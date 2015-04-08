@@ -6,6 +6,28 @@
 <body>
 	<script src="odauth.js"></script>
 	<script>
+		function onAuthCallback() {
+			var authInfo = getAuthInfoFromUrl();
+			var token = authInfo["access_token"];
+			var expiry = parseInt(authInfo["expires_in"]);
+			setCookie(token, expiry);
+			console.log("Gonna call onAuthenticated");
+			window.opener.onAuthenticated(token, window);
+		}
+
+		function getAuthInfoFromUrl() {
+			if (window.location.hash) {
+				var authResponse = window.location.hash.substring(1);
+				var authInfo = JSON.parse(
+				  '{"' + authResponse.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+				  function(key, value) { return key === "" ? value : decodeURIComponent(value); });
+				return authInfo;
+			}
+			else {
+				alert("failed to receive auth token");
+			}
+		}
+
 		onAuthCallback();
 	</script>
 </body>

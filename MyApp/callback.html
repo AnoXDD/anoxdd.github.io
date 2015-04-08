@@ -15,6 +15,18 @@
 			window.opener.onAuthenticated(token, window);
 		}
 
+		function setCookie(token, expiresInSeconds) {
+			var expiration = new Date();
+			expiration.setTime(expiration.getTime() + expiresInSeconds * 1000);
+			var cookie = "odauth=" + token + "; path=/; expires=" + expiration.toUTCString();
+
+			if (document.location.protocol.toLowerCase() == "https") {
+				cookie = cookie + ";secure";
+			}
+
+			document.cookie = cookie;
+		}
+
 		function getAuthInfoFromUrl() {
 			if (window.location.hash) {
 				var authResponse = window.location.hash.substring(1);

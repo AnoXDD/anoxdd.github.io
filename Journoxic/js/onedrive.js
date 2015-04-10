@@ -133,21 +133,23 @@ function init() {
 }
 
 function downloadFile() {
+	// Change loading icons and disable click
+	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	var token = getTokenFromCookie();
-	console.log("Get my cookie! - [" + token);
 	if (token != "")
 		$.ajax({
 			type: "GET",
-			// url: ROOTURL + dir + name + ":/content?access_token=" + token,
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+			contentType: "application/x-www-form-urlencoded; charset=utf-8",
 			success: function(data, status, xhr) {
 				mydata = data;
 				myxhr = xhr;
-				console.log("\tcontentURL = " + xhr.responseText);
-				window.app.load("", false, xhr.responseText);
+				window.app.load("", true, xhr.responseText);
 				console.log("Finished cat()");
 			}
 		});
+	// Change loading icons and re-enable click
+	$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 }
 
 ////$(document).ready(function() {

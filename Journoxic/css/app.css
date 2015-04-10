@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -118,6 +118,7 @@ body {
 	-moz-transition: height .2s,top .2s,width .1s;
 	-ms-transition: height .2s,top .2s,width .1s;
 	transition: height .2s,top .2s,width .1s;
+	display: none;
 }
 
 	#app.detail-view #header h1 {
@@ -770,8 +771,8 @@ body {
 	}
 
 		#detail .text p {
-			margin-bottom: .25em;
-			line-height: 1.3em;
+			margin-bottom: 1em;
+			line-height: 1.5em;
 			word-wrap: break-word;
 			word-break: keep-all;
 		}
@@ -1807,10 +1808,16 @@ body {
 	height: 70px;
 }
 
+#sign-in-prompt {
+	padding: 23px;
+	color: #dadada;
+	text-align: center;
+}
+
 #search-new {
 	padding: 10px 0 10px 0;
 	width: 100%;
-	display: flex;
+	display: none;
 }
 
 .search-text {
@@ -1843,7 +1850,7 @@ body {
 	width: 30%;
 	height: 15px;
 	border-radius: 10px;
-	display: inline-block;
+	display: none;
 }
 
 	.search-result p {
@@ -1858,18 +1865,19 @@ body {
 .actions {
 	display: inline-block;
 	float: right;
-	position: relative;
-	top: -20px;
+	position: absolute;
+	top: 30px;
+	right: 10px;
 }
 
 	.actions a {
 		text-decoration: none;
-		transition: 1s ease;
+		transition: color 1s ease, background 1s ease, padding .5s ease, margin .5s ease;
 		color: #b7b7b7;
 		background: #3f3f3f;
 		border-radius: 20px;
 		padding: 10px;
-		margin-right: 10px;
+		margin: 10px;
 		overflow: hidden;
 	}
 
@@ -1884,7 +1892,7 @@ body {
 		}
 
 	.actions #signin {
-		/*display: none;*/  
+		/*display: none;*/
 	}
 
 	.actions #upload {

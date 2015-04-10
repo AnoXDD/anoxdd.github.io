@@ -141,6 +141,8 @@ app.load = function(filter, forceReload, newContent) {
 	}
 	// Show the final result anyway
 	$(".search-result").fadeIn(1000);
+	if (filter == undefined)
+		filter == "";
 }
 // Load a script and passed in a function
 app.loadScript = function(data, func, isScript) {
@@ -707,8 +709,6 @@ app.detail = function() { // [m]
 		dataClip.viewing = 1;
 	}
 	var l = $(app.detailView(dataClip));
-
-	console.log(l);
 	// !!!!!HIDE THE CONTENT LISTS!!!!
 	app.cDetail.css("display", "inline-block").html(l);
 	app.app.addClass("detail-view");

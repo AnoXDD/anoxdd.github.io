@@ -151,8 +151,13 @@ function showLoginButton() {
 // otherwise it will remove the textual link that showLoginButton() created.
 function removeLoginButton() {
 	$("#signin").hide();
+	// Show everything app needs
+	$("#sign-in-prompt").remove();
 	$("#download").show();
 	$("#upload").show();
+	$("#search-new").fadeIn(1000);
+	$(".search-result").fadeIn(1000);
+	$("#app").fadeIn(1000);
 }
 
 function challengeForAuth() {

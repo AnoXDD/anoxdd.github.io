@@ -387,3 +387,8 @@ FakesAssemblies/
 
 # Adobe Photoshop
 *.psd
+
+
+*.sln
+*.csproj
+*.config

@@ -140,7 +140,7 @@ function downloadFile() {
 		$.ajax({
 			type: "GET",
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
-			contentType: "application/x-www-form-urlencoded; charset=utf-8",
+			dataType: "jsonp",
 			success: function(data, status, xhr) {
 				mydata = data;
 				myxhr = xhr;

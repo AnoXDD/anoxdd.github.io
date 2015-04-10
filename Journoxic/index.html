@@ -1,32 +1,277 @@
 ﻿<!DOCTYPE html>
 
-<html lang="en">
+<html class="no-js" lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Tester</title>
+	<title>Anoxic's Journal Viewer v3.0.0</title>
 	<link rel="stylesheet" href="css/app.css" type="text/css" />
-	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
-	<script src="js/lib/jquery.min.js"></script>
-	<script src="js/onedrive.js"></script>
+	<link rel="stylesheet" href="css/jquery-ui.css">
 </head>
 <body>
-	<h1>Tester</h1>
-	<a onclick="odauth(true)" id="login">Log in</a>
-	<a href="#" id="create-folder">Create all the folders needed</a>
-	<div id="data"></div>
-	<div id="status"></div>
-	<div id="xhr"></div>
-	<div id="feedback"></div>
-	<script>
-		function onAuthenticated(token, authWindow) {
-			if (token) {
-				if (authWindow) {
-					removeLoginButton();
-					authWindow.close();
-				}
-				$("#feedback").text(token);
+	<div id="noscript">
+		<p>JavaScript must be enabled in order for you to use this sight. However, it seems JavaScript is either disabled or not supported by your web browser. To use this sight, enable JavaScript by changing your web browser options, then try again.</p>
+	</div>
+	<!-- Search bar -->
+	<div id="header">
+		<div id="search-new">
+			<input type="text" id="query" class="search-text" autocomplete="off">
+		</div>
+		<div class="search-result">
+			<p>Total entries: </p>
+			<p id="total-entry">...</p>
+			<p>Displayed: </p>
+			<p id="total-displayed">...</p>
+			<p>Total chars: </p>
+			<p id="total-char">...</p>
+			<p>Total lines: </p>
+			<p id="total-line">...</p>
+			<p>Total time:</p>
+			<p id="total-time">...</p>
+		</div>
+		<div class="actions">
+			<a onclick="odauth(true)" href="#" title="Sign in via OneDrive" id="signin">&#xE148</a>
+			<a href="#" title="Download and revert data" id="download">&#xE118</a>
+			<a href="#" title="Update data" id="upload">&#xE11C</a>
+		</div>
+	</div>
+	<!-- Main frame of the viewer -->
+	<div id="app">
+		<div id="contents">
+			<div id="list"></div>
+			<div id="detail"></div>
+		</div>
+	</div>
+	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
+	<script src="js/lib/jquery.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/onedrive.js"></script>
+	<script src="js/lib/modernizr.min.js"></script>
+	<script src="js/lib/jquery.grab.min.js"></script>
+	<script src="js/lib/jquery.mousewheel.min.js"></script>
+	<script src="js/lib/jquery.ui.min.js"></script>
+	<script src="js/lib/underscore.min.js"></script>
+	<script src="js/lib/swipe.min.js"></script>
+	<script type="text/x-template" id="list-view">
+		<li>
+			<%
+			if (year != -1) {
+			%>
+			<p class="separator">
+				<span>
+					<%= year %>
+				</span>
+			</p>
+			<%
 			}
-		}
+			%>
+			<%
+			if (month != -1) {
+			%>
+			<p class="separator">
+				<span>
+					<%= month %>
+				</span>
+			</p>
+			<%
+			}
+			%>
+			<a href="#">
+				<div class="cover">
+					<div class="ext"><%= ext %></div>
+				</div>
+				<p class="title"><%= title %></p>
+				<p class="datetime"><%= datetime %></p>
+				<p class="summary"><%= summary %></p>
+				<div class="attached"><%= attached %></div>
+			</a>
+		</li>
+	</script>
+	<script type="text/x-template" id="detail-view">
+		<div class="head">
+			<p class="title"><%- title %></p>
+			<p class="charline"><%- chars %></p>
+			<p class="charline"><%- lines %></p>
+			<p class="datetime"><%- datetime %></p>
+		</div>
+		<div class="content">
+			<div class="upper photo"></div>
+			<div class="center"></div>
+			<div class="lower">
+				<div class="text"><%= contents %></div>
+
+				<%
+				if( video ) {
+				for( i in video ) {
+				%>
+				<div class="video">
+					<a href="resource/<%- video[i].fileName %>" target="_blank">
+						<div class="thumb"><% if (video[i].thumb) { print(book[i].thumb); } %><span></span></div>
+						<p class="title"><%- video[i].title %></p>
+					</a>
+				</div>
+				<%
+				}
+				}
+
+				if( voice ) {
+				for( i in voice ) {
+				%>
+				<div class="voice">
+					<a href="resource/<%- voice[i].fileName %>" target="_blank" title="Listen to it">
+						<div class="thumb"><span></span></div>
+						<p class="title"><%- voice[i].title %></p>
+					</a>
+				</div>
+				<%
+				}
+				}
+
+				if( place ) {
+				for( i in place ) {
+				if (place[i].latitude) {
+				%>
+				<div class="place">
+					<%
+					%>
+					<a href="https://maps.google.com/maps?z=15&q=<%- place[i].latitude %>,<%- place[i].longitude %>" target="_blank" title="See it in Google Map">
+						<div class="thumb"></div>
+						<p><%- place[i].title %></p>
+					</a>
+				</div>
+				<%
+				} else {
+				%>
+				<div class="place">
+					<a href="https://maps.google.com/maps?z=15&q=<%- place[i].title %>" target="_blank" title="See it in Google Map">
+						<div class="thumb"></div>
+						<p><%- place[i].title %></p>
+					</a>
+				</div>
+				<%
+				}
+				}
+				}
+
+				if( webLink ) {
+				for( i in webLink ) {
+				%>
+				<div class="webLink">
+					<a href="<%- webLink[i].url %>" target="_blank" title="New Window">
+						<div class="thumb"><% if( webLink[i].thumb ) { print( webLink[i].thumb ); } %><span></span></div>
+						<p class="url"><%- webLink[i].url %></p>
+						<p class="desc"><%- webLink[i].title %></p>
+					</a>
+				</div>
+				<%
+				}
+				}
+
+				if( book ) {
+				for( i in book ) {
+				if( book[i].info ) {
+				%>
+				<div class="book">
+					<a href="<%- book[i].info %>" target="_blank" title="New Window">
+						<div class="thumb"><% if( book[i].thumb ) { print( book[i].thumb ); } %><span></span></div>
+						<p class="title"><%- book[i].title %></p>
+						<p class="desc"><%- book[i].author %></p>
+					</a>
+				</div>
+				<%
+				} else {
+				%>
+				<div class="book">
+					<div class="thumb"><% if( book[i].thumb ) { print( book[i].thumb ); } %><span></span></div>
+					<p class="title"><%- book[i].title %></p>
+					<p class="desc"><%- book[i].author %></p>
+				</div>
+				<%
+				}
+				}
+				}
+
+				if( music ) {
+				for( i in music ) {
+				if( music[i].info ) {
+				%>
+				<div class="music">
+					<a href="<%- music[i].info %>" target="_blank" title="View in iTunes store">
+						<div class="thumb"><% if( music[i].thumb ) { print( music[i].thumb ); } %><span></span></div>
+						<p class="title"><%- music[i].title %></p>
+						<p class="desc"><%- music[i].author %></p>
+					</a>
+				</div>
+				<%
+				} else {
+				%>
+				<div class="music">
+					<div class="thumb"><% if( music[i].thumb ) { print( music[i].thumb ); } %><span></span></div>
+					<p class="title"><%- music[i].title %></p>
+					<p class="desc"><%- music[i].author %></p>
+				</div>
+				<%
+				}
+				}
+				}
+
+				if( movie ) {
+				for( i in movie ) {
+				if( movie[i].info ) {
+				%>
+				<div class="movie">
+					<a href="<%- movie[i].info %>" target="_blank" title="New Window">
+						<div class="thumb"><% if( movie[i].thumb ) { print( movie[i].thumb ); } %><span></span></div>
+						<p class="title"><%- movie[i].title %></p>
+						<p class="desc"><%- movie[i].author %></p>
+					</a>
+				</div>
+				<%
+				} else {
+				%>
+				<div class="movie">
+					<div class="thumb"><% if( movie[i].thumb ) { print( movie[i].thumb ); } %><span></span></div>
+					<p class="title"><%- movie[i].title %></p>
+					<p class="desc"><%- movie[i].author %></p>
+				</div>
+				<%
+				}
+				}
+				}
+
+				if( iconTags2 ) {
+				%>
+				<div class="icontags">
+					<%
+					for( i in iconTags2 ) {
+					print('<span class="' + iconTags2[i] + '"></span>');
+					}
+					%>
+				</div>
+				<%
+				}
+
+				if( textTags ) {
+				var textTags2 = textTags.split('|');
+				%>
+				<div class="texttags">
+					<p>
+						<span>#</span>
+						<%
+						for( i in textTags2 ) {
+						if( i != 0 )
+						print(', ');
+
+						print( textTags2[i] );
+						}
+						%>
+					</p>
+				</div>
+				<%
+				}
+				%>
+			</div>
+		</div>
+		<button type="button" class="btn-back"><span></span>Back</button>
 	</script>
 </body>
 </html>

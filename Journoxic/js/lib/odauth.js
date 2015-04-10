@@ -141,17 +141,7 @@ function getAppInfo() {
 // will insert a textual login link at the top of the page. if defined, your
 // showCustomLoginButton should call challengeForAuth() when clicked.
 function showLoginButton() {
-	if (typeof showCustomLoginButton === "function") {
-		showCustomLoginButton(true);
-		return;
-	}
-
-	var loginText = document.createElement('a');
-	loginText.href = "#";
-	loginText.id = "loginText";
-	loginText.onclick = challengeForAuth;
-	loginText.innerText = "[sign in]";
-	document.body.insertBefore(loginText, document.body.children[0]);
+	$("#signin").show();
 }
 
 // called with the login button created by showLoginButton() needs to be
@@ -159,15 +149,9 @@ function showLoginButton() {
 // be called with 'false' passed in to indicate the button should be removed.
 // otherwise it will remove the textual link that showLoginButton() created.
 function removeLoginButton() {
-	if (typeof showCustomLoginButton === "function") {
-		showCustomLoginButton(false);
-		return;
-	}
-
-	var loginText = document.getElementById("loginText");
-	if (loginText) {
-		document.body.removeChild(loginText);
-	}
+	$("#signin").hide();
+	$("#download").show();
+	$("#upload").show();
 }
 
 function challengeForAuth() {
@@ -208,4 +192,13 @@ function popup(url) {
 	}
 
 	popup.focus();
+}
+
+function onAuthenticated(token, authWindow) {
+	if (token) {
+		if (authWindow) {
+			removeLoginButton();
+			authWindow.close();
+		}
+	}
 }

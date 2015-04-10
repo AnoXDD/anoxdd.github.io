@@ -132,21 +132,38 @@ function init() {
 
 }
 
+function downloadFile() {
+	var token = getTokenFromCookie();
+	console.log("Get my cookie! - [" + token);
+	if (token != "")
+		$.ajax({
+			type: "GET",
+			// url: ROOTURL + dir + name + ":/content?access_token=" + token,
+			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+			success: function(data, status, xhr) {
+				mydata = data;
+				myxhr = xhr;
+				console.log("\tcontentURL = " + xhr.responseText);
+				window.app.load("", false, xhr.responseText);
+				console.log("Finished cat()");
+			}
+		});
+}
 
-$(document).ready(function() {
-	$("#login").on("click", function() {
-	});
-	/* Get ready for all the folders that needed */
-	$("#create-folder").on("click", function() {
-		mkdir("", "folderC");
-		mkdir("folderC", "another");
-		ls();
-		cat("", "textfile.txt");
-		cat("folderC", "text2.txt");
-		cat("", "Untitled.png");
-		emacs("", "text1.txt", "text1.txtxtxt");
-		emacs("folderC", "text2.txt", "textstring");
-	});
-});
+////$(document).ready(function() {
+////	$("#login").on("click", function() {
+////	});
+////	/* Get ready for all the folders that needed */
+////	$("#create-folder").on("click", function() {
+////		mkdir("", "folderC");
+////		mkdir("folderC", "another");
+////		ls();
+////		cat("", "textfile.txt");
+////		cat("folderC", "text2.txt");
+////		cat("", "Untitled.png");
+////		emacs("", "text1.txt", "text1.txtxtxt");
+////		emacs("folderC", "text2.txt", "textstring");
+////	});
+////});
 
 

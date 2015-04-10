@@ -147,7 +147,7 @@ function downloadFile() {
 				"Access-Control-Allow-Origin": true
 			},
 			success: function(data, status, xhr) {
-				window.app.load("", true, xhr.responseText);
+				window.app.load("", false, xhr.responseText);
 				console.log("Finished cat()");
 			}
 		}).then(function() {

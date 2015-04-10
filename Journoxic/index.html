@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<title>Tester</title>
 	<link rel="stylesheet" href="css/app.css" type="text/css" />
-	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="http://anoxdd.github.io/Journoxic/callback.html"></script>
+	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/onedrive.js"></script>
 </head>
@@ -19,7 +19,6 @@
 	<div id="feedback"></div>
 	<script>
 		function onAuthenticated(token, authWindow) {
-			console.log("HIHIHIHI!");
 			if (token) {
 				if (authWindow) {
 					removeLoginButton();

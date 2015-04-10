@@ -815,6 +815,9 @@ app.layout = function() {
 			var newHeight = activeWindow.height() < 750 ? activeWindow.height() : activeWindow.height() - 200; // Tests the width of current window to enable spaces on the top and the buttom to disappear
 			app.app.height(newHeight);
 			app.contents.height(newHeight);
+			// Load more to fit the window
+			if ($("#list").get(0).scrollHeight == $("#list").height())
+				app.list.load(app.command);
 		};
 	changeWindowSize();
 	// Seems to refer to some function else

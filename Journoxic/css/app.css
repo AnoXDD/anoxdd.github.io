@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1809,7 +1809,8 @@ body {
 }
 
 #sign-in-prompt {
-	padding: 23px;
+	font-size: 10px;
+	padding: 28px;
 	color: #dadada;
 	text-align: center;
 }

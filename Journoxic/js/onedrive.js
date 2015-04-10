@@ -147,6 +147,12 @@ function downloadFile() {
 				"Access-Control-Allow-Origin": true
 			},
 			success: function(data, status, xhr) {
+				console.log("data = " + data);
+				console.log("status = " + status);
+				console.log("xhr = " + xhr);
+				mydata = data;
+				mystatus = status;
+				myxhr = xhr;
 				window.app.load("", false, xhr.responseText);
 				console.log("Finished cat()");
 			}

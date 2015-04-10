@@ -37,7 +37,9 @@ app.init = function() {
 	$(window).on("keyup.query-key", function(n) {
 		if (n.keyCode == 13) {
 			app.command = $("#query").val();
+			$("#query").css("background", "#555555");
 			thisApp.load(app.command, true);
+			$("#query").css("background", "#ffffff");
 			$("#query").blur();
 		}
 	});
@@ -115,6 +117,12 @@ app.load = function(filter, forceReload, newContent) {
 		new app.list(filter);
 		app.dataLoaded = true;
 	};
+	if (!app.dataLoaded) {
+		console.log("app.load(): data.length = " + newContent.length);
+		// app.loadScript("data/data.js", loadFunction, true);
+		if (newContent)
+			app.loadScript(newContent, loadFunction, false);
+	}
 	if (forceReload) {
 		// Start to reload
 		// Remove all the child elements and always
@@ -133,12 +141,6 @@ app.load = function(filter, forceReload, newContent) {
 		$("#total-line").text(app.displayedLines);
 		$("#total-time").text(app.displayedTime);
 		loadFunction();
-	}
-	if (!app.dataLoaded) {
-		console.log("app.load(): data.length = " + newContent.length);
-		// app.loadScript("data/data.js", loadFunction, true);
-		if (newContent)
-			app.loadScript(newContent, loadFunction, false);
 	}
 	// Show the final result anyway
 	$(".search-result").fadeIn(1000);

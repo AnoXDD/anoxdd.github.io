@@ -274,6 +274,7 @@ body {
 		}
 
 			#list p.separator > span {
+				color: #898989;
 				position: relative;
 				display: inline-block;
 				padding: 20px;
@@ -1822,7 +1823,7 @@ body {
 }
 
 .search-text {
-	/* margin: 0px auto; */
+	transition: background .5s ease;
 	margin: 0 10%;
 	padding: 5px 15px;
 	color: #666;
@@ -1884,7 +1885,7 @@ body {
 
 		.actions a:active {
 			background: #676767;
-			color: #fff;
+			color: #ffffff;
 		}
 
 		.actions a:hover {

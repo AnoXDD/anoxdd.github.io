@@ -161,7 +161,7 @@ app.loadScript = function(data, func, isScript) {
 		document.getElementsByTagName("head")[0].appendChild(newScript);
 	} else {
 		// Raw data
-		journal.archive.data = data;
+		journal.archive.data = JSON.parse(data);
 		func();
 	}
 };

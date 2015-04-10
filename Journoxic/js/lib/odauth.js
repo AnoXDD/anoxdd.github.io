@@ -98,6 +98,7 @@ function setCookie(token, expiresInSeconds) {
 	expiration.setTime(expiration.getTime() + expiresInSeconds * 1000);
 	var cookie = "odauth=" + token + "; path=/; expires=" + expiration.toUTCString();
 
+	console.log("setCookie(): cookie = " + cookie);
 	if (document.location.protocol.toLowerCase() == "https") {
 		cookie = cookie + ";secure";
 	}
@@ -197,8 +198,8 @@ function popup(url) {
 function onAuthenticated(token, authWindow) {
 	if (token) {
 		if (authWindow) {
-			removeLoginButton();
 			authWindow.close();
 		}
+		removeLoginButton();
 	}
 }

@@ -141,10 +141,9 @@ function downloadFile() {
 			type: "GET",
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
 			dataType: "jsonp",
-			headers: {
-				"Access-Control-Allow-Origin": true
-			},
 			success: function(data, status, xhr) {
+				mydata = data;
+				myxhr = xhr;
 				window.app.load("", true, xhr.responseText);
 				console.log("Finished cat()");
 			}

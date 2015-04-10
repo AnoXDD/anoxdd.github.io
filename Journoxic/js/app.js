@@ -135,6 +135,7 @@ app.load = function(filter, forceReload, newContent) {
 		loadFunction();
 	}
 	if (!app.dataLoaded) {
+		console.log("app.load(): data.length = " + newContent.length);
 		// app.loadScript("data/data.js", loadFunction, true);
 		if (newContent)
 			app.loadScript(newContent, loadFunction, false);
@@ -163,6 +164,7 @@ app.loadScript = function(data, func, isScript) {
 		document.getElementsByTagName("head")[0].appendChild(newScript);
 	} else {
 		// Raw data
+		console.log("app.loadScript(): data.length = " + data.length);
 		journal.archive.data = JSON.parse(data);
 		func();
 	}

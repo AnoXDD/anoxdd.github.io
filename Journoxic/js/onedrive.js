@@ -141,12 +141,12 @@ function downloadFile() {
 			type: "GET",
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
 			success: function(data, status, xhr) {
-				window.app.load("", true, xhr.responseText);
+				myxhr = xhr.responseText;
+				window.app.load("", false, xhr.responseText);
+				// Change loading icons and re-enable click
+				$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 				console.log("Finished cat()");
 			}
-		}).then(function() {
-			// Change loading icons and re-enable click
-			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 		});
 	}
 }

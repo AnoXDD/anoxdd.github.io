@@ -162,45 +162,47 @@ function downloadFile() {
 			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 			console.log("downloadFile()\tFinish downloading");
 		});
-		// Get media data
-		downloadMedia();
+		// Show the refresh button
+		$("#refresh-media").fadeIn(1000).css("display", "inline-block");
+		// Get metadata
+		$.ajax({
+			type: "GET",
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
+		}).done(function(data, status, xhr) {
+			// Get the data number
+			journal.archive.media = data["folder"]["childCount"];
+			console.log("downloadFile()\tFinish metadata");
+			downloadMedia();
+		});
 	}
 }
 
 /* Recusively read all the children under resource folder */
 function downloadMedia(url) {
-	var token = getTokenFromCookie();
 	// Reset map
-	if (url == undefined)
+	if (url == undefined) {
 		// Initial call
+		var token = getTokenFromCookie();
 		journal.archive.map = {};
+		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=name&access_token=" + token;
+	}
 	$.ajax({
 		type: "GET",
-		url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
+		url: url
 	}).done(function(data, status, xhr) {
-		// Get the data number
-		journal.archive.media = data["folder"]["childCount"];
-		console.log("downloadFile()\tFinish metadata");
-		if (url == undefined)
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=name&access_token=" + token;
-		$.ajax({
-			type: "GET",
-			url: url
-		}).done(function(data, status, xhr) {
-			if (data["@odata.nextLink"])
-				// More content available!
-				downloadMedia(data["@odata.nextLink"]);
-			var itemList = data["value"];
-			for (key in itemList)
-				journal.archive.map[itemList[key]["name"]] = itemList[key]["@content.downloadUrl"];
-			// Show progress
-			$("#refresh-media").css("background", "-webkit-radial-gradient(center, ellipse cover, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
-			if (_.size(journal.archive.map) == journal.archive.media) {
-				// All the media have been loaded, so refresh button goes back to original status
-				$("#refresh-media").css("background", "").unbind("mouseenter mouseleave");
-			}
-			console.log("downloadFile()\tFinish media data");
-		});
+		if (data["@odata.nextLink"])
+			// More content available!
+			downloadMedia(data["@odata.nextLink"]);
+		var itemList = data["value"];
+		for (key in itemList)
+			journal.archive.map[itemList[key]["name"]] = itemList[key]["@content.downloadUrl"];
+		// Show progress
+		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
+		if (_.size(journal.archive.map) == journal.archive.media) {
+			// All the media have been loaded, so refresh button goes back to original status
+			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
+		}
+		console.log("downloadFile()\tFinish media data");
 	});
 }
 

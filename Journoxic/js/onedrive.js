@@ -138,7 +138,10 @@ function downloadFile() {
 	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
-		$(this).html(parseInt(_.size(journal.archive.map) / journal.archive.media * 100) + "%");
+		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
+		if (isNaN(percent))
+			percent = 0;
+		$(this).html(percent + "%");
 	}, function() {
 		$(this).html("&#xE149");
 	})
@@ -166,6 +169,11 @@ function downloadFile() {
 
 /* Recusively read all the children under resource folder */
 function downloadMedia(url) {
+	var token = getTokenFromCookie();
+	// Reset map
+	if (url == undefined)
+		// Initial call
+		journal.archive.map = {};
 	$.ajax({
 		type: "GET",
 		url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token

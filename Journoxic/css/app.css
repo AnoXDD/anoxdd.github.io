@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1872,7 +1872,7 @@ body {
 	right: 10px;
 }
 
-	a {
+	.actions a {
 		text-decoration: none;
 		text-align: center;
 		transition: .5s ease;

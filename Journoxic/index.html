@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div id="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.2.1 Build 041015_1637</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.3.0 Build 041115_0030</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off">
 		</div>
@@ -31,6 +31,7 @@
 		</div>
 		<div class="actions">
 			<a onclick="odauth(true)" href="#" title="Sign in via OneDrive" id="signin">&#xE148</a>
+			<a onclick="app.load('', true)" href="#" title="Refresh to see media" id="refresh-media">&#xE149</a>
 			<a onclick="downloadFile()" href="#" title="Download and revert data" id="download">&#xE118</a>
 			<a href="#" title="Update data" id="upload">&#xE11C</a>
 		</div>
@@ -105,8 +106,8 @@
 				for( i in video ) {
 				%>
 				<div class="video">
-					<a href="resource/<%- video[i].fileName %>" target="_blank">
-						<div class="thumb"><% if (video[i].thumb) { print(book[i].thumb); } %><span></span></div>
+					<a class="<%- video[i].fileName %>" href="#" target="_blank">
+						<div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
 						<p class="title"><%- video[i].title %></p>
 					</a>
 				</div>
@@ -118,7 +119,7 @@
 				for( i in voice ) {
 				%>
 				<div class="voice">
-					<a href="resource/<%- voice[i].fileName %>" target="_blank" title="Listen to it">
+					<a class="<%- voice[i].fileName %>" href="#" target="_blank" title="Listen to it">
 						<div class="thumb"><span></span></div>
 						<p class="title"><%- voice[i].title %></p>
 					</a>
@@ -197,7 +198,7 @@
 				%>
 				<div class="music">
 					<a href="<%- music[i].info %>" target="_blank" title="View in iTunes store">
-						<div class="thumb"><% if( music[i].thumb ) { print( music[i].thumb ); } %><span></span></div>
+						<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
 						<p class="title"><%- music[i].title %></p>
 						<p class="desc"><%- music[i].author %></p>
 					</a>
@@ -206,7 +207,7 @@
 				} else {
 				%>
 				<div class="music">
-					<div class="thumb"><% if( music[i].thumb ) { print( music[i].thumb ); } %><span></span></div>
+					<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
 					<p class="title"><%- music[i].title %></p>
 					<p class="desc"><%- music[i].author %></p>
 				</div>

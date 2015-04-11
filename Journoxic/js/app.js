@@ -3,6 +3,10 @@ window.journal = {};
 window.app = {};
 journal.archive = {};
 journal.archive.data = [];
+/* The number of the total media */
+journal.archive.media = 0;
+/* The map to map the source name to the weblink */
+journal.archive.map = {};
 
 app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 /* The resource folder of all the images/video/music covers, etc. */
@@ -37,9 +41,10 @@ app.init = function() {
 	$(window).on("keyup.query-key", function(n) {
 		if (n.keyCode == 13) {
 			app.command = $("#query").val();
-			$("#query").css("background", "#555555");
+			$("#query").css("background", "#555555").promise().done(function() {
+				$("#query").css("background", "#ffffff");
+			});
 			thisApp.load(app.command, true);
-			$("#query").css("background", "#ffffff");
 			$("#query").blur();
 		}
 	});
@@ -118,10 +123,11 @@ app.load = function(filter, forceReload, newContent) {
 		app.dataLoaded = true;
 	};
 	if (!app.dataLoaded) {
-		console.log("app.load(): data.length = " + newContent.length);
 		// app.loadScript("data/data.js", loadFunction, true);
-		if (newContent)
+		if (newContent) {
+			console.log("app.load(): data.length = " + newContent.length);
 			app.loadScript(newContent, loadFunction, false);
+		}
 	}
 	if (forceReload) {
 		// Start to reload
@@ -526,9 +532,16 @@ app.list.prototype = {
 			// Manual data
 			var thumbProperties = app.util.crop(1024, 720, 80),
 				thumbPropertiesHtml = app.util.style(thumbProperties);
-			var fileName = app.resource + first.fileName;
-			if (type == "video")
-				fileName = fileName + "_thumb.jpg";
+			// Match to see if this filename is already in the map
+			var fileName;
+			if (type == "images") {
+				fileName = journal.archive.map[first.fileName];
+				if (fileName == undefined)
+					return '<div class="dummy"></div>';
+			}
+			if (type == "video") {
+				fileName = journal.archive.map[first.fileName + "_thumb.jpg"];
+			}
 			// Check the validity of photos
 			////if (!fileName.match(/.(jpg|png)$/) && !!first.type)
 			////	if (first.type.match(/(png|jpg)/))
@@ -735,7 +748,7 @@ app.detail = function() { // [m]
 		var data = journal.archive.data[app.currentDisplayed];
 		if (data["images"]) {
 			for (key in data["images"]) {
-				$(".upper").append('<a href="resource/' + data["images"][key].fileName + '"><img src="resource/' + data["images"][key].fileName + '"><span></span></a>');
+				$(".upper").append('<a href="' + journal.archive.map[data["images"][key].fileName] + '"><img src="' + journal.archive.map[data["images"][key].fileName] + '"><span></span></a>');
 			}
 		}
 		$(".center").hide();
@@ -748,7 +761,6 @@ app.detail = function() { // [m]
 		// Activate the photo viewer on click
 		if (photos.length > 0) {
 			app.photos = new app.PhotoViewer(photos.find(">img").clone());
-
 			photos.on("click", function(o) {
 				o.preventDefault();
 				var n = $(this).index();
@@ -766,6 +778,15 @@ app.detail = function() { // [m]
 			$(".btn-back", app.cDetail).trigger("click");
 		}
 	});
+	// Add online media url to the classes
+	while ($(".lower video a").attr("class") != undefined) {
+		var className = $(".lower video a").attr("class");
+		$(".lower video ." + className).attr("href", journal.archive.map[className]).removeAttr("class");
+	}
+	while ($(".lower voice a").attr("class") != undefined) {
+		var className = $(".lower voice a").attr("class");
+		$(".lower voice ." + className).attr("href", journal.archive.map[className]).removeAttr("class");
+	}
 };
 app.detail.prototype = {
 	text: function(rawText) { // [c]
@@ -817,9 +838,6 @@ app.layout = function() {
 			var newHeight = activeWindow.height() < 750 ? activeWindow.height() : activeWindow.height() - 200; // Tests the width of current window to enable spaces on the top and the buttom to disappear
 			app.app.height(newHeight);
 			app.contents.height(newHeight);
-			// Load more to fit the window
-			if ($("#list").get(0).scrollHeight == $("#list").height())
-				app.list.load(app.command);
 		};
 	changeWindowSize();
 	// Seems to refer to some function else

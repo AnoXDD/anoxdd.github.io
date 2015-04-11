@@ -142,7 +142,7 @@ function getAppInfo() {
 // will insert a textual login link at the top of the page. if defined, your
 // showCustomLoginButton should call challengeForAuth() when clicked.
 function showLoginButton() {
-	$("#signin").show();
+	$("#signin").fadeIn(1000);
 }
 
 // called with the login button created by showLoginButton() needs to be
@@ -150,11 +150,13 @@ function showLoginButton() {
 // be called with 'false' passed in to indicate the button should be removed.
 // otherwise it will remove the textual link that showLoginButton() created.
 function removeLoginButton() {
-	$("#signin").hide();
 	// Show everything app needs
 	$("#sign-in-prompt").remove();
-	$("#download").show();
-	$("#upload").show();
+	$("#signin").fadeOut(1000, function() {
+		$("#refresh-media").fadeIn(1000).css("display", "inline-block");
+		$("#download").fadeIn(1000).css("display", "inline-block");
+		$("#upload").fadeIn(1000).css("display", "inline-block");
+	});
 	$("#search-new").fadeIn(1000);
 	$(".search-result").fadeIn(1000);
 	$("#app").fadeIn(1000);

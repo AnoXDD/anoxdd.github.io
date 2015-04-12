@@ -116,6 +116,12 @@ app.init = function() {
 			$confirm.animate({ top: "10px" });
 	});
 	$("#delete-confirm").on("click", function() {
+		// Change the data displayed
+		--app.displayedNum;
+		var data = journal.archive.data[app.currentDisplayed];
+		app.displayedChars -= data["text"]["chars"];
+		app.displayedLines -= data["text"]["lines"];
+		app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
 		// Remove from the map
 		journal.archive.data.splice(app.currentDisplayed, 1);
 		// Clear from the list
@@ -123,9 +129,8 @@ app.init = function() {
 			// Remove this from the list
 			$(this).remove();
 		});
-		$(this).animate({ top: "-80px" });
 		app.detail.prototype.hideDetail();
-		app.list.prototype.load(app.command);
+		$(".loadmore").trigger("click");
 	});
 };
 app.load = function(filter, forceReload, newContent) {

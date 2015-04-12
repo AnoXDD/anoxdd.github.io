@@ -174,7 +174,7 @@ function downloadFile() {
 		})
 		.always(function() {
 			// Change loading icons and re-enable click
-			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
+			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#").hide().fadeIn(1000);
 			console.log("downloadFile()\tFinish downloading");
 		});
 	}
@@ -271,7 +271,7 @@ function uploadFile() {
 	})
 	.always(function() {
 		// Change loading icons and re-enable click
-		$("#upload").html("&#xE11C").attr("onclick", "uploadFile()").attr("href", "#");
+		$("#upload").html("&#xE11C").attr("onclick", "uploadFile()").attr("href", "#").hide().fadeIn(1000);
 		console.log("uploadFile()\tFinish uploading");
 	})
 }

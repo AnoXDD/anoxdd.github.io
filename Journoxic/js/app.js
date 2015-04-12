@@ -109,9 +109,11 @@ app.init = function() {
 	});
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
-		$("#delete-confirm").fadeToggle(1000);
-		if ($("#delete-confirm").css("display") != "none")
-			$("#delete-confirm").css("display", "inline-block");
+		var $confirm = $("#delete-confirm");
+		if ($confirm.css("top") == "10px")
+			$confirm.animate({ top: "-80px" });
+		else
+			$confirm.animate({ top: "10px" });
 	});
 	$("#delete-confirm").on("click", function() {
 		// Remove from the map
@@ -163,7 +165,7 @@ app.load = function(filter, forceReload, newContent) {
 		loadFunction();
 	}
 	// Show the final result anyway
-	$(".search-result").fadeIn(1000);
+	$(".search-result").fadeIn(500);
 	if (filter == undefined)
 		filter == "";
 }
@@ -487,7 +489,7 @@ app.list.prototype = {
 			j.preventDefault();
 			// Show edit panel
 			$(".entry-edit").each(function() {
-				$(this).fadeIn(1000).css("display", "inline-block");
+				$(this).animate({ top: "10px" });
 			});
 			// Remove all the photos that have already been loaded
 			if (app.photos)
@@ -501,7 +503,9 @@ app.list.prototype = {
 			var flag = (app.currentDisplayed == $(this).parent().index());
 			if (!flag) {
 				app.currentDisplayed = $(this).parent().index();
-				$("#detail").hide().fadeIn(1000);
+				$("#detail").fadeOut(500, function() {
+					$(this).fadeIn(500);
+				});
 				app.view = new app.detail();
 			}
 			return false;
@@ -529,7 +533,7 @@ app.list.prototype = {
 		// return item.data("pid", data.pid).addClass(data.type).appendTo(this.contents);
 		////return item.addClass(data.type).appendTo(this.contents);
 		var $newClass = item.addClass(data.type).hide();
-		this.contents.append($newClass.fadeIn(1000));
+		this.contents.append($newClass.fadeIn(500));
 	},
 	/* Add an empty html list */
 	htmlEmpty: function() {
@@ -857,11 +861,13 @@ app.detail.prototype = {
 	/* Hide the detail-view */
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
+		$(".entry-edit").each(function() {
+			$(this).animate({ top: "-80px" });
+		});
+		$("#delete-confirm").animate({ top: "10px" });
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");
-		$(".entry-edit").fadeOut(1000);
-		$("#delete-confirm").fadeOut(1000);
 		//// $(window).off("keyup.detail-key");
 		// Remove all the photos
 		if (app.photos)

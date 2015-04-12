@@ -154,7 +154,7 @@ function removeLoginButton() {
 	$("#sign-in-prompt").remove();
 	$("#signin").fadeOut(1000, function() {
 		$(".entry-comm").each(function() {
-			fadeIn(1000).css("display", "inline-block");
+			$(this).fadeIn(1000).css("display", "inline-block");
 		})
 	});
 	$("#search-new").fadeIn(1000);

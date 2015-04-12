@@ -123,7 +123,7 @@ app.init = function() {
 		app.displayedLines -= data["text"]["lines"];
 		app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
 		// Remove from the map
-		journal.archive.data.splice(app.currentDisplayed, 1);
+		delete journal.archive.data[app.currentDisplayed];
 		// Clear from the list
 		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
 			// Remove this from the list
@@ -138,6 +138,10 @@ app.load = function(filter, forceReload, newContent) {
 	$(".search-result").hide();
 	// Also hide the detail view
 	app.detail.prototype.hideDetail();
+	// Filter out undefined element
+	journal.archive.data = journal.archive.data.filter(function() {
+		return n != undefined;
+	});
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data.length);

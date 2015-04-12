@@ -174,7 +174,7 @@ function downloadFile() {
 		})
 		.always(function() {
 			// Change loading icons and re-enable click
-			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#").hide().fadeIn(1000);
+			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#").fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);;
 			console.log("downloadFile()\tFinish downloading");
 		});
 	}
@@ -203,7 +203,7 @@ function downloadMedia(url) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (_.size(journal.archive.map) == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
+			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave").fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
 		}
 		console.log("downloadFile()\tFinish media data");
 	});
@@ -239,9 +239,12 @@ function uploadFile() {
 	})
 		////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
 	.done(function() {
+		$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f 50%,#343434 0%,#343434 100%)");
 		console.log("uploadFile():\t Done backup");
 		// Clean the unnecessary data
-		var tmp = journal.archive.data;
+		var tmp = journal.archive.data.filter(function() {
+			return n != undefined;
+		});
 		for (key in tmp) {
 			delete tmp[key]["summary"];
 			delete tmp[key]["index"];
@@ -271,7 +274,7 @@ function uploadFile() {
 	})
 	.always(function() {
 		// Change loading icons and re-enable click
-		$("#upload").html("&#xE11C").attr("onclick", "uploadFile()").attr("href", "#").hide().fadeIn(1000);
+		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#").fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
 		console.log("uploadFile()\tFinish uploading");
 	})
 }

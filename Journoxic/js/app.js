@@ -402,7 +402,7 @@ app.list.prototype = {
 			}
 			// If any one matches in the inner loop, the outer loop will continue until any one doe not match or all the tests have been passed
 			if (found)
-				contiune;
+				continue;
 			console.log("Reach end");
 			// No result found
 			return false;

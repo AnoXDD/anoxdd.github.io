@@ -117,13 +117,15 @@ app.init = function() {
 	});
 	$("#delete-confirm").on("click", function() {
 		// Remove from the map
-		delete journal.archive.data[app.currentDisplayed];
+		journal.archive.data.splice(app.currentDisplayed, 1);
 		// Clear from the list
 		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
 			// Remove this from the list
 			$(this).remove();
 		});
 		$(this).animate({ top: "-80px" });
+		app.detail.prototype.hideDetail();
+		app.list.prototype.load(app.command);
 	});
 };
 app.load = function(filter, forceReload, newContent) {

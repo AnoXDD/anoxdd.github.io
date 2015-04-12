@@ -134,7 +134,7 @@ app.init = function() {
 	});
 };
 app.load = function(filter, forceReload, newContent) {
-	if (newContent = "")
+	if (newContent == "")
 		// Try to add nothing
 		return;
 	// Hide anyway

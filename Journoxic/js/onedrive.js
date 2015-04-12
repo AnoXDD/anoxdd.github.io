@@ -155,7 +155,7 @@ function downloadFile() {
 			window.app.dataLoaded = false;
 			window.app.load("", true, xhr.responseText);
 			// Show the refresh button
-			$("#refresh-media").fadeIn(500).css("display", "inline-block");
+			$("#refresh-media").animate({ top: "10px" });
 			// Get metadata
 			$.ajax({
 				type: "GET",

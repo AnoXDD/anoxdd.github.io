@@ -117,12 +117,13 @@ app.init = function() {
 	});
 	$("#delete-confirm").on("click", function() {
 		// Remove from the map
-		delete journal.archive.map[app.currentDisplayed];
+		delete journal.archive.data[app.currentDisplayed];
 		// Clear from the list
 		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
 			// Remove this from the list
 			$(this).remove();
 		});
+		$(this).animate({ top: "-80px" });
 	});
 };
 app.load = function(filter, forceReload, newContent) {
@@ -503,9 +504,7 @@ app.list.prototype = {
 			var flag = (app.currentDisplayed == $(this).parent().index());
 			if (!flag) {
 				app.currentDisplayed = $(this).parent().index();
-				$("#detail").fadeOut(500, function() {
-					$(this).fadeIn(500);
-				});
+				$("#detail").hide().fadeIn(500);
 				app.view = new app.detail();
 			}
 			return false;
@@ -864,7 +863,7 @@ app.detail.prototype = {
 		$(".entry-edit").each(function() {
 			$(this).animate({ top: "-80px" });
 		});
-		$("#delete-confirm").animate({ top: "10px" });
+		$("#delete-confirm").animate({ top: "-80px" });
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");

@@ -242,8 +242,8 @@ function uploadFile() {
 		$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f 50%,#343434 0%,#343434 100%)");
 		console.log("uploadFile():\t Done backup");
 		// Clean the unnecessary data
-		var tmp = journal.archive.data.filter(function() {
-			return n != undefined;
+		var tmp = journal.archive.data.filter(function(key) {
+			return key != undefined;
 		});
 		for (key in tmp) {
 			delete tmp[key]["summary"];
@@ -274,7 +274,7 @@ function uploadFile() {
 	})
 	.always(function() {
 		// Change loading icons and re-enable click
-		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#").fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#").fadeOut(200).fadeIn(200);
 		console.log("uploadFile()\tFinish uploading");
 	})
 }

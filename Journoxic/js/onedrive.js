@@ -257,7 +257,7 @@ function uploadFile() {
 			type: "PUT",
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
 			contentType: "text/plain",
-			data: JSON.stringify(journal.archive.data)
+			data: JSON.stringify(tmp)
 		})
 		.done(function(data, status, xhr) {
 			console.log("uploadFile():\t Done!");
@@ -271,8 +271,8 @@ function uploadFile() {
 	})
 	.always(function() {
 		// Change loading icons and re-enable click
-		$("#upload").html("&#xE11C").attr("onclick", "downloadFile()").attr("href", "#");
-		console.log("downloadFile()\tFinish downloading");
+		$("#upload").html("&#xE11C").attr("onclick", "uploadFile()").attr("href", "#");
+		console.log("uploadFile()\tFinish uploading");
 	})
 }
 

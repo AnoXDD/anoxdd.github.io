@@ -111,7 +111,7 @@ app.init = function() {
 	$("#delete").on("click", function() {
 		$("#delete-confirm").fadeToggle(1000);
 		if ($("#delete-confirm").css("display") != "none")
-			$("#delete-confirm").css("display", "inline-blcok");
+			$("#delete-confirm").css("display", "inline-block");
 	});
 	$("#delete-confirm").on("click", function() {
 		// Remove from the map
@@ -486,7 +486,9 @@ app.list.prototype = {
 		item.find(">a").on("click", function(j) {
 			j.preventDefault();
 			// Show edit panel
-			$(".entry-edit").fadeIn(1000).css("display", "inline-block");
+			$(".entry-edit").each(function() {
+				$(this).fadeIn(1000).css("display", "inline-block");
+			});
 			// Remove all the photos that have already been loaded
 			if (app.photos)
 				app.photos.remove();

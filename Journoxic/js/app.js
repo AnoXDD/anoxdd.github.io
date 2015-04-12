@@ -134,13 +134,16 @@ app.init = function() {
 	});
 };
 app.load = function(filter, forceReload, newContent) {
+	if (newContent = "")
+		// Try to add nothing
+		return;
 	// Hide anyway
 	$(".search-result").hide();
 	// Also hide the detail view
 	app.detail.prototype.hideDetail();
 	// Filter out undefined element
-	journal.archive.data = journal.archive.data.filter(function() {
-		return n != undefined;
+	journal.archive.data = journal.archive.data.filter(function(key) {
+		return key != undefined;
 	});
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {

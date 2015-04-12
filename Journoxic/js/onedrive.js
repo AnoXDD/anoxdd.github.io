@@ -82,7 +82,6 @@ function cat(dir, name) {
 		success: function(data, status, xhr) {
 			mydata = data;
 			myxhr = xhr;
-
 			console.log("\tcontentURL = " + xhr.responseText);
 			console.log("Finished cat()");
 		}
@@ -151,28 +150,32 @@ function downloadFile() {
 		$.ajax({
 			type: "GET",
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
-		}).done(function(data, status, xhr) {
-			myxhr = xhr.responseText;
+		})
+		.done(function(data, status, xhr) {
 			window.app.dataLoaded = false;
 			window.app.load("", true, xhr.responseText);
-		}).fail(function(xhr, status, error) {
-			alert("Cannot download the file");
-		}).always(function() {
+			// Show the refresh button
+			$("#refresh-media").fadeIn(1000).css("display", "inline-block");
+			// Get metadata
+			$.ajax({
+				type: "GET",
+				url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
+			}).done(function(data, status, xhr) {
+				// Get the data number
+				journal.archive.media = data["folder"]["childCount"];
+				console.log("downloadFile()\tFinish metadata");
+				downloadMedia();
+			}).fail(function() {
+				alert("Cannot load children list");
+			});
+		})
+		.fail(function(xhr, status, error) {
+			alert("Cannot download the file. Do you enable CORS?");
+		})
+		.always(function() {
 			// Change loading icons and re-enable click
 			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 			console.log("downloadFile()\tFinish downloading");
-		});
-		// Show the refresh button
-		$("#refresh-media").fadeIn(1000).css("display", "inline-block");
-		// Get metadata
-		$.ajax({
-			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
-		}).done(function(data, status, xhr) {
-			// Get the data number
-			journal.archive.media = data["folder"]["childCount"];
-			console.log("downloadFile()\tFinish metadata");
-			downloadMedia();
 		});
 	}
 }
@@ -204,6 +207,73 @@ function downloadMedia(url) {
 		}
 		console.log("downloadFile()\tFinish media data");
 	});
+}
+
+/* Upload journal.archive.data to OneDrive, also created a backup */
+function uploadFile() {
+	console.log("Starting uploadFile()");
+	// Change loading icons and disable click
+	$("#upload").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	var token = getTokenFromCookie(),
+		d = new Date(),
+		month = d.getMonth() + 1,
+		day = d.getDate(),
+		year = d.getFullYear() % 100,
+		hour = d.getHours(),
+		minute = d.getMinutes(),
+		second = d.getSeconds();
+	month = month < 10 ? "0" + month : month;
+	day = day < 10 ? "0" + day : day;
+	year = year < 10 ? "0" + year : year;
+	hour = hour < 10 ? "0" + hour : hour;
+	minute = minute < 10 ? "0" + minute : minute;
+	second = second < 10 ? "0" + second : second;
+	var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
+		data = { name: fileName };
+	// Backup the original file
+	$.ajax({
+		type: "PATCH",
+		url: "https://api.onedrive.com/v1.0/drive/special/approot:/data/data.js?access_token=" + token,
+		contentType: "application/json",
+		data: JSON.stringify(data)
+	})
+		////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
+	.done(function() {
+		console.log("uploadFile():\t Done backup");
+		// Clean the unnecessary data
+		var tmp = journal.archive.data;
+		for (key in tmp) {
+			delete tmp[key]["summary"];
+			delete tmp[key]["index"];
+			delete tmp[key]["type"];
+			delete tmp[key]["ext"];
+			delete tmp[key]["datetime"];
+			delete tmp[key]["endtime"];
+			delete tmp[key]["year"];
+			delete tmp[key]["month"];
+			delete tmp[key]["attached"];
+		}
+		$.ajax({
+			type: "PUT",
+			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+			contentType: "text/plain",
+			data: JSON.stringify(journal.archive.data)
+		})
+		.done(function(data, status, xhr) {
+			console.log("uploadFile():\t Done!");
+		})
+		.fail(function() {
+			alert("Cannot upload files");
+		})
+	})
+	.fail(function() {
+		alert("Cannot backup the file");
+	})
+	.always(function() {
+		// Change loading icons and re-enable click
+		$("#upload").html("&#xE11C").attr("onclick", "downloadFile()").attr("href", "#");
+		console.log("downloadFile()\tFinish downloading");
+	})
 }
 
 ////$(document).ready(function() {

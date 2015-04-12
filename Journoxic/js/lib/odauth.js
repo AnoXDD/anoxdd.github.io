@@ -153,9 +153,9 @@ function removeLoginButton() {
 	// Show everything app needs
 	$("#sign-in-prompt").remove();
 	$("#signin").fadeOut(1000, function() {
-		$("#refresh-media").fadeIn(1000).css("display", "inline-block");
-		$("#download").fadeIn(1000).css("display", "inline-block");
-		$("#upload").fadeIn(1000).css("display", "inline-block");
+		$(".entry-comm").each(function() {
+			fadeIn(1000).css("display", "inline-block");
+		})
 	});
 	$("#search-new").fadeIn(1000);
 	$(".search-result").fadeIn(1000);

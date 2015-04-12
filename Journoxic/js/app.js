@@ -37,17 +37,6 @@ app.command = "";
 app.init = function() {
 	// Enter to search
 	var thisApp = this;
-	// Show the amount of all the entries
-	$(window).on("keyup.query-key", function(n) {
-		if (n.keyCode == 13) {
-			app.command = $("#query").val();
-			$("#query").css("background", "#555555").promise().done(function() {
-				$("#query").css("background", "#ffffff");
-			});
-			thisApp.load(app.command, true);
-			$("#query").blur();
-		}
-	});
 	// Initialize preloaded tags
 	app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
 	var tagsArray = app.bitwise().getTagsArray();
@@ -56,6 +45,14 @@ app.init = function() {
 	// Clear the field of search input every time on focus
 	$("#query").on("focus", function() {
 		$(this).val("");
+	})
+	.on("keyup.query-key", function(n) {
+		if (n.keyCode == 13) {
+			app.command = $("#query").val();
+			$("#query").animate({ width: "17%" }).animate({ width: "16%" });
+			thisApp.load(app.command, true);
+			$("#query").blur();
+		}
 	})
 	// Autocomplete for preloaded tags
 	.bind("keydown", function(event) {
@@ -110,10 +107,27 @@ app.init = function() {
 		$("#total-time").text(app.displayedTime);
 		$(".search-result").fadeIn(500);
 	});
+	// Show confirm button for delete
+	$("#delete").on("click", function() {
+		$("#delete-confirm").fadeToggle(1000);
+		if ($("#delete-confirm").css("display") != "none")
+			$("#delete-confirm").css("display", "inline-blcok");
+	});
+	$("#delete-confirm").on("click", function() {
+		// Remove from the map
+		delete journal.archive.map[app.currentDisplayed];
+		// Clear from the list
+		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
+			// Remove this from the list
+			$(this).remove();
+		});
+	});
 };
 app.load = function(filter, forceReload, newContent) {
 	// Hide anyway
 	$(".search-result").hide();
+	// Also hide the detail view
+	app.detail.prototype.hideDetail();
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data.length);
@@ -312,68 +326,83 @@ app.list.prototype = {
 		var elements = filter.toLowerCase().split(" ");
 		// Iterate for all the elements
 		for (key in elements) {
-			var element = elements[key];
-			console.log("\t\t> Testing " + element);
-			// Tag
-			if (element.charAt(0) == '#') {
-				var textTagArray = data["textTags"].split("|"),
-					found = false;
-				for (tag in textTagArray)
-					if (textTagArray[tag] == element.substr(1)) {
-						found = true;
-						break;
-					}
-				if (found) {
-					////console.log("\t- Tags Found!");
-					// Found
-					continue;
-				}
-				var iconTags = data["iconTags"];
-				if (app.bitwise().getNum(iconTags, element.substr(1))) {
-					////console.log("\t- Icon Found!");
-					// Found
-					continue;
-				}
-			} else if (element.charAt(0) == '%') {
-				////console.log("\t- Test type");
-				// Type
-				var typeArray = app.bitwise().content(data["attachments"]),
-					type = element.substr(1);
+			var element = elements[key].split("|"),
 				found = false;
-				for (key in typeArray)
-					if (type == typeArray[key]) {
+			console.log("\t\t> Testing " + element);
+			// The for-loop will break if any match is found
+			for (subkey in element) {
+				// Tag
+				if (element[subkey].charAt(0) == '#') {
+					var textTagArray = data["textTags"].split("|"),
+						subfound = false;
+					for (tag in textTagArray)
+						if (textTagArray[tag] == element[subkey].substr(1)) {
+							subfound = true;
+							break;
+						}
+					if (subfound) {
+						////console.log("\t- Tags Found!");
+						// Found
+						break;
+					}
+					var iconTags = data["iconTags"];
+					if (app.bitwise().getNum(iconTags, element[subkey].substr(1))) {
+						////console.log("\t- Icon Found!");
+						// Found
 						found = true;
 						break;
 					}
-				if (found) {
-					////console.log("\t- Type match!");
-					// Found
-					continue;
+				} else if (element[subkey].charAt(0) == '%') {
+					////console.log("\t- Test type");
+					// Type
+					var typeArray = app.bitwise().content(data["attachments"]),
+						type = element[subkey].substr(1),
+					subfound = false;
+					for (key in typeArray)
+						if (type == typeArray[key]) {
+							subfound = true;
+							break;
+						}
+					if (subfound) {
+						////console.log("\t- Type match!");
+						// Found
+						found = true;
+						break;
+					}
+				} else if (element[subkey].charAt(0) == '@') {
+					////console.log("\t- Test time");
+					// Time
+					var timeStr = element[subkey].substr(1);
+					if (this.isInRange(timeStr, data["time"]["created"])) {
+						console.log("\t- Time match!");
+						// Found
+						found = true;
+						break;
+					}
+				} else if (element[subkey].charAt(0) == '+') {
+					////console.log("\t- Test body");
+					if (data["text"]["body"].match(new RegExp(element[subkey].substr(1), "i"))) {
+						////console.log("\t- Body match!");
+						// Found
+						found = true;
+						break;
+					}
+				} else {
+					////console.log("\t- Test title");
+					if (data["title"].match(new RegExp(element[subkey], "i"))) {
+						////console.log("\t- Title match!");
+						// Found
+						found = true;
+						break;
+					}
 				}
-			} else if (element.charAt(0) == '@') {
-				////console.log("\t- Test time");
-				// Time
-				var timeStr = element.substr(1);
-				if (this.isInRange(timeStr, data["time"]["created"])) {
-					console.log("\t- Time match!");
-					// Found
-					continue;
-				}
-			} else if (element.charAt(0) == '+') {
-				////console.log("\t- Test body");
-				if (data["text"]["body"].match(new RegExp(element.substr(1), "i"))) {
-					////console.log("\t- Body match!");
-					// Found
-					continue;
-				}
-			} else {
-				////console.log("\t- Test title");
-				if (data["title"].match(new RegExp(element, "i"))) {
-					////console.log("\t- Title match!");
-					// Found
-					continue;
-				}
+				// Any one matches will break the inner loop
+				if (found)
+					break;
 			}
+			// If any one matches in the inner loop, the outer loop will continue until any one doe not match or all the tests have been passed
+			if (found)
+				contiune;
 			console.log("Reach end");
 			// No result found
 			return false;
@@ -456,6 +485,8 @@ app.list.prototype = {
 		// The event when clicking the list
 		item.find(">a").on("click", function(j) {
 			j.preventDefault();
+			// Show edit panel
+			$(".entry-edit").fadeIn(1000).css("display", "inline-block");
 			// Remove all the photos that have already been loaded
 			if (app.photos)
 				app.photos.remove();
@@ -734,14 +765,7 @@ app.detail = function() { // [m]
 		$(".center").hide();
 	// Back button
 	$(".btn-back", app.cDetail).on("click", function() {
-		// !!!!!HIDE THE CONTENT LISTS!!!!
-		app.cDetail.css("display", "none").empty();
-		app.cList.css("display", "inline-block");
-		app.app.removeClass("detail-view");
-		$(window).off("keyup.detail-key");
-		// Remove all the photos
-		if (app.photos)
-			app.photos.remove();
+		this.hideDetail();
 	});
 	// Click to load the photos
 	$(".center").on("click", function() {
@@ -773,20 +797,18 @@ app.detail = function() { // [m]
 	$(".icontags > span").on("click", function() {
 		app.load("#" + app.bitwise().getTypeByClass(this.className), true);
 	});
-	$(window).on("keyup.detail-key", function(n) {
-		if (n.keyCode == 8) {
-			$(".btn-back", app.cDetail).trigger("click");
-		}
-	});
+	////$(window).on("keyup.detail-key", function(n) {
+	////	if (n.keyCode == 8) {
+	////		$(".btn-back", app.cDetail).trigger("click");
+	////	}
+	////});
 	// Add online media url to the classes
-	while ($(".lower video a").attr("class") != undefined) {
-		var className = $(".lower video a").attr("class");
-		$(".lower video ." + className).attr("href", journal.archive.map[className]).removeAttr("class");
-	}
-	while ($(".lower voice a").attr("class") != undefined) {
-		var className = $(".lower voice a").attr("class");
-		$(".lower voice ." + className).attr("href", journal.archive.map[className]).removeAttr("class");
-	}
+	var eachOp = function() {
+		var className = $(this).attr("class");
+		$(this).attr("href", journal.archive.map[className]).removeAttr("class");
+	};
+	$(".lower .video a").each(eachOp);
+	$(".lower .voice a").each(eachOp);
 };
 app.detail.prototype = {
 	text: function(rawText) { // [c]
@@ -829,6 +851,19 @@ app.detail.prototype = {
 			if (!(thumbClip.thumb === undefined))
 				thumbClip.thumb = '<img src="' + fileDir + '"' + styleHtml + ">";
 		}
+	},
+	/* Hide the detail-view */
+	hideDetail: function() {
+		// !!!!!HIDE THE CONTENT LISTS!!!!
+		app.cDetail.css("display", "none").empty();
+		app.cList.css("display", "inline-block");
+		app.app.removeClass("detail-view");
+		$(".entry-edit").fadeOut(1000);
+		$("#delete-confirm").fadeOut(1000);
+		//// $(window).off("keyup.detail-key");
+		// Remove all the photos
+		if (app.photos)
+			app.photos.remove();
 	}
 };
 // Change the layout the main container

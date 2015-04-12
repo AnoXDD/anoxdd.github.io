@@ -274,10 +274,11 @@ body {
 		}
 
 			#list p.separator > span {
+				font-size: 12px;
 				color: #898989;
 				position: relative;
 				display: inline-block;
-				padding: 20px;
+				padding: 10px;
 				font-weight: lighter;
 			}
 
@@ -1882,7 +1883,8 @@ body {
 		height: 30px;
 		width: 40px;
 		padding-top: 10px;
-		margin: 10px;
+		margin-right: 10px 10px 0 0;
+		display: none;
 	}
 
 		.actions a:active {

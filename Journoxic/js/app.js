@@ -146,6 +146,7 @@ app.init = function() {
 app.load = function(filter, forceReload, newContent) {
 	if (newContent == "") {
 		// Try to add nothing
+		console.log("app.load()\tNo new content!");
 		animation.deny("#refresh-media");
 		return;
 	}
@@ -158,6 +159,7 @@ app.load = function(filter, forceReload, newContent) {
 		return key != undefined;
 	});
 	if (journal.archive.data.length == 0) {
+		console.log("app.load()\tNo archive data!");
 		animation.deny("#refresh-media");
 		return;
 	}

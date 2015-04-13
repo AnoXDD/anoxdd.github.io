@@ -149,7 +149,7 @@ app.load = function(filter, forceReload, newContent) {
 		console.log("app.load()\tNo new content!");
 		animation.deny("#refresh-media");
 		return;
-	} else if (newContent != undefined) {
+	} else if (newContent == undefined) {
 		// Filter out undefined element
 		journal.archive.data = journal.archive.data.filter(function(key) {
 			return key != undefined;

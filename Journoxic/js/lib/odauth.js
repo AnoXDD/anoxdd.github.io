@@ -152,15 +152,10 @@ function showLoginButton() {
 function removeLoginButton() {
 	// Show everything app needs
 	$("#sign-in-prompt").remove();
-	$("#signin").animate({ top: "-80px" }, function() {
-		$(".entry-comm").each(function() {
-			$(this).animate({ top: "10px" });
-		})
-		$(this).fadeOut(500);
-	});
-	$("#search-new").fadeIn(500);
-	$(".search-result").fadeIn(500);
-	$("#app").fadeIn(500);
+	headerShowMenu();
+	$("#search-new").fadeIn();
+	$(".search-result").fadeIn();
+	$("#app").fadeIn();
 }
 
 function challengeForAuth() {

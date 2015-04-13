@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -21,6 +21,11 @@
 	width: 0px;
 }
 
+@font-face {
+	font-family: 'Segoe UI Symbol';
+	src: url('seguisym.ttf');
+}
+
 p {
 	margin: 0;
 	padding: 0;
@@ -40,7 +45,7 @@ html, body {
 
 body, input, select, textarea {
 	-webkit-appearance: none;
-	font-family: 'Segoe UI', 'Segoe UI Symbol', Tahoma, Geneva, Verdana, sans-serif, 'Microsoft YaHei UI';
+	font-family: 'Segoe UI', 'Segoe UI Symbol', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -566,12 +571,12 @@ body {
 	margin-left: 1%;
 	height: 100%;
 	position: relative;
-	width: 50%;
+	width: 60%;
 	display: inline-block;
 }
 
 	#detail .head {
-		padding: 10px 0 0 70px;
+		padding: 10px 10px 0 70px;
 	}
 
 		#detail .head:hover p.title {
@@ -1876,18 +1881,18 @@ body {
 	.actions a {
 		text-decoration: none;
 		text-align: center;
-		transition: top .5s ease;
+		transition: background .2s ease, top .5s ease, transform 1.5s ease;
 		color: #b7b7b7;
 		background: #3f3f3f;
 		border-radius: 20px;
 		height: 30px;
 		width: 40px;
 		padding-top: 10px;
-		position:relative;
+		position: relative;
 		margin-right: 10px;
 		display: inline-block;
 		top: -80px;
-}
+	}
 
 		.actions a:active {
 			background: #676767;
@@ -1899,7 +1904,6 @@ body {
 			color: #d0d0d0;
 		}
 
-		.actions #signin {
-			top: 10px;
-		}
-
+	.actions #signin {
+		top: 10px;
+	}

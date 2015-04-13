@@ -135,6 +135,8 @@ function downloadFile() {
 	console.log("Start downloadFile()");
 	// Change loading icons and disable click
 	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	var id1 = animation.blink("#download"),
+		id2;
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
 		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
@@ -154,8 +156,7 @@ function downloadFile() {
 		.done(function(data, status, xhr) {
 			window.app.dataLoaded = false;
 			window.app.load("", true, xhr.responseText);
-			// Show the refresh button
-			$("#refresh-media").animate({ top: "10px" });
+			id2 = animation.rotate("#refresh-media");
 			// Get metadata
 			$.ajax({
 				type: "GET",
@@ -173,8 +174,11 @@ function downloadFile() {
 			alert("Cannot download the file. Do you enable CORS?");
 		})
 		.always(function() {
+			// Stop blinking and rotating
+			clearInterval(id1);
+			clearInterval(id2);
 			// Change loading icons and re-enable click
-			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#").fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);;
+			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#").fadeOut(200).fadeIn(200);
 			console.log("downloadFile()\tFinish downloading");
 		});
 	}
@@ -203,7 +207,7 @@ function downloadMedia(url) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (_.size(journal.archive.map) == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave").fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave").fadeOut(200).fadeIn(200);
 		}
 		console.log("downloadFile()\tFinish media data");
 	});
@@ -214,7 +218,8 @@ function uploadFile() {
 	console.log("Starting uploadFile()");
 	// Change loading icons and disable click
 	$("#upload").html("&#xE10C").removeAttr("onclick").removeAttr("href");
-	var token = getTokenFromCookie(),
+	var id = animation.blink("#upload"),
+		token = getTokenFromCookie(),
 		d = new Date(),
 		month = d.getMonth() + 1,
 		day = d.getDate(),
@@ -273,26 +278,10 @@ function uploadFile() {
 		alert("Cannot backup the file");
 	})
 	.always(function() {
+		// Stop blinking
+		clearInterval(id);
 		// Change loading icons and re-enable click
 		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#").fadeOut(200).fadeIn(200);
 		console.log("uploadFile()\tFinish uploading");
 	})
 }
-
-////$(document).ready(function() {
-////	$("#login").on("click", function() {
-////	});
-////	/* Get ready for all the folders that needed */
-////	$("#create-folder").on("click", function() {
-////		mkdir("", "folderC");
-////		mkdir("folderC", "another");
-////		ls();
-////		cat("", "textfile.txt");
-////		cat("folderC", "text2.txt");
-////		cat("", "Untitled.png");
-////		emacs("", "text1.txt", "text1.txtxtxt");
-////		emacs("folderC", "text2.txt", "textstring");
-////	});
-////});
-
-

@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div id="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.0 Build 041215_0246</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.1 Build 041215_2103</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off">
 		</div>
@@ -30,15 +30,22 @@
 			<p id="total-time">...</p>
 		</div>
 		<div class="actions">
-			<a href="#" title="Confirm" id="delete-confirm">&#xE10B</a>
-			<a href="#" class="entry-edit" title="Edit this entry" id="edit">&#xE104</a>
-			<a href="#" class="entry-edit" title="Delete this entry" id="delete">&#xE106</a>
-			<a onclick="app.load('', true)" href="#" title="Refresh to see media" id="refresh-media">&#xE149</a>
-			<a href="#" class="entry-comm" title="Add an entry" id="add">&#xE109</a>
-			<a href="#" class="entry-comm" title="Revert to archived data" id="undo-data">&#xE10E</a>
-			<a onclick="downloadFile()" href="#" class="entry-comm" title="Download latest data" id="download">&#xE118</a>
-			<a onclick="uploadFile()" href="#" class="entry-comm" title="Update data" id="upload">&#xE11C</a>
-			<a onclick="odauth(true)" href="#" title="Sign in via OneDrive" id="signin">&#xE148</a>
+			<a class="entry-option" title="Confirm" id="discard-confirm" href="#">&#xE10B</a>
+			<a class="entry-option" title="Confirm" id="delete-confirm" href="#">&#xE10B</a>
+			<a class="entry-add" title="Save" id="add-save" href="#">&#xE105</a>
+			<a class="entry-add" title="Discard" id="add-discard" href="#">&#xE107</a>
+			<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE149</a>
+			<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xE10E</a>
+			<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xE118</a>
+			<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xE11C</a>
+			<a class="entry-edit" title="Add an entry" id="add" href="#">&#xE109</a>
+			<a class="entry-edit" title="Edit this entry" id="edit" href="#">&#xE104</a>
+			<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xE106</a>
+			<a class="entry-menu" title="Edit entries" id="edit">&#xE14C</a>
+			<a class="entry-menu" title="Add a new entry" id="add">&#xE132</a>
+			<a class="entry-menu" title="Sync contents" id="comm">&#xE148</a>
+			<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xE138</a>
+			<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xE1A7</a>
 		</div>
 	</div>
 	<!-- Main frame of the viewer -->
@@ -50,14 +57,15 @@
 	</div>
 	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
 	<script src="js/lib/jquery.min.js"></script>
-	<script src="js/app.js"></script>
-	<script src="js/onedrive.js"></script>
 	<script src="js/lib/modernizr.min.js"></script>
 	<script src="js/lib/jquery.grab.min.js"></script>
 	<script src="js/lib/jquery.mousewheel.min.js"></script>
 	<script src="js/lib/jquery.ui.min.js"></script>
 	<script src="js/lib/underscore.min.js"></script>
 	<script src="js/lib/swipe.min.js"></script>
+	<script src="js/animation.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/onedrive.js"></script>
 	<script type="text/x-template" id="list-view">
 		<li>
 			<%

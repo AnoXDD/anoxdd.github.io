@@ -109,11 +109,15 @@ app.init = function() {
 	});
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
+		if (app.currentDisplayed) {
+			animation.deny(this);
+			return;
+		}
 		var $confirm = $("#delete-confirm");
 		if ($confirm.css("top") == "10px")
-			$confirm.animate({ top: "-80px" });
+			animation.hideIcon("#delete-confirm");
 		else
-			$confirm.animate({ top: "10px" });
+			animation.showIcon("#delete-confirm");
 	});
 	$("#delete-confirm").on("click", function() {
 		// Change the data displayed
@@ -132,11 +136,19 @@ app.init = function() {
 		app.detail.prototype.hideDetail();
 		$(".loadmore").trigger("click");
 	});
+	// Add clickon event for all the menu buttons
+	$(".entry-menu").each(function() {
+		$(this).on("click", function() {
+			headerShowMenu($(this).attr("id"));
+		});
+	});
 };
 app.load = function(filter, forceReload, newContent) {
-	if (newContent == "")
+	if (newContent == "") {
 		// Try to add nothing
+		animation.deny("#refresh-media");
 		return;
+	}
 	// Hide anyway
 	$(".search-result").hide();
 	// Also hide the detail view
@@ -145,6 +157,10 @@ app.load = function(filter, forceReload, newContent) {
 	journal.archive.data = journal.archive.data.filter(function(key) {
 		return key != undefined;
 	});
+	if (journal.archive.data.length == 0) {
+		animation.deny("#refresh-media");
+		return;
+	}
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data.length);
@@ -504,7 +520,7 @@ app.list.prototype = {
 			j.preventDefault();
 			// Show edit panel
 			$(".entry-edit").each(function() {
-				$(this).animate({ top: "10px" });
+				animation.showIcon(this);
 			});
 			// Remove all the photos that have already been loaded
 			if (app.photos)
@@ -875,9 +891,11 @@ app.detail.prototype = {
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
 		$(".entry-edit").each(function() {
-			$(this).animate({ top: "-80px" });
+			animation.hideIcon(this);
 		});
-		$("#delete-confirm").animate({ top: "-80px" });
+		$(".entry-option").each(function() {
+			animation.hideIcon(this);
+		});
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");

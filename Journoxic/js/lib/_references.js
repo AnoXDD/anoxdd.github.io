@@ -3,3 +3,4 @@
 /// <reference path="onedrive.js" />
 /// <reference path="odauth.js" />
 /// <reference path="app.js" />
+/// <reference path="animation.js" />

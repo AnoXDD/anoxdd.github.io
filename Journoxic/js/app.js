@@ -149,20 +149,21 @@ app.load = function(filter, forceReload, newContent) {
 		console.log("app.load()\tNo new content!");
 		animation.deny("#refresh-media");
 		return;
+	} else if (newContent != undefined) {
+		// Filter out undefined element
+		journal.archive.data = journal.archive.data.filter(function(key) {
+			return key != undefined;
+		});
+		if (journal.archive.data.length == 0) {
+			console.log("app.load()\tNo archive data!");
+			animation.deny("#refresh-media");
+			return;
+		}
 	}
 	// Hide anyway
 	$(".search-result").hide();
 	// Also hide the detail view
 	app.detail.prototype.hideDetail();
-	// Filter out undefined element
-	journal.archive.data = journal.archive.data.filter(function(key) {
-		return key != undefined;
-	});
-	if (journal.archive.data.length == 0) {
-		console.log("app.load()\tNo archive data!");
-		animation.deny("#refresh-media");
-		return;
-	}
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data.length);

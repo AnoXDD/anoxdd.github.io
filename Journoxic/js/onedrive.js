@@ -156,6 +156,7 @@ function downloadFile() {
 		.done(function(data, status, xhr) {
 			window.app.dataLoaded = false;
 			window.app.load("", true, xhr.responseText);
+			console.log("downloadFile()\tFinish core data");
 			id2 = animation.rotate("#refresh-media");
 			// Get metadata
 			$.ajax({

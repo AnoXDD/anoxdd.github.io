@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1980,15 +1980,17 @@ body {
 }
 
 #entry-summary #entry-line {
-    width: 3ch;
+	width: 3ch;
 
 }
 
 #entry-summary #entry-time {
+    width: 11ch;
 
 }
 
 #entry-summary #entry-elapsed {
+    width: 6ch;
 	
 }
 

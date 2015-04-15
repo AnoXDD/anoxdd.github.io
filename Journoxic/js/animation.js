@@ -40,26 +40,22 @@ animation.deny = function(selector) {
 
 function headerShowMenu(name) {
 	// Hide everything
-	$(".actions a").each(function() {
-		animation.hideIcon(this);
-	})
+	//////$(".actions a").each(function() {
+	//////animation.hideIcon(this);
+	//////})
+	animation.hideIcon(".actions a");
 	if (name == "edit")
 		name = ".entry-edit";
 	else if (name == "add")
 		name = ".entry-add";
 	else if (name == "comm")
 		name = ".entry-comm";
-	else {
+	else 
 		// name == undefined or other situations
-		return $(".entry-menu").each(function() {
-			animation.showIcon(this);
-		});
-	}
+		name = ".entry-menu";
 	// Disable going back for edit-pane
-	if (name != ".entry-add")
+	if (name != ".entry-add" && name != ".entry-menu")
 		animation.showIcon("#show-menu");
-	return $(name).each(function() {
-		animation.showIcon(this);
-	});
+	animation.showIcon(name);
 };
 

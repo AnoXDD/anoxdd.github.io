@@ -142,9 +142,7 @@ function getAppInfo() {
 // will insert a textual login link at the top of the page. if defined, your
 // showCustomLoginButton should call challengeForAuth() when clicked.
 function showLoginButton() {
-	$(".actions a").each(function() {
-		animation.hideIcon(this);
-	});
+	animation.hideIcon(".actions a");
 	animation.showIcon("#signin");
 }
 

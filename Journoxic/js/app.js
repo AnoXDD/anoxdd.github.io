@@ -35,8 +35,6 @@ app.preloadedTags = [];
 /* The keyword to be searched */
 app.command = "";
 app.init = function() {
-	// Initialize cache
-	localStorage["data"] = {};
 	// Enter to search
 	var thisApp = this;
 	// Header fix

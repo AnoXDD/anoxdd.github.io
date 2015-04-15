@@ -2,7 +2,6 @@
 
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
-edit.currentEditing = -1;
 edit.time = 0;
 edit.intervalId = -1;
 
@@ -23,12 +22,16 @@ edit.init = function(overwrite, index) {
 			edit.cleanCache();
 			if (index != undefined) {
 				data = journal.archive.data[index];
-				edit.currentEditing = index;
-				localStorage["currentEditing"] = index;
+				localStorage["created"] = data["time"]["created"];
 			}
 		} else if (overwrite == false) {
 			// Read from available caches
-			edit.currentEditing = localStorage["currentEditing"];
+			if (localStorage["created"])
+				data = edit.find(localStorage["created"]);
+			else
+				// Nothing found, start a new one
+				// Placeholder
+				;
 		} else if (overwrite == undefined) {
 			// Do not overwrite or overwrite is undefined
 			if (index != undefined) {
@@ -46,6 +49,13 @@ edit.init = function(overwrite, index) {
 
 	// Now you have caches anyway
 	localStorage["_cache"] = true;
+	// Add to cache
+	if (data["title"])
+		localStorage["title"] = data["title"];
+	if (data["text"])
+		if (data["text"]["body"])
+			localStorage["body"] = data["text"]["body"];
+
 	editPane = $(edit.editView(data));
 	// This is a must
 	localStorage["created"] = data["time"]["created"];
@@ -62,6 +72,15 @@ edit.init = function(overwrite, index) {
 	});
 	headerShowMenu("add");
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
+}
+
+/* Return the data indexed by created */
+edit.find = function(created) {
+	for (key in journal.archive.data) {
+		if (journal.archive.data[key]["time"])
+			if (journal.archive.data[key]["time"]["created"] == created)
+				return journal.archive.data[key];
+	}
 }
 
 /* Parse the json to fit _.template. This function also syncs data to localStorage */

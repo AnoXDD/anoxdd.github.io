@@ -15,6 +15,10 @@ edit.init = function(index) {
 	headerShowMenu("add");
 }
 
+edit.toggleLight = function() {
+	$("#text-area").toggleClass("dark").children().toggleClass("dark");
+}
+
 edit.fullScreen = function() {
 	// Disable auto-height
 	$(window).off("resize");
@@ -33,13 +37,15 @@ edit.fullScreen = function() {
 		$("#app").animate({ top: "2%", height: "95%" });
 	});
 	$("#attach-area").fadeOut(400, function() {
-		$("#text-area").animate({ width: "99%" });
+		$("#text-area").animate({ width: "100%" });
 	});
 	$("#text-area").children().toggleClass("fullscreen");
 	$("#text-area p").toggleClass("fullscreen");
 }
 
 edit.windowMode = function() {
+	// Exit dark mode
+	$("#text-area").removeClass("dark").children().removeClass("dark");
 	// Change the icon
 	headerShowMenu("add");
 	$("#toggle-screen").html("&#xE1D9").attr({
@@ -50,11 +56,12 @@ edit.windowMode = function() {
 	$("#app").animate({ top: "8%", height: "76%" });
 	$(".header").fadeIn(400, function() {
 		$("#text-area p").toggleClass("fullscreen");
-		$("#text-area").children().toggleClass("fullscreen").animate({ width: "64%" }, function() {
+		$("#text-area").animate({ width: "64%" }, function() {
 			$("#attach-area").fadeIn();
 			// Re-enable auto-height
 			app.layout();
-		});
+		})
+		.children().toggleClass("fullscreen");
 	});
 }
 

@@ -1922,6 +1922,7 @@ body {
 		margin-right: 10px;
 		display: inline-block;
 		top: -80px;
+		z-index: 1;
 	}
 
 		.actions a:active {
@@ -1947,6 +1948,10 @@ body {
 		display: inline-block;
 	}
 
+	#edit-pane #text-area.dark {
+		background-color: #444444;
+	}
+
 	#edit-pane #attach-area {
 		display: inline-block;
 		width: 35%;
@@ -1961,6 +1966,10 @@ body {
 	padding-top: 3px;
 }
 
+.fullscreen#entry-summary {
+    margin-right: 9ch;
+}
+
 	#entry-summary .entry-data {
 		background: #dddddd;
 		display: inline-block;
@@ -1969,10 +1978,15 @@ body {
 		padding: 0 5px 0 5px;
 		left: -1em;
 		top: 0.6em;
-	
 		font-family: monospace;
 		text-align: right;
 		overflow: hidden;
+		transition: font-size .4s ease;
+	}
+
+.fullscreen.entry-data {
+	font-size: 20px;
+	top: .4em !important;
 }
 
 #entry-summary #entry-char {
@@ -1981,42 +1995,58 @@ body {
 
 #entry-summary #entry-line {
 	width: 3ch;
+}
 
+#entry-summary #entry-line.fullscreen {
+	display: none;
 }
 
 #entry-summary #entry-time {
-    width: 11ch;
-
+	width: 11ch;
 }
 
 #entry-summary #entry-elapsed {
-    width: 6ch;
-	
+	width: 6ch;
 }
 
-	#entry-summary .entry-icons {
-		display: inline-block;
-		position: relative;
-		font-size: 15px;
-		height: 27px;
-		width: 27px;
-		padding: 7px 0 0 7px;
-		border-radius: 30px;
-		background-color: #dddddd;
-	}
+#entry-summary .entry-icons {
+	display: inline-block;
+	position: relative;
+	font-size: 15px;
+	height: 27px;
+	width: 27px;
+	padding: 7px 0 0 7px;
+	border-radius: 30px;
+	background-color: #dddddd;
+}
+
+.entry-icons.fullscreen {
+	display: none !important;
+}
 
 #entry-body, #entry-header {
-	width: -webkit-calc(100% - 60px);
 	padding: 10px 30px;
 	border-width: 0px;
 	border-color: white;
 	outline: 0;
 	background: #F7F7F7;
+	border-radius: 10px;
+	transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease;
 }
 
 	#entry-body:focus, #entry-header:focus {
 		outline: #dddddd solid 1px;
 	}
+
+#entry-header.dark, #entry-body.dark {
+	background-color: #1A1A1A !important;
+	color: #dadada;
+	border-color: #2b2b2b;
+}
+
+#entry-header.dark:focus, #entry-body.dark:focus {
+			outline: 0;
+}
 
 #entry-header {
 	font-size: 16px;
@@ -2028,9 +2058,18 @@ body {
 
 #entry-body {
 	height: -webkit-calc(100% - 110px);
+	width: -webkit-calc(100% - 60px);
 	padding: 30px;
 	resize: none;
 	font-size: 14px;
 	line-height: 1.5em;
 	margin-top: 3px;
 }
+
+.fullscreen#entry-body {
+	padding: 60px;
+	height: -webkit-calc(100% - 170px);
+	width: -webkit-calc(100% - 120px);
+	font-size: 18px;
+}
+

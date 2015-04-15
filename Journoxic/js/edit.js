@@ -16,7 +16,7 @@ edit.init = function(overwrite, index) {
 	var editPane, data;
 
 	// Test if there are cached data
-	if (localStorage["_cache"] == false) {
+	if (localStorage["_cache"] == 0) {
 		// There is cache
 		if (overwrite == true) {
 			edit.cleanCache();
@@ -48,7 +48,7 @@ edit.init = function(overwrite, index) {
 	data = data || edit.newContent();
 
 	// Now you have caches anyway
-	localStorage["_cache"] = true;
+	localStorage["_cache"] = 1;
 	// Add to cache
 	if (data["title"])
 		localStorage["title"] = data["title"];
@@ -111,7 +111,7 @@ edit.newContent = function() {
 }
 
 edit.cleanCache = function() {
-	localStorage["_cache"] = false;
+	localStorage["_cache"] = 0;
 	delete localStorage["title"];
 	delete localStorage["body"];
 	delete localStorage["created"];
@@ -203,7 +203,7 @@ edit.quit = function(save) {
 	edit.time = 0;
 	if (save) {
 		// Save the cache
-		localStorage["_cache"] = true;
+		localStorage["_cache"] = 1;
 		localStorage["title"] = $("#entry-header").val();
 		localStorage["body"] = $("#entry-body").val();
 		// Store the data

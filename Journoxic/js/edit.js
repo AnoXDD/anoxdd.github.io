@@ -16,7 +16,7 @@ edit.init = function(overwrite, index) {
 	var editPane, data;
 
 	// Test if there are cached data
-	if (localStorage["_cache"]) {
+	if (localStorage["_cache"] == false) {
 		// There is cache
 		if (overwrite == true) {
 			edit.cleanCache();

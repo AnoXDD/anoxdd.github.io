@@ -39,10 +39,6 @@ animation.deny = function(selector) {
 };
 
 function headerShowMenu(name) {
-	// Hide everything
-	//////$(".actions a").each(function() {
-	//////animation.hideIcon(this);
-	//////})
 	animation.hideIcon(".actions a");
 	if (name == "edit")
 		name = ".entry-edit";
@@ -56,7 +52,7 @@ function headerShowMenu(name) {
 	// Disable going back for edit-pane
 	if (name != ".entry-add" && name != ".entry-menu")
 		animation.showIcon("#show-menu");
-	if (name == ".entry-edit" && localStorage["_cache"])
+	if (name == ".entry-edit" && localStorage["_cache"] == 1)
 		animation.showIcon("#reread");
 	animation.showIcon(name);
 };

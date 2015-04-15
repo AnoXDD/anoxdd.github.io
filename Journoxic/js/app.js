@@ -524,9 +524,7 @@ app.list.prototype = {
 		item.find(">a").on("click", function(j) {
 			j.preventDefault();
 			// Show edit panel
-			$(".entry-edit").each(function() {
-				animation.showIcon(this);
-			});
+			headerShowMenu("edit");
 			// Remove all the photos that have already been loaded
 			if (app.photos)
 				app.photos.remove();

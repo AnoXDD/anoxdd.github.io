@@ -208,7 +208,10 @@ function downloadMedia(url) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (_.size(journal.archive.map) == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave").fadeOut(200).fadeIn(200);
+			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave")
+			if ($("#refresh-media").css("display") != "none")
+				// If the button is seeable
+				$("#refresh-media").fadeOut(200).fadeIn(200);
 		}
 		console.log("downloadFile()\tFinish media data");
 	});

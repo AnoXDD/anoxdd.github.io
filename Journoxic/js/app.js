@@ -35,6 +35,8 @@ app.preloadedTags = [];
 /* The keyword to be searched */
 app.command = "";
 app.init = function() {
+	// Initialize cache
+	localStorage["data"] = {};
 	// Enter to search
 	var thisApp = this;
 	// Header fix
@@ -789,6 +791,7 @@ app.detail = function() { // [m]
 			if (j.length > 0)
 				dataClip.iconTags2 = j;
 		}
+		// To avoid undefined error in _.template
 		var elements = "video webLink book music movie images voice place iconTags2".split(" ");
 		for (var i = 0, len = elements.length; i < len; ++i)
 			if (dataClip[elements[i]] == undefined)

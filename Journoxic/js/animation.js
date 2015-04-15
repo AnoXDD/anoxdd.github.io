@@ -56,6 +56,8 @@ function headerShowMenu(name) {
 	// Disable going back for edit-pane
 	if (name != ".entry-add" && name != ".entry-menu")
 		animation.showIcon("#show-menu");
+	if (name == ".entry-edit" && localStorage["_cache"])
+		animation.showIcon("#reread");
 	animation.showIcon(name);
 };
 

@@ -12,12 +12,12 @@
 		<p>JavaScript must be enabled in order for you to use this sight. However, it seems JavaScript is either disabled or not supported by your web browser. To use this sight, enable JavaScript by changing your web browser options, then try again.</p>
 	</div>
 	<!-- Search bar -->
-	<div id="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.4 Build 041315_1217</p>
+	<div class="header">
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.5 Build 041415_1907</p>
 		<div id="search-new">
-			<input type="text" id="query" class="search-text" autocomplete="off">
+			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
-		<div class="search-result">
+		<div id="search-result">
 			<p>Total entries: </p>
 			<p id="total-entry">...</p>
 			<p>Displayed: </p>
@@ -29,30 +29,56 @@
 			<p>Total time:</p>
 			<p id="total-time">...</p>
 		</div>
-		<div class="actions">
-			<a class="entry-option" title="Confirm" id="discard-confirm" href="#">&#xE10B</a>
-			<a class="entry-option" title="Confirm" id="delete-confirm" href="#">&#xE10B</a>
-			<a class="entry-add" title="Save" id="add-save" href="#">&#xE105</a>
-			<a class="entry-add" title="Discard" id="add-discard" href="#">&#xE107</a>
-			<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE149</a>
-			<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xE10E</a>
-			<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xE118</a>
-			<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xE11C</a>
-			<a class="entry-edit" title="Add an entry" id="add" href="#">&#xE109</a>
-			<a class="entry-edit" title="Edit this entry" id="edit" href="#">&#xE104</a>
-			<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xE106</a>
-			<a class="entry-menu" title="Edit entries" id="edit">&#xE14C</a>
-			<a class="entry-menu" title="Add a new entry" id="add">&#xE132</a>
-			<a class="entry-menu" title="Sync contents" id="comm">&#xE148</a>
-			<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xE138</a>
-			<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xE1A7</a>
-		</div>
+	</div>
+	<div class="actions">
+		<a class="entry-option" title="Confirm" id="discard-confirm" href="#">&#xE10B</a>
+		<a class="entry-option" title="Confirm" id="delete-confirm" href="#">&#xE10B</a>
+		<a title="Toggle Light" id="toggle-light" href="#">&#x1f505</a>
+		<a class="entry-add" title="Photos" id="add-photo" href="#">&#xE114</a>
+		<a class="entry-add" title="Videos" id="add-video" href="#">&#xE116</a>
+		<a class="entry-add" title="Places" id="add-place" href="#">&#xE139</a>
+		<a class="entry-add" title="Voices" id="add-voice" href="#">&#xE1D6</a>
+		<a class="entry-add" title="Music" id="add-music" href="#">&#xE189</a>
+		<a class="entry-add" title="Movie" id="add-movie" href="#">&#x1f3ac</a>
+		<a class="entry-add" title="Book" id="add-book" href="#">&#xE1D3</a>
+		<a class="entry-add" title="Link" id="add-link" href="#">&#xE167</a>
+		<a class="entry-add" title="Save and quit" id="add-save" onclick="edit.quit(true)" href="#">&#xE105</a>
+		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="edit.quit(false)" href="#">&#xE107</a>
+		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xE1D9</a>
+		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE149</a>
+		<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xE10E</a>
+		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xE118</a>
+		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xE11C</a>
+		<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xE109</a>
+		<a class="entry-edit" title="Edit this entry" id="edit" onclick="edit.init(app.currentDisplayed)" href="#">&#xE104</a>
+		<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xE106</a>
+		<a class="entry-menu" title="Edit entries" id="edit">&#xE14C</a>
+		<a class="entry-menu" title="Sync contents" id="comm">&#xE148</a>
+		<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xE138</a>
+		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xE1A7</a>
 	</div>
 	<!-- Main frame of the viewer -->
 	<div id="app">
 		<div id="contents">
 			<div id="list"></div>
 			<div id="detail"></div>
+		</div>
+		<div id="edit-pane">
+			<div id="text-area">
+				<input type="text" id="entry-header" autocomplete="off" placeholder="Title" autofocus />
+				<div id="entry-summary">
+					<p class="entry-icons" id="chars" title="Chars">&#xE164</p>
+					<p class="entry-data" id="entry-char" title="Chars">0</p>
+					<p class="entry-icons" id="lines" title="Lines">&#xE15C</p>
+					<p class="entry-data" id="entry-line" title="Lines">0</p>
+					<p class="entry-icons" id="time" title="Current time">&#xE121</p>
+					<p class ="entry-data" id="entry-time" title="Current time">030403 2233</p>
+					<p class="entry-icons" id="elapsed" title="Time elapsed">&#xE102</p>
+					<p class="entry-data" id="entry-elapsed" title="Time elapsed">:00</p>
+				</div>
+				<textarea id="entry-body" placeholder=""></textarea>
+			</div>
+			<div id="attach-area"></div>
 		</div>
 	</div>
 	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
@@ -64,6 +90,7 @@
 	<script src="js/lib/underscore.min.js"></script>
 	<script src="js/lib/swipe.min.js"></script>
 	<script src="js/animation.js"></script>
+	<script src="js/edit.js"></script>
 	<script src="js/app.js"></script>
 	<script src="js/onedrive.js"></script>
 	<script type="text/x-template" id="list-view">
@@ -287,6 +314,9 @@
 			</div>
 		</div>
 		<button type="button" class="btn-back"><span></span>Back</button>
+	</script>
+	<script type="text/x-template" id="edit-view">
+
 	</script>
 </body>
 </html>

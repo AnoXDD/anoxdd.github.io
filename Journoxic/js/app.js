@@ -37,6 +37,8 @@ app.command = "";
 app.init = function() {
 	// Enter to search
 	var thisApp = this;
+	// Header fix
+	showLoginButton();
 	// Initialize preloaded tags
 	app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
 	var tagsArray = app.bitwise().getTagsArray();
@@ -98,14 +100,14 @@ app.init = function() {
 		}
 	});
 	// Change the format of time on hover
-	$(".search-result").hover(function() {
-		$(".search-result").hide();
+	$("#search-result").hover(function() {
+		$("#search-result").hide();
 		$("#total-time").text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
-		$(".search-result").fadeIn(500);
+		$("#search-result").fadeIn(500);
 	}, function() {
-		$(".search-result").hide();
+		$("#search-result").hide();
 		$("#total-time").text(app.displayedTime);
-		$(".search-result").fadeIn(500);
+		$("#search-result").fadeIn(500);
 	});
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
@@ -161,7 +163,7 @@ app.load = function(filter, forceReload, newContent) {
 		}
 	}
 	// Hide anyway
-	$(".search-result").hide();
+	$("#search-result").hide();
 	// Also hide the detail view
 	app.detail.prototype.hideDetail();
 	/* The function to be called to reload the layout */
@@ -199,7 +201,7 @@ app.load = function(filter, forceReload, newContent) {
 		loadFunction();
 	}
 	// Show the final result anyway
-	$(".search-result").fadeIn(500);
+	$("#search-result").fadeIn(500);
 	if (filter == undefined)
 		filter == "";
 }
@@ -315,7 +317,7 @@ app.list.prototype = {
 					if (!isNaN(timeDelta))
 						app.displayedTime += timeDelta;
 				}
-				$(".search-result").hide().fadeIn(500);
+				$("#search-result").hide().fadeIn(500);
 				$("#total-displayed").text(app.displayedNum);
 				$("#total-char").text(app.displayedChars);
 				$("#total-line").text(app.displayedLines);

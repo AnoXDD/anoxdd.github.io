@@ -5,13 +5,13 @@ animation.degree = 0;
 
 animation.hideIcon = function(selector, callback) {
 	callback = callback || function() { };
-	$(selector).fadeOut(300).animate({ top: "-80px" },300,"swing", callback);
-}
+	$(selector).fadeOut(200).animate({ top: "-80px" }, 200, "swing", callback);
+};
 
 animation.showIcon = function(selector, callback) {
 	callback = callback || function() { };
-	$(selector).fadeIn(0).animate({ top: "10px" },300,"swing", callback);
-}
+	$(selector).fadeIn(0).animate({ top: "10px" }, 200, "swing", callback);
+};
 
 animation.blink = function(selector) {
 	var pulse = function() {
@@ -19,28 +19,30 @@ animation.blink = function(selector) {
 		$(selector).fadeIn(700);
 	}
 	return setInterval(pulse, 2000);
-}
+};
 
 animation.rotate = function(selector) {
 	var pulse = function() {
 		$(selector).css("-webkit-transform", "rotate(" + (++animation.degree) * 360 + "deg)");
-	}
+	};
 	return setInterval(pulse, 2000);
-}
+};
 
 animation.deny = function(selector) {
 	/* Keep a record of original text */
 	var text = $(selector).html();
 	$(selector).fadeOut(300, function() {
-		$(this).html("&#xE10A");
+		$(this).html("&#xE10A").css({ color: "#000", background: "#fff" });
 	}).fadeIn(300).delay(500).fadeOut(300, function() {
-		$(this).html(text);
+		$(this).html(text).css({ background: "", color: "" });
 	}).fadeIn(300);
-}
+};
 
 function headerShowMenu(name) {
 	// Hide everything
-	animation.hideIcon(".actions a");
+	$(".actions a").each(function() {
+		animation.hideIcon(this);
+	})
 	if (name == "edit")
 		name = ".entry-edit";
 	else if (name == "add")
@@ -53,10 +55,11 @@ function headerShowMenu(name) {
 			animation.showIcon(this);
 		});
 	}
-	animation.showIcon("#show-menu");
+	// Disable going back for edit-pane
+	if (name != ".entry-add")
+		animation.showIcon("#show-menu");
 	return $(name).each(function() {
 		animation.showIcon(this);
 	});
-
-}
+};
 

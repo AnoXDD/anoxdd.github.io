@@ -294,6 +294,8 @@ app.list.prototype = {
 			lastQualifiedLoaded = app.lastQualified;
 		// Adjust if the number of contents needed to be loaded is more than all the available contents
 		// Load the contents
+		if (app.lastLoaded >= journal.archive.data.length)
+			currentLoaded = app.lastLoaded = journal.archive.data.length - 1;
 		contents[currentLoaded].index = currentLoaded;
 		// Test if current entry satisfies the filter
 		while (true) {
@@ -342,7 +344,7 @@ app.list.prototype = {
 			}
 		}
 		// Update loaded contents
-		if (++currentLoaded == journal.total) {
+		if (++currentLoaded >= journal.total) {
 			// Remove load more
 			$(".loadmore").remove();
 			// Append a sign to indicate all of the entries have been loaded
@@ -521,6 +523,7 @@ app.list.prototype = {
 		data.attached = this.attached(data.attachments);
 		var item = $(app.itemView(data));
 		// The event when clicking the list
+		item.find(">a").off("click");
 		item.find(">a").on("click", function(j) {
 			j.preventDefault();
 			// Show edit panel
@@ -758,7 +761,7 @@ app.list.prototype = {
 /* Display the detail of the data at current index */
 app.detail = function() { // [m]
 	var dataClip = journal.archive.data[app.currentDisplayed]; // [d]
-	if (!dataClip.viewing) {
+	if (!dataClip.processed) {
 		dataClip.chars = dataClip.text.chars + " Chars";
 		dataClip.lines = dataClip.text.lines + " Lines";
 		dataClip.contents = this.text(dataClip.text.body);
@@ -793,7 +796,7 @@ app.detail = function() { // [m]
 			if (dataClip[elements[i]] == undefined)
 				dataClip[elements[i]] = undefined;
 		// Set the read status of the clip to read
-		dataClip.viewing = 1;
+		dataClip.processed = 1;
 	}
 	var l = $(app.detailView(dataClip));
 	// !!!!!HIDE THE CONTENT LISTS!!!!
@@ -848,6 +851,7 @@ app.detail = function() { // [m]
 	};
 	$(".lower .video a").each(eachOp);
 	$(".lower .voice a").each(eachOp);
+	return dataClip;
 };
 app.detail.prototype = {
 	text: function(rawText) { // [c]

@@ -16,7 +16,7 @@ edit.init = function(overwrite, index) {
 	var editPane, data;
 
 	// Test if there are cached data
-	if (localStorage["_cache"] == 0) {
+	if (localStorage["_cache"] == 1) {
 		// There is cache
 		if (overwrite == true) {
 			edit.cleanCache();
@@ -26,9 +26,11 @@ edit.init = function(overwrite, index) {
 			}
 		} else if (overwrite == false) {
 			// Read from available caches
-			if (localStorage["created"])
-				data = edit.find(localStorage["created"]);
-			else
+			if (localStorage["created"]) {
+				var index = edit.find(localStorage["created"]);
+				if (index != -1)
+					data = journal.archive.data[edit.find(localStorage["created"])];
+			} else
 				// Nothing found, start a new one
 				// Placeholder
 				;
@@ -43,6 +45,9 @@ edit.init = function(overwrite, index) {
 			}
 			return;
 		}
+	} else {
+		if (index != undefined)
+			data = journal.archive.data[index];
 	}
 	// If still no available data to be stored, create a new one
 	data = data || edit.newContent();
@@ -74,13 +79,15 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
-/* Return the data indexed by created */
+/* Return the index of data found */
 edit.find = function(created) {
 	for (key in journal.archive.data) {
 		if (journal.archive.data[key]["time"])
 			if (journal.archive.data[key]["time"]["created"] == created)
-				return journal.archive.data[key];
+				return key;
 	}
+	// Nothing found
+	return -1;
 }
 
 /* Parse the json to fit _.template. This function also syncs data to localStorage */
@@ -152,6 +159,63 @@ edit.format = function(n) {
 	return n < 10 ? "0" + n : n;
 }
 
+/* Read the cache and process start, created and end time */
+edit.processBody = function(data) {
+	if (!data["time"])
+		data["time"] = {};
+	data["time"]["created"] = parseInt(localStorage["created"]);
+	// Test if begin and end time is overwritten
+	var lines = localStorage["body"].split(/\r*\n/);
+	for (var i = 0; i != lines.length; ++i) {
+		var line = lines[i],
+			flag = false;
+		if (line.substring(0, 7) == "Begin @") {
+			// Overwrite begintime
+			data["time"]["begin"] = edit.convertTime(line.substring(8));
+			flag = true;
+		} else if (line.substring(0, 5) == "End @") {
+			// Overwrite endtime
+			data["time"]["end"] = edit.convertTime(line.substring(6));
+			flag = true;
+		} else if (line.substring(0, 9) == "Created @") {
+			// Overwrite createdtime
+			data["time"]["created"] = edit.convertTime(line.substring(10));
+			flag = true;
+		}
+		if (flag) {
+			// Remove the current line
+			lines.splice(i, 1);
+			--i;
+		}
+	}
+	if (!data["text"])
+		data["text"] = {};
+	var newBody = lines.join("\r\n");
+	data["text"]["body"] = newBody;
+	data["text"]["chars"] = newBody.length;
+	data["text"]["lines"] = lines.length;
+	data["text"]["ext"] = newBody.substring(0, 50);
+	return data;
+}
+
+/* Get my format of time and convert it to the milliseconds since epoch */
+edit.convertTime = function(time) {
+	var month = parseInt(time.substring(0, 2)),
+		day = parseInt(time.substring(2, 4)),
+		year = parseInt(time.substring(4, 6)),
+		hour = parseInt(time.substring(7, 9)),
+		minute = parseInt(time.substring(9, 11)),
+		date = new Date(2000 + year, month - 1, day, hour, minute);
+	return date.getTime();
+}
+
+/* Sort journal.archive.data */
+edit.sortArchive = function() {
+	journal.archive.data.sort(function(a, b) {
+		return a["time"]["created"] - b["time"]["created"];
+	});
+}
+
 edit.fullScreen = function() {
 	// Disable auto-height
 	$(window).off("resize");
@@ -202,22 +266,53 @@ edit.quit = function(save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	if (save) {
-		// Save the cache
-		localStorage["_cache"] = 1;
-		localStorage["title"] = $("#entry-header").val();
-		localStorage["body"] = $("#entry-body").val();
-		// Store the data
-		// ...
+		// Save to local contents
+		var index = edit.find(localStorage["created"]);
+		if (index == -1) {
+			// Create a new entry
+			var data = {};
+			data = edit.processBody(data);
+			// Title
+			data["title"] = localStorage["title"] || "Untitled";
+			if (!data["coverType"])
+				data["coverType"] = 0;
+			if (!data["attachments"])
+				data["attachments"] = 0;
+			// ...
+
+			var elements = "title time text video webLink book music movie images voice place iconTags2 textTags".split(" ");
+			// Add undefined object to make it displayable
+			for (key in elements)
+				if (data[elements[key]] == undefined)
+					data[elements[key]] = undefined;
+			// After processing
+			journal.archive.data.push(data);
+		} else {
+			// Edit an existing entry
+			var data = journal.archive.data[index];
+			// Set to let the app refresh the data
+			data["processed"] = 0;
+			// Title
+			data["title"] = localStorage["title"];
+			data = edit.processBody(data);
+			// ...
+			// After processing
+			journal.archive.data[index] = data;
+			app.currentDisplayed = -1;
+		}
+		edit.sortArchive();
 	} else {
-		// Discard the cache
-		edit.cleanCache();
 	}
+	// Clean cache anyway
+	edit.cleanCache();
 	// Content processing
 	$(".header div").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
 		// Remove the edit pane
 		$("#edit-pane").html("");
 		$("#contents").fadeIn();
+		// Reload
+		app.load("", true);
 	});
 	headerShowMenu("edit");
 }

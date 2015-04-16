@@ -264,6 +264,7 @@ function uploadFile() {
 			delete tmp[key]["year"];
 			delete tmp[key]["month"];
 			delete tmp[key]["attached"];
+			delete tmp[key]["processed"];
 		}
 		$.ajax({
 			type: "PUT",

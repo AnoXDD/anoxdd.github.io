@@ -212,7 +212,8 @@ edit.convertTime = function(time) {
 /* Sort journal.archive.data */
 edit.sortArchive = function() {
 	journal.archive.data.sort(function(a, b) {
-		return a["time"]["created"] - b["time"]["created"];
+		// From the latest to oldest
+		return b["time"]["created"] - a["time"]["created"];
 	});
 }
 

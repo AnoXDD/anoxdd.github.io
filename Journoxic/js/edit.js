@@ -20,7 +20,7 @@ edit.init = function(overwrite, index) {
 	if (localStorage["_cache"] == 1) {
 		// There is cache
 		if (overwrite == true) {
-			edit.cleanCache();
+			edit.cleanEditCache();
 			if (index != undefined) {
 				data = journal.archive.data[index];
 				localStorage["created"] = data["time"]["created"];
@@ -39,10 +39,10 @@ edit.init = function(overwrite, index) {
 			// Do not overwrite or overwrite is undefined
 			if (index != undefined) {
 				// Display edit-confirm
-				animation.hideIcon("#add-confirm", animation.showIcon("#edit-confirm"));
+				animation.setConfirm("add");
 			} else {
 				// Display add-confirm
-				animation.hideIcon("#edit-confirm", animation.showIcon("#add-confirm"));
+				animation.setConfirm("edit");
 			}
 			return;
 		}
@@ -118,6 +118,32 @@ edit.newContent = function() {
 	return dict;
 }
 
+/* Minimize the data, remove unnecessary tags */
+edit.minData = function() {
+	var tmp = journal.archive.data.filter(function(key) {
+		return key != undefined;
+	});
+	for (key in tmp) {
+		delete tmp[key]["attached"];
+		delete tmp[key]["contents"];
+		delete tmp[key]["datetime"];
+		delete tmp[key]["endtime"];
+		delete tmp[key]["ext"];
+		delete tmp[key]["index"];
+		delete tmp[key]["lines"];
+		delete tmp[key]["month"];
+		delete tmp[key]["processed"];
+		delete tmp[key]["summary"];
+		delete tmp[key]["type"];
+		delete tmp[key]["year"];
+		// Remove undefined object
+		for (var i = 0; i < tmp[key].length; ++i)
+			if (tmp[key][i] == undefined || tmp[key][i] == "undefined")
+				delete tmp[key][i];
+	};
+	return tmp;
+}
+
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
 	delete localStorage["title"];
@@ -126,9 +152,10 @@ edit.cleanEditCache = function() {
 	delete localStorage["currentEditing"];
 }
 
-/* Save the entire journal.archive.data to cache */
+/* Save the entire minimized journal.archive.data to cache */
 edit.saveDataCache = function() {
-	localStorage["archive"] = JSON.stringify(journal.archive.data);
+	var tmp = edit.minData();
+	localStorage["archive"] = JSON.stringify(tmp);
 }
 
 /* Clean the cache for journal.archive.data */
@@ -331,8 +358,8 @@ edit.quit = function(save) {
 		$("#contents").fadeIn();
 		// Reload
 		app.load("", true);
+		headerShowMenu("edit");
 	});
-	headerShowMenu("edit");
 }
 
 /* A function to be called by confirm */
@@ -355,6 +382,9 @@ edit.confirm = function() {
 		});
 		app.detail.prototype.hideDetail();
 		$(".loadmore").trigger("click");
+		// Save to cache
+		edit.saveDataCache();
+		headerShowMenu("edit");
 	} else if (edit.confirmName == "add") {
 		edit.init(true);
 	} else if (edit.confirmName == "edit") {

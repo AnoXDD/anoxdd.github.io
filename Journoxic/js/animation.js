@@ -29,7 +29,7 @@ animation.setConfirm = function(name) {
 		return;
 	}
 	// Start a new one
-	animation.hideIcon("#confirm", 	animation.showIcon("#confirm"));
+	animation.showIcon("#confirm");
 	var title;
 	if (name == "delete") {
 		title = "Confirm to remove this entry";

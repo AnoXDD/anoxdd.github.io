@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1955,7 +1955,6 @@ body {
 	#edit-pane #attach-area {
 		display: inline-block;
 		width: 35%;
-		background: purple;
 		height: 100%;
 	}
 
@@ -2033,6 +2032,7 @@ body {
 	background: #F7F7F7;
 	border-radius: 10px;
 	transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease;
+	margin-left: 5px;
 }
 
 	#entry-body:focus, #entry-header:focus {
@@ -2055,11 +2055,12 @@ body {
 	overflow: hidden;
 	display: inline-block;
 	width: -webkit-calc(100% - 430px);
+	margin-top: 5px;
 }
 
 #entry-body {
 	height: -webkit-calc(100% - 110px);
-	width: -webkit-calc(100% - 60px);
+	width: -webkit-calc(100% - 65px);
 	padding: 30px;
 	resize: none;
 	font-size: 14px;
@@ -2069,7 +2070,7 @@ body {
 
 .fullscreen#entry-body {
 	padding: 60px;
-	height: -webkit-calc(100% - 170px);
-	width: -webkit-calc(100% - 120px);
+	height: -webkit-calc(100% - 173px);
+	width: -webkit-calc(100% - 129px);
 	font-size: 18px;
 }

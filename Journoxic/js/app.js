@@ -111,7 +111,8 @@ app.init = function() {
 	});
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
-		if (app.currentDisplayed) {
+		if (app.currentDisplayed == -1) {
+			console.log("delete\tNothing to delete!")
 			animation.deny(this);
 			return;
 		}
@@ -772,7 +773,7 @@ app.detail = function() { // [m]
 				dataClip.iconTags2 = j;
 		}
 		// To avoid undefined error in _.template
-		var elements = "video webLink book music movie images voice place iconTags2".split(" ");
+		var elements = "video webLink book music movie images voice place iconTags2 textTags iconTags".split(" ");
 		for (var i = 0, len = elements.length; i < len; ++i)
 			if (dataClip[elements[i]] == undefined)
 				dataClip[elements[i]] = undefined;
@@ -1159,6 +1160,14 @@ app.bitwise = function() {
 				return this.is(typeVal, iconVal[stringVal]);
 			else
 				return false;
+		},
+		/* Get the tag names in HTML languages */
+		getTagsHTML: function() {
+			var retArray = [];
+			Object.keys(iconName).forEach(function(key) {
+				retArray.push(iconName[key]);
+			});
+			return retArray;
 		},
 		/* Get all the available tags */
 		getTagsArray: function() {

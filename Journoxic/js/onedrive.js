@@ -251,21 +251,7 @@ function uploadFile() {
 		$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f 50%,#343434 0%,#343434 100%)");
 		console.log("uploadFile():\t Done backup");
 		// Clean the unnecessary data
-		var tmp = journal.archive.data.filter(function(key) {
-			return key != undefined;
-		});
-		for (key in tmp) {
-			delete tmp[key]["summary"];
-			delete tmp[key]["index"];
-			delete tmp[key]["type"];
-			delete tmp[key]["ext"];
-			delete tmp[key]["datetime"];
-			delete tmp[key]["endtime"];
-			delete tmp[key]["year"];
-			delete tmp[key]["month"];
-			delete tmp[key]["attached"];
-			delete tmp[key]["processed"];
-		}
+		var tmp = edit.minData();
 		$.ajax({
 			type: "PUT",
 			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,

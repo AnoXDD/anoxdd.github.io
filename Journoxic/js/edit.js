@@ -13,6 +13,7 @@ edit.confirmName = "";
  index - the index of the archive data (optional)
  */
 edit.init = function(overwrite, index) {
+	////console.log("edit.init(" + overwrite + ", " + index + ")");
 	edit.editView = _.template($("#edit-view").html());
 	var editPane, data;
 
@@ -30,7 +31,7 @@ edit.init = function(overwrite, index) {
 			if (localStorage["created"]) {
 				var index = edit.find(localStorage["created"]);
 				if (index != -1)
-					data = journal.archive.data[edit.find(localStorage["created"])];
+					data = journal.archive.data[index];
 			} else
 				// Nothing found, start a new one
 				// Placeholder
@@ -39,10 +40,10 @@ edit.init = function(overwrite, index) {
 			// Do not overwrite or overwrite is undefined
 			if (index != undefined) {
 				// Display edit-confirm
-				animation.setConfirm("add");
+				animation.setConfirm("edit");
 			} else {
 				// Display add-confirm
-				animation.setConfirm("edit");
+				animation.setConfirm("add");
 			}
 			return;
 		}
@@ -55,29 +56,162 @@ edit.init = function(overwrite, index) {
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;
-	// Add to cache
-	if (data["title"])
-		localStorage["title"] = data["title"];
-	if (data["text"])
-		if (data["text"]["body"])
-			localStorage["body"] = data["text"]["body"];
-
+	// Add to cache, all the cache processing starts here
+	edit.importCache(data);
 	editPane = $(edit.editView(data));
-	// This is a must
-	localStorage["created"] = data["time"]["created"];
 
 	// Content processing
 	$(".header div").fadeOut();
+	// Initialize the contents
 	$("#contents").fadeOut(400, function() {
 		$("#edit-pane").html(editPane).fadeIn();
 		if (localStorage["title"])
 			$("#entry-header").val(localStorage["title"]);
 		if (localStorage["body"])
 			$("#entry-body").text(localStorage["body"]);
+		// Tag processing
+		var tagsHTML = app.bitwise().getTagsHTML(),
+			tagsName = app.bitwise().getTagsArray(),
+			/* The array of html names for highlighted icons */
+			iconTags = app.bitwise().iconTags(parseInt(localStorage["iconTags"]));
+		console.log("edit.init()\ticonTags = " + iconTags);
+		for (var i = 0; i != tagsHTML.length; ++i) {
+			var parent = "#attach-area .icontags";
+			if (tagsHTML[i].charAt(0) == 'w')
+				parent += " .weather";
+			else if (tagsHTML[i].charAt(0) == 'e')
+				parent += " .emotion";
+			else
+				parent += " .other";
+			// Processed existed tags
+			$(parent).append(
+				"<p class='icons "  + tagsHTML[i] +
+				"' title=" + tagsName[i].capitalize() +
+				" onclick=edit.toggleIcon('" + tagsHTML[i] +
+				"')></p>");
+		}
+		// In this loop, imitate to click on each icon (so some icons can disappear)
+		for (var i = 0; i != tagsHTML.length; ++i) 
+			if ($.inArray(tagsHTML[i], iconTags) != -1)
+				$("#edit-pane #attach-area .icontags p." + tagsHTML[i]).trigger("click");
+		$("#edit-pane #attach-area .icontags .other").mousewheel(function(event, delta) {
+			// Only scroll horizontally
+			this.scrollLeft -= (delta * 50);
+			event.preventDefault();
+		});
+
 		edit.refreshSummary();
 	});
 	headerShowMenu("add");
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
+}
+
+edit.importCache = function(data) {
+	if (data["title"])
+		localStorage["title"] = data["title"];
+	if (data["text"])
+		if (data["text"]["body"])
+			localStorage["body"] = data["text"]["body"];
+	// This is a must
+	localStorage["created"] = data["time"]["created"];
+	localStorage["iconTags"] = data["iconTags"] ? data["iconTags"] : 0;
+}
+
+edit.exportCache = function(index) {
+	var data = journal.archive.data[index] || {};
+	// Process body from cache
+	data = edit.exportCacheBody(data);
+	// Title
+	data["title"] = localStorage["title"] || "Untitled";
+	data["processed"] = 0;
+	if (!data["coverType"])
+		data["coverType"] = 0;
+	if (!data["attachments"])
+		data["attachments"] = 0;
+	data["iconTags"] = parseInt(localStorage["iconTags"]);
+	if (index < 0) {
+		// Create a new entry
+		journal.archive.data.push(data);
+	} else {
+		// Modify the new one
+		journal.archive.data[index] = data;
+		app.currentDisplayed = -1;
+	}
+
+	////if (index < 0) {
+	////	// Create a new entry
+	////	var data = {};
+	////	// Process body from cache
+	////	data = edit.exportCacheBody(data);
+	////	// Title
+	////	data["title"] = localStorage["title"] || "Untitled";
+	////	data["processed"] = 0;
+	////	if (!data["coverType"])
+	////		data["coverType"] = 0;
+	////	if (!data["attachments"])
+	////		data["attachments"] = 0;
+
+	////	// ...
+
+	////	var elements = "title time text video webLink book music movie images voice place iconTags2 textTags".split(" ");
+	////	// Add undefined object to make it displayable
+	////	for (key in elements)
+	////		if (data[elements[key]] == undefined)
+	////			data[elements[key]] = undefined;
+	////	// After processing
+	////	journal.archive.data.push(data);
+	////} else {
+	////	// Edit an existing entry
+	////	var data = journal.archive.data[index];
+	////	// Set to let the app refresh the data
+	////	data["processed"] = 0;
+	////	// Title
+	////	data["title"] = localStorage["title"];
+	////	data = edit.processBody(data);
+	////	// ...
+	////	// After processing
+	////	journal.archive.data[index] = data;
+	////	app.currentDisplayed = -1;
+	////}
+}
+
+/* Read the cache and process start, created and end time from the text body */
+edit.exportCacheBody = function(data) {
+	if (!data["time"])
+		data["time"] = {};
+	data["time"]["created"] = parseInt(localStorage["created"]);
+	// Test if begin and end time is overwritten
+	var lines = localStorage["body"].split(/\r*\n/);
+	for (var i = 0; i != lines.length; ++i) {
+		var line = lines[i],
+			flag = false;
+		if (line.substring(0, 7) == "Begin @") {
+			// Overwrite begintime
+			data["time"]["begin"] = edit.convertTime(line.substring(8));
+			flag = true;
+		} else if (line.substring(0, 5) == "End @") {
+			// Overwrite endtime
+			data["time"]["end"] = edit.convertTime(line.substring(6));
+			flag = true;
+		} else if (line.substring(0, 9) == "Created @") {
+			// Overwrite createdtime
+			data["time"]["created"] = edit.convertTime(line.substring(10));
+			flag = true;
+		}
+		if (flag) {
+			// Remove the current line
+			lines.splice(i, 1);
+			--i;
+		}
+	}
+	if (!data["text"])
+		data["text"] = {};
+	var newBody = lines.join("\r\n");
+	data["text"]["body"] = newBody;
+	data["text"]["chars"] = newBody.length;
+	data["text"]["lines"] = lines.length;
+	data["text"]["ext"] = newBody.substring(0, 50);
+	return data;
 }
 
 /* Return the index of data found */
@@ -137,9 +271,10 @@ edit.minData = function() {
 		delete tmp[key]["type"];
 		delete tmp[key]["year"];
 		// Remove undefined object
-		for (var i = 0; i < tmp[key].length; ++i)
+		for (var i = 0; i < tmp[key].length; ++i) 
 			if (tmp[key][i] == undefined || tmp[key][i] == "undefined")
-				delete tmp[key][i];
+				// Splice this key and also decrement i
+				tmp[key].splice(i--, 1);
 	};
 	return tmp;
 }
@@ -150,12 +285,13 @@ edit.cleanEditCache = function() {
 	delete localStorage["body"];
 	delete localStorage["created"];
 	delete localStorage["currentEditing"];
+	delete localStorage["iconTags"];
+	delete localStorage["textTags"];
 }
 
-/* Save the entire minimized journal.archive.data to cache */
-edit.saveDataCache = function() {
-	var tmp = edit.minData();
-	localStorage["archive"] = JSON.stringify(tmp);
+/* Save the entire journal.archive.data to cache after minimizing it */
+edit.saveDataCache = function(data) {
+	localStorage["archive"] = JSON.stringify(journal.archive.data);
 }
 
 /* Clean the cache for journal.archive.data */
@@ -169,6 +305,23 @@ edit.tryReadCache = function() {
 		// Seems that there is available data
 		journal.archive.data = JSON.parse(localStorage["archive"]);
 		app.load("", true);
+	}
+}
+
+edit.toggleIcon = function(htmlName) {
+	var selector = "#attach-area .icontags p." + htmlName,
+		parent = $(selector).parent().attr("class"),
+		iconVal = app.bitwise().getIconval($(selector).attr("title").toLowerCase());
+	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
+		if (parent == "weather" || parent == "emotion")
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
+		// Now highlighted
+		localStorage["iconTags"] = parseInt(localStorage["iconTags"]) | iconVal;
+	} else {
+		if (parent == "weather" || parent == "emotion")
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
+		// Dimmed
+		localStorage["iconTags"] = parseInt(localStorage["iconTags"]) & ~iconVal;
 	}
 }
 
@@ -202,44 +355,6 @@ edit.format = function(n) {
 	return n < 10 ? "0" + n : n;
 }
 
-/* Read the cache and process start, created and end time */
-edit.processBody = function(data) {
-	if (!data["time"])
-		data["time"] = {};
-	data["time"]["created"] = parseInt(localStorage["created"]);
-	// Test if begin and end time is overwritten
-	var lines = localStorage["body"].split(/\r*\n/);
-	for (var i = 0; i != lines.length; ++i) {
-		var line = lines[i],
-			flag = false;
-		if (line.substring(0, 7) == "Begin @") {
-			// Overwrite begintime
-			data["time"]["begin"] = edit.convertTime(line.substring(8));
-			flag = true;
-		} else if (line.substring(0, 5) == "End @") {
-			// Overwrite endtime
-			data["time"]["end"] = edit.convertTime(line.substring(6));
-			flag = true;
-		} else if (line.substring(0, 9) == "Created @") {
-			// Overwrite createdtime
-			data["time"]["created"] = edit.convertTime(line.substring(10));
-			flag = true;
-		}
-		if (flag) {
-			// Remove the current line
-			lines.splice(i, 1);
-			--i;
-		}
-	}
-	if (!data["text"])
-		data["text"] = {};
-	var newBody = lines.join("\r\n");
-	data["text"]["body"] = newBody;
-	data["text"]["chars"] = newBody.length;
-	data["text"]["lines"] = lines.length;
-	data["text"]["ext"] = newBody.substring(0, 50);
-	return data;
-}
 
 /* Get my format of time and convert it to the milliseconds since epoch */
 edit.convertTime = function(time) {
@@ -311,40 +426,10 @@ edit.quit = function(save) {
 	edit.time = 0;
 	if (save) {
 		// Save to local contents
-		var index = edit.find(localStorage["created"]);
-		if (index == -1) {
-			// Create a new entry
-			var data = {};
-			data = edit.processBody(data);
-			// Title
-			data["title"] = localStorage["title"] || "Untitled";
-			if (!data["coverType"])
-				data["coverType"] = 0;
-			if (!data["attachments"])
-				data["attachments"] = 0;
-			// ...
-
-			var elements = "title time text video webLink book music movie images voice place iconTags2 textTags".split(" ");
-			// Add undefined object to make it displayable
-			for (key in elements)
-				if (data[elements[key]] == undefined)
-					data[elements[key]] = undefined;
-			// After processing
-			journal.archive.data.push(data);
-		} else {
-			// Edit an existing entry
-			var data = journal.archive.data[index];
-			// Set to let the app refresh the data
-			data["processed"] = 0;
-			// Title
-			data["title"] = localStorage["title"];
-			data = edit.processBody(data);
-			// ...
-			// After processing
-			journal.archive.data[index] = data;
-			app.currentDisplayed = -1;
-		}
+		var index = edit.find(localStorage["created"]),
+			data = edit.exportCache(index);
 		edit.sortArchive();
+		journal.archive.data = edit.minData();
 		edit.saveDataCache();
 	} else {
 	}
@@ -390,4 +475,8 @@ edit.confirm = function() {
 	} else if (edit.confirmName == "edit") {
 		edit.init(true, app.currentDisplayed);
 	}
+}
+
+String.prototype.capitalize = function() {
+	return this.charAt(0).toUpperCase() + this.slice(1);
 }

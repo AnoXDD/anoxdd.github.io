@@ -174,12 +174,16 @@ app.load = function(filter, forceReload, newContent) {
 		app.displayedLines = 0;
 		app.displayedNum = 0;
 		app.displayedTime = 0;
+		app.currentDisplayed = -1;
 		app.command = filter;
 		$("#query").val(filter);
 		$("#total-displayed").text(app.displayedNum);
 		$("#total-char").text(app.displayedChars);
 		$("#total-line").text(app.displayedLines);
 		$("#total-time").text(app.displayedTime);
+		// Refresh every stuff
+		for (key in journal.archive.data)
+			journal.archive.data[key]["processed"] = 0;
 		loadFunction();
 	}
 	// Show the final result anyway
@@ -315,14 +319,9 @@ app.list.prototype = {
 				this.htmlEmpty();
 				// 1) Increment currentLoaded to try to load the next entry candidate
 				// 2) Tests if this is the last entry to be loaded. If so, break the circle
-				if (++currentLoaded == journal.total) {
-					////console.log("Loaded all");
-					// Remove load more
-					$(".loadmore").remove();
-					// Append a sign to indicate all of the entries have been loaded
-					$("#list").append('<li><p class="separator"><span>EOF</span></p></li>');
+				if (++currentLoaded == journal.total)
+					// Break out of the loop
 					break;
-				}
 			}
 		}
 		// Update loaded contents
@@ -355,25 +354,30 @@ app.list.prototype = {
 			for (subkey in element) {
 				// Tag
 				if (element[subkey].charAt(0) == '#') {
-					var textTagArray = data["textTags"].split("|"),
-						subfound = false;
-					for (tag in textTagArray)
-						if (textTagArray[tag] == element[subkey].substr(1)) {
-							subfound = true;
+					if (data["textTags"]) {
+						var textTagArray = data["textTags"].split("|"),
+							subfound = false;
+						for (tag in textTagArray)
+							if (textTagArray[tag] == element[subkey].substr(1)) {
+								subfound = true;
+								break;
+							}
+						if (subfound) {
+							////console.log("\t- Tags Found!");
+							// Found
 							break;
 						}
-					if (subfound) {
-						////console.log("\t- Tags Found!");
-						// Found
-						break;
 					}
 					var iconTags = data["iconTags"];
-					if (app.bitwise().getNum(iconTags, element[subkey].substr(1))) {
-						////console.log("\t- Icon Found!");
-						// Found
-						found = true;
-						break;
+					if (iconTags) {
+						if (app.bitwise().getNum(iconTags, element[subkey].substr(1))) {
+							////console.log("\t- Icon Found!");
+							// Found
+							found = true;
+							break;
+						}
 					}
+
 				} else if (element[subkey].charAt(0) == '%') {
 					////console.log("\t- Test type");
 					// Type
@@ -505,7 +509,6 @@ app.list.prototype = {
 		data.attached = this.attached(data.attachments);
 		var item = $(app.itemView(data));
 		// The event when clicking the list
-		item.find(">a").off("click");
 		item.find(">a").on("click", function(j) {
 			j.preventDefault();
 			// Show edit panel
@@ -819,7 +822,9 @@ app.detail = function() { // [m]
 	});
 	// Click the icons to search
 	$(".icontags > span").on("click", function() {
-		app.load("#" + app.bitwise().getTypeByClass(this.className), true);
+		var tag = app.bitwise().getTypeByClass(this.className);
+		if (tag != "")
+			app.load("#" + tag, true);
 	});
 	////$(window).on("keyup.detail-key", function(n) {
 	////	if (n.keyCode == 8) {
@@ -1090,7 +1095,7 @@ app.bitwise = function() {
 	iconVal["snowing"] = 8;
 	iconVal["thundering"] = 16;
 	iconVal["happy"] = 1024;
-	iconVal["notBad"] = 2048;
+	iconVal["notbad"] = 2048;
 	iconVal["surprised"] = 4096;
 	iconVal["sad"] = 8192;
 	iconVal["angry"] = 16384;
@@ -1142,6 +1147,7 @@ app.bitwise = function() {
 				retArray.push("webLink");
 			return retArray;
 		},
+		/* Get the array of html names from a typeVal */
 		iconTags: function(typeVal) {
 			var retArray = [];
 			for (i in iconName) {
@@ -1156,10 +1162,14 @@ app.bitwise = function() {
 		 Return false if the string is either invalid or not found
 		 */
 		getNum: function(typeVal, stringVal) {
-			if (iconVal.hasOwnProperty(stringVal))
-				return this.is(typeVal, iconVal[stringVal]);
+			if (iconVal.hasOwnProperty(stringVal.toLowerCase()))
+				return this.is(typeVal, iconVal[stringVal.toLowerCase()]);
 			else
 				return false;
+		},
+		/* Return the value in iconVal */
+		getIconval: function(tagName) {
+			return iconVal[tagName.toLowerCase()];
 		},
 		/* Get the tag names in HTML languages */
 		getTagsHTML: function() {
@@ -1169,27 +1179,34 @@ app.bitwise = function() {
 			});
 			return retArray;
 		},
-		/* Get all the available tags */
+		/* Get all the human-readable available tags */
 		getTagsArray: function() {
 			return Object.keys(iconVal);
 		},
 		/*
-		 Get the name given the class displayed in html 
-		 Return false if the string is either invalid or not found
+		 Get the value given the class displayed in html 
+		 Return -1 if the value is not found
 		 */
-		getTypeByClass: function(className) {
-			var classVal = -1;
+		getValueByClass: function(className) {
 			for (val in iconName)
 				if (iconName[val] == className)
 					// Found
-					classVal = val;
+					return val;
+			return -1;
+		},
+		/*
+		 Get the name given the class displayed in html 
+		 Return an empty string if the string is either invalid or not found
+		 */
+		getTypeByClass: function(className) {
+			var classVal = this.getValueByClass(className);
 			if (classVal == -1)
-				return false;
+				return "";
 			for (str in iconVal)
 				if (iconVal[str] == classVal)
 					// Found
 					return str;
-			return false;
+			return "";
 		},
 		// Tests if testValue is in totalValue, i.e. typesVal has type of typeVal
 		is: function(typesVal, typeVal) { // [R, Q]

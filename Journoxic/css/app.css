@@ -1301,7 +1301,7 @@ body {
 	}
 
 @media(-webkit-min-device-pixel-ratio:1.5) {
-	.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.webLink-video, #list div.attached span, #detail .video .video-play, #detail .webLink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, #detail .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2 {
+	.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.webLink-video, #list div.attached span, #detail .video .video-play, #detail .webLink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, #detail .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2, #edit-pane .icontags p {
 		background-image: url('../img/archive@2x.png');
 		background-size: 800px 530px;
 	}
@@ -1946,6 +1946,7 @@ body {
 		width: 64%;
 		height: 100%;
 		display: inline-block;
+		position: absolute;
 	}
 
 		#edit-pane #text-area.dark {
@@ -1954,123 +1955,325 @@ body {
 
 	#edit-pane #attach-area {
 		display: inline-block;
-		width: 35%;
+		width: 34%;
 		height: 100%;
+		padding-left: 1%;
+		position: absolute;
+		left: 64.5%;
 	}
 
-#entry-summary {
-	display: inline-block;
-	float: right;
-	font-size: 12px;
-	padding-top: 3px;
-}
-
-.fullscreen#entry-summary {
-	margin-right: 4ch;
-}
-
-#entry-summary .entry-data {
-	background: #dddddd;
-	display: inline-block;
-	position: relative;
-	border-radius: 6px;
-	padding: 0 5px 0 5px;
-	left: -1em;
-	top: 0.6em;
-	font-family: monospace;
-	text-align: right;
-	overflow: hidden;
-	transition: font-size .4s ease;
-}
-
-.fullscreen.entry-data {
-	font-size: 20px;
-	top: .4em !important;
-	margin-right: .5ch;
-}
-
-#entry-summary #entry-char {
-	width: 5ch;
-}
-
-#entry-summary #entry-line {
-	width: 3ch;
-}
-
-	#entry-summary #entry-line.fullscreen {
-		display: none;
+	#edit-pane #entry-summary {
+		display: inline-block;
+		float: right;
+		font-size: 12px;
+		padding-top: 3px;
+		margin-top: 5px;
 	}
 
-#entry-summary #entry-time {
-	width: 11ch;
-}
-
-#entry-summary #entry-elapsed {
-	width: 5ch;
-}
-
-#entry-summary .entry-icons {
-	display: inline-block;
-	position: relative;
-	font-size: 15px;
-	height: 27px;
-	width: 27px;
-	padding: 7px 0 0 7px;
-	border-radius: 30px;
-	background-color: #dddddd;
-}
-
-.entry-icons.fullscreen {
-	display: none !important;
-}
-
-#entry-body, #entry-header {
-	padding: 10px 30px;
-	border-width: 0px;
-	border-color: white;
-	outline: 0;
-	background: #F7F7F7;
-	border-radius: 10px;
-	transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease;
-	margin-left: 5px;
-}
-
-	#entry-body:focus, #entry-header:focus {
-		outline: #dddddd solid 1px;
+	#edit-pane .fullscreen#entry-summary {
+		margin-right: 4ch;
+		margin-top: 2px;
 	}
 
-	#entry-header.dark, #entry-body.dark {
+	#edit-pane #entry-summary .entry-data {
+		background: #dddddd;
+		display: inline-block;
+		position: relative;
+		border-radius: 6px;
+		padding: 0 5px 0 5px;
+		left: -1em;
+		top: 0.6em;
+		font-family: monospace;
+		text-align: right;
+		overflow: hidden;
+		transition: font-size .4s ease;
+	}
+
+	#edit-pane .fullscreen.entry-data {
+		font-size: 20px;
+		top: .4em !important;
+		margin-right: .5ch;
+	}
+
+	#edit-pane #entry-summary #entry-char {
+		width: 5ch;
+	}
+
+	#edit-pane #entry-summary #entry-line {
+		width: 3ch;
+	}
+
+		#edit-pane #entry-summary #entry-line.fullscreen {
+			display: none;
+		}
+
+	#edit-pane #entry-summary #entry-time {
+		width: 11ch;
+	}
+
+	#edit-pane #entry-summary #entry-elapsed {
+		width: 5ch;
+	}
+
+	#edit-pane #entry-summary .entry-icons {
+		display: inline-block;
+		position: relative;
+		font-size: 15px;
+		height: 27px;
+		width: 27px;
+		padding: 7px 0 0 7px;
+		border-radius: 30px;
+		background-color: #dddddd;
+	}
+
+	#edit-pane .entry-icons.fullscreen {
+		display: none !important;
+	}
+
+	#edit-pane #entry-body, #entry-header {
+		padding: 10px 30px;
+		border-width: 0px;
+		border-color: white;
+		outline: 0;
+		background: #F7F7F7;
+		border-radius: 10px;
+		transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease;
+		margin-left: 5px;
+	}
+
+		#edit-pane #entry-body:focus, #entry-header:focus {
+			outline: #dddddd solid 1px;
+		}
+
+	#edit-pane #entry-header.dark, #entry-body.dark {
 		background-color: #1A1A1A !important;
 		color: #dadada;
 		border-color: #2b2b2b;
 	}
 
-		#entry-header.dark:focus, #entry-body.dark:focus {
+		#edit-pane #entry-header.dark:focus, #entry-body.dark:focus {
 			outline: 0;
 		}
 
-#entry-header {
-	font-size: 16px;
-	text-align: center;
-	overflow: hidden;
-	display: inline-block;
-	width: -webkit-calc(100% - 430px);
-	margin-top: 5px;
+	#edit-pane #entry-header {
+		font-size: 16px;
+		text-align: center;
+		overflow: hidden;
+		display: inline-block;
+		width: -webkit-calc(100% - 430px);
+		margin-top: 5px;
+	}
+
+	#edit-pane #entry-body {
+		height: -webkit-calc(100% - 110px);
+		width: -webkit-calc(100% - 65px);
+		padding: 30px;
+		resize: none;
+		font-size: 14px;
+		line-height: 1.5em;
+		margin-top: 3px;
+	}
+
+	#edit-pane .fullscreen#entry-body {
+		padding: 60px;
+		height: -webkit-calc(100% - 173px);
+		width: -webkit-calc(100% - 129px);
+		font-size: 18px;
+	}
+
+	#edit-pane #attach-area .icontags {
+		height: 25px;
+		padding-top: 1em;
+	}
+
+
+		#edit-pane #attach-area .icontags .weather, #edit-pane #attach-area .icontags .emotion {
+			display: inline-block;
+			width: 49%;
+		
+			text-align: center;
 }
 
-#entry-body {
-	height: -webkit-calc(100% - 110px);
-	width: -webkit-calc(100% - 65px);
-	padding: 30px;
-	resize: none;
-	font-size: 14px;
-	line-height: 1.5em;
-	margin-top: 3px;
+		#edit-pane #attach-area .icontags .other {
+		
+			overflow-y: hidden;
+			height: 35px;
+			width: 97%;
+			text-overflow: clip;
+			white-space: nowrap;
+			margin-top: 5px;
 }
 
-.fullscreen#entry-body {
-	padding: 60px;
-	height: -webkit-calc(100% - 173px);
-	width: -webkit-calc(100% - 129px);
-	font-size: 18px;
-}
+		#edit-pane #attach-area .icontags .icons {
+			display: inline-block;
+			width: 25px;
+			height: 25px;
+			margin-right: 5px;
+			/* margin-bottom: 5px; */
+			opacity: 0.1;
+			-webkit-transition: opacity .4s ease, height .4s ease;
+		}
+
+			#edit-pane #attach-area .icontags .icons:hover {
+				opacity: .8;
+			}
+
+			#edit-pane #attach-area .icontags .icons:active {
+				opacity: .5;
+			}
+
+			#edit-pane #attach-area .icontags p.highlight {
+				opacity: 1;
+			}
+
+			#edit-pane #attach-area .icontags p.w01 {
+				background-position: -90px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.w02 {
+				background-position: -115px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.w03 {
+				background-position: -140px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.w04 {
+				background-position: -165px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.w05 {
+				background-position: -190px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c01 {
+				background-position: -215px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c02 {
+				background-position: -240px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c03 {
+				background-position: -265px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c04 {
+				background-position: -290px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c05 {
+				background-position: -315px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c06 {
+				background-position: -340px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c07 {
+				background-position: -365px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c08 {
+				background-position: -390px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c09 {
+				background-position: -415px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.c10 {
+				background-position: -440px -370px;
+			}
+
+			#edit-pane #attach-area .icontags p.e01 {
+				background-position: -90px -395px;
+			}
+
+			#edit-pane #attach-area .icontags p.e02 {
+				background-position: -115px -395px;
+			}
+
+			#edit-pane #attach-area .icontags p.e03 {
+				background-position: -140px -395px;
+			}
+
+			#edit-pane #attach-area .icontags p.e04 {
+				background-position: -165px -395px;
+			}
+
+			#edit-pane #attach-area .icontags p.e05 {
+				background-position: -190px -395px;
+			}
+
+			#edit-pane #attach-area .icontags p.s01 {
+				background-position: -90px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s02 {
+				background-position: -115px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s03 {
+				background-position: -140px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s04 {
+				background-position: -165px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s05 {
+				background-position: -190px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s06 {
+				background-position: -215px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s07 {
+				background-position: -240px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s08 {
+				background-position: -265px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s09 {
+				background-position: -290px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s10 {
+				background-position: -315px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s11 {
+				background-position: -340px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s12 {
+				background-position: -365px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s13 {
+				background-position: -390px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s14 {
+				background-position: -415px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s15 {
+				background-position: -440px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s16 {
+				background-position: -465px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s17 {
+				background-position: -490px -420px;
+			}
+
+			#edit-pane #attach-area .icontags p.s18 {
+				background-position: -515px -420px;
+			}

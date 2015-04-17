@@ -4,6 +4,7 @@ window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
 edit.intervalId = -1;
+edit.confirmName = "";
 
 /* 
  Initialize the edit pane.
@@ -117,7 +118,7 @@ edit.newContent = function() {
 	return dict;
 }
 
-edit.cleanCache = function() {
+edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
 	delete localStorage["title"];
 	delete localStorage["body"];
@@ -125,8 +126,23 @@ edit.cleanCache = function() {
 	delete localStorage["currentEditing"];
 }
 
-edit.toCache = function(data) {
+/* Save the entire journal.archive.data to cache */
+edit.saveDataCache = function() {
+	localStorage["archive"] = JSON.stringify(journal.archive.data);
+}
 
+/* Clean the cache for journal.archive.data */
+edit.removeDataCache = function() {
+	delete localStorage["archive"];
+}
+
+/* Try to read journal.archive.data from cache */
+edit.tryReadCache = function() {
+	if (localStorage["archive"]) {
+		// Seems that there is available data
+		journal.archive.data = JSON.parse(localStorage["archive"]);
+		app.load("", true);
+	}
 }
 
 edit.toggleLight = function() {
@@ -302,10 +318,11 @@ edit.quit = function(save) {
 			app.currentDisplayed = -1;
 		}
 		edit.sortArchive();
+		edit.saveDataCache();
 	} else {
 	}
 	// Clean cache anyway
-	edit.cleanCache();
+	edit.cleanEditCache();
 	// Content processing
 	$(".header div").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
@@ -316,4 +333,31 @@ edit.quit = function(save) {
 		app.load("", true);
 	});
 	headerShowMenu("edit");
+}
+
+/* A function to be called by confirm */
+edit.confirm = function() {
+	if (edit.confirmName == "discard") {
+		edit.quit(false);
+	} else if (edit.confirmName == "delete") {
+		// Change the data displayed
+		--app.displayedNum;
+		var data = journal.archive.data[app.currentDisplayed];
+		app.displayedChars -= data["text"]["chars"];
+		app.displayedLines -= data["text"]["lines"];
+		app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
+		// Remove from the map
+		delete journal.archive.data[app.currentDisplayed];
+		// Clear from the list
+		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
+			// Remove this from the list
+			$(this).remove();
+		});
+		app.detail.prototype.hideDetail();
+		$(".loadmore").trigger("click");
+	} else if (edit.confirmName == "add") {
+		edit.init(true);
+	} else if (edit.confirmName == "edit") {
+		edit.init(true, app.currentDisplayed);
+	}
 }

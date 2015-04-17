@@ -13,6 +13,40 @@ animation.showIcon = function(selector, callback) {
 	$(selector).fadeIn(0).animate({ top: "10px" }, 200, "swing", callback);
 };
 
+animation.toggleIcon = function(selector, callback) {
+	callback = callback || function() { };
+	if ($(selector).css("top") == "10px")
+		animation.hideIcon(selector, callback);
+	else
+		animation.showIcon(selector, callback);
+}
+
+/* Set the name of confirm */
+animation.setConfirm = function(name) {
+	if (name == edit.confirmName) {
+		// Do not need to follow the steps below, just toggle it
+		animation.toggleIcon("#confirm");
+		return;
+	}
+	// Start a new one
+	animation.hideIcon("#confirm", 	animation.showIcon("#confirm"));
+	var title;
+	if (name == "delete") {
+		title = "Confirm to remove this entry";
+	} else if (name == "discard") {
+		title = "Discard this entry";
+	} else if (name == "add") {
+		title = "Overwrite saved data to create a new entry"
+	} else if (name == "edit") {
+		title = "Overwrite saved data to edit this entry"
+	}
+	if (title == undefined)
+		// Not a valid call
+		return;
+	$("#confirm").css("title", title);
+	edit.confirmName = name;
+}
+
 animation.blink = function(selector) {
 	var pulse = function() {
 		$(selector).fadeOut(700);

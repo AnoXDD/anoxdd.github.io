@@ -156,6 +156,7 @@ function removeLoginButton() {
 	$("#search-new").fadeIn();
 	$("#search-result").fadeIn();
 	$("#app").fadeIn();
+	edit.tryReadCache();
 }
 
 function challengeForAuth() {

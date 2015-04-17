@@ -115,28 +115,7 @@ app.init = function() {
 			animation.deny(this);
 			return;
 		}
-		var $confirm = $("#delete-confirm");
-		if ($confirm.css("top") == "10px")
-			animation.hideIcon("#delete-confirm");
-		else
-			animation.showIcon("#delete-confirm");
-	});
-	$("#delete-confirm").on("click", function() {
-		// Change the data displayed
-		--app.displayedNum;
-		var data = journal.archive.data[app.currentDisplayed];
-		app.displayedChars -= data["text"]["chars"];
-		app.displayedLines -= data["text"]["lines"];
-		app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
-		// Remove from the map
-		delete journal.archive.data[app.currentDisplayed];
-		// Clear from the list
-		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
-			// Remove this from the list
-			$(this).remove();
-		});
-		app.detail.prototype.hideDetail();
-		$(".loadmore").trigger("click");
+		animation.setConfirm("delete");
 	});
 	// Add clickon event for all the menu buttons
 	$(".entry-menu").each(function() {
@@ -177,8 +156,10 @@ app.load = function(filter, forceReload, newContent) {
 	if (!app.dataLoaded) {
 		// app.loadScript("data/data.js", loadFunction, true);
 		if (newContent) {
+			// New contents available! Refresh the new data
 			console.log("app.load(): data.length = " + newContent.length);
 			app.loadScript(newContent, loadFunction, false);
+			edit.saveDataCache();
 		}
 	}
 	if (forceReload) {

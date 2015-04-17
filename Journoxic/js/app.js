@@ -51,9 +51,8 @@ app.init = function() {
 	.on("keyup.query-key", function(n) {
 		if (n.keyCode == 13) {
 			app.command = $("#query").val();
-			$("#query").animate({ width: "17%" }).animate({ width: "16%" });
+			$("#query").effect("highlight", { color: "#dddddd" });
 			thisApp.load(app.command, true);
-			$("#query").blur();
 		}
 	})
 	// Autocomplete for preloaded tags

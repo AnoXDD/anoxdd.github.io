@@ -1857,7 +1857,6 @@ body {
 }
 
 .search-text {
-	transition: background .5s ease;
 	margin: 0 10%;
 	padding: 5px 15px;
 	color: #666;

@@ -23,6 +23,7 @@ edit.init = function(overwrite, index) {
 		if (overwrite == true) {
 			edit.cleanEditCache();
 			if (index != undefined) {
+				// Modify an entry
 				data = journal.archive.data[index];
 				localStorage["created"] = data["time"]["created"];
 			}
@@ -57,7 +58,8 @@ edit.init = function(overwrite, index) {
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;
 	// Add to cache, all the cache processing starts here
-	edit.importCache(data);
+	data = edit.importCache(data);
+	console.log(Object.keys(data));
 	editPane = $(edit.editView(data));
 
 	// Content processing
@@ -65,6 +67,11 @@ edit.init = function(overwrite, index) {
 	// Initialize the contents
 	$("#contents").fadeOut(400, function() {
 		$("#edit-pane").html(editPane).fadeIn();
+		// Enter to add tag
+		$("#entry-tag").keyup(function(n) {
+			if (n.keyCode == 13)
+				edit.saveTag();
+		});
 		if (localStorage["title"])
 			$("#entry-header").val(localStorage["title"]);
 		if (localStorage["body"])
@@ -85,16 +92,16 @@ edit.init = function(overwrite, index) {
 				parent += " .other";
 			// Processed existed tags
 			$(parent).append(
-				"<p class='icons "  + tagsHTML[i] +
+				"<p class='icons " + tagsHTML[i] +
 				"' title=" + tagsName[i].capitalize() +
 				" onclick=edit.toggleIcon('" + tagsHTML[i] +
 				"')></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
-		for (var i = 0; i != tagsHTML.length; ++i) 
+		for (var i = 0; i != tagsHTML.length; ++i)
 			if ($.inArray(tagsHTML[i], iconTags) != -1)
 				$("#edit-pane #attach-area .icontags p." + tagsHTML[i]).trigger("click");
-		$("#edit-pane #attach-area .icontags .other").mousewheel(function(event, delta) {
+		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other").mousewheel(function(event, delta) {
 			// Only scroll horizontally
 			this.scrollLeft -= (delta * 50);
 			event.preventDefault();
@@ -106,15 +113,37 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
+/* Sync between the local and caches. Local cache will overwrite data if there is */
 edit.importCache = function(data) {
-	if (data["title"])
+	// Title
+	if (localStorage["title"])
+		data["title"] = localStorage["title"];
+	else if (data["title"])
 		localStorage["title"] = data["title"];
-	if (data["text"])
-		if (data["text"]["body"])
-			localStorage["body"] = data["text"]["body"];
-	// This is a must
+	// Body
+	if (localStorage["body"]) {
+		if (!data["text"])
+			data["text"] = {};
+		data["text"]["body"];
+	} else {
+		if (data["text"])
+			if (data["text"]["body"])
+				localStorage["body"] = data["text"]["body"];
+	}
+	// created is not modifiable from user-side
 	localStorage["created"] = data["time"]["created"];
-	localStorage["iconTags"] = data["iconTags"] ? data["iconTags"] : 0;
+	// iconTags
+	if (localStorage["iconTags"])
+		data["iconTags"] = localStorage["iconTags"];
+	else
+		localStorage["iconTags"] = data["iconTags"] ? data["iconTags"] : 0;
+	// textTags
+	if (localStorage["textTags"])
+		data["textTags"] = localStorage["textTags"];
+	else
+		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
+	// Return value
+	return data;
 }
 
 edit.exportCache = function(index) {
@@ -129,6 +158,7 @@ edit.exportCache = function(index) {
 	if (!data["attachments"])
 		data["attachments"] = 0;
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
+	data["textTags"] = localStorage["textTags"];
 	if (index < 0) {
 		// Create a new entry
 		journal.archive.data.push(data);
@@ -138,41 +168,6 @@ edit.exportCache = function(index) {
 		app.currentDisplayed = -1;
 	}
 
-	////if (index < 0) {
-	////	// Create a new entry
-	////	var data = {};
-	////	// Process body from cache
-	////	data = edit.exportCacheBody(data);
-	////	// Title
-	////	data["title"] = localStorage["title"] || "Untitled";
-	////	data["processed"] = 0;
-	////	if (!data["coverType"])
-	////		data["coverType"] = 0;
-	////	if (!data["attachments"])
-	////		data["attachments"] = 0;
-
-	////	// ...
-
-	////	var elements = "title time text video webLink book music movie images voice place iconTags2 textTags".split(" ");
-	////	// Add undefined object to make it displayable
-	////	for (key in elements)
-	////		if (data[elements[key]] == undefined)
-	////			data[elements[key]] = undefined;
-	////	// After processing
-	////	journal.archive.data.push(data);
-	////} else {
-	////	// Edit an existing entry
-	////	var data = journal.archive.data[index];
-	////	// Set to let the app refresh the data
-	////	data["processed"] = 0;
-	////	// Title
-	////	data["title"] = localStorage["title"];
-	////	data = edit.processBody(data);
-	////	// ...
-	////	// After processing
-	////	journal.archive.data[index] = data;
-	////	app.currentDisplayed = -1;
-	////}
 }
 
 /* Read the cache and process start, created and end time from the text body */
@@ -249,6 +244,7 @@ edit.newContent = function() {
 	// Set created time
 	dict["time"] = {};
 	dict["time"]["created"] = new Date().getTime();
+	dict["textTags"] = "";
 	return dict;
 }
 
@@ -271,7 +267,7 @@ edit.minData = function() {
 		delete tmp[key]["type"];
 		delete tmp[key]["year"];
 		// Remove undefined object
-		for (var i = 0; i < tmp[key].length; ++i) 
+		for (var i = 0; i < tmp[key].length; ++i)
 			if (tmp[key][i] == undefined || tmp[key][i] == "undefined")
 				// Splice this key and also decrement i
 				tmp[key].splice(i--, 1);
@@ -333,6 +329,56 @@ edit.saveTitle = function() {
 	localStorage["title"] = $("#entry-header").val();
 }
 
+edit.saveTag = function() {
+	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
+	// Test for duplicate
+	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
+		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+	} else {
+		var found = false;
+		// Try to convert to iconTag
+		$("#attach-area .icontags p").each(function() {
+			if ($(this).attr("title").toLowerCase() == tagVal) {
+				// Found
+				found = true;
+				if (!$(this).hasClass("highlight")) {
+					$(this).trigger("click");
+				} else {
+					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+					// Saved
+				}
+				return;
+			}
+		});
+		if (!found) {
+			// Keep searching
+			$("#entry-tag").effect("highlight", { color: "#dadada" }, 400);
+			// Marked for a new entry
+			$("#attach-area .texttags .other").append("<p title='Click to remove' onclick=edit.removeTag('" + tagVal + "')>#" + tagVal + "</p>");
+			// Add to the cache
+			if (localStorage["textTags"] == "")
+				localStorage["textTags"] = tagVal;
+			else
+				localStorage["textTags"] += "|" + tagVal;
+		}
+	}
+			// Clean the entry
+	$("#entry-tag").val("");
+}
+
+edit.removeTag = function(tagName) {
+	var tagArray = localStorage["textTags"].split("|");
+	delete tagArray[tagName];
+	tagArray.join("|");
+	// Remove from the panal
+	$("#attach-area .texttags p").each(function() {
+		if ($(this).text() == "#" + tagName)
+			$(this).animate({ width: "0" }, function() {
+				$(this).remove();
+			})
+	})
+}
+
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
 		char = text.length;
@@ -354,7 +400,6 @@ edit.refreshTime = function() {
 edit.format = function(n) {
 	return n < 10 ? "0" + n : n;
 }
-
 
 /* Get my format of time and convert it to the milliseconds since epoch */
 edit.convertTime = function(time) {

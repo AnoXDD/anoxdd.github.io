@@ -48,7 +48,7 @@ app.init = function() {
 	$("#query").on("focus", function() {
 		$(this).val("");
 	})
-	.on("keyup.query-key", function(n) {
+	.keyup(function(n) {
 		if (n.keyCode == 13) {
 			app.command = $("#query").val();
 			$("#query").effect("highlight", { color: "#dddddd" });

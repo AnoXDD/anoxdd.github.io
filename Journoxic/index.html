@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.18 Build 041915_0052</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.19 Build 041915_0054</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -178,20 +178,6 @@
 				}
 				}
 
-				if( webLink ) {
-				for( i in webLink ) {
-				%>
-				<div class="webLink">
-					<a href="<%- webLink[i].url %>" target="_blank" title="New Window">
-						<div class="thumb"><% if( webLink[i].thumb ) { print( webLink[i].thumb ); } %><span></span></div>
-						<p class="url"><%- webLink[i].url %></p>
-						<p class="desc"><%- webLink[i].title %></p>
-					</a>
-				</div>
-				<%
-				}
-				}
-
 				if( book ) {
 				for( i in book ) {
 				if( book[i].info ) {
@@ -261,6 +247,20 @@
 				</div>
 				<%
 				}
+				}
+				}
+
+				if( webLink ) {
+				for( i in webLink ) {
+				%>
+				<div class="webLink">
+					<a href="<%- webLink[i].url %>" target="_blank" title="New Window">
+						<div class="thumb"><% if( webLink[i].thumb ) { print( webLink[i].thumb ); } %><span></span></div>
+						<p class="url"><%- webLink[i].url %></p>
+						<p class="desc"><%- webLink[i].title %></p>
+					</a>
+				</div>
+				<%
 				}
 				}
 
@@ -336,6 +336,144 @@
 					%>
 				</div>
 			</div>
+			<%
+			if( video ) {
+			for( i in video ) {
+			%>
+			<div class="video">
+				<a class="<%- video[i].fileName %>" href="#" target="_blank">
+					<div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
+					<p class="title"><%- video[i].title %></p>
+				</a>
+			</div>
+			<%
+			}
+			}
+
+			if( voice ) {
+			for( i in voice ) {
+			%>
+			<div class="voice">
+				<a class="<%- voice[i].fileName %>" href="#" target="_blank" title="Listen to it">
+					<div class="thumb"><span></span></div>
+					<p class="title"><%- voice[i].title %></p>
+				</a>
+			</div>
+			<%
+			}
+			}
+
+			if( place ) {
+			for( i in place ) {
+			if (place[i].latitude) {
+			%>
+			<div class="place">
+				<%
+				%>
+				<a href="https://maps.google.com/maps?z=15&q=<%- place[i].latitude %>,<%- place[i].longitude %>" target="_blank" title="See it in Google Map">
+					<div class="thumb"></div>
+					<p><%- place[i].title %></p>
+				</a>
+			</div>
+			<%
+			} else {
+			%>
+			<div class="place">
+				<a href="https://maps.google.com/maps?z=15&q=<%- place[i].title %>" target="_blank" title="See it in Google Map">
+					<div class="thumb"></div>
+					<p><%- place[i].title %></p>
+				</a>
+			</div>
+			<%
+			}
+			}
+			}
+
+			if( webLink ) {
+			for( i in webLink ) {
+			%>
+			<div class="webLink">
+				<a href="<%- webLink[i].url %>" target="_blank" title="New Window">
+					<div class="thumb"><% if( webLink[i].thumb ) { print( webLink[i].thumb ); } %><span></span></div>
+					<p class="url"><%- webLink[i].url %></p>
+					<p class="desc"><%- webLink[i].title %></p>
+				</a>
+			</div>
+			<%
+			}
+			}
+
+			if( book ) {
+			for( i in book ) {
+			if( book[i].info ) {
+			%>
+			<div class="book">
+				<a href="<%- book[i].info %>" target="_blank" title="New Window">
+					<div class="thumb"><% if( book[i].thumb ) { print( book[i].thumb ); } %><span></span></div>
+					<p class="title"><%- book[i].title %></p>
+					<p class="desc"><%- book[i].author %></p>
+				</a>
+			</div>
+			<%
+			} else {
+			%>
+			<div class="book">
+				<div class="thumb"><% if( book[i].thumb ) { print( book[i].thumb ); } %><span></span></div>
+				<p class="title"><%- book[i].title %></p>
+				<p class="desc"><%- book[i].author %></p>
+			</div>
+			<%
+			}
+			}
+			}
+
+			if( music ) {
+			for( i in music ) {
+			if( music[i].info ) {
+			%>
+			<div class="music">
+				<a href="<%- music[i].info %>" target="_blank" title="View in iTunes store">
+					<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
+					<p class="title"><%- music[i].title %></p>
+					<p class="desc"><%- music[i].author %></p>
+				</a>
+			</div>
+			<%
+			} else {
+			%>
+			<div class="music">
+				<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
+				<p class="title"><%- music[i].title %></p>
+				<p class="desc"><%- music[i].author %></p>
+			</div>
+			<%
+			}
+			}
+			}
+
+			if( movie ) {
+			for( i in movie ) {
+			if( movie[i].info ) {
+			%>
+			<div class="movie">
+				<a href="<%- movie[i].info %>" target="_blank" title="New Window">
+					<div class="thumb"><% if( movie[i].thumb ) { print( movie[i].thumb ); } %><span></span></div>
+					<p class="title"><%- movie[i].title %></p>
+					<p class="desc"><%- movie[i].author %></p>
+				</a>
+			</div>
+			<%
+			} else {
+			%>
+			<div class="movie">
+				<div class="thumb"><% if( movie[i].thumb ) { print( movie[i].thumb ); } %><span></span></div>
+				<p class="title"><%- movie[i].title %></p>
+				<p class="desc"><%- movie[i].author %></p>
+			</div>
+			<%
+			}
+			}
+			}
 		</div>
 	</script>
 </body>

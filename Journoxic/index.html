@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.21 Build 041915_0112</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.22 Build 041915_0120</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -389,20 +389,6 @@
 			}
 			}
 
-			if( weblink ) {
-			for( i in weblink ) {
-			%>
-			<div class="weblink">
-				<a href="<%- weblink[i].url %>" target="_blank" title="New Window">
-					<div class="thumb"><% if( weblink[i].thumb ) { print( weblink[i].thumb ); } %><span></span></div>
-					<p class="url"><%- weblink[i].url %></p>
-					<p class="desc"><%- weblink[i].title %></p>
-				</a>
-			</div>
-			<%
-			}
-			}
-
 			if( book ) {
 			for( i in book ) {
 			if( book[i].info ) {
@@ -472,6 +458,20 @@
 			</div>
 			<%
 			}
+			}
+			}
+
+			if( weblink ) {
+			for( i in weblink ) {
+			%>
+			<div class="weblink">
+				<a href="<%- weblink[i].url %>" target="_blank" title="New Window">
+					<div class="thumb"><% if( weblink[i].thumb ) { print( weblink[i].thumb ); } %><span></span></div>
+					<p class="url"><%- weblink[i].url %></p>
+					<p class="desc"><%- weblink[i].title %></p>
+				</a>
+			</div>
+			<%
 			}
 			}
 		</div>

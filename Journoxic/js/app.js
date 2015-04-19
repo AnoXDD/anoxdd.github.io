@@ -69,8 +69,8 @@ app.init = function() {
 			// Remove elements that are already there
 			var terms = $("#query").val().split(" "),
 				availableTags = app.preloadedTags.sort();
-			for (var i = 0; i != availableTags.length; ++i) {
-				for (var j = 0; j != terms.length; ++j) {
+			for (var i = 0; i < availableTags.length; ++i) {
+				for (var j = 0; j < terms.length; ++j) {
 					if (availableTags[i] == terms[j]) {
 						// Same element found, remove it
 						terms.splice(j, 1);

@@ -67,6 +67,19 @@ edit.init = function(overwrite, index) {
 	// Initialize the contents
 	$("#contents").fadeOut(400, function() {
 		$("#edit-pane").html(editPane).fadeIn();
+		// Enter to finish entry header
+		$("#entry-header").keyup(function(n) {
+			if (n.keyCode == 13) {
+				// Test to add date header
+				if (isNaN(parseInt($(this).val().substring(0, 6)))) {
+					var date = new Date().getTime();
+					date = new Date(date - 14400000);
+					$(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
+				}
+				$("#entry-body").focus();
+			}
+			edit.saveTitle();
+		});
 		// Enter to add tag
 		$("#entry-tag").keyup(function(n) {
 			if (n.keyCode == 13)

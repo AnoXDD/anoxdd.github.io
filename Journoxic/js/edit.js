@@ -1,4 +1,4 @@
-﻿/* The script for editing anything */
+/* The script for editing anything */
 
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */

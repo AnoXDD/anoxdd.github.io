@@ -84,7 +84,7 @@ body {
 	background: #454545 !important;
 }
 
-.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.webLink-video, #list div.attached span, #detail .video .video-play, #detail .webLink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .video .thumb, #detail .place .thumb, #detail .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2 {
+.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #list div.attached span, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .video .thumb, #detail .place .thumb, #detail .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2 {
 	background-image: url('../img/archive.png');
 	background-repeat: no-repeat;
 }
@@ -387,7 +387,7 @@ body {
 		background-position: -600px 0;
 	}
 
-	#list .webLink a div.dummy {
+	#list .weblink a div.dummy {
 		background-position: -700px 0;
 	}
 
@@ -419,7 +419,7 @@ body {
 		background-position: -600px -100px;
 	}
 
-	#list .webLink a:hover div.dummy, #list .webLink a:focus div.dummy {
+	#list .weblink a:hover div.dummy, #list .weblink a:focus div.dummy {
 		background-position: -700px -100px;
 	}
 
@@ -451,7 +451,7 @@ body {
 		background-position: -600px -200px;
 	}
 
-	#list .webLink a:active div.dummy {
+	#list .weblink a:active div.dummy {
 		background-position: -700px -200px;
 	}
 
@@ -494,7 +494,7 @@ body {
 			z-index: 2;
 		}
 
-			#list div.thumb span.webLink-video {
+			#list div.thumb span.weblink-video {
 				border: 0;
 				width: 100%;
 				height: 100%;
@@ -572,7 +572,7 @@ body {
 				background-color: #d8513e;
 			}
 
-			#list div.attached span.webLink {
+			#list div.attached span.weblink {
 				background-position-x: -305px;
 				background-color: #3cbaff;
 			}
@@ -842,17 +842,17 @@ body {
 			/* border: 1px solid rgba(0,0,0,.1); */
 		}
 
-	#detail .webLink p, #detail .movie p, #detail .music p, #detail .book p, #detail .voice p, #detail .place p {
+	#detail .weblink p, #detail .movie p, #detail .music p, #detail .book p, #detail .voice p, #detail .place p {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 
-	#detail .webLink {
+	#detail .weblink {
 		margin-bottom: 20px;
 	}
 
-		#detail .webLink a, #detail .movie a, #detail .music a, #detail .book a, #detail .voice a, #detail .place a, #detail .video a {
+		#detail .weblink a, #detail .movie a, #detail .music a, #detail .book a, #detail .voice a, #detail .place a, #detail .video a {
 			-webkit-transition: background-color .2s;
 			-moz-transition: background-color .2s;
 			-ms-transition: background-color .2s;
@@ -860,7 +860,7 @@ body {
 			transition: background-color .2s;
 		}
 
-		#detail .webLink a {
+		#detail .weblink a {
 			position: relative;
 			padding: 10px;
 			height: 50px;
@@ -871,22 +871,22 @@ body {
 			line-height: 1.5em;
 		}
 
-			#detail .webLink a:hover, #detail .webLink a:focus, #detail .webLink a:active {
+			#detail .weblink a:hover, #detail .weblink a:focus, #detail .weblink a:active {
 				background-color: #e0e0e0;
 			}
 
-		#detail .webLink .thumb {
+		#detail .weblink .thumb {
 			height: 50px;
 			background-position: -340px -300px;
 		}
 
-		#detail .webLink .url {
+		#detail .weblink .url {
 			font-size: 13px;
 			font-weight: bold;
 			color: #0091e1;
 		}
 
-		#detail .webLink .desc {
+		#detail .weblink .desc {
 			font-size: 15px;
 			font-weight: normal;
 			color: #4e4e4e;
@@ -1301,12 +1301,12 @@ body {
 	}
 
 @media(-webkit-min-device-pixel-ratio:1.5) {
-	.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.webLink-video, #list div.attached span, #detail .video .video-play, #detail .webLink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, #detail .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2, #edit-pane .icontags p {
+	.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #list div.attached span, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, #detail .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2, #edit-pane .icontags p {
 		background-image: url('../img/archive@2x.png');
 		background-size: 800px 530px;
 	}
 
-	header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.webLink-video, #list div.attached span {
+	header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #list div.attached span {
 		border-radius: 50%;
 	}
 

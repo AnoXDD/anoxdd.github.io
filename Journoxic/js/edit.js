@@ -1,4 +1,4 @@
-/* The script for editing anything */
+﻿/* The script for editing anything */
 
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
@@ -236,7 +236,7 @@ edit.find = function(created) {
 /* Parse the json to fit _.template. This function also syncs data to localStorage */
 edit.parseJSON = function(string) {
 	var dict = JSON.parse(string),
-		elements = "title time text video webLink book music movie images voice place iconTags2 textTags".split(" "),
+		elements = "title time text video weblink book music movie images voice place iconTags2 textTags".split(" "),
 		dict = {};
 	// Add to cache
 	if (dict["title"])

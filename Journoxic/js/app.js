@@ -490,8 +490,8 @@ app.list.prototype = {
 				data.ext = this.thumb("dummy");
 				break;
 			case 8:
-				data.type = "webLink";
-				data.ext = this.thumb(data, "webLink");
+				data.type = "weblink";
+				data.ext = this.thumb(data, "weblink");
 				break;
 		}
 		// Get the created time
@@ -609,8 +609,8 @@ app.list.prototype = {
 			var j = '<img src="' + fileName + '"' + thumbPropertiesHtml + ">";
 			if (Modernizr.canvas)
 				j = '<canvas width="160" height="160" data-src="' + fileName + '"></canvas>';
-			if (first.urlType > 1 && type == "webLink")
-				g = '<span class="webLink-video"></span>';
+			if (first.urlType > 1 && type == "weblink")
+				g = '<span class="weblink-video"></span>';
 			if (type == "video")
 				g = '<span class="video-play"></span>';
 			returnHtml = '<div class="thumb">' + j + "" + g + "</div>";
@@ -749,8 +749,8 @@ app.detail = function() { // [m]
 		dataClip.chars = dataClip.text.chars + " Chars";
 		dataClip.lines = dataClip.text.lines + " Lines";
 		dataClip.contents = this.text(dataClip.text.body);
-		if (dataClip.webLink)
-			this.thumb(dataClip, "webLink", 50, 50);
+		if (dataClip.weblink)
+			this.thumb(dataClip, "weblink", 50, 50);
 		if (dataClip.book)
 			this.thumb(dataClip, "book", 50, 70);
 		if (dataClip.music)
@@ -775,7 +775,7 @@ app.detail = function() { // [m]
 				dataClip.iconTags2 = j;
 		}
 		// To avoid undefined error in _.template
-		var elements = "video webLink book music movie images voice place iconTags2 textTags iconTags".split(" ");
+		var elements = "video weblink book music movie images voice place iconTags2 textTags iconTags".split(" ");
 		for (var i = 0, len = elements.length; i < len; ++i)
 			if (dataClip[elements[i]] == undefined)
 				dataClip[elements[i]] = undefined;
@@ -859,7 +859,7 @@ app.detail.prototype = {
 		return rawText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#039;").replace(/"/g, "&quot;");
 	},
 	thumb: function(dataClip, thumbType, width, height) { // [h, l, d, n]
-		// Seems that only the type of music, movie, book, webLink will be passed in 
+		// Seems that only the type of music, movie, book, weblink will be passed in 
 		var thumbClip = dataClip[thumbType]; // [m]
 		if (thumbClip && thumbClip.length > 0) {
 			var thumbClip = thumbClip[0]; // [k]
@@ -1143,7 +1143,7 @@ app.bitwise = function() {
 			if (this.is(contentFlag, placeVal))
 				retArray.push("place");
 			if (this.is(contentFlag, weblinkVal))
-				retArray.push("webLink");
+				retArray.push("weblink");
 			return retArray;
 		},
 		/* Get the array of html names from a typeVal */

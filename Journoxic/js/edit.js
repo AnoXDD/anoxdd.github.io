@@ -6,6 +6,8 @@ edit.time = 0;
 edit.intervalId = -1;
 edit.confirmName = "";
 
+edit.isLocationShown = false;
+
 /* 
  Initialize the edit pane.
  localStorage["created"] will be used to track the entry being edited
@@ -380,7 +382,7 @@ edit.saveTag = function() {
 				localStorage["textTags"] += "|" + tagVal;
 		}
 	}
-			// Clean the entry
+	// Clean the entry
 	$("#entry-tag").val("");
 }
 
@@ -538,6 +540,63 @@ edit.confirm = function() {
 	} else if (edit.confirmName == "edit") {
 		edit.init(true, app.currentDisplayed);
 	}
+}
+
+/* Toggle location getter by using Google Map */
+edit.location = function() {
+	if (edit.isLocationShown) {
+
+	} else {
+		// Enable input boxes
+		$("#attach-area .place input").prop("disabled", false);
+		// Show the location menu
+		var mapOptions = {
+			zoom: 15
+		},
+		errorMsg = "Did you enable location sharing?";
+		map = new google.maps.Map($("#map-selector"), mapOptions);
+		// Try HTML5 geolocation
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				var latitude = position.coords.latitude,
+					longitude = position.coords.longitude,
+					pos = new google.maps.LatLng(latitude, longitude),
+					infowindow = new google.maps.InfoWindow({
+						map: map,
+						position: pos,
+						content: 'Current location'
+					});
+				// Set on the map
+				map.setCenter(pos);
+				// Set on the input box
+				$("#latitude").value(latitude);
+				$("#longitude").value(longitude);
+				// Reverse geocoding to get current address
+				geocoder.geocode({ 'latLng': pos }, function(results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						if (results[1])
+							$("#attach-area .place .title").value(results[1].formatted_address);
+						else
+							alert('No results found');
+					} else {
+						alert('Geocoder failed due to: ' + status);
+					}
+				});
+			}, function() {
+				alert(errorMsg);
+			});
+		} else {
+			// Browser doesn't support Geolocation
+			alert(errorMsg);
+		}
+	}
+	edit.isLocationShown = !edit.isLocationShown;
+}
+
+/* Save the location and collapse the panal */
+edit.locationSave = function() {
+	edit.location();
+	// TODO save to cache
 }
 
 String.prototype.capitalize = function() {

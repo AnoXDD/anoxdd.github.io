@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1959,10 +1959,9 @@ body {
 		padding-left: 1%;
 		position: absolute;
 		left: 64.5%;
-	
 		overflow-y: scroll;
 		overflow-x: hidden;
-}
+	}
 
 	#edit-pane #entry-summary {
 		display: inline-block;
@@ -2312,226 +2311,201 @@ body {
 			background: #eeeeee;
 		}
 
-	#attach-area .video {
-		/* margin-bottom: 24px; */
-		/* position: relative; */
-		/* font-size: 0; */
-		/* line-height: 0; */
-		/* margin: 0 auto; */
+/* STARTING OTHER ATTACHED MEDIA */
+
+#attach-area .video {
+	/* margin-bottom: 24px; */
+	/* position: relative; */
+	/* font-size: 0; */
+	/* line-height: 0; */
+	/* margin: 0 auto; */
+}
+
+	#attach-area .video .thumb {
+		background-position: -540px -300px;
 	}
 
-		#attach-area .video .thumb {
-			background-position: -540px -300px;
-		}
+#attach-area .video-link a {
+	display: block;
+	z-index: 2;
+	position: relative;
+	height: 50px;
+	padding: 10px 10px 10px 10px;
+}
 
-	#attach-area .video-link a {
+	#attach-area .video-link a:after {
 		display: block;
-		z-index: 2;
-		position: relative;
-		height: 50px;
-		padding: 10px 10px 10px 10px;
-	}
-
-		#attach-area .video-link a:after {
-			display: block;
-			content: '';
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
-			right: 0;
-			border: 1px solid rgba(0,0,0,.1);
-		}
-
-	#attach-area .video-link span.video-play {
+		content: '';
 		position: absolute;
-		display: block;
-		left: 50%;
-		top: 50%;
-		width: 70px;
-		height: 70px;
-		margin-left: -35px;
-		margin-top: -35px;
-		background-position: -590px -300px;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		border: 1px solid rgba(0,0,0,.1);
 	}
 
-	#attach-area .text {
-		font-size: 14px;
-		color: #4e4e4e;
-		min-height: 100px;
-		padding-bottom: 30px;
-		line-height: 1.2em;
-		font-weight: normal;
+#attach-area .video-link span.video-play {
+	position: absolute;
+	display: block;
+	left: 50%;
+	top: 50%;
+	width: 70px;
+	height: 70px;
+	margin-left: -35px;
+	margin-top: -35px;
+	background-position: -590px -300px;
+}
+
+#attach-area .thumb {
+	position: relative;
+	float: left;
+	width: 50px;
+	margin-right: 14px;
+	overflow: hidden;
+}
+
+	#attach-area .thumb img {
+		width: 100%;
+		height: 100%;
 	}
 
-		#attach-area .text p {
-			margin-bottom: 1em;
-			line-height: 1.5em;
-			word-wrap: break-word;
-			word-break: keep-all;
-		}
+	#attach-area .thumb span {
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		/* border: 1px solid rgba(0,0,0,.1); */
+	}
 
-			#attach-area .text p.t1 {
-				padding-left: 4em;
-				color: #aaa;
-			}
+#attach-area .weblink input, #attach-area .movie input, #attach-area .music input, #attach-area .book input, #attach-area .voice input, #attach-area .place input {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
-			#attach-area .text p.t2 {
-				padding-left: 8em;
-				color: #ddd;
-			}
+#attach-area .weblink {
+	margin-bottom: 20px;
+}
 
-	#attach-area .thumb {
+	#attach-area .weblink a, #attach-area .movie a, #attach-area .music a, #attach-area .book a, #attach-area .voice a, #attach-area .place a, #attach-area .video a {
+		-webkit-transition: background-color .2s;
+		-moz-transition: background-color .2s;
+		-ms-transition: background-color .2s;
+		-o-transition: background-color .2s;
+		transition: background-color .2s;
+	}
+
+	#attach-area .weblink a {
 		position: relative;
-		float: left;
-		width: 50px;
-		margin-right: 14px;
-		overflow: hidden;
-	}
-
-		#attach-area .thumb img {
-			width: 100%;
-			height: 100%;
-		}
-
-		#attach-area .thumb span {
-			position: absolute;
-			left: 0;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			/* border: 1px solid rgba(0,0,0,.1); */
-		}
-
-	#attach-area .weblink p, #attach-area .movie p, #attach-area .music p, #attach-area .book p, #attach-area .voice p, #attach-area .place p {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	#attach-area .weblink {
-		margin-bottom: 20px;
-	}
-
-		#attach-area .weblink a, #attach-area .movie a, #attach-area .music a, #attach-area .book a, #attach-area .voice a, #attach-area .place a, #attach-area .video a {
-			-webkit-transition: background-color .2s;
-			-moz-transition: background-color .2s;
-			-ms-transition: background-color .2s;
-			-o-transition: background-color .2s;
-			transition: background-color .2s;
-		}
-
-		#attach-area .weblink a {
-			position: relative;
-			padding: 10px;
-			height: 50px;
-			display: block;
-			border: 1px solid #dbdbdb;
-			text-decoration: none;
-			line-height: 1.5em;
-		}
-
-			#attach-area .weblink a:hover, #attach-area .weblink a:focus, #attach-area .weblink a:active {
-				background-color: #e0e0e0;
-			}
-
-		#attach-area .weblink .thumb {
-			height: 50px;
-			background-position: -340px -300px;
-		}
-
-		#attach-area .weblink .url {
-			font-size: 13px;
-			font-weight: bold;
-			color: #0091e1;
-		}
-
-		#attach-area .weblink .desc {
-			font-size: 15px;
-			font-weight: normal;
-			color: #4e4e4e;
-		}
-
-	#attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .texttags, #attach-area .icontags {
-		/* border-top: 1px solid #dadada; */
 		padding: 10px;
-	}
-
-	#attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .video {
+		height: 50px;
+		display: block;
+		border: 1px solid #dbdbdb;
+		text-decoration: none;
 		line-height: 1.5em;
 	}
 
-		#attach-area .movie a, #attach-area .music a, #attach-area .book a, #attach-area .voice a, #attach-area .place a, #attach-area .video a {
-			display: block;
-			margin: -10px 7px -10px -10px;
-			padding: 10px;
-			text-decoration: none;
+		#attach-area .weblink a:hover, #attach-area .weblink a:focus, #attach-area .weblink a:active {
+			background-color: #e0e0e0;
 		}
 
-			#attach-area .movie a:hover, #attach-area .movie a:focus, #attach-area .movie a:active, #attach-area .music a:hover, #attach-area .music a:focus, #attach-area .music a:active, #attach-area .book a:hover, #attach-area .book a:focus, #attach-area .book a:active, #attach-area .voice a:hover, #attach-area .voice a:focus, #attach-area .voice a:active, #attach-area .place a:hover, #attach-area .place a:focus, #attach-area .place a:active, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
-				background-color: #dadada;
-				transition: background-color .5s ease;
-			}
+	#attach-area .weblink .thumb {
+		height: 50px;
+		background-position: -340px -300px;
+	}
 
-				#attach-area .movie a:hover p, #attach-area .movie a:focus p, #attach-area .movie a:active p, #attach-area .music a:hover p, #attach-area .music a:focus p, #attach-area .music a:active p, #attach-area .book a:hover p, #attach-area .book a:focus p, #attach-area .book a:active p, #attach-area .voice a:hover p, #attach-area .voice a:focus p, #attach-area .voice a:active p, #attach-area .place a:hover p, #attach-area .place a:focus p, #attach-area .place a:active p, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
-					overflow: initial;
-				}
+	#attach-area .weblink .url {
+		font-size: 13px;
+		font-weight: bold;
+		color: #0091e1;
+	}
 
+	#attach-area .weblink .desc {
+		font-size: 15px;
+		font-weight: normal;
+		color: #4e4e4e;
+	}
 
-		#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice p, #attach-area .place p {
-			font-size: 15px;
-			font-weight: normal;
-			color: #323232;
-			margin: 0;
-			padding: 0;
-			width: 70%;
-			float: initial;
-		}
-
-		#attach-area .movie .desc, #attach-area .music .desc, #attach-area .book .desc {
-			font-size: 14px;
-			font-weight: normal;
-			color: #8d8d8d;
-		}
-
-		#attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
-			height: 50px;
-		}
-
-			#attach-area .movie .thumb {
-				background-position: -440px -310px;
-			}
-
-			#attach-area .book .thumb {
-				background-position: -490px -300px;
-			}
-
-		#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
-			height: 50px;
-		
+#attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .texttags, #attach-area .icontags {
+	/* border-top: 1px solid #dadada; */
+	padding: 10px;
 }
 
-		#attach-area .music .thumb {
-			background-position: -290px -300px;
+#attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .video {
+	line-height: 1.5em;
+}
+
+	#attach-area .movie a, #attach-area .music a, #attach-area .book a, #attach-area .voice a, #attach-area .place a, #attach-area .video a {
+		display: block;
+		margin: -10px 7px -10px -10px;
+		padding: 10px;
+		text-decoration: none;
+	}
+
+		#attach-area .movie a:hover, #attach-area .movie a:focus, #attach-area .movie a:active, #attach-area .music a:hover, #attach-area .music a:focus, #attach-area .music a:active, #attach-area .book a:hover, #attach-area .book a:focus, #attach-area .book a:active, #attach-area .voice a:hover, #attach-area .voice a:focus, #attach-area .voice a:active, #attach-area .place a:hover, #attach-area .place a:focus, #attach-area .place a:active, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
+			background-color: #dadada;
+			transition: background-color .5s ease;
 		}
 
-	#attach-area .voice .thumb {
-		background-position: -90px -300px;
+			#attach-area .movie a:hover input, #attach-area .movie a:focus input, #attach-area .movie a:active input, #attach-area .music a:hover input, #attach-area .music a:focus input, #attach-area .music a:active input, #attach-area .book a:hover input, #attach-area .book a:focus input, #attach-area .book a:active input, #attach-area .voice a:hover input, #attach-area .voice a:focus input, #attach-area .voice a:active input, #attach-area .place a:hover input, #attach-area .place a:focus input, #attach-area .place a:active input, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
+				overflow: initial;
+			}
+
+
+	#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice input, #attach-area .place input {
+		font-size: 15px;
+		font-weight: normal;
+		color: #323232;
+		margin: 0;
+		padding: 0;
+		width: 70%;
+		float: initial;
 	}
 
-	#attach-area .place .thumb {
-		background-position: -390px -300px;
+	#attach-area .movie .desc, #attach-area .music .desc, #attach-area .book .desc {
+		font-size: 14px;
+		font-weight: normal;
+		color: #8d8d8d;
 	}
 
-	#attach-area .movie a, #attach-area .book a, #attach-area .music a, #attach-area .voice a, #attach-area .place a {
-		padding-right: 20px;
-		background: url('../img/arrow.png') 100% 50% no-repeat;
+	#attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
+		height: 50px;
 	}
 
-	#attach-area .voice p, #attach-area .place p {
-		padding-top: 15px;
+		#attach-area .movie .thumb {
+			background-position: -440px -310px;
+		}
+
+		#attach-area .book .thumb {
+			background-position: -490px -300px;
+		}
+
+	#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
+		height: 50px;
 	}
 
-	#attach-area .voice .miniplayer-flip {
-		margin-right: 14px;
+	#attach-area .music .thumb {
+		background-position: -290px -300px;
 	}
+
+#attach-area .voice .thumb {
+	background-position: -90px -300px;
+}
+
+#attach-area .place .thumb {
+	background-position: -390px -300px;
+}
+
+#attach-area .movie a, #attach-area .book a, #attach-area .music a, #attach-area .voice a, #attach-area .place a {
+	padding-right: 20px;
+	background: url('../img/arrow.png') 100% 50% no-repeat;
+}
+
+#attach-area .voice input, #attach-area .place input {
+	padding-top: 15px;
+}
+
+#attach-area .voice .miniplayer-flip {
+	margin-right: 14px;
+}

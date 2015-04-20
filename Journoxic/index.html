@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.23 Build 041915_0122</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.23 Build 042015_0000</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -329,7 +329,7 @@
 					var textTags2 = textTags.split('|');
 					for( i in textTags2 ) {
 					%>
-					<p title="Click to remove" onclick="edit.removeTag(<%- "'" + textTags2[i] + "'" %>)"><% print( "#" + textTags2[i] ); %></p>
+					<p title="Click to remove"><% print( "#" + textTags2[i] ); %></p>
 					<%
 					}
 					}
@@ -374,6 +374,7 @@
 					<div class="thumb"></div>
 					<p><%- place[i].title %></p>
 				</a>
+				<div class="selector"></div>
 			</div>
 			<%
 			} else {
@@ -383,6 +384,7 @@
 					<div class="thumb"></div>
 					<p><%- place[i].title %></p>
 				</a>
+				<div class="selector"></div>
 			</div>
 			<%
 			}
@@ -474,6 +476,7 @@
 			<%
 			}
 			}
+			%>
 		</div>
 	</script>
 </body>

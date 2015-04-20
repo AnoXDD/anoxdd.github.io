@@ -66,6 +66,7 @@ edit.init = function(overwrite, index) {
 	$(".header div").fadeOut();
 	// Initialize the contents
 	$("#contents").fadeOut(400, function() {
+		// Initialize the pane, this line must be the first one!
 		$("#edit-pane").html(editPane).fadeIn();
 		// Enter to finish entry header
 		$("#entry-header").keyup(function(n) {
@@ -84,6 +85,10 @@ edit.init = function(overwrite, index) {
 		$("#entry-tag").keyup(function(n) {
 			if (n.keyCode == 13)
 				edit.saveTag();
+		});
+		// Click to remove tags
+		$("#attach-area .texttags .other p").click(function() {
+			edit.removeTag($(this).text().substring(1));
 		});
 		if (localStorage["title"])
 			$("#entry-header").val(localStorage["title"]);

@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2304,7 +2304,9 @@ body {
 		font-size: 12px;
 		padding: 5px 20px;
 		border-radius: 20px;
-	}
+	
+		background: #f7f7f7;
+}
 
 		#edit-pane #attach-area .texttags #entry-tag:focus {
 			outline: none;
@@ -2454,20 +2456,47 @@ body {
 
 
 	#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice input, #attach-area .place input {
-		font-size: 15px;
+		font-size: 12px;
 		font-weight: normal;
 		color: #323232;
-		margin: 0;
-		padding: 0;
-		width: 70%;
+		background: #F7F7F7;
+		margin: 1px;
+		padding: 3px 10px;
+		width: 75%;
 		float: initial;
-	}
+	
+		border-radius: 30px;
+}
 
-	#attach-area .movie .desc, #attach-area .music .desc, #attach-area .book .desc {
-		font-size: 14px;
+	#attach-area .movie .desc, #attach-area .music .desc, #attach-area .book .desc, #attach-area .place .desc {
+		font-size: 12px;
 		font-weight: normal;
 		color: #8d8d8d;
 	}
+
+	#attach-area .place .desc {
+    display: inline-block;
+
+	
+    width: 20%;
+}
+
+	#attach-area .place p {
+    display: inline-block;
+
+	}
+
+	#attach-area .place a:active p {
+		color: #000;
+	}
+
+	#attach-area .place #map-selector {
+    background: #E3E3E3;
+		
+	
+    border-radius: 20px;
+    margin-top: 5px;
+}
 
 	#attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
 		height: 50px;
@@ -2503,7 +2532,7 @@ body {
 }
 
 #attach-area .voice input, #attach-area .place input {
-	padding-top: 15px;
+	/* padding-top: 7px; */
 }
 
 #attach-area .voice .miniplayer-flip {

@@ -549,12 +549,14 @@ edit.location = function() {
 	} else {
 		// Enable input boxes
 		$("#attach-area .place input").prop("disabled", false);
+		// Spread map-selector
+		$("#map-selector").animate({height: "15%"});
 		// Show the location menu
 		var mapOptions = {
 			zoom: 15
 		},
 		errorMsg = "Did you enable location sharing?";
-		map = new google.maps.Map($("#map-selector"), mapOptions);
+		map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
 		// Try HTML5 geolocation
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {

@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.24 Build 042015_0049</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.25 Build 042015_0108</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -370,13 +370,13 @@
 			<div class="place">
 				<a title="Edit" onclick="edit.location()" href="#">
 					<div class="thumb"></div>
-					<input disabled class="title" value="%- place[i].title %>" />
+					<input disabled title="Place" class="title" value="<%- place[i].title %>" />
 					<%
 					if (place[i].latitude) {
 					%>
-					<input disabled class="desc" id="latitude" value="<%- place[i].latitude %>" />
+					<input disabled title="Latitude" class="desc" id="latitude" value="<%- place[i].latitude %>" />
 					<p>,</p>
-					<input disabled class="desc" id="longitude" value="<%- place[i].longitude %>" />
+					<input disabled title="Longitude" class="desc" id="longitude" value="<%- place[i].longitude %>" />
 					<%
 					}
 					%>

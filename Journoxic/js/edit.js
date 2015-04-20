@@ -545,52 +545,63 @@ edit.confirm = function() {
 /* Toggle location getter by using Google Map */
 edit.location = function() {
 	if (edit.isLocationShown) {
-
+		// Remove the contents
+		$("#map-selector").animate({ height: 0 }).html("");
+		// Disable input boxes
+		$("#attach-area .place input").prop("disabled", true);
+		// Recover onclick event
+		$("#attach-area .place a").attr("onclick", "edit.location");
 	} else {
 		// Enable input boxes
 		$("#attach-area .place input").prop("disabled", false);
+		// Avoid accidentally click
+		$("#attach-area .place a").removeAttr("onclick");
 		// Spread map-selector
-		$("#map-selector").animate({height: "15%"});
-		// Show the location menu
-		var mapOptions = {
-			zoom: 15
-		},
-		errorMsg = "Did you enable location sharing?";
-		map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-		// Try HTML5 geolocation
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				var latitude = position.coords.latitude,
-					longitude = position.coords.longitude,
-					pos = new google.maps.LatLng(latitude, longitude),
-					infowindow = new google.maps.InfoWindow({
+		$("#map-selector").animate({ height: "200px" }, function() {
+			// Show the location menu
+			var errorMsg = "Did you enable location sharing?";
+			// Try HTML5 geolocation
+			if (navigator.geolocation) {
+
+				navigator.geolocation.getCurrentPosition(function(position) {
+					var latitude = position.coords.latitude,
+										longitude = position.coords.longitude,
+										pos = new google.maps.LatLng(latitude, longitude),
+										mapOptions = {
+											zoom: 15,
+											center: pos,
+										}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
+
+					marker = new google.maps.Marker({
 						map: map,
-						position: pos,
-						content: 'Current location'
+						position: map.getCenter()
 					});
-				// Set on the map
-				map.setCenter(pos);
-				// Set on the input box
-				$("#latitude").value(latitude);
-				$("#longitude").value(longitude);
-				// Reverse geocoding to get current address
-				geocoder.geocode({ 'latLng': pos }, function(results, status) {
-					if (status == google.maps.GeocoderStatus.OK) {
-						if (results[1])
-							$("#attach-area .place .title").value(results[1].formatted_address);
-						else
-							alert('No results found');
-					} else {
-						alert('Geocoder failed due to: ' + status);
-					}
+					// Set on the map
+					map.setCenter(pos);
+					// Set on the input box
+					$("#latitude").val(latitude);
+					$("#longitude").val(longitude);
+					// Reverse geocoding to get current address
+					var geocoder = new google.maps.Geocoder();
+					geocoder.geocode({ 'latLng': pos }, function(results, status) {
+						if (status == google.maps.GeocoderStatus.OK) {
+							if (results[0])
+								$("#attach-area .place .title").val(results[0].formatted_address);
+							else
+								alert('No results found');
+						} else {
+							alert('Geocoder failed due to: ' + status);
+						}
+					});
+				}, function() {
+					alert(errorMsg);
 				});
-			}, function() {
+			} else {
+				// Browser doesn't support Geolocation
 				alert(errorMsg);
-			});
-		} else {
-			// Browser doesn't support Geolocation
-			alert(errorMsg);
-		}
+			}
+		});
+
 	}
 	edit.isLocationShown = !edit.isLocationShown;
 }

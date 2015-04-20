@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2304,11 +2304,10 @@ body {
 		font-size: 12px;
 		padding: 5px 20px;
 		border-radius: 20px;
-	
 		background: #f7f7f7;
-}
+	}
 
-		#edit-pane #attach-area .texttags #entry-tag:focus {
+		#edit-pane #attach-area .texttags #entry-tag:focus, #edit-pane #attach-area input:focus {
 			outline: none;
 			background: #eeeeee;
 		}
@@ -2464,9 +2463,8 @@ body {
 		padding: 3px 10px;
 		width: 75%;
 		float: initial;
-	
 		border-radius: 30px;
-}
+	}
 
 	#attach-area .movie .desc, #attach-area .music .desc, #attach-area .book .desc, #attach-area .place .desc {
 		font-size: 12px;
@@ -2474,49 +2472,51 @@ body {
 		color: #8d8d8d;
 	}
 
-	#attach-area .place .desc {
-    display: inline-block;
-
-	
-    width: 20%;
+#attach-area .place .desc {
+	display: inline-block;
+	width: 20%;
 }
 
-	#attach-area .place p {
-    display: inline-block;
-
-	}
-
-	#attach-area .place a:active p {
-		color: #000;
-	}
-
-	#attach-area .place #map-selector {
-    background: #E3E3E3;
-		
-	
-    border-radius: 20px;
-    margin-top: 5px;
+#attach-area .place p {
+	display: inline-block;
 }
 
-	#attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
-		height: 50px;
+#attach-area .place a:active p {
+	color: #000;
+}
+
+#attach-area .place #map-selector {
+	background: #F3F3F3;
+	/* border-radius: 20px; */
+	left: -10px;
+	top: 10px;
+}
+
+	#attach-area .place #map-selector a {
+		height: 0px;
+		background-image: none;
 	}
 
-		#attach-area .movie .thumb {
-			background-position: -440px -310px;
-		}
 
-		#attach-area .book .thumb {
-			background-position: -490px -300px;
-		}
+#attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
+	height: 50px;
+}
 
-	#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
-		height: 50px;
+	#attach-area .movie .thumb {
+		background-position: -440px -310px;
 	}
 
-	#attach-area .music .thumb {
-		background-position: -290px -300px;
+	#attach-area .book .thumb {
+		background-position: -490px -300px;
 	}
+
+#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
+	height: 50px;
+}
+
+#attach-area .music .thumb {
+	background-position: -290px -300px;
+}
 
 #attach-area .voice .thumb {
 	background-position: -90px -300px;

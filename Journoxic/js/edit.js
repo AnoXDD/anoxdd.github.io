@@ -210,7 +210,7 @@ edit.importCache = function(data) {
 	if (localStorage["place"])
 		data["place"] = JSON.parse(localStorage["place"].replace(/null/g, ",").replace(/,,/g, ""));
 	else
-		data["place"] = "[]";
+		localStorage["place"] = data["place"] ? data["place"] : "[]";
 	// Return value
 	return data;
 }
@@ -669,12 +669,15 @@ edit.location = function(index) {
 		$("#attach-area .place a").attr("onclick", "edit.location");
 	} else {
 		// Show menu
-		edit.mediaIndex = $("#attach-area .place")[index].index();
+		edit.mediaIndex = index;
 		animation.setConfirm(2);
+		var selectorHeader = "#attach-area .place:eq(" + index + ") ";
 		// Enable input boxes
-		$("#attach-area .place:nth-of-type(" + (index + 1) + ") input").prop("disabled", false);
+		$(selectorHeader + "input").prop("disabled", false);
 		// Avoid accidentally click
-		$("#attach-area .place a")[index].removeAttr("onclick");
+		$(selectorHeader + "a").removeAttr("onclick");
+		// Spread map-selector
+		$(selectorHeader + "#map-selector").animate({ height: "200px" });
 		// Press esc to save
 		$("#attach-area").keyup(function(n) {
 			if (n.keyCode == 27) {
@@ -692,14 +695,30 @@ edit.location = function(index) {
 
 			}
 		});
-		// Spread map-selector
-		$("#map-selector")[index].animate({ height: "200px" });
 
+		// Show the location menu
+		var errorMsg = "Did you enable location sharing?",
+			pos;
+		// Try HTML5 geolocation
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				var latitude = position.coords.latitude,
+					longitude = position.coords.longitude;
+				pos = new google.maps.LatLng(latitude, longitude);
+			}, function() {
+				alert(errorMsg);
+			});
+		} else {
+			// Browser doesn't support Geolocation
+			alert(errorMsg);
+		}
 
-
-
-		var input = /** @type {HTMLInputElement} */(
-	  document.getElementById('place-search'));
+		var mapOptions = {
+			zoom: 15,
+			center: pos,
+		}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
+				input = /** @type {HTMLInputElement} */(
+			  document.getElementById('place-search'));
 		map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
 		var searchBox = new google.maps.places.SearchBox(

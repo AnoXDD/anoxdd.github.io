@@ -210,7 +210,7 @@ edit.importCache = function(data) {
 	if (localStorage["place"])
 		data["place"] = JSON.parse(localStorage["place"].replace(/null/g, ",").replace(/,,/g, ""));
 	else
-		localStorage["place"] = data["place"] ? data["place"] : "[]";
+		localStorage["place"] = data["place"] ? JSON.stringify(data["place"]) : "[]";
 	// Return value
 	return data;
 }

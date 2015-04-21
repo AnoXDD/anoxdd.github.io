@@ -677,55 +677,83 @@ edit.location = function(index) {
 		$("#attach-area .place a")[index].removeAttr("onclick");
 		// Press esc to save
 		$("#attach-area").keyup(function(n) {
-			if (n == 27) {
+			if (n.keyCode == 27) {
 				edit.location();
 			}
-		})
-		// Spread map-selector
-		$("#map-selector")[index].animate({ height: "200px" }, function() {
-			// Show the location menu
-			var errorMsg = "Did you enable location sharing?";
-			// Try HTML5 geolocation
-			if (navigator.geolocation) {
+		});
+		// Press enter to search
+		$("#attach-area .place .title").keyup(function(n) {
+			if (n.keyCode == 13) {
 
-				navigator.geolocation.getCurrentPosition(function(position) {
-					var latitude = position.coords.latitude,
-										longitude = position.coords.longitude,
-										pos = new google.maps.LatLng(latitude, longitude),
-										mapOptions = {
-											zoom: 15,
-											center: pos,
-										}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-
-					marker = new google.maps.Marker({
-						map: map,
-						position: map.getCenter()
-					});
-					// Set on the map
-					map.setCenter(pos);
-					// Set on the input box
-					$("#latitude").val(latitude);
-					$("#longitude").val(longitude);
-					// Reverse geocoding to get current address
-					var geocoder = new google.maps.Geocoder();
-					geocoder.geocode({ 'latLng': pos }, function(results, status) {
-						if (status == google.maps.GeocoderStatus.OK) {
-							if (results[0])
-								$("#attach-area .place .title").val(results[0].formatted_address);
-							else
-								alert('No results found');
-						} else {
-							alert('Geocoder failed due to: ' + status);
-						}
-					});
-				}, function() {
-					alert(errorMsg);
-				});
-			} else {
-				// Browser doesn't support Geolocation
-				alert(errorMsg);
 			}
 		});
+		$("#attach-area .place .desc").keyup(function(n) {
+			if (n.keyCode == 13) {
+
+			}
+		});
+		// Spread map-selector
+		$("#map-selector")[index].animate({ height: "200px" });
+
+
+
+
+		var input = /** @type {HTMLInputElement} */(
+	  document.getElementById('place-search'));
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+		var searchBox = new google.maps.places.SearchBox(
+		  /** @type {HTMLInputElement} */(input));
+
+		// [START region_getplaces]
+		// Listen for the event fired when the user selects an item from the
+		// pick list. Retrieve the matching places for that item.
+		google.maps.event.addListener(searchBox, 'places_changed', function() {
+			var places = searchBox.getPlaces();
+
+			if (places.length == 0) {
+				return;
+			}
+			for (var i = 0, marker; marker = markers[i]; i++) {
+				marker.setMap(null);
+			}
+
+			// For each place, get the icon, place name, and location.
+			markers = [];
+			var bounds = new google.maps.LatLngBounds();
+			for (var i = 0, place; place = places[i]; i++) {
+				var image = {
+					url: place.icon,
+					size: new google.maps.Size(71, 71),
+					origin: new google.maps.Point(0, 0),
+					anchor: new google.maps.Point(17, 34),
+					scaledSize: new google.maps.Size(25, 25)
+				};
+
+				// Create a marker for each place.
+				var marker = new google.maps.Marker({
+					map: map,
+					icon: image,
+					title: place.name,
+					position: place.geometry.location
+				});
+
+				markers.push(marker);
+
+				bounds.extend(place.geometry.location);
+			}
+
+			map.fitBounds(bounds);
+		});
+		// [END region_getplaces]
+
+		// Bias the SearchBox results towards places that are within the bounds of the
+		// current map's viewport.
+		google.maps.event.addListener(map, 'bounds_changed', function() {
+			var bounds = map.getBounds();
+			searchBox.setBounds(bounds);
+		});
+
 
 	}
 	edit.isLocationShown = !edit.isLocationShown;
@@ -752,6 +780,56 @@ edit.locationSave = function(index) {
 	data[index] = newElem;
 	localStorage["place"] = JSON.stringify(data);
 }
+
+edit.locationPin = function() {
+	// Show the location menu
+	var errorMsg = "Did you enable location sharing?";
+	// Try HTML5 geolocation
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			var latitude = position.coords.latitude,
+				longitude = position.coords.longitude,
+				pos = new google.maps.LatLng(latitude, longitude);
+			// Set on the input box
+			$("#latitude").val(latitude);
+			$("#longitude").val(longitude);
+			edit.locationGeocode(pos);
+		}, function() {
+			alert(errorMsg);
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		alert(errorMsg);
+	}
+}
+
+/* Reverse geocoding */
+edit.locationGeocode = function(pos) {
+	var mapOptions = {
+		zoom: 15,
+		center: pos,
+	}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
+	marker = new google.maps.Marker({
+		map: map,
+		position: pos
+	});
+	// Set on the map
+	map.setCenter(pos);
+	// Reverse geocoding to get current address
+	var geocoder = new google.maps.Geocoder();
+	geocoder.geocode({ 'latLng': pos }, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			if (results[0])
+				$("#attach-area .place .title").val(results[0].formatted_address);
+			else
+				alert('No results found');
+		} else {
+			alert('Geocoder failed due to: ' + status);
+		}
+	});
+}
+
+edit.locationSearch = function()
 
 /******************************************************************
  ************************ OTHERS **********************************

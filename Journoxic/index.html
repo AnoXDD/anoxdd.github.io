@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.27 Build 042015_2237</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.28 Build 042015_2356</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -32,6 +32,7 @@
 	</div>
 	<div class="actions">
 		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xE10B</a>
+		<a class="entry-option" id="pin-point" onclick="edit.locationPin()" href="#">&#xE1D2</a>
 		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#x1f506</a>
 		<!--	<a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
 		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xE114</a>
@@ -372,7 +373,7 @@
 			<div class="place">
 				<a title="Edit" onclick="edit.location(<%- i %>)" href="#">
 					<div class="thumb"></div>
-					<input disabled title="Place" class="title" value="<%- place[i].title %>" />
+					<input disabled title="Place" class="title" id="place-search" value="<%- place[i].title %>" />
 					<%
 					if (place[i].latitude) {
 					%>

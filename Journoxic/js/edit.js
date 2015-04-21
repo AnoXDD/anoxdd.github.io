@@ -5,8 +5,16 @@ window.edit = {};
 edit.time = 0;
 edit.intervalId = -1;
 edit.confirmName = "";
+edit.currentEditing = -1;
+edit.mediaIndex = -1;
 
 edit.isLocationShown = false;
+
+edit.localChange = [];
+
+/******************************************************************
+ ********************** INIT & QUIT *******************************
+ ******************************************************************/
 
 /* 
  Initialize the edit pane.
@@ -133,6 +141,42 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
+edit.quit = function(save) {
+	clearInterval(edit.intervalId);
+	edit.time = 0;
+	if (save)
+		// Save to local contents
+		edit.save();
+	// Clean cache anyway
+	edit.cleanEditCache();
+	// Content processing
+	$(".header div").fadeIn();
+	$("#edit-pane").fadeOut(400, function() {
+		// Remove the edit pane
+		$("#edit-pane").html("");
+		$("#contents").fadeIn();
+		// Reload
+		app.load("", true);
+		headerShowMenu("edit");
+	});
+}
+
+/* Save cache for edit-pane to journal.archive.data */
+edit.save = function(response) {
+	var index = edit.find(localStorage["created"]),
+		data = edit.exportCache(index);
+	edit.sortArchive();
+	journal.archive.data = edit.minData();
+	edit.saveDataCache();
+	if (response)
+		// Show finish animation
+		animation.finished("#add-save-local");
+}
+
+/******************************************************************
+ **************************** CACHE *******************************
+ ******************************************************************/
+
 /* Sync between the local and caches. Local cache will overwrite data if there is */
 edit.importCache = function(data) {
 	// Title
@@ -162,6 +206,11 @@ edit.importCache = function(data) {
 		data["textTags"] = localStorage["textTags"];
 	else
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
+	// place
+	if (localStorage["place"])
+		data["place"] = JSON.parse(localStorage["place"].replace(/null/g, ",").replace(/,,/g, ""));
+	else
+		data["place"] = "[]";
 	// Return value
 	return data;
 }
@@ -179,6 +228,8 @@ edit.exportCache = function(index) {
 		data["attachments"] = 0;
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
+	// Place
+	data["place"] = JSON.parse(localStorage["place"].replace(/null/g, ",").replace(/,,/g, ""));
 	if (index < 0) {
 		// Create a new entry
 		journal.archive.data.push(data);
@@ -228,6 +279,40 @@ edit.exportCacheBody = function(data) {
 	data["text"]["ext"] = newBody.substring(0, 50);
 	return data;
 }
+
+edit.cleanEditCache = function() {
+	localStorage["_cache"] = 0;
+	delete localStorage["title"];
+	delete localStorage["body"];
+	delete localStorage["created"];
+	delete localStorage["currentEditing"];
+	delete localStorage["iconTags"];
+	delete localStorage["textTags"];
+	delete localStorage["place"];
+}
+
+/* Save the entire journal.archive.data to cache after minimizing it */
+edit.saveDataCache = function(data) {
+	localStorage["archive"] = JSON.stringify(journal.archive.data);
+}
+
+/* Clean the cache for journal.archive.data */
+edit.removeDataCache = function() {
+	delete localStorage["archive"];
+}
+
+/* Try to read journal.archive.data from cache */
+edit.tryReadCache = function() {
+	if (localStorage["archive"]) {
+		// Seems that there is available data
+		journal.archive.data = JSON.parse(localStorage["archive"]);
+		app.load("", true);
+	}
+}
+
+/******************************************************************
+ **************************** DATA ********************************
+ ******************************************************************/
 
 /* Return the index of data found */
 edit.find = function(created) {
@@ -295,34 +380,116 @@ edit.minData = function() {
 	return tmp;
 }
 
-edit.cleanEditCache = function() {
-	localStorage["_cache"] = 0;
-	delete localStorage["title"];
-	delete localStorage["body"];
-	delete localStorage["created"];
-	delete localStorage["currentEditing"];
-	delete localStorage["iconTags"];
-	delete localStorage["textTags"];
+/* Sort journal.archive.data */
+edit.sortArchive = function() {
+	journal.archive.data.sort(function(a, b) {
+		// From the latest to oldest
+		return b["time"]["created"] - a["time"]["created"];
+	});
 }
 
-/* Save the entire journal.archive.data to cache after minimizing it */
-edit.saveDataCache = function(data) {
-	localStorage["archive"] = JSON.stringify(journal.archive.data);
+/******************************************************************
+ ************************ CONTENT CONTROL *************************
+ ******************************************************************/
+
+/************************** REDO **********************************/
+
+/* NOT USABLE */
+edit.undo = function() {
+	////	if (edit.localChange.length == 0) {
+	////		// No changes to undo
+	////		animation.deny("#add-undo");
+	////	} else {
+	////		// Trace back
+	////		var changes = edit.localChange.pop();
+	////		// This is considered to be of object type
+	////		for (key in changes) {
+	////			var change = changes[key];
+	////			if (change == "place") {
+	////				var dict = JSON.parse(changes[key][change]),
+	////					html = "";
+	////				for (key2 in dict) {
+
+	////				}
+	////			}
+	////		}
+	////	}
 }
 
-/* Clean the cache for journal.archive.data */
-edit.removeDataCache = function() {
-	delete localStorage["archive"];
+/* NOT USABLE */
+edit.change = function(key, value) {
+	////	var dict = {};
+	////	if (localStorage[key])
+	////		// Archive this value
+	////		dict[key] = value;
+	////	else
+	////		dict[key] = undefined;
+	////	edit.localChange.push(dict);
+	////	localStorage[key] = value;
+
 }
 
-/* Try to read journal.archive.data from cache */
-edit.tryReadCache = function() {
-	if (localStorage["archive"]) {
-		// Seems that there is available data
-		journal.archive.data = JSON.parse(localStorage["archive"]);
-		app.load("", true);
+/************************** EDITING *******************************/
+
+edit.addMedia = function(type) {
+	switch (type) {
+		default:
+
 	}
 }
+
+edit.deleteMedia = function() {
+
+}
+
+/* A function to be called by confirm */
+edit.confirm = function() {
+	if (typeof (edit.confirmName) == "string") {
+		if (edit.confirmName == "discard") {
+			edit.quit(false);
+		} else if (edit.confirmName == "delete") {
+			// Change the data displayed
+			--app.displayedNum;
+			var data = journal.archive.data[app.currentDisplayed];
+			app.displayedChars -= data["text"]["chars"];
+			app.displayedLines -= data["text"]["lines"];
+			app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
+			// Remove from the map
+			delete journal.archive.data[app.currentDisplayed];
+			// Clear from the list
+			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
+				// Remove this from the list
+				$(this).remove();
+			});
+			app.detail.prototype.hideDetail();
+			$(".loadmore").trigger("click");
+			// Save to cache
+			edit.saveDataCache();
+			headerShowMenu("edit");
+		} else if (edit.confirmName == "add") {
+			edit.init(true);
+		} else if (edit.confirmName == "edit") {
+			edit.init(true, app.currentDisplayed);
+		}
+	} else {
+		// Media removal
+		switch (edit.confirmName) {
+			case 2:
+				// Place
+				// Clear the html
+				$("#attach-area .place")[edit.mediaIndex].html("");
+				// Remove from cache
+				var data = JSON.parse(localStorage["place"]);
+				delete data[edit.mediaIndex];
+				localStorage["place"] = JSON.stringify(data);
+				break;
+			default:
+
+		}
+	}
+}
+
+/************************** ANIMATION *****************************/
 
 edit.toggleIcon = function(htmlName) {
 	var selector = "#attach-area .icontags p." + htmlName,
@@ -345,9 +512,59 @@ edit.toggleLight = function() {
 	$("#text-area").toggleClass("dark").children().toggleClass("dark");
 }
 
+edit.fullScreen = function() {
+	// Disable auto-height
+	$(window).off("resize");
+	// Change the icon
+	animation.hideIcon(".actions a", function() {
+		$("#toggle-screen").html("&#xE1D8").attr({
+			title: "Back to window",
+			onclick: "edit.windowMode()"
+		});
+	});
+	animation.showIcon("#toggle-screen");
+	// Add the icon
+	animation.showIcon("#toggle-light");
+	// Hide the other part
+	$(".header").fadeOut(400, function() {
+		$("#app").animate({ top: "2%", height: "95%" });
+	});
+	$("#attach-area").fadeOut(400, function() {
+		$("#text-area").animate({ width: "100%" });
+	});
+	$("#text-area").children().toggleClass("fullscreen");
+	$("#text-area p").toggleClass("fullscreen");
+}
+
+edit.windowMode = function() {
+	// Exit dark mode
+	$("#text-area").removeClass("dark").children().removeClass("dark");
+	// Change the icon
+	headerShowMenu("add");
+	$("#toggle-screen").html("&#xE1D9").attr({
+		title: "Go fullscreen",
+		onclick: "edit.fullScreen()"
+	});
+	// Resize
+	$("#app").animate({ top: "8%", height: "76%" });
+	$(".header").fadeIn(400, function() {
+		$("#text-area p").toggleClass("fullscreen");
+		$("#text-area").animate({ width: "64%" }, function() {
+			$("#attach-area").fadeIn();
+			// Re-enable auto-height
+			app.layout();
+		})
+		.children().toggleClass("fullscreen");
+	});
+}
+
+/************************** TITLE *********************************/
+
 edit.saveTitle = function() {
 	localStorage["title"] = $("#entry-header").val();
 }
+
+/************************** TITLE HEADER **************************/
 
 edit.saveTag = function() {
 	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
@@ -432,119 +649,18 @@ edit.convertTime = function(time) {
 	return date.getTime();
 }
 
-/* Sort journal.archive.data */
-edit.sortArchive = function() {
-	journal.archive.data.sort(function(a, b) {
-		// From the latest to oldest
-		return b["time"]["created"] - a["time"]["created"];
-	});
-}
-
-edit.fullScreen = function() {
-	// Disable auto-height
-	$(window).off("resize");
-	// Change the icon
-	animation.hideIcon(".actions a", function() {
-		$("#toggle-screen").html("&#xE1D8").attr({
-			title: "Back to window",
-			onclick: "edit.windowMode()"
-		});
-	});
-	animation.showIcon("#toggle-screen");
-	// Add the icon
-	animation.showIcon("#toggle-light");
-	// Hide the other part
-	$(".header").fadeOut(400, function() {
-		$("#app").animate({ top: "2%", height: "95%" });
-	});
-	$("#attach-area").fadeOut(400, function() {
-		$("#text-area").animate({ width: "100%" });
-	});
-	$("#text-area").children().toggleClass("fullscreen");
-	$("#text-area p").toggleClass("fullscreen");
-}
-
-edit.windowMode = function() {
-	// Exit dark mode
-	$("#text-area").removeClass("dark").children().removeClass("dark");
-	// Change the icon
-	headerShowMenu("add");
-	$("#toggle-screen").html("&#xE1D9").attr({
-		title: "Go fullscreen",
-		onclick: "edit.fullScreen()"
-	});
-	// Resize
-	$("#app").animate({ top: "8%", height: "76%" });
-	$(".header").fadeIn(400, function() {
-		$("#text-area p").toggleClass("fullscreen");
-		$("#text-area").animate({ width: "64%" }, function() {
-			$("#attach-area").fadeIn();
-			// Re-enable auto-height
-			app.layout();
-		})
-		.children().toggleClass("fullscreen");
-	});
-}
-
-edit.quit = function(save) {
-	clearInterval(edit.intervalId);
-	edit.time = 0;
-	if (save) {
-		// Save to local contents
-		var index = edit.find(localStorage["created"]),
-			data = edit.exportCache(index);
-		edit.sortArchive();
-		journal.archive.data = edit.minData();
-		edit.saveDataCache();
-	} else {
-	}
-	// Clean cache anyway
-	edit.cleanEditCache();
-	// Content processing
-	$(".header div").fadeIn();
-	$("#edit-pane").fadeOut(400, function() {
-		// Remove the edit pane
-		$("#edit-pane").html("");
-		$("#contents").fadeIn();
-		// Reload
-		app.load("", true);
-		headerShowMenu("edit");
-	});
-}
-
-/* A function to be called by confirm */
-edit.confirm = function() {
-	if (edit.confirmName == "discard") {
-		edit.quit(false);
-	} else if (edit.confirmName == "delete") {
-		// Change the data displayed
-		--app.displayedNum;
-		var data = journal.archive.data[app.currentDisplayed];
-		app.displayedChars -= data["text"]["chars"];
-		app.displayedLines -= data["text"]["lines"];
-		app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
-		// Remove from the map
-		delete journal.archive.data[app.currentDisplayed];
-		// Clear from the list
-		$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
-			// Remove this from the list
-			$(this).remove();
-		});
-		app.detail.prototype.hideDetail();
-		$(".loadmore").trigger("click");
-		// Save to cache
-		edit.saveDataCache();
-		headerShowMenu("edit");
-	} else if (edit.confirmName == "add") {
-		edit.init(true);
-	} else if (edit.confirmName == "edit") {
-		edit.init(true, app.currentDisplayed);
-	}
-}
+/************************** LOCATION **************************/
 
 /* Toggle location getter by using Google Map */
-edit.location = function() {
+edit.location = function(index) {
 	if (edit.isLocationShown) {
+		// Collapse menu
+		edit.mediaIndex = -1;
+		$("#attach-area").off("keyup");
+		// Hide all the options button
+		animation.hideIcon(".entry-option");
+		// Save data by default
+		edit.locationSave(index);
 		// Remove the contents
 		$("#map-selector").animate({ height: 0 }).html("");
 		// Disable input boxes
@@ -552,12 +668,21 @@ edit.location = function() {
 		// Recover onclick event
 		$("#attach-area .place a").attr("onclick", "edit.location");
 	} else {
+		// Show menu
+		edit.mediaIndex = $("#attach-area .place")[index].index();
+		animation.setConfirm(2);
 		// Enable input boxes
-		$("#attach-area .place input").prop("disabled", false);
+		$("#attach-area .place:nth-of-type(" + (index + 1) + ") input").prop("disabled", false);
 		// Avoid accidentally click
-		$("#attach-area .place a").removeAttr("onclick");
+		$("#attach-area .place a")[index].removeAttr("onclick");
+		// Press esc to save
+		$("#attach-area").keyup(function(n) {
+			if (n == 27) {
+				edit.location();
+			}
+		})
 		// Spread map-selector
-		$("#map-selector").animate({ height: "200px" }, function() {
+		$("#map-selector")[index].animate({ height: "200px" }, function() {
 			// Show the location menu
 			var errorMsg = "Did you enable location sharing?";
 			// Try HTML5 geolocation
@@ -607,10 +732,30 @@ edit.location = function() {
 }
 
 /* Save the location and collapse the panal */
-edit.locationSave = function() {
-	edit.location();
+edit.locationSave = function(index) {
 	// TODO save to cache
+	var data = localStorage["place"],
+		latitude = parseInt($("#latitude").val()),
+		longitude = parseInt($("#longitude").val()),
+		newElem = {};
+	if (!data)
+		data = [];
+	else
+		data = JSON.parse(data);
+	newElem["title"] = $("#attach-area .place .title").val();
+	// Test if both latitude and longitude are valid 
+	if (!isNaN(latitude) && !isNaN(longitude)) {
+		newElem["latitude"] = $("#latitude").val();
+		newElem["longitude"] = $("#longitude").val();
+	}
+	// Update the data
+	data[index] = newElem;
+	localStorage["place"] = JSON.stringify(data);
 }
+
+/******************************************************************
+ ************************ OTHERS **********************************
+ ******************************************************************/
 
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);

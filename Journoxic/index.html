@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.26 Build 042015_0147</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.27 Build 042015_2237</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -33,14 +33,16 @@
 	<div class="actions">
 		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xE10B</a>
 		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#x1f506</a>
-		<a class="entry-add" title="Photos" id="add-photo" href="#">&#xE114</a>
-		<a class="entry-add" title="Videos" id="add-video" href="#">&#xE116</a>
-		<a class="entry-add" title="Places" id="add-place" href="#">&#xE139</a>
-		<a class="entry-add" title="Voices" id="add-voice" href="#">&#xE1D6</a>
-		<a class="entry-add" title="Music" id="add-music" href="#">&#xE189</a>
-		<a class="entry-add" title="Movie" id="add-movie" href="#">&#x1f3ac</a>
-		<a class="entry-add" title="Book" id="add-book" href="#">&#xE1D3</a>
-		<a class="entry-add" title="Link" id="add-link" href="#">&#xE167</a>
+		<!--	<a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
+		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xE114</a>
+		<a class="entry-add" title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xE116</a>
+		<a class="entry-add" title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xE139</a>
+		<a class="entry-add" title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xE1D6</a>
+		<a class="entry-add" title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="#">&#xE189</a>
+		<a class="entry-add" title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#x1f3ac</a>
+		<a class="entry-add" title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xE1D3</a>
+		<a class="entry-add" title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="#">&#xE167</a>
+		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save()" href="#">&#xE159</a>
 		<a class="entry-add" title="Save and quit" id="add-save" onclick="edit.quit(true)" href="#">&#xE105</a>
 		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xE107</a>
 		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xE1D9</a>
@@ -368,7 +370,7 @@
 			for( i in place ) {
 			%>
 			<div class="place">
-				<a title="Edit" onclick="edit.location()" href="#">
+				<a title="Edit" onclick="edit.location(<%- i %>)" href="#">
 					<div class="thumb"></div>
 					<input disabled title="Place" class="title" value="<%- place[i].title %>" />
 					<%

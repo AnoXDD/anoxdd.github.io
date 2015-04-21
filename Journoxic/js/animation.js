@@ -13,9 +13,13 @@ animation.showIcon = function(selector, callback) {
 	$(selector).fadeIn(0).animate({ top: "10px" }, 200, "swing", callback);
 };
 
+animation.isShown = function(selector) {
+	return $(selector).css("top") == "10px";
+}
+
 animation.toggleIcon = function(selector, callback) {
 	callback = callback || function() { };
-	if ($(selector).css("top") == "10px")
+	if (animation.isShown(selector))
 		animation.hideIcon(selector, callback);
 	else
 		animation.showIcon(selector, callback);
@@ -29,8 +33,15 @@ animation.setConfirm = function(name) {
 		return;
 	}
 	// Start a new one
-	animation.showIcon("#confirm");
 	var title;
+	// Change how it looks
+	if (typeof (name) == "number") {
+		$("#confirm").html("&#xE106");
+		title = "Remove this medium";
+	} else {
+		$("#confirm").html("&#xE10B");
+	}
+	animation.showIcon("#confirm");
 	if (name == "delete") {
 		title = "Confirm to remove this entry";
 	} else if (name == "discard") {
@@ -39,6 +50,8 @@ animation.setConfirm = function(name) {
 		title = "Overwrite saved data to create a new entry"
 	} else if (name == "edit") {
 		title = "Overwrite saved data to edit this entry"
+	} else if (name == "save") {
+		title = "Save entry";
 	}
 	if (title == undefined)
 		// Not a valid call
@@ -47,29 +60,54 @@ animation.setConfirm = function(name) {
 	edit.confirmName = name;
 }
 
+/* Return undefined if it is not shown */
 animation.blink = function(selector) {
-	var pulse = function() {
-		$(selector).fadeOut(700);
-		$(selector).fadeIn(700);
+	if (animation.isShown(selector)) {
+		var pulse = function() {
+			$(selector).fadeOut(700);
+			$(selector).fadeIn(700);
+		}
+		return setInterval(pulse, 1800);
+	} else {
+		return undefined;
 	}
-	return setInterval(pulse, 2000);
 };
 
+
+/* Return undefined if it is not shown */
 animation.rotate = function(selector) {
-	var pulse = function() {
-		$(selector).css("-webkit-transform", "rotate(" + (++animation.degree) * 360 + "deg)");
-	};
-	return setInterval(pulse, 2000);
+	if (animation.isShown(selector)) {
+		var pulse = function() {
+			$(selector).css("-webkit-transform", "rotate(" + (++animation.degree) * 360 + "deg)");
+		};
+		return setInterval(pulse, 2000);
+	} else {
+		return undefined;
+	}
 };
+
+animation.finished = function(selector) {
+	if (animation.isShown(selector)) {
+		/* Keep a record of original text */
+		var text = $(selector).html();
+		$(selector).fadeOut(300, function() {
+			$(this).html("&#xE10B").css({ background: "#fff" });
+		}).fadeIn(300).delay(500).fadeOut(300, function() {
+			$(this).html(text).css({ background: "" });
+		}).fadeIn(300);
+	}
+}
 
 animation.deny = function(selector) {
-	/* Keep a record of original text */
-	var text = $(selector).html();
-	$(selector).fadeOut(300, function() {
-		$(this).html("&#xE10A").css({ color: "#000", background: "#fff" });
-	}).fadeIn(300).delay(500).fadeOut(300, function() {
-		$(this).html(text).css({ background: "", color: "" });
-	}).fadeIn(300);
+	if (animation.isShown(selector)) {
+		/* Keep a record of original text */
+		var text = $(selector).html();
+		$(selector).fadeOut(300, function() {
+			$(this).html("&#xE10A").css({ color: "#000", background: "#fff" });
+		}).fadeIn(300).delay(500).fadeOut(300, function() {
+			$(this).html(text).css({ background: "", color: "" });
+		}).fadeIn(300);
+	}
 };
 
 function headerShowMenu(name) {
@@ -80,7 +118,7 @@ function headerShowMenu(name) {
 		name = ".entry-add";
 	else if (name == "comm")
 		name = ".entry-comm";
-	else 
+	else
 		// name == undefined or other situations
 		name = ".entry-menu";
 	// Disable going back for edit-pane

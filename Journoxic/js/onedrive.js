@@ -179,7 +179,8 @@ function downloadFile() {
 			clearInterval(id1);
 			clearInterval(id2);
 			// Change loading icons and re-enable click
-			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#").fadeOut(200).fadeIn(200);
+			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
+			animation.finished("#download");
 			console.log("downloadFile()\tFinish downloading");
 		});
 	}
@@ -208,10 +209,8 @@ function downloadMedia(url) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (_.size(journal.archive.map) == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave")
-			if ($("#refresh-media").css("display") != "none")
-				// If the button is seeable
-				$("#refresh-media").fadeOut(200).fadeIn(200);
+			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
+			animation.finished("#refresh-media");
 		}
 		console.log("downloadFile()\tFinish media data");
 	});
@@ -272,7 +271,8 @@ function uploadFile() {
 		// Stop blinking
 		clearInterval(id);
 		// Change loading icons and re-enable click
-		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#").fadeOut(200).fadeIn(200);
+		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#");
+		animation.finished("#upload");
 		console.log("uploadFile()\tFinish uploading");
 	})
 }

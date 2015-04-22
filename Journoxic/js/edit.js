@@ -437,6 +437,11 @@ edit.change = function(key, value) {
 
 edit.addMedia = function(type) {
 	switch (type) {
+		case 2:
+			edit.mediaIndex = $("#attach-area .place").length;
+			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><input disabled title="Latitude" class="desc" id="latitude" /><p>,</p><input disabled title="Longitude" class="desc" id="longitude" /></a></div>';
+			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (edit.mediaIndex - 1) + ")"));
+			break;
 		default:
 
 	}
@@ -763,7 +768,6 @@ edit.location = function(index) {
 			// Browser doesn't support Geolocation
 			alert(errorMsg);
 		}
-
 
 	}
 	edit.isLocationShown = !edit.isLocationShown;

@@ -149,6 +149,9 @@ edit.quit = function(save) {
 		edit.save();
 	// Clean cache anyway
 	edit.cleanEditCache();
+	// Map selector toggle
+	if (edit.isLocationShown)
+		edit.location();
 	// Content processing
 	$(".header div").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
@@ -704,12 +707,13 @@ edit.location = function(index) {
 			navigator.geolocation.getCurrentPosition(function(position) {
 				var latitude = position.coords.latitude,
 					longitude = position.coords.longitude;
-				pos = new google.maps.LatLng(latitude, longitude);
-				var mapOptions = {
+				pos = new google.maps.LatLng(latitude, longitude),
+				mapOptions = {
 					zoom: 15,
 					center: pos,
 				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
-				searchBox = new google.maps.places.SearchBox((document.getElementById('place-search')));
+				searchBox = new google.maps.places.SearchBox((document.getElementById('place-search'))),
+				markers = [];
 
 				// [START region_getplaces]
 				// Listen for the event fired when the user selects an item from the
@@ -728,18 +732,9 @@ edit.location = function(index) {
 					markers = [];
 					var bounds = new google.maps.LatLngBounds();
 					for (var i = 0, place; place = places[i]; i++) {
-						var image = {
-							url: place.icon,
-							size: new google.maps.Size(71, 71),
-							origin: new google.maps.Point(0, 0),
-							anchor: new google.maps.Point(17, 34),
-							scaledSize: new google.maps.Size(25, 25)
-						};
-
 						// Create a marker for each place.
 						var marker = new google.maps.Marker({
 							map: map,
-							icon: image,
 							title: place.name,
 							position: place.geometry.location
 						});

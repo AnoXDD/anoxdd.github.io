@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2312,6 +2312,27 @@ body {
 			background: #eeeeee;
 		}
 
+#edit-pane #map-holder {
+    display: none;
+    position: relative;
+	
+    top: -webkit-calc(-100% + 45px);
+    height: -webkit-calc(100% - 48px);
+    width: -webkit-calc(100% + 5px);
+}
+
+#edit-pane #map-selector {
+	background: #F3F3F3;
+	/* border-radius: 20px; */
+	height: 100%;
+}
+
+	#edit-pane #map-selector a {
+		height: 0px;
+		background-image: none;
+	}
+
+
 /* STARTING OTHER ATTACHED MEDIA */
 
 #attach-area .video {
@@ -2484,19 +2505,6 @@ body {
 #attach-area .place a:active p {
 	color: #000;
 }
-
-#attach-area .place #map-selector {
-	background: #F3F3F3;
-	/* border-radius: 20px; */
-	left: -10px;
-	top: 10px;
-}
-
-	#attach-area .place #map-selector a {
-		height: 0px;
-		background-image: none;
-	}
-
 
 #attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
 	height: 50px;

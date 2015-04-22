@@ -144,11 +144,13 @@ edit.init = function(overwrite, index) {
 edit.quit = function(save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
-	if (save)
+	if (save) {
 		// Save to local contents
 		edit.save();
-	// Clean cache anyway
-	edit.cleanEditCache();
+		edit.sortArchive();
+		journal.archive.data = edit.minData();
+		edit.saveDataCache();
+	}
 	// Map selector toggle
 	if (edit.isLocationShown)
 		edit.location();
@@ -162,15 +164,14 @@ edit.quit = function(save) {
 		app.load("", true);
 		headerShowMenu("edit");
 	});
+	// Clean cache anyway
+	edit.cleanEditCache();
 }
 
 /* Save cache for edit-pane to journal.archive.data */
 edit.save = function(response) {
-	var index = edit.find(localStorage["created"]),
-		data = edit.exportCache(index);
-	edit.sortArchive();
-	journal.archive.data = edit.minData();
-	edit.saveDataCache();
+	var index = edit.find(localStorage["created"]);
+	edit.exportCache(index);
 	if (response)
 		// Show finish animation
 		animation.finished("#add-save-local");
@@ -656,46 +657,35 @@ edit.convertTime = function(time) {
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
+	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	if (edit.isLocationShown) {
 		// Collapse menu
-		edit.mediaIndex = -1;
 		$("#attach-area").off("keyup");
 		// Hide all the options button
 		animation.hideIcon(".entry-option");
 		// Save data by default
-		edit.locationSave(index);
+		edit.locationSave(edit.mediaIndex);
 		// Remove the contents
-		$("#map-holder").animate({ height: 0 }).html('<div id="map-selector"></div>');
+		$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
 		// Disable input boxes
-		$("#attach-area .place input").prop("disabled", true);
+		$(selectorHeader + "input").prop("disabled", true);
 		// Recover onclick event
-		$("#attach-area .place a").attr("onclick", "edit.location");
+		$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
+		edit.mediaIndex = -1;
 	} else {
 		// Show menu
 		edit.mediaIndex = index;
 		animation.setConfirm(2);
-		var selectorHeader = "#attach-area .place:eq(" + index + ") ";
 		// Enable input boxes
 		$(selectorHeader + "input").prop("disabled", false);
 		// Avoid accidentally click
 		$(selectorHeader + "a").removeAttr("onclick");
 		// Spread map-selector
-		$("#map-holder").animate({ height: "200px" });
+		$("#map-holder").fadeIn();
 		// Press esc to save
 		$("#attach-area").keyup(function(n) {
 			if (n.keyCode == 27) {
 				edit.location();
-			}
-		});
-		// Press enter to search
-		$("#attach-area .place .title").keyup(function(n) {
-			if (n.keyCode == 13) {
-
-			}
-		});
-		$("#attach-area .place .desc").keyup(function(n) {
-			if (n.keyCode == 13) {
-
 			}
 		});
 
@@ -705,45 +695,38 @@ edit.location = function(index) {
 		// Try HTML5 geolocation
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
-				var latitude = position.coords.latitude,
-					longitude = position.coords.longitude;
+				var latitude = parseFloat($(selectorHeader + "#latitude").val()) || position.coords.latitude,
+					longitude = parseFloat($(selectorHeader + "#longitude").val()) || position.coords.longitude;
 				pos = new google.maps.LatLng(latitude, longitude),
 				mapOptions = {
 					zoom: 15,
 					center: pos,
 				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
 				searchBox = new google.maps.places.SearchBox((document.getElementById('place-search'))),
-				markers = [];
 
 				// [START region_getplaces]
 				// Listen for the event fired when the user selects an item from the
 				// pick list. Retrieve the matching places for that item.
 				google.maps.event.addListener(searchBox, 'places_changed', function() {
 					var places = searchBox.getPlaces();
-
 					if (places.length == 0) {
 						return;
 					}
-					for (var i = 0, marker; marker = markers[i]; i++) {
-						marker.setMap(null);
-					}
+					// Only care about the first result
+					var place = places[0],
+						marker;
 
-					// For each place, get the icon, place name, and location.
-					markers = [];
+					marker.setMap(null);
 					var bounds = new google.maps.LatLngBounds();
-					for (var i = 0, place; place = places[i]; i++) {
-						// Create a marker for each place.
-						var marker = new google.maps.Marker({
-							map: map,
-							title: place.name,
-							position: place.geometry.location
-						});
+					// Create a marker for each place.
+					var marker = new google.maps.Marker({
+						map: map,
+						title: place.name,
+						position: place.geometry.location
+					});
 
-						markers.push(marker);
-
-						bounds.extend(place.geometry.location);
-					}
-
+					bounds.extend(place.geometry.location);
+					console.log(place.geometry.location.latitude);
 					map.fitBounds(bounds);
 				});
 				// [END region_getplaces]
@@ -755,6 +738,12 @@ edit.location = function(index) {
 					searchBox.setBounds(bounds);
 				});
 
+				// Press enter to search
+				$("#attach-area .place .desc").keyup(function(n) {
+					if (n.keyCode == 13) {
+
+					}
+				});
 
 			}, function() {
 				alert(errorMsg);
@@ -816,7 +805,7 @@ edit.locationPin = function() {
 /* Reverse geocoding */
 edit.locationGeocode = function(pos) {
 	var mapOptions = {
-		zoom: 15,
+		zoom: 8,
 		center: pos,
 	}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
 	marker = new google.maps.Marker({

@@ -660,7 +660,7 @@ edit.location = function(index) {
 	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	if (edit.isLocationShown) {
 		// Collapse menu
-		$("#attach-area").off("keyup");
+		$("#edit-pane").off("keyup");
 		// Hide all the options button
 		animation.hideIcon(".entry-option");
 		// Save data by default
@@ -683,7 +683,7 @@ edit.location = function(index) {
 		// Spread map-selector
 		$("#map-holder").fadeIn();
 		// Press esc to save
-		$("#attach-area").keyup(function(n) {
+		$("#edit-pane").keyup(function(n) {
 			if (n.keyCode == 27) {
 				edit.location();
 			}
@@ -703,33 +703,33 @@ edit.location = function(index) {
 					center: pos,
 				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
 				searchBox = new google.maps.places.SearchBox((document.getElementById('place-search'))),
+				markers = [];
 
-				// [START region_getplaces]
-				// Listen for the event fired when the user selects an item from the
-				// pick list. Retrieve the matching places for that item.
 				google.maps.event.addListener(searchBox, 'places_changed', function() {
 					var places = searchBox.getPlaces();
-					if (places.length == 0) {
+					if (!places && places.length == 0) {
 						return;
 					}
 					// Only care about the first result
 					var place = places[0],
-						marker;
-
-					marker.setMap(null);
-					var bounds = new google.maps.LatLngBounds();
+						bounds = new google.maps.LatLngBounds();
 					// Create a marker for each place.
-					var marker = new google.maps.Marker({
+					if (markers[0]) {
+						markers[0].setMap(null);
+						markers = [];
+					}
+					marker = new google.maps.Marker({
 						map: map,
 						title: place.name,
 						position: place.geometry.location
 					});
-
-					bounds.extend(place.geometry.location);
-					console.log(place.geometry.location.latitude);
-					map.fitBounds(bounds);
+					marker.setMap(map);
+					markers.push(marker);
+					map.setZoom(16);
+					map.setCenter(place.geometry.location);
+					$(selectorHeader + "#latitude").val(place.geometry.location.lat());
+					$(selectorHeader + "#longitude").val(place.geometry.location.lng());
 				});
-				// [END region_getplaces]
 
 				// Bias the SearchBox results towards places that are within the bounds of the
 				// current map's viewport.
@@ -741,7 +741,18 @@ edit.location = function(index) {
 				// Press enter to search
 				$("#attach-area .place .desc").keyup(function(n) {
 					if (n.keyCode == 13) {
-
+						var latitude = parseFloat($(selectorHeader + "#latitude").val()),
+							longitude = parseFloat($(selectorHeader + "#longitude").val());
+						if (isNaN(latitude)) {
+							$(selectorHeader + "#latitude").effect("highlight", { color: "#8d8d8d" });
+							return;
+						}
+						if (isNaN(longitude)) {
+							$(selectorHeader + "#longitude").effect("highlight", { color: "#8d8d8d" });
+							return;
+						}
+						pos = new google.maps.LatLng(latitude, longitude);
+						edit.locationGeocode(pos);
 					}
 				});
 
@@ -805,7 +816,7 @@ edit.locationPin = function() {
 /* Reverse geocoding */
 edit.locationGeocode = function(pos) {
 	var mapOptions = {
-		zoom: 8,
+		zoom: 16,
 		center: pos,
 	}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
 	marker = new google.maps.Marker({

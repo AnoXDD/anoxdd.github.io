@@ -665,7 +665,7 @@ edit.location = function(index) {
 		// Save data by default
 		edit.locationSave(index);
 		// Remove the contents
-		$("#map-selector").animate({ height: 0 }).html("");
+		$("#map-holder").animate({ height: 0 }).html('<div id="map-selector"></div>');
 		// Disable input boxes
 		$("#attach-area .place input").prop("disabled", true);
 		// Recover onclick event
@@ -680,7 +680,7 @@ edit.location = function(index) {
 		// Avoid accidentally click
 		$(selectorHeader + "a").removeAttr("onclick");
 		// Spread map-selector
-		$(selectorHeader + "#map-selector").animate({ height: "200px" });
+		$("#map-holder").animate({ height: "200px" });
 		// Press esc to save
 		$("#attach-area").keyup(function(n) {
 			if (n.keyCode == 27) {

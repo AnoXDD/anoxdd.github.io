@@ -778,7 +778,8 @@ edit.location = function(index) {
 			edit.location(index);
 		}
 	});
-
+	// Update media index
+	edit.mediaIndex = index;
 }
 
 /* Save the location and collapse the panal */

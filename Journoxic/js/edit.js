@@ -666,6 +666,8 @@ edit.location = function(index) {
 	if (edit.mediaIndex == -1)
 		edit.mediaIndex = index;
 	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+	// Just start a new one
+	animation.setConfirm(2);
 	if (edit.isLocationShown) {
 		// To collapse the current menu anyway
 		// Disable input boxes
@@ -674,13 +676,13 @@ edit.location = function(index) {
 		$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
 		// Save data by default
 		edit.locationSave(edit.mediaIndex);
+		// Remove the contents
+		$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
+		$("#edit-pane").off("keyup");
 		if (index == edit.mediaIndex || index == undefined) {
 			// Yes, collapse the current menu
-			$("#edit-pane").off("keyup");
 			// Hide all the options button
 			animation.hideIcon(".entry-option");
-			// Remove the contents
-			$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
 			edit.mediaIndex = -1;
 			edit.isLocationShown = false;
 			// Avoid following general stuffs for other conditions
@@ -688,91 +690,87 @@ edit.location = function(index) {
 		} else {
 			// Start a map-selector for another entry
 			selectorHeader = "#attach-area .place:eq(" + index + ") ";
-			edit.mediaIndex = index;
 		}
 	} else {
 		// Spread map-selector
 		$("#map-holder").fadeIn();
-		// Show the location menu
-		var errorMsg = "Did you enable location sharing?";
-		// Try HTML5 geolocation
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
-					longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
-				pos = new google.maps.LatLng(latitude, longitude),
-				mapOptions = {
-					zoom: 15,
-					center: pos,
-				},
-				map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-			}, function() {
-				alert(errorMsg);
-			});
-		} else {
-			// Browser doesn't support Geolocation
-			alert(errorMsg);
-		}
 		edit.isLocationShown = true;
 	}
-
-	// Just start a new one
-	animation.setConfirm(2);
+	// Update media index
+	edit.mediaIndex = index;
+	var errorMsg = "Did you enable location sharing?";
 	// Try HTML5 geolocation
-	searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
-	markers = [];
-
-	google.maps.event.clearListeners(searchBox, 'places_changed');
-	google.maps.event.addListener(searchBox, 'places_changed', function() {
-		var places = searchBox.getPlaces();
-		if (places != undefined && places.length == 0) {
-			return;
-		}
-		// Only care about the first result
-		var place = places[0],
-			bounds = new google.maps.LatLngBounds();
-		// Create a marker for each place.
-		if (markers[0]) {
-			markers[0].setMap(null);
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
+				longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
+			pos = new google.maps.LatLng(latitude, longitude),
+			mapOptions = {
+				zoom: 15,
+				center: pos,
+			},
+			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
+				searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
 			markers = [];
-		}
-		marker = new google.maps.Marker({
-			map: map,
-			title: place.name,
-			position: place.geometry.location
+
+			google.maps.event.clearListeners(searchBox, 'places_changed');
+			google.maps.event.addListener(searchBox, 'places_changed', function() {
+				var places = searchBox.getPlaces();
+				if (places != undefined && places.length == 0) {
+					return;
+				}
+				// Only care about the first result
+				var place = places[0],
+					bounds = new google.maps.LatLngBounds();
+				// Create a marker for each place.
+				if (markers[0]) {
+					markers[0].setMap(null);
+					markers = [];
+				}
+				marker = new google.maps.Marker({
+					map: map,
+					title: place.name,
+					position: place.geometry.location
+				});
+				marker.setMap(map);
+				markers.push(marker);
+				map.setZoom(16);
+				map.setCenter(place.geometry.location);
+				$(selectorHeader + ".latitude").val(place.geometry.location.lat());
+				$(selectorHeader + ".longitude").val(place.geometry.location.lng());
+			});
+
+			// Bias the SearchBox results towards places that are within the bounds of the
+			// current map's viewport.
+			google.maps.event.addListener(map, 'bounds_changed', function() {
+				var bounds = map.getBounds();
+				searchBox.setBounds(bounds);
+			});
+
+			// Press enter to search
+			$("#attach-area .place .desc").keyup(function(n) {
+				if (n.keyCode == 13) {
+					var latitude = parseFloat($(selectorHeader + ".latitude").val()),
+						longitude = parseFloat($(selectorHeader + ".longitude").val());
+					if (isNaN(latitude)) {
+						$(selectorHeader + ".latitude").effect("highlight", { color: "#8d8d8d" });
+						return;
+					}
+					if (isNaN(longitude)) {
+						$(selectorHeader + ".longitude").effect("highlight", { color: "#8d8d8d" });
+						return;
+					}
+					pos = new google.maps.LatLng(latitude, longitude);
+					edit.locationGeocode(pos);
+				}
+			});
+		}, function() {
+			alert(errorMsg);
 		});
-		marker.setMap(map);
-		markers.push(marker);
-		map.setZoom(16);
-		map.setCenter(place.geometry.location);
-		$(selectorHeader + ".latitude").val(place.geometry.location.lat());
-		$(selectorHeader + ".longitude").val(place.geometry.location.lng());
-	});
-
-	// Bias the SearchBox results towards places that are within the bounds of the
-	// current map's viewport.
-	google.maps.event.addListener(map, 'bounds_changed', function() {
-		var bounds = map.getBounds();
-		searchBox.setBounds(bounds);
-	});
-
-	// Press enter to search
-	$("#attach-area .place .desc").keyup(function(n) {
-		if (n.keyCode == 13) {
-			var latitude = parseFloat($(selectorHeader + ".latitude").val()),
-				longitude = parseFloat($(selectorHeader + ".longitude").val());
-			if (isNaN(latitude)) {
-				$(selectorHeader + ".latitude").effect("highlight", { color: "#8d8d8d" });
-				return;
-			}
-			if (isNaN(longitude)) {
-				$(selectorHeader + ".longitude").effect("highlight", { color: "#8d8d8d" });
-				return;
-			}
-			pos = new google.maps.LatLng(latitude, longitude);
-			edit.locationGeocode(pos);
-		}
-	});
+	} else {
+		// Browser doesn't support Geolocation
+		alert(errorMsg);
+	}
 
 	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
@@ -784,8 +782,6 @@ edit.location = function(index) {
 			edit.location(edit.mediaIndex);
 		}
 	});
-	// Update media index
-	edit.mediaIndex = index;
 }
 
 /* Save the location and collapse the panal */

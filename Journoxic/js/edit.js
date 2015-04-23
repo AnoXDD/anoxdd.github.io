@@ -696,85 +696,85 @@ edit.location = function(index) {
 		// Show the location menu
 		var errorMsg = "Did you enable location sharing?",
 			pos;
-			edit.map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
 
 		edit.isLocationShown = true;
 	}
 
-		// Just start a new one
-		animation.setConfirm(2);
-				// Try HTML5 geolocation
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
-					longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
-				pos = new google.maps.LatLng(latitude, longitude),
-				mapOptions = {
-					zoom: 15,
-					center: pos,
-				},
-				searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
-				markers = [];
-				
-				google.maps.event.clearListeners(searchBox, 'places_changed');
-				google.maps.event.addListener(searchBox, 'places_changed', function() {
-					var places = searchBox.getPlaces();
-					if (places != undefined && places.length == 0) {
+	// Just start a new one
+	animation.setConfirm(2);
+	// Try HTML5 geolocation
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
+				longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
+			pos = new google.maps.LatLng(latitude, longitude),
+			mapOptions = {
+				zoom: 15,
+				center: pos,
+			},
+			searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
+			markers = [];
+			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
+
+			google.maps.event.clearListeners(searchBox, 'places_changed');
+			google.maps.event.addListener(searchBox, 'places_changed', function() {
+				var places = searchBox.getPlaces();
+				if (places != undefined && places.length == 0) {
+					return;
+				}
+				// Only care about the first result
+				var place = places[0],
+					bounds = new google.maps.LatLngBounds();
+				// Create a marker for each place.
+				if (markers[0]) {
+					markers[0].setMap(null);
+					markers = [];
+				}
+				marker = new google.maps.Marker({
+					map: map,
+					title: place.name,
+					position: place.geometry.location
+				});
+				marker.setMap(map);
+				markers.push(marker);
+				map.setZoom(16);
+				map.setCenter(place.geometry.location);
+				$(selectorHeader + ".latitude").val(place.geometry.location.lat());
+				$(selectorHeader + ".longitude").val(place.geometry.location.lng());
+			});
+
+			// Bias the SearchBox results towards places that are within the bounds of the
+			// current map's viewport.
+			google.maps.event.addListener(map, 'bounds_changed', function() {
+				var bounds = map.getBounds();
+				searchBox.setBounds(bounds);
+			});
+
+			// Press enter to search
+			$("#attach-area .place .desc").keyup(function(n) {
+				if (n.keyCode == 13) {
+					var latitude = parseFloat($(selectorHeader + ".latitude").val()),
+						longitude = parseFloat($(selectorHeader + ".longitude").val());
+					if (isNaN(latitude)) {
+						$(selectorHeader + ".latitude").effect("highlight", { color: "#8d8d8d" });
 						return;
 					}
-					// Only care about the first result
-					var place = places[0],
-						bounds = new google.maps.LatLngBounds();
-					// Create a marker for each place.
-					if (markers[0]) {
-						markers[0].setMap(null);
-						markers = [];
+					if (isNaN(longitude)) {
+						$(selectorHeader + ".longitude").effect("highlight", { color: "#8d8d8d" });
+						return;
 					}
-					marker = new google.maps.Marker({
-						map: edit.map,
-						title: place.name,
-						position: place.geometry.location
-					});
-					marker.setMap(edit.map);
-					markers.push(marker);
-					edit.map.setZoom(16);
-					edit.map.setCenter(place.geometry.location);
-					$(selectorHeader + ".latitude").val(place.geometry.location.lat());
-					$(selectorHeader + ".longitude").val(place.geometry.location.lng());
-				});
-
-				// Bias the SearchBox results towards places that are within the bounds of the
-				// current map's viewport.
-				google.maps.event.addListener(edit.map, 'bounds_changed', function() {
-					var bounds = edit.map.getBounds();
-					searchBox.setBounds(bounds);
-				});
-
-				// Press enter to search
-				$("#attach-area .place .desc").keyup(function(n) {
-					if (n.keyCode == 13) {
-						var latitude = parseFloat($(selectorHeader + ".latitude").val()),
-							longitude = parseFloat($(selectorHeader + ".longitude").val());
-						if (isNaN(latitude)) {
-							$(selectorHeader + ".latitude").effect("highlight", { color: "#8d8d8d" });
-							return;
-						}
-						if (isNaN(longitude)) {
-							$(selectorHeader + ".longitude").effect("highlight", { color: "#8d8d8d" });
-							return;
-						}
-						pos = new google.maps.LatLng(latitude, longitude);
-						edit.locationGeocode(pos);
-					}
-				});
-
-			}, function() {
-				alert(errorMsg);
+					pos = new google.maps.LatLng(latitude, longitude);
+					edit.locationGeocode(pos);
+				}
 			});
-		} else {
-			// Browser doesn't support Geolocation
+
+		}, function() {
 			alert(errorMsg);
-		}
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		alert(errorMsg);
+	}
 	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
 	// Avoid accidentally click

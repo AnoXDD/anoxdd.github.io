@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2313,12 +2313,12 @@ body {
 		}
 
 #edit-pane #map-holder {
-    display: none;
-    position: relative;
+	display: none;
+	position: relative;
 	
-    top: -webkit-calc(-100% + 45px);
-    height: -webkit-calc(100% - 48px);
-    width: -webkit-calc(100% + 5px);
+	top: -webkit-calc(-100% + 45px);
+	height: -webkit-calc(100% - 48px);
+	width: -webkit-calc(100% + 5px);
 }
 
 #edit-pane #map-selector {

@@ -439,7 +439,7 @@ edit.addMedia = function(type) {
 	switch (type) {
 		case 2:
 			edit.mediaIndex = $("#attach-area .place").length;
-			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title" autocomplete="off" id="place-search"/><input disabled title="Latitude" class="desc" autocomplete="off" id="latitude" /><p>,</p><input disabled title="Longitude" class="desc" autocomplete="off" id="longitude" /></a></div>';
+			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
 			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (edit.mediaIndex - 1) + ")"));
 			break;
 		default:
@@ -697,14 +697,14 @@ edit.location = function(index) {
 		// Try HTML5 geolocation
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
-				var latitude = parseFloat($(selectorHeader + "#latitude").val()) || position.coords.latitude,
-					longitude = parseFloat($(selectorHeader + "#longitude").val()) || position.coords.longitude;
+				var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
+					longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
 				pos = new google.maps.LatLng(latitude, longitude),
 				mapOptions = {
 					zoom: 15,
 					center: pos,
 				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
-				searchBox = new google.maps.places.SearchBox(document.getElementById('place-search')[edit.mediaIndex]),
+				searchBox = new google.maps.places.SearchBox(document.getElementByClass('place-search')[edit.mediaIndex]),
 				markers = [];
 
 				google.maps.event.addListener(searchBox, 'places_changed', function() {
@@ -729,8 +729,8 @@ edit.location = function(index) {
 					markers.push(marker);
 					map.setZoom(16);
 					map.setCenter(place.geometry.location);
-					$(selectorHeader + "#latitude").val(place.geometry.location.lat());
-					$(selectorHeader + "#longitude").val(place.geometry.location.lng());
+					$(selectorHeader + ".latitude").val(place.geometry.location.lat());
+					$(selectorHeader + ".longitude").val(place.geometry.location.lng());
 				});
 
 				// Bias the SearchBox results towards places that are within the bounds of the
@@ -743,14 +743,14 @@ edit.location = function(index) {
 				// Press enter to search
 				$("#attach-area .place .desc").keyup(function(n) {
 					if (n.keyCode == 13) {
-						var latitude = parseFloat($(selectorHeader + "#latitude").val()),
-							longitude = parseFloat($(selectorHeader + "#longitude").val());
+						var latitude = parseFloat($(selectorHeader + ".latitude").val()),
+							longitude = parseFloat($(selectorHeader + ".longitude").val());
 						if (isNaN(latitude)) {
-							$(selectorHeader + "#latitude").effect("highlight", { color: "#8d8d8d" });
+							$(selectorHeader + ".latitude").effect("highlight", { color: "#8d8d8d" });
 							return;
 						}
 						if (isNaN(longitude)) {
-							$(selectorHeader + "#longitude").effect("highlight", { color: "#8d8d8d" });
+							$(selectorHeader + ".longitude").effect("highlight", { color: "#8d8d8d" });
 							return;
 						}
 						pos = new google.maps.LatLng(latitude, longitude);
@@ -787,8 +787,8 @@ edit.locationSave = function(index) {
 	// TODO change to fix each location
 	var data = localStorage["place"],
 		selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ",
-		latitude = parseInt($(selectorHeader + "#latitude").val()),
-		longitude = parseInt($(selectorHeader + "#longitude").val()),
+		latitude = parseInt($(selectorHeader + ".latitude").val()),
+		longitude = parseInt($(selectorHeader + ".longitude").val()),
 		newElem = {};
 	if (!data)
 		data = [];
@@ -816,8 +816,8 @@ edit.locationPin = function() {
 				longitude = position.coords.longitude,
 				pos = new google.maps.LatLng(latitude, longitude);
 			// Set on the input box
-			$(selectorHeader + "#latitude").val(latitude);
-			$(selectorHeader + "#longitude").val(longitude);
+			$(selectorHeader + ".latitude").val(latitude);
+			$(selectorHeader + ".longitude").val(longitude);
 			edit.locationGeocode(pos);
 		}, function() {
 			alert(errorMsg);

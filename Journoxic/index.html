@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.40 Build 042215_2307</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.40 Build 042215_2317</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -376,13 +376,13 @@
 			<div class="place">
 				<a title="Edit" onclick="edit.location(<%- i %>)" href="#">
 					<div class="thumb"></div>
-					<input disabled title="Place" class="title" id="place-search" autocomplete="off" value="<%- place[i].title %>" />
+					<input disabled title="Place" class="title place-search" autocomplete="off" value="<%- place[i].title %>" />
 					<%
 					if (place[i].latitude) {
 					%>
-					<input disabled title="Latitude" class="desc" id="latitude" autocomplete="off" value="<%- place[i].latitude %>" />
+					<input disabled title="Latitude" class="desc latitude" autocomplete="off" value="<%- place[i].latitude %>" />
 					<p>,</p>
-					<input disabled title="Longitude" class="desc" id="longitude" autocomplete="off" value="<%- place[i].longitude %>" />
+					<input disabled title="Longitude" class="desc longitude" autocomplete="off" value="<%- place[i].longitude %>" />
 					<%
 					} else {
 					%>

@@ -9,6 +9,7 @@ edit.currentEditing = -1;
 edit.mediaIndex = -1;
 
 edit.isLocationShown = false;
+edit.map;
 
 edit.localChange = [];
 
@@ -690,14 +691,19 @@ edit.location = function(index) {
 			edit.mediaIndex = index;
 		}
 	} else {
-		// Just start a new one
-		animation.setConfirm(2);
 		// Spread map-selector
 		$("#map-holder").fadeIn();
 		// Show the location menu
 		var errorMsg = "Did you enable location sharing?",
 			pos;
-		// Try HTML5 geolocation
+			edit.map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
+
+		edit.isLocationShown = true;
+	}
+
+		// Just start a new one
+		animation.setConfirm(2);
+				// Try HTML5 geolocation
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
 				var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
@@ -706,13 +712,14 @@ edit.location = function(index) {
 				mapOptions = {
 					zoom: 15,
 					center: pos,
-				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
+				},
 				searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
 				markers = [];
-
+				
+				google.maps.event.clearListeners(searchBox, 'places_changed');
 				google.maps.event.addListener(searchBox, 'places_changed', function() {
 					var places = searchBox.getPlaces();
-					if (!places && places.length == 0) {
+					if (places != undefined && places.length == 0) {
 						return;
 					}
 					// Only care about the first result
@@ -724,22 +731,22 @@ edit.location = function(index) {
 						markers = [];
 					}
 					marker = new google.maps.Marker({
-						map: map,
+						map: edit.map,
 						title: place.name,
 						position: place.geometry.location
 					});
-					marker.setMap(map);
+					marker.setMap(edit.map);
 					markers.push(marker);
-					map.setZoom(16);
-					map.setCenter(place.geometry.location);
+					edit.map.setZoom(16);
+					edit.map.setCenter(place.geometry.location);
 					$(selectorHeader + ".latitude").val(place.geometry.location.lat());
 					$(selectorHeader + ".longitude").val(place.geometry.location.lng());
 				});
 
 				// Bias the SearchBox results towards places that are within the bounds of the
 				// current map's viewport.
-				google.maps.event.addListener(map, 'bounds_changed', function() {
-					var bounds = map.getBounds();
+				google.maps.event.addListener(edit.map, 'bounds_changed', function() {
+					var bounds = edit.map.getBounds();
 					searchBox.setBounds(bounds);
 				});
 
@@ -768,9 +775,6 @@ edit.location = function(index) {
 			// Browser doesn't support Geolocation
 			alert(errorMsg);
 		}
-		edit.isLocationShown = true;
-	}
-
 	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
 	// Avoid accidentally click
@@ -790,8 +794,8 @@ edit.locationSave = function(index) {
 	// TODO change to fix each location
 	var data = localStorage["place"],
 		selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ",
-		latitude = parseInt($(selectorHeader + ".latitude").val()),
-		longitude = parseInt($(selectorHeader + ".longitude").val()),
+		latitude = parseFloat($(selectorHeader + ".latitude").val()),
+		longitude = parseFloat($(selectorHeader + ".longitude").val()),
 		newElem = {};
 	if (!data)
 		data = [];

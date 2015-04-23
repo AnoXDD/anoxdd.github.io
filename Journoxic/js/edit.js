@@ -439,7 +439,7 @@ edit.addMedia = function(type) {
 	switch (type) {
 		case 2:
 			edit.mediaIndex = $("#attach-area .place").length;
-			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><input disabled title="Latitude" class="desc" id="latitude" /><p>,</p><input disabled title="Longitude" class="desc" id="longitude" /></a></div>';
+			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title" id="place-search"/><input disabled title="Latitude" class="desc" id="latitude" /><p>,</p><input disabled title="Longitude" class="desc" id="longitude" /></a></div>';
 			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (edit.mediaIndex - 1) + ")"));
 			break;
 		default:
@@ -826,7 +826,8 @@ edit.locationGeocode = function(pos) {
 	marker = new google.maps.Marker({
 		map: map,
 		position: pos
-	});
+	}),
+	selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	// Set on the map
 	map.setCenter(pos);
 	// Reverse geocoding to get current address
@@ -834,7 +835,7 @@ edit.locationGeocode = function(pos) {
 	geocoder.geocode({ 'latLng': pos }, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			if (results[0])
-				$("#attach-area .place .title").val(results[0].formatted_address);
+				$(selectorHeader + ".title").val(results[0].formatted_address);
 			else
 				alert('No results found');
 		} else {

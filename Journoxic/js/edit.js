@@ -442,6 +442,7 @@ edit.addMedia = function(type) {
 			edit.mediaIndex = $("#attach-area .place").length;
 			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
 			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (edit.mediaIndex - 1) + ")"));
+			edit.location(edit.mediaIndex);
 			break;
 		default:
 
@@ -692,10 +693,10 @@ edit.location = function(index) {
 			selectorHeader = "#attach-area .place:eq(" + index + ") ";
 		}
 	} else {
-		// Spread map-selector
-		$("#map-holder").fadeIn();
 		edit.isLocationShown = true;
 	}
+			// Spread map-selector
+		$("#map-holder").fadeIn();
 	// Update media index
 	edit.mediaIndex = index;
 	var errorMsg = "Did you enable location sharing?";
@@ -716,7 +717,7 @@ edit.location = function(index) {
 			google.maps.event.clearListeners(searchBox, 'places_changed');
 			google.maps.event.addListener(searchBox, 'places_changed', function() {
 				var places = searchBox.getPlaces();
-				if (places != undefined && places.length == 0) {
+				if (places == undefined && places.length == 0) {
 					return;
 				}
 				// Only care about the first result

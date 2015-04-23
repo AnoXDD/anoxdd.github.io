@@ -30,6 +30,14 @@ animation.setConfirm = function(name) {
 	if (name == edit.confirmName) {
 		// Do not need to follow the steps below, just toggle it
 		animation.toggleIcon("#confirm");
+		if (typeof (name) == "number") {
+			switch (name) {
+				case 2:
+					// Place
+					animation.toggleIcon("#pin-point");
+					break;
+			}
+		} 
 		return;
 	}
 	// Start a new one

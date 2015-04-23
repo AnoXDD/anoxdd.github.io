@@ -786,18 +786,19 @@ edit.location = function(index) {
 edit.locationSave = function(index) {
 	// TODO change to fix each location
 	var data = localStorage["place"],
-		latitude = parseInt($("#latitude").val()),
-		longitude = parseInt($("#longitude").val()),
+		selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ",
+		latitude = parseInt($(selectorHeader + "#latitude").val()),
+		longitude = parseInt($(selectorHeader + "#longitude").val()),
 		newElem = {};
 	if (!data)
 		data = [];
 	else
 		data = JSON.parse(data);
-	newElem["title"] = $("#attach-area .place .title").val();
+	newElem["title"] = $(selectorHeader + ".title").val();
 	// Test if both latitude and longitude are valid 
 	if (!isNaN(latitude) && !isNaN(longitude)) {
-		newElem["latitude"] = $("#latitude").val();
-		newElem["longitude"] = $("#longitude").val();
+		newElem["latitude"] = latitude;
+		newElem["longitude"] = longitude;
 	}
 	// Update the data
 	data[index] = newElem;

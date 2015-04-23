@@ -33,38 +33,39 @@ animation.setConfirm = function(name) {
 		return;
 	}
 	// Start a new one
-	animation.hideIcon(".entry-option");
-	var title;
-	// Change how it looks
-	if (typeof (name) == "number") {
-		$("#confirm").html("&#xE106");
-		title = "Remove this medium";
-		switch (name) {
-			case 2:
-				// Place
-				animation.showIcon("#pin-point");
-				break;
+	animation.hideIcon(".entry-option", function() {
+		var title;
+		// Change how it looks
+		if (typeof (name) == "number") {
+			$("#confirm").html("&#xE106");
+			title = "Remove this medium";
+			switch (name) {
+				case 2:
+					// Place
+					animation.showIcon("#pin-point");
+					break;
+			}
+		} else {
+			$("#confirm").html("&#xE10B");
 		}
-	} else {
-		$("#confirm").html("&#xE10B");
-	}
-	animation.showIcon("#confirm");
-	if (name == "delete") {
-		title = "Confirm to remove this entry";
-	} else if (name == "discard") {
-		title = "Discard this entry";
-	} else if (name == "add") {
-		title = "Overwrite saved data to create a new entry"
-	} else if (name == "edit") {
-		title = "Overwrite saved data to edit this entry"
-	} else if (name == "save") {
-		title = "Save entry";
-	}
-	if (title == undefined)
-		// Not a valid call
-		return;
-	$("#confirm").css("title", title);
-	edit.confirmName = name;
+		animation.showIcon("#confirm");
+		if (name == "delete") {
+			title = "Confirm to remove this entry";
+		} else if (name == "discard") {
+			title = "Discard this entry";
+		} else if (name == "add") {
+			title = "Overwrite saved data to create a new entry"
+		} else if (name == "edit") {
+			title = "Overwrite saved data to edit this entry"
+		} else if (name == "save") {
+			title = "Save entry";
+		}
+		if (title == undefined)
+			// Not a valid call
+			return;
+		$("#confirm").css("title", title);
+		edit.confirmName = name;
+	});
 }
 
 /* Return undefined if it is not shown */

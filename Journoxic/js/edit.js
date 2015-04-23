@@ -662,6 +662,8 @@ edit.convertTime = function(time) {
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
+	if (edit.mediaIndex == -1)
+		edit.mediaIndex = index;
 	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	if (edit.isLocationShown) {
 		// To collapse the current menu anyway
@@ -671,7 +673,7 @@ edit.location = function(index) {
 		$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
 		// Save data by default
 		edit.locationSave(edit.mediaIndex);
-		if (index == edit.mediaIndex) {
+		if (index == edit.mediaIndex || index == undefined) {
 			// Yes, collapse the current menu
 			$("#edit-pane").off("keyup");
 			// Hide all the options button
@@ -685,6 +687,7 @@ edit.location = function(index) {
 		} else {
 			// Start a map-selector for another entry
 			selectorHeader = "#attach-area .place:eq(" + index + ") ";
+			edit.mediaIndex = index;
 		}
 	} else {
 		// Just start a new one
@@ -704,7 +707,7 @@ edit.location = function(index) {
 					zoom: 15,
 					center: pos,
 				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
-				searchBox = new google.maps.places.SearchBox(document.getElementByClass('place-search')[edit.mediaIndex]),
+				searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
 				markers = [];
 
 				google.maps.event.addListener(searchBox, 'places_changed', function() {
@@ -775,7 +778,7 @@ edit.location = function(index) {
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
 		if (n.keyCode == 27) {
-			edit.location(index);
+			edit.location(edit.mediaIndex);
 		}
 	});
 	// Update media index

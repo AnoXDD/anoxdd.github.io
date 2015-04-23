@@ -439,7 +439,7 @@ edit.addMedia = function(type) {
 	switch (type) {
 		case 2:
 			edit.mediaIndex = $("#attach-area .place").length;
-			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title" id="place-search"/><input disabled title="Latitude" class="desc" id="latitude" /><p>,</p><input disabled title="Longitude" class="desc" id="longitude" /></a></div>';
+			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title" autocomplete="off" id="place-search"/><input disabled title="Latitude" class="desc" autocomplete="off" id="latitude" /><p>,</p><input disabled title="Longitude" class="desc" autocomplete="off" id="longitude" /></a></div>';
 			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (edit.mediaIndex - 1) + ")"));
 			break;
 		default:
@@ -664,36 +664,33 @@ edit.convertTime = function(time) {
 edit.location = function(index) {
 	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	if (edit.isLocationShown) {
-		// Collapse menu
-		$("#edit-pane").off("keyup");
-		// Hide all the options button
-		animation.hideIcon(".entry-option");
-		// Save data by default
-		edit.locationSave(edit.mediaIndex);
-		// Remove the contents
-		$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
+		// To collapse the current menu anyway
 		// Disable input boxes
 		$(selectorHeader + "input").prop("disabled", true);
 		// Recover onclick event
 		$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
-		edit.mediaIndex = -1;
+		// Save data by default
+		edit.locationSave(edit.mediaIndex);
+		if (index == edit.mediaIndex) {
+			// Yes, collapse the current menu
+			$("#edit-pane").off("keyup");
+			// Hide all the options button
+			animation.hideIcon(".entry-option");
+			// Remove the contents
+			$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
+			edit.mediaIndex = -1;
+			edit.isLocationShown = false;
+			// Avoid following general stuffs for other conditions
+			return;
+		} else {
+			// Start a map-selector for another entry
+			selectorHeader = "#attach-area .place:eq(" + index + ") ";
+		}
 	} else {
-		// Show menu
-		edit.mediaIndex = index;
+		// Just start a new one
 		animation.setConfirm(2);
-		// Enable input boxes
-		$(selectorHeader + "input").prop("disabled", false);
-		// Avoid accidentally click
-		$(selectorHeader + "a").removeAttr("onclick");
 		// Spread map-selector
 		$("#map-holder").fadeIn();
-		// Press esc to save
-		$("#edit-pane").keyup(function(n) {
-			if (n.keyCode == 27) {
-				edit.location();
-			}
-		});
-
 		// Show the location menu
 		var errorMsg = "Did you enable location sharing?",
 			pos;
@@ -707,7 +704,7 @@ edit.location = function(index) {
 					zoom: 15,
 					center: pos,
 				}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
-				searchBox = new google.maps.places.SearchBox((document.getElementById('place-search'))),
+				searchBox = new google.maps.places.SearchBox(document.getElementById('place-search')[edit.mediaIndex]),
 				markers = [];
 
 				google.maps.event.addListener(searchBox, 'places_changed', function() {
@@ -768,14 +765,25 @@ edit.location = function(index) {
 			// Browser doesn't support Geolocation
 			alert(errorMsg);
 		}
-
+		edit.isLocationShown = true;
 	}
-	edit.isLocationShown = !edit.isLocationShown;
+
+	// Enable input boxes
+	$(selectorHeader + "input").prop("disabled", false);
+	// Avoid accidentally click
+	$(selectorHeader + "a").removeAttr("onclick");
+	// Press esc to save
+	$("#edit-pane").keyup(function(n) {
+		if (n.keyCode == 27) {
+			edit.location(index);
+		}
+	});
+
 }
 
 /* Save the location and collapse the panal */
 edit.locationSave = function(index) {
-	// TODO save to cache
+	// TODO change to fix each location
 	var data = localStorage["place"],
 		latitude = parseInt($("#latitude").val()),
 		longitude = parseInt($("#longitude").val()),
@@ -797,7 +805,8 @@ edit.locationSave = function(index) {
 
 edit.locationPin = function() {
 	// Show the location menu
-	var errorMsg = "Did you enable location sharing?";
+	var errorMsg = "Did you enable location sharing?",
+		selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -805,8 +814,8 @@ edit.locationPin = function() {
 				longitude = position.coords.longitude,
 				pos = new google.maps.LatLng(latitude, longitude);
 			// Set on the input box
-			$("#latitude").val(latitude);
-			$("#longitude").val(longitude);
+			$(selectorHeader + "#latitude").val(latitude);
+			$(selectorHeader + "#longitude").val(longitude);
 			edit.locationGeocode(pos);
 		}, function() {
 			alert(errorMsg);

@@ -1,4 +1,4 @@
-/* The script for editing anything */
+﻿/* The script for editing anything */
 
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
@@ -119,7 +119,7 @@ edit.init = function(overwrite, index) {
 		var elem = ["music", "book", "movie"];
 		for (var i = 0; i != elem.length; ++i) {
 			var medium = elem[i];
-			for (var j = 0; j != $("#attach-area ."+medium).length; ++j) {
+			for (var j = 0; j != $("#attach-area ." + medium).length; ++j) {
 				var selectorHeader = edit.getSelectorHeader(medium, j),
 					term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
 				getCoverPhoto(selectorHeader, term, false, medium);
@@ -174,9 +174,6 @@ edit.quit = function(save) {
 	if (save) {
 		// Save to local contents
 		edit.save();
-		edit.sortArchive();
-		journal.archive.data = edit.minData();
-		edit.saveDataCache();
 	}
 	edit.removalList = {};
 	// Set everything to initial state
@@ -200,6 +197,9 @@ edit.save = function(response) {
 	var index = edit.find(localStorage["created"]);
 	edit.processRemovalList();
 	edit.exportCache(index);
+	edit.sortArchive();
+	journal.archive.data = edit.minData();
+	edit.saveDataCache();
 	if (response)
 		// Show finish animation
 		animation.finished("#add-save-local");
@@ -347,6 +347,8 @@ edit.cleanEditCache = function() {
 	delete localStorage["textTags"];
 	delete localStorage["place"];
 	delete localStorage["music"];
+	delete localStorage["movie"];
+	delete localStorage["book"];
 }
 
 /* Save the entire journal.archive.data to cache after minimizing it */
@@ -505,6 +507,18 @@ edit.addMedia = function(typeNum) {
 			$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
 			edit.music(length);
 			break;
+		case 5:
+			// Movie
+			var htmlContent = '<div class="movie"><a title="Edit" onclick="edit.movie(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Movie title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Director" autocomplete="off" onclick="this.select()" /></a></div>';
+			$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
+			edit.movie(length);
+			break;
+		case 6:
+			// Book
+			var htmlContent = '<div class="book"><a title="Edit" onclick="edit.book(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Book title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Author" autocomplete="off" onclick="this.select()" /></a></div>'
+			$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
+			edit.book(length);
+			break;
 		default:
 
 	}
@@ -512,26 +526,8 @@ edit.addMedia = function(typeNum) {
 
 edit.removeMedia = function(typeNum) {
 	var selectorHeader = edit.getSelectorHeader(typeNum);
+	$(selectorHeader).fadeOut();
 	edit.addToRemovalList(edit.mediaName(typeNum));
-	// The hide function will be called at edit.cleanupMediaEdit()
-	switch (typeNum) {
-		case 2:
-			// Place
-			// Hide current div
-			$(selectorHeader).fadeOut();
-			break;
-		case 4:
-			// Music
-			break;
-		case 5:
-			// Movie
-			break;
-		case 6:
-			// Book
-			break;
-		default:
-
-	}
 	edit.cleanupMediaEdit();
 }
 
@@ -872,7 +868,7 @@ edit.location = function(index) {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
-	edit.isEditing = "place";
+	edit.isEditing = 2;
 
 	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
@@ -1069,10 +1065,10 @@ edit.itunesHide = function(typeNum) {
 
 edit.itunesSave = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
-		data = localStorage[type],
-	selectorHeader = edit.getSelectorHeader(type, index),
-	title = $(selectorHeader + ".title").val(),
-	author = $(selectorHeader + ".desc").val();
+	data = localStorage[type],
+selectorHeader = edit.getSelectorHeader(type, index),
+title = $(selectorHeader + ".title").val(),
+author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,

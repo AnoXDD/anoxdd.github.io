@@ -1,4 +1,4 @@
-﻿/* The script for editing anything */
+/* The script for editing anything */
 
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
@@ -207,10 +207,10 @@ edit.save = function(response) {
 
 /* Process removal list to do the final cleanup of contents */
 edit.processRemovalList = function() {
-	for (var key = 0; key != edit.removalList.length; ++key) {
+	for (var key = 0; key < edit.removalList.length; ++key) {
 		if (localStorage[key]) {
 			var data = JSON.parse(localStorage[key]);
-			for (var i = 0; i != edit.removalList[key].length; ++i) {
+			for (var i = 0; i < edit.removalList[key].length; ++i) {
 				data.splice(edit.removalList[key][i], 1);
 			}
 			localStorage[key] = JSON.stringify(data);

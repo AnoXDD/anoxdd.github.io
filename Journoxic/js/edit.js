@@ -279,7 +279,7 @@ edit.exportCache = function(index) {
 	data["textTags"] = localStorage["textTags"];
 	var media,
 		elem = ["place", "music", "book", "movie"];
-	for (var i = 0; i != elem.length; ++i) {
+	for (var i = 0; i < elem.length; ++i) {
 		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : i;
 		for (var j = 0; j < media.length; ++j) {
 			if (!media[j] || media[j]["title"] == "")

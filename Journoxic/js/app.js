@@ -1,4 +1,4 @@
-﻿//(function(window, $) {
+//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -342,7 +342,7 @@ app.list.prototype = {
 		/* The elements of all the filter */
 		var elements = filter.toLowerCase().split(" ");
 		// Iterate for all the elements
-		for (var key = 0, len = element.length; key != len; ++key) {
+		for (var key = 0, len = elements.length; key < len; ++key) {
 			var element = elements[key].split("|"),
 				found = false;
 			console.log("\t\t> Testing " + element);

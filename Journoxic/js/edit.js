@@ -147,7 +147,7 @@ edit.quit = function(save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	edit.mediaIndex = -1;
-	edit.removalList = {};
+	edit.localChange = [];
 	if (save) {
 		// Save to local contents
 		edit.save();
@@ -155,7 +155,7 @@ edit.quit = function(save) {
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
 	}
-	edit.localChange = [];
+	edit.removalList = {};
 	// Map selector toggle
 	if (edit.isLocationShown)
 		edit.locationHide();
@@ -189,8 +189,9 @@ edit.processRemovalList = function() {
 		if (localStorage[key]) {
 			var data = JSON.parse(localStorage[key]);
 			for (value in edit.removalList[key]) {
-				data.splice(edit.removalList[key][value]);
+				data.splice(edit.removalList[key][value], 1);
 			}
+			localStorage[key] = JSON.stringify(data);
 		}
 	}
 }
@@ -477,6 +478,7 @@ edit.removeMedia = function(type) {
 			if (!edit.removalList["place"])
 				edit.removalList["place"] = [];
 			edit.removalList["place"].push(edit.mediaIndex);
+			edit.locationHide();
 			break;
 		default:
 
@@ -716,34 +718,33 @@ edit.location = function(index) {
 				center: pos,
 			};
 			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-			searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]);
+			searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName('place-search')[edit.mediaIndex], { types: ['geocode'] });
 			markers = [];
 
-			google.maps.event.clearListeners(searchBox, 'places_changed');
-			google.maps.event.addListener(searchBox, 'places_changed', function() {
-				var places = searchBox.getPlaces();
-				if (places == undefined && places.length == 0) {
-					return;
-				}
-				// Only care about the first result
-				var place = places[0],
+			google.maps.event.clearListeners(searchBox, 'place_changed');
+			google.maps.event.addListener(searchBox, 'place_changed', function() {
+				var place = searchBox.getPlace(),
 					bounds = new google.maps.LatLngBounds();
-				// Create a marker for each place.
-				if (markers[0]) {
-					markers[0].setMap(null);
-					markers = [];
+				if (!place) {
+					// Invalid input
+					animation.invalid(selectorHeader + ".place-search");
+				} else {
+					if (markers[0]) {
+						markers[0].setMap(null);
+						markers = [];
+					}
+					marker = new google.maps.Marker({
+						map: map,
+						title: place.name,
+						position: place.geometry.location
+					});
+					marker.setMap(map);
+					markers.push(marker);
+					map.setZoom(16);
+					map.setCenter(place.geometry.location);
+					$(selectorHeader + ".latitude").val(place.geometry.location.lat());
+					$(selectorHeader + ".longitude").val(place.geometry.location.lng());
 				}
-				marker = new google.maps.Marker({
-					map: map,
-					title: place.name,
-					position: place.geometry.location
-				});
-				marker.setMap(map);
-				markers.push(marker);
-				map.setZoom(16);
-				map.setCenter(place.geometry.location);
-				$(selectorHeader + ".latitude").val(place.geometry.location.lat());
-				$(selectorHeader + ".longitude").val(place.geometry.location.lng());
 			});
 
 			// Bias the SearchBox results towards places that are within the bounds of the
@@ -759,11 +760,11 @@ edit.location = function(index) {
 					var latitude = parseFloat($(selectorHeader + ".latitude").val()),
 						longitude = parseFloat($(selectorHeader + ".longitude").val());
 					if (isNaN(latitude)) {
-						$(selectorHeader + ".latitude").effect("highlight", { color: "#8d8d8d" });
+						animation.invalid(selectorHeader + ".latitude");
 						return;
 					}
 					if (isNaN(longitude)) {
-						$(selectorHeader + ".longitude").effect("highlight", { color: "#8d8d8d" });
+						animation.invalid(selectorHeader + ".longitude");
 						return;
 					}
 					pos = new google.maps.LatLng(latitude, longitude);
@@ -779,7 +780,7 @@ edit.location = function(index) {
 	}
 	edit.isLocationShown = true;
 
-	// Enable input boxes
+	// Enable input boxesf
 	$(selectorHeader + "input").prop("disabled", false);
 	// Avoid accidentally click
 	$(selectorHeader + "a").removeAttr("onclick");

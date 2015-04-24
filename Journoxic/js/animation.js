@@ -126,6 +126,10 @@ animation.deny = function(selector) {
 	}
 };
 
+animation.invalid = function(selector) {
+	$(selector).effect("highlight", { color: "#8d8d8d" });
+}
+
 function headerShowMenu(name) {
 	animation.hideIcon(".actions a");
 	if (name == "edit")

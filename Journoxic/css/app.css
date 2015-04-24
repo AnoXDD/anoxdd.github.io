@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2496,6 +2496,7 @@ body {
 #attach-area .place .desc {
 	display: inline-block;
 	width: 20%;
+	overflow: hidden;
 }
 
 #attach-area .place p {

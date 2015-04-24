@@ -154,7 +154,7 @@ edit.quit = function(save) {
 	}
 	// Map selector toggle
 	if (edit.isLocationShown)
-		edit.location();
+		edit.locationHide();
 	// Content processing
 	$(".header div").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
@@ -450,7 +450,7 @@ edit.addMedia = function(type) {
 }
 
 edit.removeMedia = function(type) {
-	var selectorHeader = "attach-area ." + edit.mediaName(type) + ":eq(" + edit.mediaIndex + ") ";
+	var selectorHeader = "#attach-area ." + edit.mediaName(type) + ":eq(" + edit.mediaIndex + ")";
 	switch (edit.confirmName) {
 		case 2:
 			// Place
@@ -507,7 +507,7 @@ edit.confirm = function() {
 		}
 	} else {
 		// Media removal
-		edit.removeMedia(2);
+		edit.removeMedia(edit.confirmName);
 	}
 }
 
@@ -675,54 +675,31 @@ edit.convertTime = function(time) {
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
-	if (edit.mediaIndex == -1)
-		edit.mediaIndex = index;
-	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
 	// Just start a new one
 	animation.setConfirm(2);
-	if (edit.isLocationShown) {
-		// To collapse the current menu anyway
-		// Disable input boxes
-		$(selectorHeader + "input").prop("disabled", true);
-		// Recover onclick event
-		$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
-		// Save data by default
-		edit.locationSave(edit.mediaIndex);
-		// Remove the contents
-		$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
-		$("#edit-pane").off("keyup");
-		if (index == edit.mediaIndex || index == undefined) {
-			// Yes, collapse the current menu
-			// Hide all the options button
-			animation.hideIcon(".entry-option");
-			edit.mediaIndex = -1;
-			edit.isLocationShown = false;
-			// Avoid following general stuffs for other conditions
-			return;
-		} else {
-			// Start a map-selector for another entry
-			selectorHeader = "#attach-area .place:eq(" + index + ") ";
-		}
-	} else {
-		edit.isLocationShown = true;
-	}
-	// Spread map-selector
-	$("#map-holder").fadeIn();
+	if (index == edit.mediaIndex || index == undefined)
+		return;
+	if (edit.mediaIndex != -1)
+		// Have to shutdown the map first
+		edit.locationHide();
 	// Update media index
 	edit.mediaIndex = index;
+	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+	// Spread map-selector
+	$("#map-holder").fadeIn();
 	var errorMsg = "Did you enable location sharing?";
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
 				longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
-			pos = new google.maps.LatLng(latitude, longitude),
+			pos = new google.maps.LatLng(latitude, longitude);
 			mapOptions = {
 				zoom: 15,
 				center: pos,
-			},
-			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
-				searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]),
+			};
+			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
+			searchBox = new google.maps.places.SearchBox(document.getElementsByClassName('place-search')[edit.mediaIndex]);
 			markers = [];
 
 			google.maps.event.clearListeners(searchBox, 'places_changed');
@@ -783,6 +760,7 @@ edit.location = function(index) {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
+	edit.isLocationShown = true;
 
 	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
@@ -791,9 +769,29 @@ edit.location = function(index) {
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
 		if (n.keyCode == 27) {
-			edit.location(edit.mediaIndex);
+			edit.locationHide();
 		}
 	});
+}
+
+edit.locationHide = function() {
+	if (edit.mediaIndex < 0)
+		// Invalid call
+		return;
+	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+	// Disable input boxes
+	$(selectorHeader + "input").prop("disabled", true);
+	// Recover onclick event
+	$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
+	// Save data by default
+	edit.locationSave(edit.mediaIndex);
+	// Remove the contents
+	$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
+	$("#edit-pane").off("keyup");
+	// Hide all the options button
+	animation.hideIcon(".entry-option");
+	edit.mediaIndex = -1;
+	edit.isLocationShown = false;
 }
 
 /* Save the location and collapse the panal */

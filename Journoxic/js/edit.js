@@ -6,9 +6,12 @@ edit.time = 0;
 edit.intervalId = -1;
 edit.confirmName = "";
 edit.currentEditing = -1;
-edit.mediaIndex = -1;
+
+edit.mediaIndex = {};
+edit.isEditing = {};
 
 edit.isLocationShown = false;
+edit.isMusicEditing = false;
 
 edit.removalList = {};
 
@@ -69,6 +72,24 @@ edit.init = function(overwrite, index) {
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;
+	edit.mediaIndex = {
+		place: -1,
+		music: -1,
+		book: -1,
+		movie: -1,
+		weblink: -1,
+		video: -1,
+		voice: -1
+	}
+	edit.isEditing = {
+		place: false,
+		music: false,
+		book: false,
+		movie: false,
+		weblnk: false,
+		video: false,
+		voice: false
+	}
 	// Add to cache, all the cache processing starts here
 	data = edit.importCache(data);
 	console.log(Object.keys(data));
@@ -146,7 +167,7 @@ edit.init = function(overwrite, index) {
 edit.quit = function(save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
-	edit.mediaIndex = -1;
+	edit.mediaIndex = {};
 	edit.localChange = [];
 	if (save) {
 		// Save to local contents
@@ -156,9 +177,8 @@ edit.quit = function(save) {
 		edit.saveDataCache();
 	}
 	edit.removalList = {};
-	// Map selector toggle
-	if (edit.isLocationShown)
-		edit.locationHide();
+	// Set everything to initial state
+	edit.cleanupMediaEdit();
 	// Content processing
 	$(".header div").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
@@ -231,9 +251,24 @@ edit.importCache = function(data) {
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
 	// place
 	if (localStorage["place"])
-		data["place"] = JSON.parse(localStorage["place"].replace(/null/g, ",").replace(/,,/g, ""));
+		data["place"] = JSON.parse(localStorage["place"]);
 	else
 		localStorage["place"] = data["place"] ? JSON.stringify(data["place"]) : "[]";
+	// music
+	if (localStorage["music"])
+		data["music"] = JSON.parse(localStorage["music"]);
+	else {
+		if (data["music"]) {
+			// Backup old thumbs if there are any to delete it later
+			for (elem in data["music"]) {
+				if (data["music"][elem]["thumb"])
+					data["music"][elem]["old_thumb"] = data["music"][elem]["thumb"];
+			}
+			localStorage["music"] = JSON.stringify(data["music"]);
+		} else {
+			localStorage["music"] = "[]";
+		}
+	}
 	// Return value
 	return data;
 }
@@ -252,7 +287,10 @@ edit.exportCache = function(index) {
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
 	// Place
-	data["place"] = JSON.parse(localStorage["place"].replace(/null/g, "").replace(/,,/g, ""));
+	data["place"] = JSON.parse(localStorage["place"]);
+	// Music
+	data["music"] = JSON.parse(localStorage["music"]);
+	// TODO add remove old-thumb
 	if (index < 0) {
 		// Create a new entry
 		journal.archive.data.push(data);
@@ -261,7 +299,6 @@ edit.exportCache = function(index) {
 		journal.archive.data[index] = data;
 		app.currentDisplayed = -1;
 	}
-
 }
 
 /* Read the cache and process start, created and end time from the text body */
@@ -312,6 +349,7 @@ edit.cleanEditCache = function() {
 	delete localStorage["iconTags"];
 	delete localStorage["textTags"];
 	delete localStorage["place"];
+	delete localStorage["music"];
 }
 
 /* Save the entire journal.archive.data to cache after minimizing it */
@@ -467,31 +505,57 @@ edit.addMedia = function(type) {
 	}
 }
 
-edit.removeMedia = function(type) {
-	var selectorHeader = "#attach-area ." + edit.mediaName(type) + ":eq(" + edit.mediaIndex + ")";
-	switch (edit.confirmName) {
+edit.removeMedia = function(typeNum) {
+	var selectorHeader = edit.getSelectorHeader(typeNum);
+	edit.addToRemovalList(edit.mediaName(typeNum));
+	switch (typeNum) {
 		case 2:
 			// Place
 			// Clear the html
 			$(selectorHeader).fadeOut();
 			// Add to removal list
-			if (!edit.removalList["place"])
-				edit.removalList["place"] = [];
-			edit.removalList["place"].push(edit.mediaIndex);
 			edit.locationHide();
+			break;
+		case 5:
+			// Music
+			// Add to removal list
+			if (!edit.removalList["music"])
+				edit.removalList["music"] = [];
+			edit.removalList["music"].push(edit.mediaIndex["music"]);
+			edit.musicHide();
 			break;
 		default:
 
 	}
 }
 
+edit.addToRemovalList = function(name) {
+	if (!edit.removalList[name])
+		edit.removalList[name] = [];
+	edit.removalList[name].push(edit.mediaIndex[name]);
+}
+
 /* Get the name of media by value */
 edit.mediaName = function(type) {
 	switch (type) {
+		case 0:
+			return "photo";
+		case 1:
+			return "video";
 		case 2:
 			return "place";
+		case 3:
+			return "voice";
+		case 4:
+			return "music";
+		case 5:
+			return "movie";
+		case 6:
+			return "book";
+		case 7:
+			return "link";
 		default:
-
+			return "";
 	}
 }
 
@@ -528,6 +592,24 @@ edit.confirm = function() {
 		// Media removal
 		edit.removeMedia(edit.confirmName);
 	}
+}
+
+/* Get ready for next editing */
+edit.cleanupMediaEdit = function() {
+	$("#edit-pane").off("keyup");
+	if (edit.isEditing["place"])
+		// Have to shutdown the map first
+		edit.locationHide();
+	if (edit.isEditing["music"])
+		edit.musicHide();
+
+}
+
+/* Get a header for selector */
+edit.getSelectorHeader = function(type, index) {
+	if (index == undefined)
+		return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
+	return "#attach-area ." + type + ":eq(" + index + ") ";
 }
 
 /************************** ANIMATION *****************************/
@@ -694,16 +776,14 @@ edit.convertTime = function(time) {
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
-	if (index == edit.mediaIndex || index == undefined)
+	if (index == edit.mediaIndex["place"] || index == undefined)
 		return;
-	if (edit.mediaIndex != -1)
-		// Have to shutdown the map first
-		edit.locationHide();
+	edit.cleanupMediaEdit();
 	// Just start a new one
 	animation.setConfirm(2);
 	// Update media index
-	edit.mediaIndex = index;
-	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+	edit.mediaIndex["place"] = index;
+	var selectorHeader = edit.getSelectorHeader("place");
 	// Spread map-selector
 	$("#map-holder").fadeIn();
 	var errorMsg = "Did you enable location sharing?";
@@ -718,7 +798,7 @@ edit.location = function(index) {
 				center: pos,
 			};
 			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-			searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName('place-search')[edit.mediaIndex], { types: ['geocode'] });
+			searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName('place-search')[edit.mediaIndex["place"]], { types: ['geocode'] });
 			markers = [];
 
 			google.maps.event.clearListeners(searchBox, 'place_changed');
@@ -778,7 +858,7 @@ edit.location = function(index) {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
-	edit.isLocationShown = true;
+	edit.isEditing["place"] = true;
 
 	// Enable input boxesf
 	$(selectorHeader + "input").prop("disabled", false);
@@ -793,30 +873,30 @@ edit.location = function(index) {
 }
 
 edit.locationHide = function() {
-	if (edit.mediaIndex < 0)
+	if (edit.mediaIndex["place"] < 0)
 		// Invalid call
 		return;
-	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+	var selectorHeader = edit.getSelectorHeader("place");
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true);
 	// Recover onclick event
-	$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex + ")");
+	$(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex["place"] + ")");
 	// Save data by default
-	edit.locationSave(edit.mediaIndex);
+	edit.locationSave(edit.mediaIndex["place"]);
 	// Remove the contents
 	$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex = -1;
-	edit.isLocationShown = false;
+	edit.mediaIndex["place"] = -1;
+	edit.isEditing["place"] = false;
 }
 
 /* Save the location and collapse the panal */
 edit.locationSave = function(index) {
 	// TODO change to fix each location
 	var data = localStorage["place"],
-		selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ",
+		selectorHeader = edit.getSelectorHeader("place", index),
 		latitude = parseFloat($(selectorHeader + ".latitude").val()),
 		longitude = parseFloat($(selectorHeader + ".longitude").val()),
 		newElem = {};
@@ -838,7 +918,7 @@ edit.locationSave = function(index) {
 edit.locationPin = function() {
 	// Show the location menu
 	var errorMsg = "Did you enable location sharing?",
-		selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+		selectorHeader = edit.getSelectorHeader("place");
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -868,7 +948,7 @@ edit.locationGeocode = function(pos) {
 		map: map,
 		position: pos
 	}),
-	selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";
+	selectorHeader = edit.getSelectorHeader("place");
 	// Set on the map
 	map.setCenter(pos);
 	// Reverse geocoding to get current address
@@ -885,6 +965,57 @@ edit.locationGeocode = function(pos) {
 	});
 }
 
+/************************** LOCATION **************************/
+
+edit.music = function(index) {
+	var selectorHeader = edit.getSelectorHeader("music");
+	// Basic setup
+	$(selectorHeader + "a").removeAttr("onclick");
+	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
+		// Press enter to search
+		if (n.keyCode == 13) {
+			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
+			getCoverPhoto(selectorHeader, term, more);
+		}
+	});
+
+	edit.isEditing["music"] = true;
+}
+
+edit.musicHide = function() {
+	if (edit.mediaIndex["music"] < 0)
+		// Invalid call
+		return;
+	var selectorHeader = edit.getSelectorHeader("music");
+	// Disable input boxes
+	$(selectorHeader + "input").prop("disabled", true).off("keyup");
+	// Recover onclick event
+	$(selectorHeader + "a").attr("onclick", "edit.music(" + edit.mediaIndex["music"] + ")");
+	// Save data
+	edit.musicSave(edit.mediaIndex["music"]);
+	$("#edit-pane").off("keyup");
+	// Hide all the option button
+	animation.hideIcon(".entry-option");
+	edit.mediaIndex["music"] = -1;
+	edit.isEditing["music"] = false;
+}
+
+edit.musicSave = function(index) {
+	var data = localStorage["music"],
+		selectorHeader = edit.getSelectorHeader("music", index),
+		title = $(selectorHeader + ".title").val(),
+		author = $(selectorHeader + ".desc").val(),
+		thumb = $(selectorHeader + ".thumb").css("background-image"),
+	thumb = thumb ? thumb.substring(4, tmp.length - 1) : "";
+	data = data ? JSON.parse(data) : [];
+	var newElem = {
+		title: title,
+		author: author,
+		thumb: thumb
+	};
+	data[index] = newElem;
+	localStorage["music"] = JSON.stringify(data);
+}
 
 /******************************************************************
  ************************ OTHERS **********************************
@@ -893,3 +1024,4 @@ edit.locationGeocode = function(pos) {
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 }
+

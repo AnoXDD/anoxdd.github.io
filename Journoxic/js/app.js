@@ -753,8 +753,12 @@ app.detail = function() { // [m]
 			this.thumb(dataClip, "weblink", 50, 50);
 		if (dataClip.book)
 			this.thumb(dataClip, "book", 50, 70);
-		if (dataClip.music)
+		if (dataClip.music) {
 			this.thumb(dataClip, "music", 50, 50);
+			for (var i = 0; i != dataClip["music"].length; ++i) {
+				getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music.author + " " + dataClip.music.title);
+			}
+		}
 		if (dataClip.movie)
 			this.thumb(dataClip, "movie", 50, 70);
 		// Put missing extensions

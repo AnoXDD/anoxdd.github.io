@@ -276,3 +276,30 @@ function uploadFile() {
 		console.log("uploadFile()\tFinish uploading");
 	})
 }
+
+function getCoverPhoto(selectorHeader, term, more) {
+	var id = animation.blink(selectorHeader + ".thumb");
+	$.ajax({
+		url: "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=" + term,
+		dataType: "jsonp",
+		// Work with the response
+		success: function(response) {
+			var result = response.results[0];
+			if (result == undefined) {
+				// Not found
+				animation.invalid(selectorHeader + "input");
+			} else {
+				// Result found
+				var artist = result["artistName"],
+					track = result["trackName"],
+					coverURL = result["artworkUrl100"];
+				if (more) {
+					$(selectorHeader + ".title").val(artist);
+					$(selectorHeader + ".desc").val(track);
+				}
+				$(selectorHeader + ".thumb").css("background-image", "url(" + coverURL + ")");
+			}
+			clearInterval(id);
+		}
+	});
+}

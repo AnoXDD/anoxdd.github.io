@@ -2507,7 +2507,7 @@ body {
 	color: #000;
 }
 
-#attach-area .movie, #attach-area .book, #attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
+#attach-area .movie a, #attach-area .book a, #attach-area .movie .thumb, #attach-area .book .thumb {
 	height: 50px;
 }
 
@@ -2516,7 +2516,7 @@ body {
 	}
 
 	#attach-area .book .thumb {
-		background-position: -490px -300px;
+		background-position: -490px -310px;
 	}
 
 #attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {

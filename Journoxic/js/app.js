@@ -1,4 +1,4 @@
-﻿//(function(window, $) {
+//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -1226,7 +1226,7 @@ app.bitwise = function() {
 			var newVal = this.get(typesVal).toCharArray();
 			newVal[this.get(typeVal).indexOf("1")] = '0';
 			return parseInt(newVal.toString(), 2);
-		}
+		},
 		// Tests if testValue is in totalValue, i.e. typesVal has type of typeVal
 		is: function(typesVal, typeVal) { // [R, Q]
 			return this.get(typesVal).charAt(this.get(typeVal).indexOf("1")) == "1";

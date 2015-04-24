@@ -449,8 +449,31 @@ edit.addMedia = function(type) {
 	}
 }
 
-edit.deleteMedia = function() {
+edit.removeMedia = function(type) {
+	var selectorHeader = "attach-area ." + edit.mediaName(type) + ":eq(" + edit.mediaIndex + ") ";
+	switch (edit.confirmName) {
+		case 2:
+			// Place
+			// Clear the html
+			$(selectorHeader).html("");
+			// Remove from cache
+			var data = JSON.parse(localStorage["place"]);
+			delete data[edit.mediaIndex];
+			localStorage["place"] = JSON.stringify(data);
+			break;
+		default:
 
+	}
+}
+
+/* Get the name of media by value */
+edit.mediaName = function(type) {
+	switch (type) {
+		case 2:
+			return "place";
+		default:
+
+	}
 }
 
 /* A function to be called by confirm */
@@ -484,19 +507,7 @@ edit.confirm = function() {
 		}
 	} else {
 		// Media removal
-		switch (edit.confirmName) {
-			case 2:
-				// Place
-				// Clear the html
-				$("#attach-area .place")[edit.mediaIndex].html("");
-				// Remove from cache
-				var data = JSON.parse(localStorage["place"]);
-				delete data[edit.mediaIndex];
-				localStorage["place"] = JSON.stringify(data);
-				break;
-			default:
-
-		}
+		edit.removeMedia(2);
 	}
 }
 
@@ -695,8 +706,8 @@ edit.location = function(index) {
 	} else {
 		edit.isLocationShown = true;
 	}
-			// Spread map-selector
-		$("#map-holder").fadeIn();
+	// Spread map-selector
+	$("#map-holder").fadeIn();
 	// Update media index
 	edit.mediaIndex = index;
 	var errorMsg = "Did you enable location sharing?";

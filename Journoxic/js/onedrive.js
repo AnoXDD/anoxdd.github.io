@@ -297,7 +297,7 @@ function getCoverPhoto(selectorHeader, term, more) {
 					$(selectorHeader + ".title").val(artist);
 					$(selectorHeader + ".desc").val(track);
 				}
-				$(selectorHeader + ".thumb").css("background-image", "url(" + coverURL + ")");
+				$(selectorHeader + ".thumb").attr("src", coverURL);
 			}
 			clearInterval(id);
 		}

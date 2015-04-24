@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.52 Build 042315_2359</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.53 Build 042415_0007</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" />
 		</div>
@@ -208,25 +208,13 @@
 
 				if( music ) {
 				for( i in music ) {
-				if( music[i].info ) {
 				%>
 				<div class="music">
-					<a href="<%- music[i].info %>" target="_blank" title="View in iTunes store">
-						<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
-						<p class="title"><%- music[i].title %></p>
-						<p class="desc"><%- music[i].author %></p>
-					</a>
-				</div>
-				<%
-				} else {
-				%>
-				<div class="music">
-					<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
+					<img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span>
 					<p class="title"><%- music[i].title %></p>
 					<p class="desc"><%- music[i].author %></p>
 				</div>
 				<%
-				}
 				}
 				}
 
@@ -423,9 +411,9 @@
 			%>
 			<div class="music">
 				<a title="Edit" onclick="edit.music(<%- i %>)" href="#">
-					<div class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span></div>
-					<input disabled class="title" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off"/>
-					<input disabled class="desc" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off"/>
+					<img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span>
+					<input disabled class="title" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off" />
+					<input disabled class="desc" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off" />
 				</a>
 			</div>
 			<%

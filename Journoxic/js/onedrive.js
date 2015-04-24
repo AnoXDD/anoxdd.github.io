@@ -294,8 +294,8 @@ function getCoverPhoto(selectorHeader, term, more) {
 					track = result["trackName"],
 					coverURL = result["artworkUrl100"];
 				if (more) {
-					$(selectorHeader + ".title").val(artist);
-					$(selectorHeader + ".desc").val(track);
+					$(selectorHeader + ".title").val(track);
+					$(selectorHeader + ".desc").val(artist);
 				}
 				$(selectorHeader + ".thumb").attr("src", coverURL);
 			}

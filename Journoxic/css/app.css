@@ -2475,7 +2475,7 @@ body {
 			}
 
 
-	#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice input, #attach-area .place input {
+	#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice input, #attach-area .place input, #attach-area .music input {
 		font-size: 12px;
 		font-weight: normal;
 		color: #323232;

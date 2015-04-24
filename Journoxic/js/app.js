@@ -1,4 +1,4 @@
-﻿//(function(window, $) {
+//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -756,7 +756,7 @@ app.detail = function() { // [m]
 		if (dataClip.music) {
 			this.thumb(dataClip, "music", 50, 50);
 			for (var i = 0; i != dataClip["music"].length; ++i) {
-				getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music.author + " " + dataClip.music.title);
+				getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music[i].author + " " + dataClip.music[i].title);
 			}
 		}
 		if (dataClip.movie)

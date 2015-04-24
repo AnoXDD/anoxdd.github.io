@@ -492,13 +492,21 @@ edit.change = function(key, value) {
 
 /************************** EDITING *******************************/
 
-edit.addMedia = function(type) {
-	switch (type) {
+edit.addMedia = function(typeNum) {
+	var selectorHeader = "attach-area ." + edit.mediaName(typeNum),
+		length = $(selectorHeader).length;
+	switch (typeNum) {
 		case 2:
-			var length = $("#attach-area .place").length,
-				htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
-			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (length - 1) + ")"));
+			// Place
+			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
+			$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
 			edit.location(length);
+			break;
+		case 4:
+			// Music
+			var htmlContent = '<div class="music"><a title="Edit" onclick="edit.music(' + length + ')" href="#"><img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span><input disabled class="title" placeholder="Track name" autocomplete="off" /><input disabled class="desc" placeholder="Artist" autocomplete="off" /></a></div>';
+			$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
+			edit.music(length);
 			break;
 		default:
 
@@ -511,17 +519,12 @@ edit.removeMedia = function(typeNum) {
 	switch (typeNum) {
 		case 2:
 			// Place
-			// Clear the html
+			// Hide current div
 			$(selectorHeader).fadeOut();
-			// Add to removal list
 			edit.locationHide();
 			break;
-		case 5:
+		case 4:
 			// Music
-			// Add to removal list
-			if (!edit.removalList["music"])
-				edit.removalList["music"] = [];
-			edit.removalList["music"].push(edit.mediaIndex["music"]);
 			edit.musicHide();
 			break;
 		default:
@@ -968,17 +971,20 @@ edit.locationGeocode = function(pos) {
 /************************** LOCATION **************************/
 
 edit.music = function(index) {
+	if (index == edit.mediaIndex["music"] || index == undefined)
+		return;
+	edit.cleanupMediaEdit();
 	var selectorHeader = edit.getSelectorHeader("music");
-	// Basic setup
+	animation.setConfirm(4);
+	edit.mediaIndex["music"] = index;
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search
 		if (n.keyCode == 13) {
 			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
-			getCoverPhoto(selectorHeader, term, more);
+			getCoverPhoto(selectorHeader, term, true);
 		}
 	});
-
 	edit.isEditing["music"] = true;
 }
 

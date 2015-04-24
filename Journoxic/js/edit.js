@@ -115,11 +115,15 @@ edit.init = function(overwrite, index) {
 		$("#attach-area .texttags .other p").click(function() {
 			edit.removeTag($(this).text().substring(1));
 		});
-		// Update cover photo for music
-		for (var i = 0; i != $("#attach-area .music").length; ++i) {
-			var selectorHeader = edit.getSelectorHeader(music, i),
-				term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
-			getCoverPhoto(selectorHeader, term);
+		// Update cover photo for music, book and movie
+		var elem = ["music", "book", "movie"];
+		for (var i = 0; i != elem.length; ++i) {
+			var medium = elem[i];
+			for (var j = 0; j != $("#attach-area ."+medium).length; ++j) {
+				var selectorHeader = edit.getSelectorHeader(medium, j),
+					term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
+				getCoverPhoto(selectorHeader, term, false, medium);
+			}
 		}
 		if (localStorage["title"])
 			$("#entry-header").val(localStorage["title"]);
@@ -203,11 +207,11 @@ edit.save = function(response) {
 
 /* Process removal list to do the final cleanup of contents */
 edit.processRemovalList = function() {
-	for (key in edit.removalList) {
+	for (var key = 0; key != edit.removalList.length; ++key) {
 		if (localStorage[key]) {
 			var data = JSON.parse(localStorage[key]);
-			for (value in edit.removalList[key]) {
-				data.splice(edit.removalList[key][value], 1);
+			for (var i = 0; i != edit.removalList[key].length; ++i) {
+				data.splice(edit.removalList[key][i], 1);
 			}
 			localStorage[key] = JSON.stringify(data);
 		}
@@ -247,25 +251,14 @@ edit.importCache = function(data) {
 		data["textTags"] = localStorage["textTags"];
 	else
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
-	// place
-	if (localStorage["place"])
-		data["place"] = JSON.parse(localStorage["place"]);
-	else
-		localStorage["place"] = data["place"] ? JSON.stringify(data["place"]) : "[]";
-	// music
-	if (localStorage["music"])
-		data["music"] = JSON.parse(localStorage["music"]);
-	else {
-		if (data["music"]) {
-			// Backup old thumbs if there are any to delete it later
-			for (elem in data["music"]) {
-				if (data["music"][elem]["thumb"])
-					data["music"][elem]["old_thumb"] = data["music"][elem]["thumb"];
-			}
-			localStorage["music"] = JSON.stringify(data["music"]);
-		} else {
-			localStorage["music"] = "[]";
-		}
+	// place, music, book, movie
+	var elem = ["place", "music", "book", "movie"];
+	for (var i = 0; i != elem.length; ++i) {
+		var medium = elem[i];
+		if (localStorage[medium])
+			data[medium] = JSON.parse(localStorage[medium]);
+		else
+			localStorage[medium] = data[medium] ? JSON.stringify(data[medium]) : "[]";
 	}
 	// Return value
 	return data;
@@ -284,11 +277,17 @@ edit.exportCache = function(index) {
 		data["attachments"] = 0;
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
-	// Place
-	data["place"] = JSON.parse(localStorage["place"]);
-	// Music
-	data["music"] = JSON.parse(localStorage["music"]);
-	// TODO add remove old-thumb
+	var media,
+		elem = ["place", "music", "book", "movie"];
+	for (var i = 0; i != elem.length; ++i) {
+		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : i;
+		for (var j = 0; j < media.length; ++j) {
+			if (!media[j] || media[j]["title"] == "")
+				// null or undefined or empty title, remove this
+				media.splice(j--, 1);
+		}
+		data[elem[i]] = media.length == 0 ? undefined : media;
+	}
 	if (index < 0) {
 		// Create a new entry
 		journal.archive.data.push(data);
@@ -375,7 +374,7 @@ edit.tryReadCache = function() {
 
 /* Return the index of data found */
 edit.find = function(created) {
-	for (key in journal.archive.data) {
+	for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
 		if (journal.archive.data[key]["time"])
 			if (journal.archive.data[key]["time"]["created"] == created)
 				return key;
@@ -396,7 +395,7 @@ edit.parseJSON = function(string) {
 		if (dict["text"]["body"])
 			localStorage["body"] = dict["text"]["body"];
 	// Add undefined object to make it displayable
-	for (key in elements)
+	for (var key = 0, len = elements.length; key != len; ++key)
 		if (dict[elements[key]] == undefined)
 			dict[elements[key]] = undefined;
 	return dict;
@@ -417,7 +416,7 @@ edit.minData = function() {
 	var tmp = journal.archive.data.filter(function(key) {
 		return key != undefined;
 	});
-	for (key in tmp) {
+	for (var key = 0, len = tmp.length; key != len; ++key) {
 		delete tmp[key]["attached"];
 		delete tmp[key]["contents"];
 		delete tmp[key]["datetime"];
@@ -514,20 +513,26 @@ edit.addMedia = function(typeNum) {
 edit.removeMedia = function(typeNum) {
 	var selectorHeader = edit.getSelectorHeader(typeNum);
 	edit.addToRemovalList(edit.mediaName(typeNum));
+	// The hide function will be called at edit.cleanupMediaEdit()
 	switch (typeNum) {
 		case 2:
 			// Place
 			// Hide current div
 			$(selectorHeader).fadeOut();
-			edit.locationHide();
 			break;
 		case 4:
 			// Music
-			edit.musicHide();
+			break;
+		case 5:
+			// Movie
+			break;
+		case 6:
+			// Book
 			break;
 		default:
 
 	}
+	edit.cleanupMediaEdit();
 }
 
 edit.addToRemovalList = function(name) {
@@ -537,8 +542,8 @@ edit.addToRemovalList = function(name) {
 }
 
 /* Get the name of media by value */
-edit.mediaName = function(type) {
-	switch (type) {
+edit.mediaName = function(typeNum) {
+	switch (typeNum) {
 		case 0:
 			return "photo";
 		case 1:
@@ -598,12 +603,20 @@ edit.confirm = function() {
 /* Get ready for next editing */
 edit.cleanupMediaEdit = function() {
 	$("#edit-pane").off("keyup");
-	if (edit.isEditing == 2)
-		// Have to shutdown the map first
-		edit.locationHide();
-	if (edit.isEditing == 4)
-		edit.musicHide();
-
+	switch (edit.isEditing) {
+		case 2:
+			edit.locationHide();
+			break;
+		case 4:
+			edit.musicHide();
+			break;
+		case 5:
+			edit.movieHide();
+			break;
+		case 6:
+			edit.bookHide();
+			break;
+	}
 }
 
 /* Get a header for selector */
@@ -859,7 +872,7 @@ edit.location = function(index) {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
-	edit.isEditing ="place" ;
+	edit.isEditing = "place";
 
 	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
@@ -966,62 +979,107 @@ edit.locationGeocode = function(pos) {
 	});
 }
 
-/************************** LOCATION **************************/
+/************************** MUSIC 4 **************************/
 
 edit.music = function(index) {
-	if (index == edit.mediaIndex["music"] || index == undefined)
+	edit.itunes(index, 4);
+}
+
+edit.musicHide = function() {
+	edit.itunesHide(4);
+}
+
+edit.musicSave = function(index) {
+	edit.itunesSave(index, 4);
+}
+
+/************************** MOVIE 5 *************************/
+
+edit.movie = function(index) {
+	edit.itunes(index, 5);
+}
+
+edit.movieHide = function() {
+	edit.itunesHide(5);
+}
+
+edit.movieSave = function(index) {
+	edit.itunesSave(index, 5);
+}
+
+/************************** BOOK 6 **************************/
+
+edit.book = function(index) {
+	edit.itunes(index, 6);
+}
+
+edit.bookHide = function() {
+	edit.itunesHide(6);
+}
+
+edit.bookSave = function(index) {
+	edit.itunesHide(index, 6);
+}
+
+/************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
+
+edit.itunes = function(index, typeNum) {
+	var type = edit.mediaName(typeNum);
+	if (index == edit.mediaIndex[type] || index == undefined)
 		return;
 	edit.cleanupMediaEdit();
-	edit.mediaIndex["music"] = index;
-	var selectorHeader = edit.getSelectorHeader("music");
-	animation.setConfirm(4);
+	edit.mediaIndex[type] = index;
+	var selectorHeader = edit.getSelectorHeader(type);
+	animation.setConfirm(typeNum);
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search
 		if (n.keyCode == 13) {
 			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
-			getCoverPhoto(selectorHeader, term, true);
+			getCoverPhoto(selectorHeader, term, true, typeNum);
 		}
 	});
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
 		if (n.keyCode == 27) {
-			edit.musicHide();
+			edit.itunesHide(typeNum);
 		}
 	});
-	edit.isEditing = 4;
+	edit.isEditing = typeNum;
 }
 
-edit.musicHide = function() {
-	if (edit.mediaIndex["music"] < 0)
+edit.itunesHide = function(typeNum) {
+	var type = edit.mediaName(typeNum);
+	if (edit.mediaIndex[type] < 0)
 		// Invalid call
 		return;
-	var selectorHeader = edit.getSelectorHeader("music");
+	var selectorHeader = edit.getSelectorHeader(type);
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
 	// Recover onclick event
-	$(selectorHeader + "a").attr("onclick", "edit.music(" + edit.mediaIndex["music"] + ")");
+	$(selectorHeader + "a").attr("onclick", "edit." + type + "(" + edit.mediaIndex[type] + ")");
 	// Save data
-	edit.musicSave(edit.mediaIndex["music"]);
+	edit.itunesSave(edit.mediaIndex[type], typeNum);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["music"] = -1;
+	edit.mediaIndex[type] = -1;
 	edit.isEditing = -1;
 }
 
-edit.musicSave = function(index) {
-	var data = localStorage["music"],
-		selectorHeader = edit.getSelectorHeader("music", index),
-		title = $(selectorHeader + ".title").val(),
-		author = $(selectorHeader + ".desc").val();
+edit.itunesSave = function(index, typeNum) {
+	var type = edit.mediaName(typeNum);
+		data = localStorage[type],
+	selectorHeader = edit.getSelectorHeader(type, index),
+	title = $(selectorHeader + ".title").val(),
+	author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
 		author: author,
 	};
 	data[index] = newElem;
-	localStorage["music"] = JSON.stringify(data);
+	localStorage[type] = JSON.stringify(data);
 }
 
 /******************************************************************

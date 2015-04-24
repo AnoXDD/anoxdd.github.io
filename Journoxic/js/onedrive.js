@@ -203,7 +203,7 @@ function downloadMedia(url) {
 			// More content available!
 			downloadMedia(data["@odata.nextLink"]);
 		var itemList = data["value"];
-		for (key in itemList)
+		for (var key = 0, len = itemList.length; key != len; ++key)
 			journal.archive.map[itemList[key]["name"]] = itemList[key]["@content.downloadUrl"];
 		// Show progress
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
@@ -277,10 +277,18 @@ function uploadFile() {
 	})
 }
 
-function getCoverPhoto(selectorHeader, term, more) {
-	var id = animation.blink(selectorHeader + ".thumb");
+/* Download the cover photo from iTunes. type can be either number or string*/
+function getCoverPhoto(selectorHeader, term, more, type) {
+	var id = animation.blink(selectorHeader + ".thumb"),
+		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
+	if (typeof (type) == "number")
+		type = edit.mediaName(type);
+	if (type == "movie")
+		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=movie&entity=movieArtist,movie&term=";
+	else if (type == "book")
+		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=ebook&entity=ebook&term=";
 	$.ajax({
-		url: "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=" + term,
+		url: url + term,
 		dataType: "jsonp",
 		// Work with the response
 		success: function(response) {
@@ -303,3 +311,4 @@ function getCoverPhoto(selectorHeader, term, more) {
 		}
 	});
 }
+

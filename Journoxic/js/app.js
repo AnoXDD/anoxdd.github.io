@@ -42,7 +42,7 @@ app.init = function() {
 	// Initialize preloaded tags
 	app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
 	var tagsArray = app.bitwise().getTagsArray();
-	for (key in tagsArray)
+	for (var key = 0; key != tagsArray.length; ++key)
 		app.preloadedTags.push("#" + tagsArray[key]);
 	// Clear the field of search input every time on focus
 	$("#query").keyup(function(n) {
@@ -178,7 +178,7 @@ app.load = function(filter, forceReload, newContent) {
 		$("#total-line").text(app.displayedLines);
 		$("#total-time").text(app.displayedTime);
 		// Refresh every stuff
-		for (key in journal.archive.data)
+		for (var key = 0, len = journal.archive.data.length; key != len; ++key)
 			journal.archive.data[key]["processed"] = 0;
 		loadFunction();
 	}
@@ -342,7 +342,7 @@ app.list.prototype = {
 		/* The elements of all the filter */
 		var elements = filter.toLowerCase().split(" ");
 		// Iterate for all the elements
-		for (key in elements) {
+		for (var key = 0, len = element.length; key != len; ++key) {
 			var element = elements[key].split("|"),
 				found = false;
 			console.log("\t\t> Testing " + element);
@@ -380,7 +380,7 @@ app.list.prototype = {
 					var typeArray = app.bitwise().content(data["attachments"]),
 						type = element[subkey].substr(1),
 					subfound = false;
-					for (key in typeArray)
+					for (var key = 0; key != typeArray.length; ++key)
 						if (type == typeArray[key]) {
 							subfound = true;
 							break;
@@ -798,7 +798,7 @@ app.detail = function() { // [m]
 	$(".center").on("click", function() {
 		var data = journal.archive.data[app.currentDisplayed];
 		if (data["images"]) {
-			for (key in data["images"]) {
+			for (var key = 0; key != data["images"].length; ++key) {
 				$(".upper").append('<a href="' + journal.archive.map[data["images"][key].fileName] + '"><img src="' + journal.archive.map[data["images"][key].fileName] + '"><span></span></a>');
 			}
 		}

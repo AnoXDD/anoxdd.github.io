@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.55 Build 042415_0103</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.56 Build 042415_1434</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -390,16 +390,10 @@
 			for( i in book ) {
 			%>
 			<div class="book">
-				<%
-				if( book[i].info )
-				%>
-				<a href="<%- book[i].info %>" target="_blank" title="New Window">
-					<div class="thumb"><% if( book[i].thumb ) { print( book[i].thumb ); } %><span></span></div>
-					<input disabled class="title" value="<%- book[i].title %>" />
-					<input disabled class="desc" value="<%- book[i].author %>" />
-					<%
-					if( book[i].info )
-					%>
+				<a title="Edit" onclick="edit.book(<%- i %>)" href="#">
+					<img class="thumb"><span></span>
+					<input disabled class="title" placeholder="Book title" value="<%- book[i].title %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="desc" placeholder="Author" value="<%- book[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
 			</div>
 			<%
@@ -411,7 +405,7 @@
 			%>
 			<div class="music">
 				<a title="Edit" onclick="edit.music(<%- i %>)" href="#">
-					<img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span>
+					<img class="thumb"><span></span>
 					<input disabled class="title" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off" onclick="this.select()" />
 					<input disabled class="desc" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
@@ -424,16 +418,10 @@
 			for( i in movie ) {
 			%>
 			<div class="movie">
-				<%
-				if( movie[i].info )
-				%>
-				<a href="<%- movie[i].info %>" target="_blank" title="New Window">
-					<div class="thumb"><% if( movie[i].thumb ) { print( movie[i].thumb ); } %><span></span></div>
-					<input disabled class="title" value="<%- movie[i].title %>" />
-					<input disabled class="desc" value="<%- movie[i].author %>" />
-					<%
-					if( movie[i].info )
-					%>
+				<a title="Edit" onclick="edit.movie(<%- i %>)" href="#">
+					<img class="thumb"><span></span>
+					<input disabled class="title" placeholder="Movie title" value="<%- movie[i].title %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="desc" placeholder="Director" value="<%- movie[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
 			</div>
 			<%

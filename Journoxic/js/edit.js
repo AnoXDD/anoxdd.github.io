@@ -8,7 +8,7 @@ edit.confirmName = "";
 edit.currentEditing = -1;
 
 edit.mediaIndex = {};
-edit.isEditing = {};
+edit.isEditing = -1;
 
 edit.isLocationShown = false;
 edit.isMusicEditing = false;
@@ -80,16 +80,8 @@ edit.init = function(overwrite, index) {
 		weblink: -1,
 		video: -1,
 		voice: -1
-	}
-	edit.isEditing = {
-		place: false,
-		music: false,
-		book: false,
-		movie: false,
-		weblnk: false,
-		video: false,
-		voice: false
-	}
+	};
+	edit.isEditing = -1;
 	// Add to cache, all the cache processing starts here
 	data = edit.importCache(data);
 	console.log(Object.keys(data));
@@ -123,6 +115,12 @@ edit.init = function(overwrite, index) {
 		$("#attach-area .texttags .other p").click(function() {
 			edit.removeTag($(this).text().substring(1));
 		});
+		// Update cover photo for music
+		for (var i = 0; i != $("#attach-area .music").length; ++i) {
+			var selectorHeader = edit.getSelectorHeader(music, i),
+				term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
+			getCoverPhoto(selectorHeader, term);
+		}
 		if (localStorage["title"])
 			$("#entry-header").val(localStorage["title"]);
 		if (localStorage["body"])
@@ -600,10 +598,10 @@ edit.confirm = function() {
 /* Get ready for next editing */
 edit.cleanupMediaEdit = function() {
 	$("#edit-pane").off("keyup");
-	if (edit.isEditing["place"])
+	if (edit.isEditing == 2)
 		// Have to shutdown the map first
 		edit.locationHide();
-	if (edit.isEditing["music"])
+	if (edit.isEditing == 4)
 		edit.musicHide();
 
 }
@@ -861,9 +859,9 @@ edit.location = function(index) {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
-	edit.isEditing["place"] = true;
+	edit.isEditing ="place" ;
 
-	// Enable input boxesf
+	// Enable input boxes
 	$(selectorHeader + "input").prop("disabled", false);
 	// Avoid accidentally click
 	$(selectorHeader + "a").removeAttr("onclick");
@@ -892,7 +890,7 @@ edit.locationHide = function() {
 	// Hide all the options button
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["place"] = -1;
-	edit.isEditing["place"] = false;
+	edit.isEditing = "";
 }
 
 /* Save the location and collapse the panal */
@@ -974,9 +972,9 @@ edit.music = function(index) {
 	if (index == edit.mediaIndex["music"] || index == undefined)
 		return;
 	edit.cleanupMediaEdit();
+	edit.mediaIndex["music"] = index;
 	var selectorHeader = edit.getSelectorHeader("music");
 	animation.setConfirm(4);
-	edit.mediaIndex["music"] = index;
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search
@@ -985,7 +983,13 @@ edit.music = function(index) {
 			getCoverPhoto(selectorHeader, term, true);
 		}
 	});
-	edit.isEditing["music"] = true;
+	// Press esc to save
+	$("#edit-pane").keyup(function(n) {
+		if (n.keyCode == 27) {
+			edit.musicHide();
+		}
+	});
+	edit.isEditing = 4;
 }
 
 edit.musicHide = function() {
@@ -1003,7 +1007,7 @@ edit.musicHide = function() {
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["music"] = -1;
-	edit.isEditing["music"] = false;
+	edit.isEditing = -1;
 }
 
 edit.musicSave = function(index) {

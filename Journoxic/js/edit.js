@@ -313,7 +313,7 @@ edit.exportCacheBody = function(data) {
 			flag = false;
 		if (line.substring(0, 7) == "Begin @") {
 			// Overwrite begintime
-			data["time"]["begin"] = edit.convertTime(line.substring(8));
+			data["time"]["start"] = edit.convertTime(line.substring(8));
 			flag = true;
 		} else if (line.substring(0, 5) == "End @") {
 			// Overwrite endtime
@@ -493,7 +493,7 @@ edit.change = function(key, value) {
 /************************** EDITING *******************************/
 
 edit.addMedia = function(typeNum) {
-	var selectorHeader = "attach-area ." + edit.mediaName(typeNum),
+	var selectorHeader = "#attach-area ." + edit.mediaName(typeNum),
 		length = $(selectorHeader).length;
 	switch (typeNum) {
 		case 2:
@@ -1010,14 +1010,11 @@ edit.musicSave = function(index) {
 	var data = localStorage["music"],
 		selectorHeader = edit.getSelectorHeader("music", index),
 		title = $(selectorHeader + ".title").val(),
-		author = $(selectorHeader + ".desc").val(),
-		thumb = $(selectorHeader + ".thumb").css("background-image"),
-	thumb = thumb ? thumb.substring(4, tmp.length - 1) : "";
+		author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
 		author: author,
-		thumb: thumb
 	};
 	data[index] = newElem;
 	localStorage["music"] = JSON.stringify(data);

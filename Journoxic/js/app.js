@@ -1,4 +1,4 @@
-//(function(window, $) {
+﻿//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -45,10 +45,7 @@ app.init = function() {
 	for (key in tagsArray)
 		app.preloadedTags.push("#" + tagsArray[key]);
 	// Clear the field of search input every time on focus
-	$("#query").on("focus", function() {
-		$(this).val("");
-	})
-	.keyup(function(n) {
+	$("#query").keyup(function(n) {
 		if (n.keyCode == 13) {
 			app.command = $("#query").val();
 			$("#query").effect("highlight", { color: "#dddddd" });

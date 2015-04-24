@@ -13,9 +13,9 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.53 Build 042415_0023</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.54 Build 042415_0035</p>
 		<div id="search-new">
-			<input type="text" id="query" class="search-text" autocomplete="off" />
+			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
 		<div id="search-result">
 			<p>Total entries: </p>
@@ -293,7 +293,7 @@
 	</script>
 	<script type="text/x-template" id="edit-view">
 		<div id="text-area">
-			<input type="text" id="entry-header" autocomplete="off" placeholder="Title" autofocus />
+			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
 				<p class="entry-icons" id="chars" title="Chars">&#xE164</p>
 				<p class="entry-data" id="entry-char" title="Chars">0</p>
@@ -317,7 +317,7 @@
 			</div>
 			<div class="texttags">
 				<span>#</span>
-				<input type="text" id="entry-tag" autocomplete="off" />
+				<input type="text" id="entry-tag" autocomplete="off" onclick="this.select()" />
 				<div class="other">
 					<%
 					if( textTags ) {
@@ -364,19 +364,19 @@
 			<div class="place">
 				<a title="Edit" onclick="edit.location(<%- i %>)" href="#">
 					<div class="thumb"></div>
-					<input disabled title="Place" class="title place-search" autocomplete="off" value="<%- place[i].title %>" />
+					<input disabled title="Place" class="title place-search" autocomplete="off" onclick="this.select()" value="<%- place[i].title %>" />
 					<%
 					if (place[i].latitude) {
 					%>
-					<input disabled title="Latitude" class="desc latitude" autocomplete="off" value="<%- place[i].latitude %>" />
+					<input disabled title="Latitude" class="desc latitude" autocomplete="off" onclick="this.select()" value="<%- place[i].latitude %>" />
 					<p>,</p>
-					<input disabled title="Longitude" class="desc longitude" autocomplete="off" value="<%- place[i].longitude %>" />
+					<input disabled title="Longitude" class="desc longitude" autocomplete="off" onclick="this.select()" value="<%- place[i].longitude %>" />
 					<%
 					} else {
 					%>
-					<input disabled title="Latitude" class="desc latitude" autocomplete="off" id="latitude" />
+					<input disabled title="Latitude" class="desc latitude" autocomplete="off" onclick="this.select()" id="latitude" />
 					<p>,</p>
-					<input disabled title="Longitude" class="desc longitude" autocomplete="off" id="longitude" />
+					<input disabled title="Longitude" class="desc longitude" autocomplete="off" onclick="this.select()" id="longitude" />
 					<%
 					}
 					%>
@@ -412,8 +412,8 @@
 			<div class="music">
 				<a title="Edit" onclick="edit.music(<%- i %>)" href="#">
 					<img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span>
-					<input disabled class="title" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off" />
-					<input disabled class="desc" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off" />
+					<input disabled class="title" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="desc" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
 			</div>
 			<%

@@ -2449,7 +2449,7 @@ body {
 		color: #4e4e4e;
 	}
 
-#attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .texttags, #attach-area .icontags {
+#attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .texttags, #attach-area .icontags {
 	/* border-top: 1px solid #dadada; */
 	margin: 10px 10px 0 10px;
 }

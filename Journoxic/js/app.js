@@ -1,4 +1,4 @@
-//(function(window, $) {
+﻿//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -748,16 +748,24 @@ app.detail = function() { // [m]
 		dataClip.contents = this.text(dataClip.text.body);
 		if (dataClip.weblink)
 			this.thumb(dataClip, "weblink", 50, 50);
-		if (dataClip.book)
+		if (dataClip.book) {
 			this.thumb(dataClip, "book", 50, 70);
+			for (var i = 0; i != dataClip["book"].length; ++i) {
+				getCoverPhoto("#detail .book:eq(" + i + ") ", dataClip.book[i].author + " " + dataClip.book[i].title, false, "book");
+			}
+		}
 		if (dataClip.music) {
 			this.thumb(dataClip, "music", 50, 50);
 			for (var i = 0; i != dataClip["music"].length; ++i) {
 				getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music[i].author + " " + dataClip.music[i].title);
 			}
 		}
-		if (dataClip.movie)
+		if (dataClip.movie) {
 			this.thumb(dataClip, "movie", 50, 70);
+			for (var i = 0; i != dataClip["movie"].length; ++i) {
+				getCoverPhoto("#detail .movie:eq(" + i + ") ", dataClip.movie[i].author + " " + dataClip.movie[i].title, false, "movie");
+			}
+		}
 		// Put missing extensions
 		////if (dataClip.contents.images)
 		////	for (element in dataClip.images)

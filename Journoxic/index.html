@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.59 Build 042415_1515</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.60 Build 042415_1530</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -186,7 +186,7 @@
 				for( i in book ) {
 				%>
 				<div class="book">
-					<img class="thumb <% if( book[i].thumb ) { print( book[i].thumb ); } %>"><span></span>
+					<img class="thumb <% if( book[i].thumb ) { book[i].thumb ); } %>"><span></span>
 					<p class="title"><%- book[i].title %></p>
 					<p class="desc"><%- book[i].author %></p>
 				</div>
@@ -210,7 +210,7 @@
 				for( i in movie ) {
 				%>
 				<div class="movie">
-					<img class="thumb <% if( movie[i].thumb ) { print( movie[i].thumb ); } %>"><span></span>
+					<img class="thumb <% if( movie[i].thumb ) { movie[i].thumb ); } %>"><span></span>
 					<p class="title"><%- movie[i].title %></p>
 					<p class="desc"><%- movie[i].author %></p>
 				</div>

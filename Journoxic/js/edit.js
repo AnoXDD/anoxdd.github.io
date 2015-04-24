@@ -9,7 +9,8 @@ edit.currentEditing = -1;
 edit.mediaIndex = -1;
 
 edit.isLocationShown = false;
-edit.map;
+
+edit.removalList = {};
 
 edit.localChange = [];
 
@@ -145,6 +146,8 @@ edit.init = function(overwrite, index) {
 edit.quit = function(save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
+	edit.mediaIndex = -1;
+	edit.removalList = {};
 	if (save) {
 		// Save to local contents
 		edit.save();
@@ -152,6 +155,7 @@ edit.quit = function(save) {
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
 	}
+	edit.localChange = [];
 	// Map selector toggle
 	if (edit.isLocationShown)
 		edit.locationHide();
@@ -172,10 +176,23 @@ edit.quit = function(save) {
 /* Save cache for edit-pane to journal.archive.data */
 edit.save = function(response) {
 	var index = edit.find(localStorage["created"]);
+	edit.processRemovalList();
 	edit.exportCache(index);
 	if (response)
 		// Show finish animation
 		animation.finished("#add-save-local");
+}
+
+/* Process removal list to do the final cleanup of contents */
+edit.processRemovalList = function() {
+	for (key in edit.removalList) {
+		if (localStorage[key]) {
+			var data = JSON.parse(localStorage[key]);
+			for (value in edit.removalList[key]) {
+				data.splice(edit.removalList[key][value]);
+			}
+		}
+	}
 }
 
 /******************************************************************
@@ -234,7 +251,7 @@ edit.exportCache = function(index) {
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
 	// Place
-	data["place"] = JSON.parse(localStorage["place"].replace(/null/g, ",").replace(/,,/g, ""));
+	data["place"] = JSON.parse(localStorage["place"].replace(/null/g, "").replace(/,,/g, ""));
 	if (index < 0) {
 		// Create a new entry
 		journal.archive.data.push(data);
@@ -439,10 +456,10 @@ edit.change = function(key, value) {
 edit.addMedia = function(type) {
 	switch (type) {
 		case 2:
-			edit.mediaIndex = $("#attach-area .place").length;
-			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + edit.mediaIndex + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
-			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (edit.mediaIndex - 1) + ")"));
-			edit.location(edit.mediaIndex);
+			var length = $("#attach-area .place").length,
+				htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
+			$(htmlContent).insertAfter($("#attach-area .place:eq(" + (length - 1) + ")"));
+			edit.location(length);
 			break;
 		default:
 
@@ -455,11 +472,11 @@ edit.removeMedia = function(type) {
 		case 2:
 			// Place
 			// Clear the html
-			$(selectorHeader).html("");
-			// Remove from cache
-			var data = JSON.parse(localStorage["place"]);
-			delete data[edit.mediaIndex];
-			localStorage["place"] = JSON.stringify(data);
+			$(selectorHeader).fadeOut();
+			// Add to removal list
+			if (!edit.removalList["place"])
+				edit.removalList["place"] = [];
+			edit.removalList["place"].push(edit.mediaIndex);
 			break;
 		default:
 
@@ -675,13 +692,13 @@ edit.convertTime = function(time) {
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
-	// Just start a new one
-	animation.setConfirm(2);
 	if (index == edit.mediaIndex || index == undefined)
 		return;
 	if (edit.mediaIndex != -1)
 		// Have to shutdown the map first
 		edit.locationHide();
+	// Just start a new one
+	animation.setConfirm(2);
 	// Update media index
 	edit.mediaIndex = index;
 	var selectorHeader = "#attach-area .place:eq(" + edit.mediaIndex + ") ";

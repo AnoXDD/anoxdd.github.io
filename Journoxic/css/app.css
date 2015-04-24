@@ -2451,7 +2451,7 @@ body {
 
 #attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .texttags, #attach-area .icontags {
 	/* border-top: 1px solid #dadada; */
-	padding: 10px;
+	margin: 10px 10px 0 10px;
 }
 
 #attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .video {

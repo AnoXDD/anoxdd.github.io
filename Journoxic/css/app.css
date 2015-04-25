@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2312,32 +2312,25 @@ body {
 			background: #eeeeee;
 		}
 
-	#edit-pane #attach-area .types {
-		display: none;
-	}
+#edit-pane #map-holder {
+	display: none;
+	position: relative;
+	
+	top: -webkit-calc(-100% + 45px);
+	height: -webkit-calc(100% - 48px);
+	width: -webkit-calc(100% + 5px);
+}
 
-	#edit-pane #attach-area p {
-		display: inline-block;
-	}
+#edit-pane #map-selector {
+	background: #F3F3F3;
+	/* border-radius: 20px; */
+	height: 100%;
+}
 
-	#edit-pane #map-holder {
-		display: none;
-		position: relative;
-		top: -webkit-calc(-100% + 45px);
-		height: -webkit-calc(100% - 48px);
-		width: -webkit-calc(100% + 5px);
+	#edit-pane #map-selector a {
+		height: 0px;
+		background-image: none;
 	}
-
-	#edit-pane #map-selector {
-		background: #F3F3F3;
-		/* border-radius: 20px; */
-		height: 100%;
-	}
-
-		#edit-pane #map-selector a {
-			height: 0px;
-			background-image: none;
-		}
 
 
 /* STARTING OTHER ATTACHED MEDIA */
@@ -2430,7 +2423,6 @@ body {
 		padding: 10px;
 		height: 50px;
 		display: block;
-		border: 1px solid #dbdbdb;
 		text-decoration: none;
 		line-height: 1.5em;
 	}
@@ -2444,19 +2436,7 @@ body {
 		background-position: -340px -300px;
 	}
 
-	#attach-area .weblink .url {
-		font-size: 13px;
-		font-weight: bold;
-		color: #0091e1;
-	}
-
-	#attach-area .weblink .desc {
-		font-size: 15px;
-		font-weight: normal;
-		color: #4e4e4e;
-	}
-
-#attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .texttags, #attach-area .icontags {
+#attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .weblink, #attach-area .texttags, #attach-area .icontags {
 	/* border-top: 1px solid #dadada; */
 	margin: 10px 10px 0 10px;
 }
@@ -2465,7 +2445,7 @@ body {
 	line-height: 1.5em;
 }
 
-	#attach-area .movie a, #attach-area .music a, #attach-area .book a, #attach-area .voice a, #attach-area .place a, #attach-area .video a {
+	#attach-area .movie a, #attach-area .music a, #attach-area .book a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .weblink a {
 		display: block;
 		margin: -10px 7px -10px -10px;
 		padding: 10px;
@@ -2482,7 +2462,7 @@ body {
 			}
 
 
-	#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice input, #attach-area .place input, #attach-area .music input, #attach-area .book input, #attach-area .movie input {
+	#attach-area .movie .title, #attach-area .music .title, #attach-area .book .title, #attach-area .video .title, #attach-area .voice input, #attach-area .place input, #attach-area .music input, #attach-area .book input, #attach-area .movie input, #attach-area .weblink input {
 		font-size: 12px;
 		font-weight: normal;
 		color: #323232;
@@ -2518,15 +2498,15 @@ body {
 	height: 50px;
 }
 
-#attach-area .movie .thumb {
-	background-position: -440px -310px;
-}
+	#attach-area .movie .thumb {
+		background-position: -440px -310px;
+	}
 
-#attach-area .book .thumb {
-	background-position: -490px -310px;
-}
+	#attach-area .book .thumb {
+		background-position: -490px -310px;
+	}
 
-#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
+#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .weblink a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
 	height: 50px;
 }
 
@@ -2540,11 +2520,6 @@ body {
 
 #attach-area .place .thumb {
 	background-position: -390px -300px;
-}
-
-#attach-area .movie a, #attach-area .book a, #attach-area .music a, #attach-area .voice a, #attach-area .place a {
-	padding-right: 20px;
-	background: url('../img/arrow.png') 100% 50% no-repeat;
 }
 
 #attach-area .voice input, #attach-area .place input {

@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.6.0 Build 042415_1702</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.6.1 Build 042415_1959</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -418,10 +418,10 @@
 			for( i in weblink ) {
 			%>
 			<div class="weblink">
-				<a href="#" target="_blank" title="New Window">
+				<a title="Edit" onclick="edit.weblink(<%- i %>)" href="#">
 					<div class="thumb"><span></span></div>
-					<input disabled class="title" placeholder="http://" value="<%- weblink[i].url %>" />
-					<input disabled class="desc" placeholder="Title" value="<%- weblink[i].title %>" />
+					<input disabled class="title" placeholder="Title" value="<%- weblink[i].title %>" />
+					<input disabled class="desc" placeholder="http://" value="<%- weblink[i].url %>" />
 				</a>
 			</div>
 			<%

@@ -252,7 +252,7 @@ edit.importCache = function(data) {
 	else
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
 	// place, music, book, movie
-	var elem = ["place", "music", "book", "movie"];
+	var elem = ["place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {
 		var medium = elem[i];
 		if (localStorage[medium])
@@ -278,7 +278,7 @@ edit.exportCache = function(index) {
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
 	var media,
-		elem = ["place", "music", "book", "movie"];
+		elem = ["place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i < elem.length; ++i) {
 		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : i;
 		for (var j = 0; j < media.length; ++j) {
@@ -615,6 +615,8 @@ edit.cleanupMediaEdit = function() {
 		case 6:
 			edit.bookHide();
 			break;
+		case 7:
+			edit.weblinkHide();
 	}
 }
 
@@ -1068,10 +1070,10 @@ edit.itunesHide = function(typeNum) {
 
 edit.itunesSave = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
-	data = localStorage[type],
-selectorHeader = edit.getSelectorHeader(type, index),
-title = $(selectorHeader + ".title").val(),
-author = $(selectorHeader + ".desc").val();
+		data = localStorage[type],
+		selectorHeader = edit.getSelectorHeader(type, index),
+		title = $(selectorHeader + ".title").val(),
+		author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
@@ -1079,6 +1081,58 @@ author = $(selectorHeader + ".desc").val();
 	};
 	data[index] = newElem;
 	localStorage[type] = JSON.stringify(data);
+}
+
+/************************** WEBLINK 7 **************************/
+
+edit.weblink = function(index) {
+	if (index == edit.mediaIndex["weblink"] || index == undefined)
+		return;
+	edit.cleanupMediaEdit();
+	edit.mediaIndex["weblink"] = index;
+	var selectorHeader = edit.getSelectorHeader("weblink");
+	animation.setConfirm(7);
+	$(selectorHeader + "a").removeAttr("onclick");
+	$(selectorHeader + "input").prop("disabled", false);
+	// Press esc to save
+	$("#edit-pane").keyup(function(n) {
+		if (n.keyCode == 27) {
+			edit.weblinkHide(7);
+		}
+	});
+	edit.isEditing = 7;
+}
+
+edit.weblinkHide = function() {
+	if (edit.mediaIndex["weblink"] < 0)
+		// Invalid call
+		return;
+	var selectorHeader = edit.getSelectorHeader("weblink");
+	// Disable input boxes
+	$(selectorHeader + "input").prop("disabled", true).off("keyup");
+	// Recover onclick event
+	$(selectorHeader + "a").attr("onclick", "edit.weblink(" + edit.mediaIndex["weblink"] + ")");
+	// Save data
+	edit.weblinkSave(edit.mediaIndex["weblink"], 7);
+	$("#edit-pane").off("keyup");
+	// Hide all the option button
+	animation.hideIcon(".entry-option");
+	edit.mediaIndex["weblink"] = -1;
+	edit.isEditing = -1;
+}
+
+edit.weblinkSave = function(index) {
+	var data = localStorage["weblink"],
+	selectorHeader = edit.getSelectorHeader("weblink", index),
+	title = $(selectorHeader + ".title").val(),
+	url = $(selectorHeader + ".desc").val();
+	data = data ? JSON.parse(data) : [];
+	var newElem = {
+		title: title,
+		url: url,
+	};
+	data[index] = newElem;
+	localStorage["weblink"] = JSON.stringify(data);
 }
 
 /******************************************************************

@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2312,25 +2312,32 @@ body {
 			background: #eeeeee;
 		}
 
-#edit-pane #map-holder {
-	display: none;
-	position: relative;
-	
-	top: -webkit-calc(-100% + 45px);
-	height: -webkit-calc(100% - 48px);
-	width: -webkit-calc(100% + 5px);
-}
-
-#edit-pane #map-selector {
-	background: #F3F3F3;
-	/* border-radius: 20px; */
-	height: 100%;
-}
-
-	#edit-pane #map-selector a {
-		height: 0px;
-		background-image: none;
+	#edit-pane #attach-area .types {
+		display: none;
 	}
+
+	#edit-pane #attach-area p {
+		display: inline-block;
+	}
+
+	#edit-pane #map-holder {
+		display: none;
+		position: relative;
+		top: -webkit-calc(-100% + 45px);
+		height: -webkit-calc(100% - 48px);
+		width: -webkit-calc(100% + 5px);
+	}
+
+	#edit-pane #map-selector {
+		background: #F3F3F3;
+		/* border-radius: 20px; */
+		height: 100%;
+	}
+
+		#edit-pane #map-selector a {
+			height: 0px;
+			background-image: none;
+		}
 
 
 /* STARTING OTHER ATTACHED MEDIA */
@@ -2511,13 +2518,13 @@ body {
 	height: 50px;
 }
 
-	#attach-area .movie .thumb {
-		background-position: -440px -310px;
-	}
+#attach-area .movie .thumb {
+	background-position: -440px -310px;
+}
 
-	#attach-area .book .thumb {
-		background-position: -490px -310px;
-	}
+#attach-area .book .thumb {
+	background-position: -490px -310px;
+}
 
 #attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
 	height: 50px;

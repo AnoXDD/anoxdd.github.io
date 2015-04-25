@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.5.62 Build 042415_1612</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.6.0 Build 042415_1702</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -293,7 +293,7 @@
 			</div>
 			<div class="texttags">
 				<span>#</span>
-				<input type="text" id="entry-tag" autocomplete="off" onclick="this.select()" />
+				<input type="text" id="entry-tag" placeholder="Tags" autocomplete="off" onclick="this.select()" />
 				<div class="other">
 					<%
 					if( textTags ) {
@@ -306,6 +306,16 @@
 					}
 					%>
 				</div>
+			</div>
+			<div class="types">
+				<p id="photo-cover">&#xE114</p>
+				<p id="video-cover">&#xE116</p>
+				<p id="place-cover">&#xE1C4</p>
+				<p id="voice-cover">&#xE1D6</p>
+				<p id="music-cover">&#xE189</p>
+				<p id="movie-cover">&#x1f3ac</p>
+				<p id="book-cover">&#xE1D3</p>
+				<p id="weblink-cover">&#xE167</p>
 			</div>
 			<%
 			if( video ) {
@@ -408,10 +418,10 @@
 			for( i in weblink ) {
 			%>
 			<div class="weblink">
-				<a href="<%- weblink[i].url %>" target="_blank" title="New Window">
-					<div class="thumb"><% if( weblink[i].thumb ) { print( weblink[i].thumb ); } %><span></span></div>
-					<input disabled class="url" value="<%- weblink[i].url %>" />
-					<input disabled class="desc" value="<%- weblink[i].title %>" />
+				<a href="#" target="_blank" title="New Window">
+					<div class="thumb"><span></span></div>
+					<input disabled class="title" placeholder="http://" value="<%- weblink[i].url %>" />
+					<input disabled class="desc" placeholder="Title" value="<%- weblink[i].title %>" />
 				</a>
 			</div>
 			<%

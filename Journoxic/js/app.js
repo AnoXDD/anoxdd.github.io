@@ -1218,14 +1218,14 @@ app.bitwise = function() {
 		},
 		/* Set typeVal on typesVal. Return typesVal | typeVal */
 		or: function(typesVal, typeVal) {
-			var newVal = this.get(typesVal).toCharArray();
+			var newVal = this.get(typesVal).split("");
 			newVal[this.get(typeVal).indexOf("1")] = '1';
-			return parseInt(newVal.toString(), 2);
+			return parseInt(newVal.join(""), 2);
 		},
 		andnot: function(typesVal, typeVal) {
-			var newVal = this.get(typesVal).toCharArray();
+			var newVal = this.get(typesVal).split("");
 			newVal[this.get(typeVal).indexOf("1")] = '0';
-			return parseInt(newVal.toString(), 2);
+			return parseInt(newVal.join(""), 2);
 		},
 		// Tests if testValue is in totalValue, i.e. typesVal has type of typeVal
 		is: function(typesVal, typeVal) { // [R, Q]

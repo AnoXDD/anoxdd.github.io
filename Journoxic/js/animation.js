@@ -29,6 +29,8 @@ animation.toggleIcon = function(selector, callback) {
 animation.setConfirm = function(name) {
 	if (name == edit.confirmName) {
 		if (typeof (name) == "number") {
+			// Always show
+			animation.showIcon("#confirm");
 			switch (name) {
 				case 2:
 					// Place

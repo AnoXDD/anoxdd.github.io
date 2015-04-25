@@ -493,41 +493,51 @@ edit.change = function(key, value) {
 
 edit.addMedia = function(typeNum) {
 	var selectorHeader = "#attach-area ." + edit.mediaName(typeNum),
-		length = $(selectorHeader).length;
+		length = $(selectorHeader).length,
+		htmlContent;
 	switch (typeNum) {
 		case 2:
 			// Place
-			var htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
+			htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
 			break;
 		case 4:
 			// Music
-			var htmlContent = '<div class="music"><a title="Edit" onclick="edit.music(' + length + ')" href="#"><img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span><input disabled class="title" placeholder="Track name" autocomplete="off" /><input disabled class="desc" placeholder="Artist" autocomplete="off" /></a></div>';
+			htmlContent = '<div class="music"><a title="Edit" onclick="edit.music(' + length + ')" href="#"><img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span><input disabled class="title" placeholder="Track name" autocomplete="off" /><input disabled class="desc" placeholder="Artist" autocomplete="off" /></a></div>';
 			break;
 		case 5:
 			// Movie
-			var htmlContent = '<div class="movie"><a title="Edit" onclick="edit.movie(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Movie title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Director" autocomplete="off" onclick="this.select()" /></a></div>';
+			htmlContent = '<div class="movie"><a title="Edit" onclick="edit.movie(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Movie title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Director" autocomplete="off" onclick="this.select()" /></a></div>';
 			break;
 		case 6:
 			// Book
-			var htmlContent = '<div class="book"><a title="Edit" onclick="edit.book(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Book title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Author" autocomplete="off" onclick="this.select()" /></a></div>'
+			htmlContent = '<div class="book"><a title="Edit" onclick="edit.book(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Book title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Author" autocomplete="off" onclick="this.select()" /></a></div>'
 			break;
 		default:
 
 	}
-	$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")")).trigger("click");
+	if (length > 0)
+		// Elements already exist
+		$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
+	else
+		// Have to create a new one
+		$(htmlContent).appendTo("#attach-area");
+	$(selectorHeader + ":eq(" + length + ") a").trigger("click");
 }
 
 edit.removeMedia = function(typeNum) {
-	var selectorHeader = edit.getSelectorHeader(typeNum);
+	var type = edit.mediaName(typeNum);
+	selectorHeader = edit.getSelectorHeader(type);
 	$(selectorHeader).fadeOut();
-	edit.addToRemovalList(edit.mediaName(typeNum));
+	edit.addToRemovalList(type);
 	edit.cleanupMediaEdit();
 }
 
 edit.addToRemovalList = function(name) {
 	if (!edit.removalList[name])
 		edit.removalList[name] = [];
-	edit.removalList[name].push(edit.mediaIndex[name]);
+	if (edit.removalList.indexOf(name) != -1)
+		// Only add when this element does not exist
+		edit.removalList[name].push(edit.mediaIndex[name]);
 }
 
 /* Get the name of media by value */

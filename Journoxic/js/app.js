@@ -1,4 +1,4 @@
-//(function(window, $) {
+﻿//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -588,12 +588,12 @@ app.list.prototype = {
 			// Match to see if this filename is already in the map
 			var fileName;
 			if (type == "images") {
-				fileName = journal.archive.map[first.fileName];
+				fileName = journal.archive.map[first.fileName]["url"];
 				if (fileName == undefined)
 					return '<div class="dummy"></div>';
 			}
 			if (type == "video") {
-				fileName = journal.archive.map[first.fileName + "_thumb.jpg"];
+				fileName = journal.archive.map[first.fileName + "_thumb.jpg"]["url"];
 			}
 			// Check the validity of photos
 			////if (!fileName.match(/.(jpg|png)$/) && !!first.type)
@@ -807,7 +807,7 @@ app.detail = function() { // [m]
 		var data = journal.archive.data[app.currentDisplayed];
 		if (data["images"]) {
 			for (var key = 0; key != data["images"].length; ++key) {
-				$(".upper").append('<a href="' + journal.archive.map[data["images"][key].fileName] + '"><img src="' + journal.archive.map[data["images"][key].fileName] + '"><span></span></a>');
+				$(".upper").append('<a href="' + journal.archive.map[data["images"][key].fileName]["url"] + '"><img src="' + journal.archive.map[data["images"][key].fileName]["url"] + '"><span></span></a>');
 			}
 		}
 		$(".center").hide();
@@ -842,7 +842,7 @@ app.detail = function() { // [m]
 	// Add online media url to the classes
 	var eachOp = function() {
 		var className = $(this).attr("class");
-		$(this).attr("href", journal.archive.map[className]).removeAttr("class");
+		$(this).attr("href", journal.archive.map[className]["url"]).removeAttr("class");
 	};
 	$(".lower .video a").each(eachOp);
 	$(".lower .voice a").each(eachOp);

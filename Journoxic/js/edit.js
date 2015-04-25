@@ -7,11 +7,10 @@ edit.intervalId = -1;
 edit.confirmName = "";
 edit.currentEditing = -1;
 
+edit.photos = [];
+
 edit.mediaIndex = {};
 edit.isEditing = -1;
-
-edit.isLocationShown = false;
-edit.isMusicEditing = false;
 
 edit.removalList = {};
 
@@ -196,13 +195,15 @@ edit.quit = function(save) {
 edit.save = function(response) {
 	var index = edit.find(localStorage["created"]);
 	edit.processRemovalList();
-	edit.exportCache(index);
-	edit.sortArchive();
-	journal.archive.data = edit.minData();
-	edit.saveDataCache();
-	if (response)
-		// Show finish animation
-		animation.finished("#add-save-local");
+	edit.photoSave(function() {
+		edit.exportCache(index);
+		edit.sortArchive();
+		journal.archive.data = edit.minData();
+		edit.saveDataCache();
+		if (response)
+			// Show finish animation
+			animation.finished("#add-save-local");
+	})
 }
 
 /* Process removal list to do the final cleanup of contents */
@@ -496,6 +497,11 @@ edit.addMedia = function(typeNum) {
 		length = $(selectorHeader).length,
 		htmlContent;
 	switch (typeNum) {
+		case 0:
+			// Images
+			edit.photo();
+			// Do not execute the codes after switch block
+			return;
 		case 2:
 			// Place
 			htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
@@ -780,7 +786,7 @@ edit.format = function(n) {
 	return n < 10 ? "0" + n : n;
 }
 
-/* Get my format of time and convert it to the milliseconds since epoch */
+/* Convert my format of time to the milliseconds since epoch */
 edit.convertTime = function(time) {
 	var month = parseInt(time.substring(0, 2)),
 		day = parseInt(time.substring(2, 4)),
@@ -791,7 +797,224 @@ edit.convertTime = function(time) {
 	return date.getTime();
 }
 
-/************************** LOCATION **************************/
+/************************** PHOTO 0 ************************/
+
+edit.photo = function() {
+	if (edit.photos.length != 0)
+		// Return if edit.photo is already displayed
+		return;
+	// Add throttle
+	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	edit.photos = [];
+	// Get resource photos from data (if any)
+	var index = edit.find(localStorage["created"]);
+	if (journal.archive.data[index]["images"]) {
+		var images = journal.archive.data[index]["images"];
+		for (var i = 0; i != images.length; ++i) {
+			var name = images[i]["fileName"],
+				image = {
+					name: name,
+					size: journal.archive.map[name]["size"],
+					url: journal.archive.map[name]["url"],
+					resource: true,
+					/* Whether this image is moved to the other location, 
+					 i.e. if it is deleted or added
+					 */
+					move: false,
+				};
+			edit.photos.push(image);
+		}
+	}
+	// Get resource photos from user content folder
+	// Get correct date folder
+	var dateStr;
+	if (edit.photos.length != 0) {
+		// Get date from photos already existed
+		dateStr = edit.photos[0]["name"].substring(0, 6);
+	} else if (localStorage["title"] && isNaN(parseInt(localStorage["title"].substring(0, 6)))) {
+		// Get date from title, ignore what title looks like
+		dateStr = localStorage["title"].substring(0, 6);
+	} else {
+		// Get from current date
+		var date = new Date().getTime();
+		date = new Date(date - 14400000);
+		dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+	}
+	var token = getTokenFromCookie(),
+		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+	$.ajax({
+		type: "GET",
+		url: url
+	}).done(function(data, status, xhr) {
+		if (data["@odata.nextLink"]) {
+			// More content available!
+			// Do nothing right now
+		}
+		var itemList = data["value"];
+		for (var key = 0, len = itemList.length; key != len; ++key) {
+			var size = itemList[key]["size"],
+				found = false;
+			// Use size to filter out duplicate photos
+			for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
+				if (tmp[i]["size"] == size) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				// Abandon this image
+				continue;
+			} else {
+				var data = {
+					name: itemList[key]["name"],
+					url: itemList[key]["@content.downloadUrl"],
+					size: itemList[key]["size"],
+					resource: false,
+					change: false,
+				};
+				edit.photos.push(data);
+			}
+		}
+		console.log("edit.photo()\tFinish media data");
+		// Add to images div
+		for (var i = 0; i != edit.photos.length; ++i) {
+			var htmlContent = '<img src="' + edit.photos[i]["url"] + '" onclick="edit.photoClick(' + i + ')" href="#" />';
+			$("#attach-area .images").append(htmlContent);
+		}
+		// Stop throttle 
+		$("#add-photo").html("&#xE114").attr({
+			onclick: "edit.addMedia(0)",
+			href: "#"
+		}).fadeIn().animate({ height: "100px" });
+		animation.setConfirm(0);
+		animation.finished("#add-photo");
+	}).fail(function() {
+		$("#add-photo").html("&#xE114").attr({
+			onclick: "edit.addMedia(0)",
+			href: "#"
+		});
+		animation.deny("#add-photo");
+	});
+}
+
+edit.photoClick = function(index) {
+	$("#attach-area .images img:eq(" + index + ")").toggleClass("highlight");
+	// Tell the photos map that this photo would like to switch location
+	edit.photos[i]["change"] = !edit.photos[i]["change"];
+}
+
+/* 
+ This function is to be called only at edit.save() 
+ because this function will contact OneDrive server to move files,
+ which will cause async between client and the server
+ The callback function will be called after all the changes have been made
+ */
+edit.photoSave = function(callback) {
+	if (edit.photos.length == 0) {
+		// Nothing to process
+		callback();
+		return;
+	} else {
+		// Get the photos whose locations to be changed
+		var photoQueue = [],
+			nameNum = -1;
+		for (var i = 0; i != edit.photos.length; ++i) {
+			if (edit.photos[i]["change"]) {
+				// Reset properties in edit.photos first
+				edit.photos[i]["change"] = false;
+				var resource = edit.photos[i]["resource"];
+				edit.photos[i]["resource"] = !resource;
+				photoQueue.push({
+					name: edit.photos[i]["name"],
+					// New location
+					resource: !resource
+				});
+			}
+			if (edit.photos[i]["resource"]) {
+				// Get the naming sequence from resource
+				var name = edit.photos[i]["name"],
+					suffix = name.substring(name.length - 4);
+				// Remove the file suffix
+				name = substring(0, name.length - 4);
+				var nameNumTmp = parseInt(name);
+				if (isNaN(nameNumTmp)) {
+					if (nameNumTmp > nameNum)
+						// Try to get the largest nameNum possible
+						nameNum = nameNumTmp;
+				}
+			}
+		}
+		// Start to change location
+		var resourceDir = "drive/special/approot:/resource",
+			contentDir = "drive/special/approot:/data/" + nameNum.toString().substring(0, 6),
+			processingPhoto = 0,
+			localCache = JSON.parse(localStorage["images"]);
+		for (var i = 0; i != photoQueue.length; ++i) {
+			var requestJSON, url,
+				token = getTokenFromCookie(),
+				name = photoQueue[i]["name"];
+			if (photoQueue[i]["resource"]) {
+				// Would like to be added to entry, originally at data folder
+				if (nameNum.toString().substring(0, 6) != (nameNum + 1).toString().substring(0, 6)) {
+					// New digit needed for the name
+					nameNum = parseInt(nameNum.toString().substring(0, 6) + "0" + nameNum.toString().substring(6));
+				}
+				++nameNum;
+				requestJSON = {
+					// New name of the file
+					name: nameNum + name.substring(name.length - 4),
+					parentReference: {
+						path: resourceDir
+					}
+				};
+				url = "https://api.onedrive.com/v1.0/" + contentDir + "?select=name&access_token=" + token;
+				// Add to cache
+				localCache.push({
+					fileName: name
+				});
+			} else {
+				// Would like to be added to data, i.e. remove from resource folder
+				requestJSON = {
+					parentReference: {
+						path: contentDir
+					}
+				}
+				url = "https://api.onedrive.com/v1.0/" + resourceDir + "?select=name&access_token=" + token;
+				// Remove from cache
+				for (var j = 0; j != localCache.length; ++j)
+					if (localCache[j]["fileName"] == name) {
+						delete localCache[name];
+						break;
+					}
+				delete journal.archive.map[name];
+			}
+			$.ajax({
+				type: "PATCH",
+				url: url,
+				contentType: "application/json",
+				data: JSON.stringify(requestJSON)
+			})
+			.done(function(data, status, xhr) {
+				journal.archive.map[name] = data["@content.downloadUrl"];
+				console.log("edit.photoSave()\tFinish update metadata");
+			})
+			.always(function() {
+				// Test if it is elligible for calling callback()
+				if (++processingPhoto == photoQueue.length) {
+					localStorage["images"] = JSON.stringify(localCache);
+					callback();
+				}
+			});
+		}
+	}
+}
+
+edit.photoHide = function() {
+	// Just hide everything, no further moves to be made
+	$("#attach-area .images").animate({ height: "0" }).fadeOut().html("");
+}
+
+/************************** LOCATION 2 ************************/
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
@@ -1074,10 +1297,10 @@ edit.itunesHide = function(typeNum) {
 
 edit.itunesSave = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
-		data = localStorage[type],
-		selectorHeader = edit.getSelectorHeader(type, index),
-		title = $(selectorHeader + ".title").val(),
-		author = $(selectorHeader + ".desc").val();
+	data = localStorage[type],
+	selectorHeader = edit.getSelectorHeader(type, index),
+	title = $(selectorHeader + ".title").val(),
+	author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,

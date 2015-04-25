@@ -510,7 +510,11 @@ edit.addMedia = function(typeNum) {
 			break;
 		case 6:
 			// Book
-			htmlContent = '<div class="book"><a title="Edit" onclick="edit.book(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Book title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Author" autocomplete="off" onclick="this.select()" /></a></div>'
+			htmlContent = '<div class="book"><a title="Edit" onclick="edit.book(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Book title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Author" autocomplete="off" onclick="this.select()" /></a></div>';
+			break;
+		case 7:
+			// Weblink
+			htmlContent = '<div class="weblink"><a title="Edit" onclick="edit.weblink(' + length + ')" href="#"><div class="thumb"><span></span></div><input disabled class="title" placeholder="Title" /><input disabled class="desc" placeholder="http://" /></a></div>';
 			break;
 		default:
 
@@ -535,7 +539,7 @@ edit.removeMedia = function(typeNum) {
 edit.addToRemovalList = function(name) {
 	if (!edit.removalList[name])
 		edit.removalList[name] = [];
-	if (edit.removalList.indexOf(name) != -1)
+	if (edit.removalList[name].indexOf(edit.mediaIndex[name]) != -1)
 		// Only add when this element does not exist
 		edit.removalList[name].push(edit.mediaIndex[name]);
 }

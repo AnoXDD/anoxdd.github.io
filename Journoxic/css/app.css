@@ -537,42 +537,42 @@ body {
 			background-position-y: -450px;
 		}
 
-			#list div.attached span.photo {
+			#list div.attached span.photo, #edit-pane #attach-area .types #photo-cover {
 				background-position-x: -200px;
 				background-color: #5670a5;
 			}
 
-			#list div.attached span.video {
+			#list div.attached span.video, #edit-pane #attach-area .types #video-cover  {
 				background-position-x: -215px;
 				background-color: #169dae;
 			}
 
-			#list div.attached span.music {
+			#list div.attached span.music, #edit-pane #attach-area .types #music-cover  {
 				background-position-x: -230px;
 				background-color: #4188f0;
 			}
 
-			#list div.attached span.voice {
+			#list div.attached span.voice, #edit-pane #attach-area .types #voice-cover  {
 				background-position-x: -245px;
 				background-color: #ffab19;
 			}
 
-			#list div.attached span.book {
+			#list div.attached span.book, #edit-pane #attach-area .types #book-cover  {
 				background-position-x: -260px;
 				background-color: #86b73c;
 			}
 
-			#list div.attached span.movie {
+			#list div.attached span.movie, #edit-pane #attach-area .types #movie-cover  {
 				background-position-x: -275px;
 				background-color: #a865cd;
 			}
 
-			#list div.attached span.place {
+			#list div.attached span.place, #edit-pane #attach-area .types #place-cover  {
 				background-position-x: -290px;
 				background-color: #d8513e;
 			}
 
-			#list div.attached span.weblink {
+			#list div.attached span.weblink, #edit-pane #attach-area .types #weblink-cover  {
 				background-position-x: -305px;
 				background-color: #3cbaff;
 			}
@@ -2114,15 +2114,15 @@ body {
 			-webkit-transition: opacity .4s ease, height .4s ease;
 		}
 
-			#edit-pane #attach-area .icontags .icons:hover {
+			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover  {
 				opacity: .8;
 			}
 
-			#edit-pane #attach-area .icontags .icons:active {
+			#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active {
 				opacity: .5;
 			}
 
-		#edit-pane #attach-area .icontags p.highlight {
+		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight  {
 			opacity: 1;
 		}
 
@@ -2312,6 +2312,25 @@ body {
 			background: #eeeeee;
 		}
 
+#edit-pane #attach-area .types {
+    /* display: none; */
+
+    text-align: center;
+}
+
+#edit-pane #attach-area .types p {
+    display: inline-block;
+ 
+    font-size: 10px;
+    color: #fff;
+    opacity: .1;
+    padding-top: 6px;
+    border-radius: 7px;
+    width: 26px;
+    height: 20px;
+    margin: 0 8px;
+}
+
 #edit-pane #map-holder {
 	display: none;
 	position: relative;
@@ -2436,7 +2455,7 @@ body {
 		background-position: -340px -300px;
 	}
 
-#attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .weblink, #attach-area .texttags, #attach-area .icontags {
+#attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .weblink, #attach-area .texttags, #attach-area .icontags, #attach-area .types {
 	/* border-top: 1px solid #dadada; */
 	margin: 10px 10px 0 10px;
 }

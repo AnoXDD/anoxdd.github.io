@@ -898,7 +898,7 @@ edit.photo = function() {
 			var htmlContent;
 			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
-				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img class="highlight" src="' + edit.photos[i]["url"] + '"/></a>';
+				htmlContent = '<a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
 			else
 				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
 			$("#attach-area .images").append(htmlContent);
@@ -920,7 +920,7 @@ edit.photo = function() {
 }
 
 edit.photoClick = function(index) {
-	$("#attach-area .images img:eq(" + index + ")").toggleClass("highlight");
+	$("#attach-area .images a:eq(" + index + ")").toggleClass("highlight");
 	// Tell the photos map that this photo would like to switch location
 	edit.photos[i]["change"] = !edit.photos[i]["change"];
 }

@@ -175,7 +175,6 @@ edit.quit = function(save) {
 		edit.save();
 	}
 	edit.removalList = {};
-	edit.photos=[];
 	// Set everything to initial state
 	edit.cleanupMediaEdit();
 	// Content processing
@@ -804,7 +803,11 @@ edit.photo = function() {
 	if (edit.photos.length != 0)
 		// Return if edit.photo is already displayed
 		return;
-	$("#attach-area .images").css({ height: "200px" })
+	if (journal.archive.map.length == 0) {
+		// Download the map first!
+		animation.deny("#add-photo");
+		return;
+	}
 	// Add throttle
 	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	edit.photos = [];
@@ -814,6 +817,8 @@ edit.photo = function() {
 		var images = journal.archive.data[index]["images"];
 		for (var i = 0; i != images.length; ++i) {
 			var name = images[i]["fileName"],
+				image;
+			if (journal.archive.map[name])
 				image = {
 					name: name,
 					size: journal.archive.map[name]["size"],
@@ -822,7 +827,7 @@ edit.photo = function() {
 					/* Whether this image is moved to the other location, 
 					 i.e. if it is deleted or added
 					 */
-					change: false,
+					move: false,
 				};
 			edit.photos.push(image);
 		}
@@ -843,7 +848,7 @@ edit.photo = function() {
 		dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	}
 	var token = getTokenFromCookie(),
-		url =  "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
 	$.ajax({
 		type: "GET",
 		url: url
@@ -1013,7 +1018,7 @@ edit.photoSave = function(callback) {
 
 edit.photoHide = function() {
 	// Just hide everything, no further moves to be made
-	$("#attach-area .images").css({ height: "0" }).fadeOut().html("");
+	$("#attach-area .images").animate({ height: "0" }).fadeOut().html("");
 }
 
 /************************** LOCATION 2 ************************/

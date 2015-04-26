@@ -1157,7 +1157,7 @@ body {
 			margin-right: 5px;
 		}
 
-	#detail .photo a, #attach-area .images img {
+	#detail .photo a, #attach-area .images a {
 		margin: 0 10px 0 10px;
 		position: relative;
 		font-size: 0;

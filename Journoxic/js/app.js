@@ -588,11 +588,10 @@ app.list.prototype = {
 			// Match to see if this filename is already in the map
 			var fileName;
 			if (type == "images") {
-				if (journal.archive.map[first.fileName]) {
+				if (journal.archive.map[first.fileName])
 					fileName = journal.archive.map[first.fileName]["url"];
-					if (fileName == undefined)
-						return '<div class="dummy"></div>';
-				}
+				if (fileName == undefined)
+					return '<div class="dummy"></div>';
 			}
 			if (type == "video") {
 				if (journal.archive.map[first.fileName + "_thumb.jpg"])

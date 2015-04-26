@@ -174,6 +174,7 @@ edit.quit = function(save) {
 		// Save to local contents
 		edit.save();
 	}
+	edit.photos = [];
 	edit.removalList = {};
 	// Set everything to initial state
 	edit.cleanupMediaEdit();
@@ -822,10 +823,9 @@ edit.photo = function() {
 	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	edit.photos = [];
 	for (var i = 0; i != images.length; ++i) {
-		var name = images[i]["fileName"],
-			image;
-		if (journal.archive.map[name])
-			image = {
+		var name = images[i]["fileName"];
+		if (journal.archive.map[name]) {
+			var image = {
 				name: name,
 				size: journal.archive.map[name]["size"],
 				url: journal.archive.map[name]["url"],
@@ -835,7 +835,8 @@ edit.photo = function() {
 				 */
 				change: false,
 			};
-		edit.photos.push(image);
+			edit.photos.push(image);
+		}
 	}
 	// Get resource photos from user content folder
 	// Get correct date folder
@@ -843,9 +844,9 @@ edit.photo = function() {
 	if (edit.photos.length != 0) {
 		// Get date from photos already existed
 		dateStr = edit.photos[0]["name"].substring(0, 6);
-	} else if (localStorage["title"] && isNaN(parseInt(localStorage["title"].substring(0, 6)))) {
+	} else if (localStorage["title"] && !isNaN(parseInt(localStorage["title"].substring(0, 6)))) {
 		// Get date from title, ignore what title looks like
-		dateStr = localStorage["title"].substring(0, 6);
+		dateStr = parseInt(localStorage["title"].substring(0, 6));
 	} else {
 		// Get from current date
 		var date = new Date().getTime();
@@ -868,7 +869,7 @@ edit.photo = function() {
 				name = itemList[key]["name"],
 				suffix = name.substring(name.length - 4),
 				found = false;
-			if (suffix != ".jpg" || suffix != ".png")
+			if (suffix != ".jpg" && suffix != ".png")
 				// Only support these two types
 				continue;
 			// Use size to filter out duplicate photos
@@ -939,7 +940,7 @@ edit.photoSave = function(callback) {
 	} else {
 		// Get the photos whose locations to be changed
 		var photoQueue = [],
-			timeHeader = edit.photos[0].substring(0, 6),
+			timeHeader = edit.photos[0]["name"].substring(0, 6),
 			newImagesData = [];
 		for (var i = 0; i != edit.photos.length; ++i) {
 			var name = edit.photos[i]["name"];
@@ -963,8 +964,8 @@ edit.photoSave = function(callback) {
 		localStorage["images"] = JSON.stringify(newImagesData);
 
 		// Start to change location
-		var resourceDir = "drive/special/approot:/resource",
-			contentDir = "drive/special/approot:/data/" + nameNum.toString().substring(0, 6),
+		var resourceDir = "/drive/root:/Apps/Journal/resource",
+			contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
 			processingPhoto = 0,
 			localCache = JSON.parse(localStorage["images"]);
 		for (var i = 0; i != photoQueue.length; ++i) {
@@ -980,7 +981,7 @@ edit.photoSave = function(callback) {
 						path: resourceDir
 					}
 				};
-				url = "https://api.onedrive.com/v1.0/" + contentDir + "?select=name&access_token=" + token;
+				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?access_token=" + token;
 				// Add to cache
 				localCache.push({
 					fileName: name
@@ -991,8 +992,8 @@ edit.photoSave = function(callback) {
 					parentReference: {
 						path: contentDir
 					}
-				}
-				url = "https://api.onedrive.com/v1.0/" + resourceDir + "?select=name&access_token=" + token;
+				};
+				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?access_token=" + token;
 				// Remove from cache
 				for (var j = 0; j != localCache.length; ++j)
 					if (localCache[j]["fileName"] == name) {

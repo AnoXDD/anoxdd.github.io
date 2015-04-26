@@ -922,7 +922,7 @@ edit.photo = function() {
 edit.photoClick = function(index) {
 	$("#attach-area .images a:eq(" + index + ")").toggleClass("highlight");
 	// Tell the photos map that this photo would like to switch location
-	edit.photos[i]["change"] = !edit.photos[i]["change"];
+	edit.photos[index]["change"] = !edit.photos[index]["change"];
 }
 
 /* 

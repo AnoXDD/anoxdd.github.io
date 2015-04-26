@@ -2096,7 +2096,7 @@ body {
 
 		#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other {
 			overflow-y: hidden;
-			overflow-x: scroll;
+			overflow-x: hidden;
 			height: 35px;
 			width: 97%;
 			text-overflow: clip;
@@ -2115,11 +2115,11 @@ body {
 		}
 
 			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover, #edit-pane #attach-area .images a:hover {
-				opacity: .8;
+				opacity: .8 !important;
 			}
 
 			#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active, #edit-pane #attach-area .images a:active {
-				opacity: .5;
+				opacity: .5 !important;
 			}
 
 		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images a.highlight {
@@ -2331,9 +2331,10 @@ body {
 		}
 
 	#edit-pane .images {
+		height: 0px;
 		padding: 5px 0;
 		width: 95%;
-		overflow-x: scroll;
+		overflow-x: hidden;
 		overflow-y: hidden;
 		transition: height .5s ease;
 	}

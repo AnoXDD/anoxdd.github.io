@@ -184,8 +184,9 @@ function downloadFile() {
 }
 
 /* Recusively read all the children under resource folder */
-function downloadMedia(url) {
-	var id = animation.rotate("#refresh-media");
+function downloadMedia(url, id) {
+	if (id == undefined)
+		id = animation.rotate("#refresh-media");
 	// Reset map
 	if (url == undefined) {
 		// Initial call
@@ -199,7 +200,7 @@ function downloadMedia(url) {
 	}).done(function(data, status, xhr) {
 		if (data["@odata.nextLink"])
 			// More content available!
-			downloadMedia(data["@odata.nextLink"]);
+			downloadMedia(data["@odata.nextLink"], id);
 		var itemList = data["value"];
 		for (var key = 0, len = itemList.length; key != len; ++key) {
 			var data = {

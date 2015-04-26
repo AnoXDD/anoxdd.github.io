@@ -1,4 +1,4 @@
-﻿/* The script for editing anything */
+/* The script for editing anything */
 
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
@@ -153,7 +153,7 @@ edit.init = function(overwrite, index) {
 		for (var i = 0; i != tagsHTML.length; ++i)
 			if ($.inArray(tagsHTML[i], iconTags) != -1)
 				$("#edit-pane #attach-area .icontags p." + tagsHTML[i]).trigger("click");
-		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other").mousewheel(function(event, delta) {
+		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
 			// Only scroll horizontally
 			this.scrollLeft -= (delta * 50);
 			event.preventDefault();
@@ -193,9 +193,9 @@ edit.quit = function(save) {
 
 /* Save cache for edit-pane to journal.archive.data */
 edit.save = function(response) {
-	var index = edit.find(localStorage["created"]);
 	edit.processRemovalList();
 	edit.photoSave(function() {
+		var index = edit.find(localStorage["created"]);
 		edit.exportCache(index);
 		edit.sortArchive();
 		journal.archive.data = edit.minData();
@@ -252,6 +252,11 @@ edit.importCache = function(data) {
 		data["textTags"] = localStorage["textTags"];
 	else
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
+	// photos
+	if (localStorage["images"])
+		data["images"] = JSON.parse(localStorage["images"]);
+	else
+		localStorage["images"] = data["images"] ? data["images"] : "[]";
 	// place, music, book, movie
 	var elem = ["place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {
@@ -350,6 +355,7 @@ edit.cleanEditCache = function() {
 	delete localStorage["music"];
 	delete localStorage["movie"];
 	delete localStorage["book"];
+	delete localStorage["images"];
 }
 
 /* Save the entire journal.archive.data to cache after minimizing it */
@@ -803,34 +809,34 @@ edit.photo = function() {
 	if (edit.photos.length != 0)
 		// Return if edit.photo is already displayed
 		return;
-	if (journal.archive.map.length == 0) {
-		// Download the map first!
-		animation.deny("#add-photo");
-		return;
+	var images = JSON.parse(localStorage["images"]);
+	if (images) {
+		// Test if this entry really doesn't have any images at all
+		if (journal.archive.map.length == 0) {
+			animation.deny("#add-photo");
+			return;
+		}
 	}
+	animation.setConfirm(0);
+	$("#attach-area .images").css({ height: "200px" });
 	// Add throttle
 	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	edit.photos = [];
-	// Get resource photos from data (if any)
-	var index = edit.find(localStorage["created"]);
-	if (journal.archive.data[index]["images"]) {
-		var images = journal.archive.data[index]["images"];
-		for (var i = 0; i != images.length; ++i) {
-			var name = images[i]["fileName"],
-				image;
-			if (journal.archive.map[name])
-				image = {
-					name: name,
-					size: journal.archive.map[name]["size"],
-					url: journal.archive.map[name]["url"],
-					resource: true,
-					/* Whether this image is moved to the other location, 
-					 i.e. if it is deleted or added
-					 */
-					move: false,
-				};
-			edit.photos.push(image);
-		}
+	for (var i = 0; i != images.length; ++i) {
+		var name = images[i]["fileName"],
+			image;
+		if (journal.archive.map[name])
+			image = {
+				name: name,
+				size: journal.archive.map[name]["size"],
+				url: journal.archive.map[name]["url"],
+				resource: true,
+				/* Whether this image is moved to the other location, 
+				 i.e. if it is deleted or added
+				 */
+				change: false,
+			};
+		edit.photos.push(image);
 	}
 	// Get resource photos from user content folder
 	// Get correct date folder
@@ -860,7 +866,12 @@ edit.photo = function() {
 		var itemList = data["value"];
 		for (var key = 0, len = itemList.length; key != len; ++key) {
 			var size = itemList[key]["size"],
+				name = itemList[key]["name"],
+				suffix = name.substring(name.length - 4),
 				found = false;
+			if (suffix != ".jpg" || suffix != ".png")
+				// Only support these two types
+				continue;
 			// Use size to filter out duplicate photos
 			for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
 				if (tmp[i]["size"] == size) {
@@ -873,9 +884,9 @@ edit.photo = function() {
 				continue;
 			} else {
 				var data = {
-					name: itemList[key]["name"],
+					name: name,
 					url: itemList[key]["@content.downloadUrl"],
-					size: itemList[key]["size"],
+					size: size,
 					resource: false,
 					change: false,
 				};
@@ -885,7 +896,12 @@ edit.photo = function() {
 		console.log("edit.photo()\tFinish media data");
 		// Add to images div
 		for (var i = 0; i != edit.photos.length; ++i) {
-			var htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
+			var htmlContent;
+			if (edit.photos["resource"])
+				// The image should be highlighted if it is already at resource folder
+				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img class="highlight" src="' + edit.photos[i]["url"] + '"/></a>';
+			else
+				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -924,33 +940,29 @@ edit.photoSave = function(callback) {
 	} else {
 		// Get the photos whose locations to be changed
 		var photoQueue = [],
-			nameNum = -1;
+			timeHeader = edit.photos[0].substring(0, 6),
+			newImagesData = [];
 		for (var i = 0; i != edit.photos.length; ++i) {
+			var name = edit.photos[i]["name"];
 			if (edit.photos[i]["change"]) {
+				var resource = edit.photos[i]["resource"];
 				// Reset properties in edit.photos first
 				edit.photos[i]["change"] = false;
-				var resource = edit.photos[i]["resource"];
 				edit.photos[i]["resource"] = !resource;
 				photoQueue.push({
-					name: edit.photos[i]["name"],
+					name: name,
 					// New location
 					resource: !resource
 				});
 			}
-			if (edit.photos[i]["resource"]) {
-				// Get the naming sequence from resource
-				var name = edit.photos[i]["name"],
-					suffix = name.substring(name.length - 4);
-				// Remove the file suffix
-				name = substring(0, name.length - 4);
-				var nameNumTmp = parseInt(name);
-				if (isNaN(nameNumTmp)) {
-					if (nameNumTmp > nameNum)
-						// Try to get the largest nameNum possible
-						nameNum = nameNumTmp;
-				}
-			}
+			if (edit.photos[i]["resource"])
+				// Update the data
+				newImagesData.push({
+					fileName: name
+				})
 		}
+		localStorage["images"] = JSON.stringify(newImagesData);
+
 		// Start to change location
 		var resourceDir = "drive/special/approot:/resource",
 			contentDir = "drive/special/approot:/data/" + nameNum.toString().substring(0, 6),
@@ -962,14 +974,9 @@ edit.photoSave = function(callback) {
 				name = photoQueue[i]["name"];
 			if (photoQueue[i]["resource"]) {
 				// Would like to be added to entry, originally at data folder
-				if (nameNum.toString().substring(0, 6) != (nameNum + 1).toString().substring(0, 6)) {
-					// New digit needed for the name
-					nameNum = parseInt(nameNum.toString().substring(0, 6) + "0" + nameNum.toString().substring(6));
-				}
-				++nameNum;
 				requestJSON = {
 					// New name of the file
-					name: nameNum + name.substring(name.length - 4),
+					name: timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4),
 					parentReference: {
 						path: resourceDir
 					}
@@ -1002,6 +1009,7 @@ edit.photoSave = function(callback) {
 				data: JSON.stringify(requestJSON)
 			})
 			.done(function(data, status, xhr) {
+				// Add the url of this new image to map
 				journal.archive.map[name] = data["@content.downloadUrl"];
 				console.log("edit.photoSave()\tFinish update metadata");
 			})

@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1158,7 +1158,7 @@ body {
 		}
 
 	#detail .photo a, #attach-area .images a {
-		margin: 0 10px 0 10px;
+		margin: 10px 0 10px;
 		position: relative;
 		font-size: 0;
 		line-height: 0;
@@ -2114,15 +2114,15 @@ body {
 			-webkit-transition: opacity .4s ease, height .4s ease;
 		}
 
-			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover {
+			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover, #edit-pane #attach-area .images a:hover {
 				opacity: .8;
 			}
 
-			#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active {
+			#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active, #edit-pane #attach-area .images a:active {
 				opacity: .5;
 			}
 
-		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight {
+		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images a.highlight {
 			opacity: 1;
 		}
 
@@ -2331,14 +2331,20 @@ body {
 		}
 
 	#edit-pane .images {
-		/* padding: 5px 0; */
+		padding: 5px 0;
 		width: 95%;
 		overflow-x: scroll;
 		overflow-y: hidden;
 		transition: height .5s ease;
 	}
 
+#edit-pane .images a {
+	opacity:.1;
+	transition: opacity .4s ease;
+}
+
 		#edit-pane .images img {
+    padding: 1px;
 		}
 
 	#edit-pane #map-holder {

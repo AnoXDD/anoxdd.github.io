@@ -588,12 +588,15 @@ app.list.prototype = {
 			// Match to see if this filename is already in the map
 			var fileName;
 			if (type == "images") {
-				fileName = journal.archive.map[first.fileName]["url"];
-				if (fileName == undefined)
-					return '<div class="dummy"></div>';
+				if (journal.archive.map[first.fileName]) {
+					fileName = journal.archive.map[first.fileName]["url"];
+					if (fileName == undefined)
+						return '<div class="dummy"></div>';
+				}
 			}
 			if (type == "video") {
-				fileName = journal.archive.map[first.fileName + "_thumb.jpg"]["url"];
+				if (journal.archive.map[first.fileName + "_thumb.jpg"])
+					fileName = journal.archive.map[first.fileName + "_thumb.jpg"]["url"];
 			}
 			// Check the validity of photos
 			////if (!fileName.match(/.(jpg|png)$/) && !!first.type)

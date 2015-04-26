@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -542,37 +542,37 @@ body {
 				background-color: #5670a5;
 			}
 
-			#list div.attached span.video, #edit-pane #attach-area .types #video-cover  {
+			#list div.attached span.video, #edit-pane #attach-area .types #video-cover {
 				background-position-x: -215px;
 				background-color: #169dae;
 			}
 
-			#list div.attached span.music, #edit-pane #attach-area .types #music-cover  {
+			#list div.attached span.music, #edit-pane #attach-area .types #music-cover {
 				background-position-x: -230px;
 				background-color: #4188f0;
 			}
 
-			#list div.attached span.voice, #edit-pane #attach-area .types #voice-cover  {
+			#list div.attached span.voice, #edit-pane #attach-area .types #voice-cover {
 				background-position-x: -245px;
 				background-color: #ffab19;
 			}
 
-			#list div.attached span.book, #edit-pane #attach-area .types #book-cover  {
+			#list div.attached span.book, #edit-pane #attach-area .types #book-cover {
 				background-position-x: -260px;
 				background-color: #86b73c;
 			}
 
-			#list div.attached span.movie, #edit-pane #attach-area .types #movie-cover  {
+			#list div.attached span.movie, #edit-pane #attach-area .types #movie-cover {
 				background-position-x: -275px;
 				background-color: #a865cd;
 			}
 
-			#list div.attached span.place, #edit-pane #attach-area .types #place-cover  {
+			#list div.attached span.place, #edit-pane #attach-area .types #place-cover {
 				background-position-x: -290px;
 				background-color: #d8513e;
 			}
 
-			#list div.attached span.weblink, #edit-pane #attach-area .types #weblink-cover  {
+			#list div.attached span.weblink, #edit-pane #attach-area .types #weblink-cover {
 				background-position-x: -305px;
 				background-color: #3cbaff;
 			}
@@ -745,7 +745,7 @@ body {
 
 	#detail .upper {
 		height: 0;
-		padding: 1% 0;
+		/* padding: 1% 0; */
 		overflow-y: hidden;
 		margin-right: 5%;
 		transition: .5s ease;
@@ -1157,8 +1157,8 @@ body {
 			margin-right: 5px;
 		}
 
-	#detail .photo a {
-		margin: 10px 10px 0 10px;
+	#detail .photo a, #attach-area .images img {
+		margin: 0 10px 0 10px;
 		position: relative;
 		font-size: 0;
 		line-height: 0;
@@ -1177,7 +1177,7 @@ body {
 			background-color: rgba(0,0,0,.1);
 		}
 
-	#detail .photo img {
+	#detail .photo img, #attach-area .images img {
 		max-width: 100%;
 		max-height: 100%;
 	}
@@ -2114,7 +2114,7 @@ body {
 			-webkit-transition: opacity .4s ease, height .4s ease;
 		}
 
-			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover  {
+			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover {
 				opacity: .8;
 			}
 
@@ -2122,7 +2122,7 @@ body {
 				opacity: .5;
 			}
 
-		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight  {
+		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight {
 			opacity: 1;
 		}
 
@@ -2312,44 +2312,53 @@ body {
 			background: #eeeeee;
 		}
 
-#edit-pane #attach-area .types {
-    /* display: none; */
-
-    text-align: center;
-}
-
-#edit-pane #attach-area .types p {
-    display: inline-block;
- 
-    font-size: 10px;
-    color: #fff;
-    opacity: .1;
-    padding-top: 6px;
-    border-radius: 7px;
-    width: 26px;
-    height: 20px;
-    margin: 0 8px;
-}
-
-#edit-pane #map-holder {
-	display: none;
-	position: relative;
-	
-	top: -webkit-calc(-100% + 45px);
-	height: -webkit-calc(100% - 48px);
-	width: -webkit-calc(100% + 5px);
-}
-
-#edit-pane #map-selector {
-	background: #F3F3F3;
-	/* border-radius: 20px; */
-	height: 100%;
-}
-
-	#edit-pane #map-selector a {
-		height: 0px;
-		background-image: none;
+	#edit-pane #attach-area .types {
+		/* display: none; */
+		text-align: center;
 	}
+
+		#edit-pane #attach-area .types p {
+			display: inline-block;
+			font-size: 10px;
+			color: #fff;
+			opacity: .1;
+			padding-top: 6px;
+			border-radius: 7px;
+			width: 26px;
+			height: 20px;
+			margin: 0 8px 8px 0;
+			transition: opacity .4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+		}
+
+	#edit-pane .images {
+		/* padding: 5px 0; */
+		width: 95%;
+		overflow-x: scroll;
+		overflow-y: hidden;
+		transition: height .5s ease;
+	}
+
+		#edit-pane .images img {
+		}
+
+	#edit-pane #map-holder {
+		display: none;
+		position: relative;
+		top: -webkit-calc(-100% + 45px);
+		height: -webkit-calc(100% - 48px);
+		width: -webkit-calc(100% + 5px);
+	}
+
+	#edit-pane #map-selector {
+		background: #F3F3F3;
+		/* border-radius: 20px; */
+		height: 100%;
+	}
+
+		#edit-pane #map-selector a {
+			height: 0px;
+			background-image: none;
+		}
 
 
 /* STARTING OTHER ATTACHED MEDIA */
@@ -2517,15 +2526,15 @@ body {
 	height: 50px;
 }
 
-	#attach-area .movie .thumb {
-		background-position: -440px -310px;
-	}
+#attach-area .movie .thumb {
+	background-position: -440px -310px;
+}
 
-	#attach-area .book .thumb {
-		background-position: -490px -310px;
-	}
+#attach-area .book .thumb {
+	background-position: -490px -310px;
+}
 
-#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, #attach-area .weblink a, #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
+#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a,   #attach-area .weblink a,   #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
 	height: 50px;
 }
 

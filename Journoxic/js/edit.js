@@ -256,7 +256,7 @@ edit.importCache = function(data) {
 	if (localStorage["images"])
 		data["images"] = JSON.parse(localStorage["images"]);
 	else
-		localStorage["images"] = data["images"] ? data["images"] : "[]";
+		localStorage["images"] = data["images"] ? JSON.stringify(data["images"]) : "[]";
 	// place, music, book, movie
 	var elem = ["place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {

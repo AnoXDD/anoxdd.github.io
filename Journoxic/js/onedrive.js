@@ -135,8 +135,7 @@ function downloadFile() {
 	console.log("Start downloadFile()");
 	// Change loading icons and disable click
 	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
-	var id1 = animation.blink("#download"),
-		id2;
+	var id1 = animation.blink("#download");
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
 		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
@@ -157,7 +156,6 @@ function downloadFile() {
 			window.app.dataLoaded = false;
 			window.app.load("", true, xhr.responseText);
 			console.log("downloadFile()\tFinish core data");
-			id2 = animation.rotate("#refresh-media");
 			// Get metadata
 			$.ajax({
 				type: "GET",
@@ -177,7 +175,6 @@ function downloadFile() {
 		.always(function() {
 			// Stop blinking and rotating
 			clearInterval(id1);
-			clearInterval(id2);
 			// Change loading icons and re-enable click
 			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 			animation.finished("#download");
@@ -188,6 +185,7 @@ function downloadFile() {
 
 /* Recusively read all the children under resource folder */
 function downloadMedia(url) {
+	var id = animation.rotate("#refresh-media");
 	// Reset map
 	if (url == undefined) {
 		// Initial call
@@ -215,6 +213,7 @@ function downloadMedia(url) {
 		if (_.size(journal.archive.map) == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
 			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
+			clearInterval(id);
 			animation.finished("#refresh-media");
 		}
 		console.log("downloadFile()\tFinish media data");

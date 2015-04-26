@@ -817,7 +817,6 @@ edit.photo = function() {
 			return;
 		}
 	}
-	animation.setConfirm(0);
 	$("#attach-area .images").css({ height: "200px" });
 	// Add throttle
 	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
@@ -897,7 +896,7 @@ edit.photo = function() {
 		// Add to images div
 		for (var i = 0; i != edit.photos.length; ++i) {
 			var htmlContent;
-			if (edit.photos["resource"])
+			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
 				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img class="highlight" src="' + edit.photos[i]["url"] + '"/></a>';
 			else

@@ -1,4 +1,4 @@
-﻿//(function(window, $) {
+//(function(window, $) {
 window.journal = {};
 window.app = {};
 journal.archive = {};
@@ -844,6 +844,7 @@ app.detail = function() { // [m]
 	// Add online media url to the classes
 	var eachOp = function() {
 		var className = $(this).attr("class");
+		if (journal.archive.map[className])
 		$(this).attr("href", journal.archive.map[className]["url"]).removeAttr("class");
 	};
 	$(".lower .video a").each(eachOp);

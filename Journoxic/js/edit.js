@@ -165,14 +165,14 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
-edit.quit = function(save) {
+edit.quit = function(save, selector) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	edit.mediaIndex = {};
 	edit.localChange = [];
 	if (save) {
 		// Save to local contents
-		edit.save();
+		edit.save(false, selector);
 	}
 	edit.photos = [];
 	edit.removalList = {};
@@ -194,6 +194,12 @@ edit.quit = function(save) {
 
 /* Save cache for edit-pane to journal.archive.data */
 edit.save = function(response) {
+	var id, html;
+	if (selector) {
+		html = $(selector).html();
+		$(selector).html("&#xE10C").removeAttr("onclick").removeAttr("href");
+		id = animation.blink(selector);
+	}
 	edit.processRemovalList();
 	edit.photoSave(function() {
 		var index = edit.find(localStorage["created"]);
@@ -201,9 +207,12 @@ edit.save = function(response) {
 		edit.sortArchive();
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
-		if (response)
+		if (response) {
+			clearInterval(id);
+			$(selector).html(html);
 			// Show finish animation
 			animation.finished("#add-save-local");
+		}
 	})
 }
 

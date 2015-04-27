@@ -117,6 +117,18 @@ animation.finished = function(selector) {
 	}
 }
 
+animation.warning = function(selector) {
+	if (animation.isShown(selector)) {
+		/* Keep a record of original text */
+		var text = $(selector).html();
+		$(selector).fadeOut(300, function() {
+			$(this).html("&#xE171").css({ background: "#fff" });
+		}).fadeIn(300).delay(500).fadeOut(300, function() {
+			$(this).html(text).css({ background: "" });
+		}).fadeIn(300);
+	}
+}
+
 animation.deny = function(selector) {
 	if (animation.isShown(selector)) {
 		/* Keep a record of original text */

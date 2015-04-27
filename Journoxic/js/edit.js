@@ -193,7 +193,7 @@ edit.quit = function(save, selector) {
 }
 
 /* Save cache for edit-pane to journal.archive.data */
-edit.save = function(response) {
+edit.save = function(response, selector) {
 	var id, html;
 	if (selector) {
 		html = $(selector).html();

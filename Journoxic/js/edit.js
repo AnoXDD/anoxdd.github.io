@@ -848,22 +848,30 @@ edit.photo = function() {
 				change: false,
 			};
 			edit.photos.push(image);
+		} else {
+			// File not found, remove this file
+			images.splice(i--, 1);
+			localStorage["images"] = JSON.stringify(images);
 		}
 	}
 	// Get resource photos from user content folder
 	// Get correct date folder
 	var dateStr;
-	if (edit.photos.length != 0) {
+	if (localStorage["images"].length != 0) {
 		// Get date from photos already existed
-		dateStr = edit.photos[0]["name"].substring(0, 6);
-	} else if (localStorage["title"] && !isNaN(parseInt(localStorage["title"].substring(0, 6)))) {
-		// Get date from title, ignore what title looks like
-		dateStr = parseInt(localStorage["title"].substring(0, 6));
+		dateStr = JSON.parse(localStorage["images"])[0]["fileName"].substring(0, 6);
 	} else {
-		// Get from current date
-		var date = new Date().getTime();
-		date = new Date(date - 14400000);
-		dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+		// Get date from title, ignore what title looks like
+		if (localStorage["title"]) {
+			// Sometimes for some reason the first character is an "empty" char
+			dateStr = parseInt(localStorage["title"]);
+			if (isNaN(dateStr) || dateStr.toString().length != 6) {
+				// Inorrect format, get from current date
+				var date = new Date().getTime();
+				date = new Date(date - 14400000);
+				dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+			}
+		}
 	}
 	var token = getTokenFromCookie(),
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
@@ -966,12 +974,12 @@ edit.photoSave = function(callback) {
 					// New location
 					resource: !resource
 				});
-			}
-			if (edit.photos[i]["resource"])
-				// Update the data
+			} else if (edit.photos[i]["resource"]) {
+				// Update the data for those photos that don't change locations
 				newImagesData.push({
 					fileName: name
-				})
+				});
+			}
 		}
 		localStorage["images"] = JSON.stringify(newImagesData);
 

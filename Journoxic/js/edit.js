@@ -165,14 +165,14 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
-edit.quit = function(save) {
+edit.quit = function(save, selector) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	edit.mediaIndex = {};
 	edit.localChange = [];
 	if (save) {
 		// Save to local contents
-		edit.save();
+		edit.save(false, selector);
 	}
 	edit.photos = [];
 	edit.removalList = {};
@@ -193,7 +193,13 @@ edit.quit = function(save) {
 }
 
 /* Save cache for edit-pane to journal.archive.data */
-edit.save = function(response) {
+edit.save = function(response, selector) {
+	var id, html;
+	if (selector) {
+		html = $(selector).html();
+		$(selector).html("&#xE10C").removeAttr("onclick").removeAttr("href");
+		id = animation.blink(selector);
+	}
 	edit.processRemovalList();
 	edit.photoSave(function() {
 		var index = edit.find(localStorage["created"]);
@@ -201,9 +207,12 @@ edit.save = function(response) {
 		edit.sortArchive();
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
-		if (response)
+		if (response) {
+			clearInterval(id);
+			$(selector).html(html);
 			// Show finish animation
 			animation.finished("#add-save-local");
+		}
 	})
 }
 
@@ -974,14 +983,15 @@ edit.photoSave = function(callback) {
 				name = photoQueue[i]["name"];
 			if (photoQueue[i]["resource"]) {
 				// Would like to be added to entry, originally at data folder
+				name = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
 				requestJSON = {
 					// New name of the file
-					name: timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4),
+					name: name,
 					parentReference: {
 						path: resourceDir
 					}
 				};
-				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?access_token=" + token;
+				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name&access_token=" + token;
 				// Add to cache
 				localCache.push({
 					fileName: name
@@ -993,7 +1003,7 @@ edit.photoSave = function(callback) {
 						path: contentDir
 					}
 				};
-				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?access_token=" + token;
+				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name&access_token=" + token;
 				// Remove from cache
 				for (var j = 0; j != localCache.length; ++j)
 					if (localCache[j]["fileName"] == name) {
@@ -1009,6 +1019,7 @@ edit.photoSave = function(callback) {
 				data: JSON.stringify(requestJSON)
 			})
 			.done(function(data, status, xhr) {
+				console.log(JSON.stringify(data));
 				// Add the url of this new image to map
 				journal.archive.map[name] = data["@content.downloadUrl"];
 				console.log("edit.photoSave()\tFinish update metadata");

@@ -209,7 +209,10 @@ edit.save = function(response, selector) {
 		edit.saveDataCache();
 		if (response) {
 			clearInterval(id);
-			$(selector).html(html);
+			$(selector).html(html).attr({
+				onclick: "edit.save(true, '#add-save-local')",
+				href: "#"
+			});
 			// Show finish animation
 			animation.finished("#add-save-local");
 		}
@@ -978,26 +981,28 @@ edit.photoSave = function(callback) {
 			processingPhoto = 0,
 			localCache = JSON.parse(localStorage["images"]);
 		for (var i = 0; i != photoQueue.length; ++i) {
-			var requestJSON, url,
+			var requestJSON, url, newName,
 				token = getTokenFromCookie(),
 				name = photoQueue[i]["name"];
 			if (photoQueue[i]["resource"]) {
 				// Would like to be added to entry, originally at data folder
-				name = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
+				newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
 				requestJSON = {
 					// New name of the file
-					name: name,
+					name: newName,
 					parentReference: {
 						path: resourceDir
 					}
 				};
+				// Still use the old name to find the file
 				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name&access_token=" + token;
 				// Add to cache
 				localCache.push({
-					fileName: name
+					fileName: newName
 				});
 			} else {
 				// Would like to be added to data, i.e. remove from resource folder
+				newName = name;
 				requestJSON = {
 					parentReference: {
 						path: contentDir
@@ -1020,8 +1025,12 @@ edit.photoSave = function(callback) {
 			})
 			.done(function(data, status, xhr) {
 				// Add the url of this new image to map
-				journal.archive.map[name] = data["@content.downloadUrl"];
+				journal.archive.map[newName] = data["@content.downloadUrl"];
 				console.log("edit.photoSave()\tFinish update metadata");
+			})
+			.fail(function(xhr, status, error) {
+				animation.warning("#add-photo");
+				console.log(error);
 			})
 			.always(function() {
 				// Test if it is elligible for calling callback()

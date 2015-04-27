@@ -296,6 +296,7 @@ edit.exportCache = function(index) {
 		data["attachments"] = 0;
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
+	data["images"] = JSON.parse(localStorage["images"]);
 	var media,
 		elem = ["place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i < elem.length; ++i) {
@@ -825,7 +826,11 @@ edit.photo = function() {
 	var images = JSON.parse(localStorage["images"]);
 	if (images) {
 		// Test if this entry really doesn't have any images at all
-		if (journal.archive.map.length == 0) {
+		if (!(Object.keys(journal.archive.map).length > 0)) {
+					$("#add-photo").html("&#xE114").attr({
+			onclick: "edit.addMedia(0)",
+			href: "#"
+		});
 			animation.deny("#add-photo");
 			return;
 		}
@@ -834,7 +839,7 @@ edit.photo = function() {
 	// Add throttle
 	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	edit.photos = [];
-	for (var i = 0; i != images.length; ++i) {
+	for (var i = 0; i < images.length; ++i) {
 		var name = images[i]["fileName"];
 		if (journal.archive.map[name]) {
 			var image = {
@@ -848,7 +853,7 @@ edit.photo = function() {
 				change: false,
 			};
 			edit.photos.push(image);
-		} else {
+		} else  {
 			// File not found, remove this file
 			images.splice(i--, 1);
 			localStorage["images"] = JSON.stringify(images);
@@ -857,9 +862,9 @@ edit.photo = function() {
 	// Get resource photos from user content folder
 	// Get correct date folder
 	var dateStr;
-	if (localStorage["images"].length != 0) {
+	if (images.length != 0) {
 		// Get date from photos already existed
-		dateStr = JSON.parse(localStorage["images"])[0]["fileName"].substring(0, 6);
+		dateStr = images[0]["fileName"].substring(0, 6);
 	} else {
 		// Get date from title, ignore what title looks like
 		if (localStorage["title"]) {
@@ -981,13 +986,13 @@ edit.photoSave = function(callback) {
 				});
 			}
 		}
+		// Store all the files in the resource folder that don't change locations later in the cache
 		localStorage["images"] = JSON.stringify(newImagesData);
 
 		// Start to change location
 		var resourceDir = "/drive/root:/Apps/Journal/resource",
 			contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
-			processingPhoto = 0,
-			localCache = JSON.parse(localStorage["images"]);
+			processingPhoto = 0;
 		for (var i = 0; i != photoQueue.length; ++i) {
 			var requestJSON, url, newName,
 				token = getTokenFromCookie(),
@@ -1003,9 +1008,9 @@ edit.photoSave = function(callback) {
 					}
 				};
 				// Still use the old name to find the file
-				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name&access_token=" + token;
+				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
 				// Add to cache
-				localCache.push({
+				newImagesData.push({
 					fileName: newName
 				});
 			} else {
@@ -1016,11 +1021,11 @@ edit.photoSave = function(callback) {
 						path: contentDir
 					}
 				};
-				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name&access_token=" + token;
+				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
 				// Remove from cache
-				for (var j = 0; j != localCache.length; ++j)
-					if (localCache[j]["fileName"] == name) {
-						delete localCache[name];
+				for (var j = 0; j != newImagesData.length; ++j)
+					if (newImagesData[j]["fileName"] == name) {
+						delete newImagesData[name];
 						break;
 					}
 				delete journal.archive.map[name];
@@ -1033,7 +1038,10 @@ edit.photoSave = function(callback) {
 			})
 			.done(function(data, status, xhr) {
 				// Add the url of this new image to map
-				journal.archive.map[newName] = data["@content.downloadUrl"];
+				journal.archive.map[newName] = {
+					url: data["@content.downloadUrl"],
+					size: data["size"]
+				}
 				console.log("edit.photoSave()\tFinish update metadata");
 			})
 			.fail(function(xhr, status, error) {
@@ -1043,7 +1051,7 @@ edit.photoSave = function(callback) {
 			.always(function() {
 				// Test if it is elligible for calling callback()
 				if (++processingPhoto == photoQueue.length) {
-					localStorage["images"] = JSON.stringify(localCache);
+					localStorage["images"] = JSON.stringify(newImagesData);
 					callback();
 				}
 			});

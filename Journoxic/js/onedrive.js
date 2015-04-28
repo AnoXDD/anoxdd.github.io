@@ -132,7 +132,8 @@ function init() {
 }
 
 function downloadFile() {
-	console.log("Start downloadFile()");
+	animation.log("Start downloading data...");
+	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
 	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	var id1 = animation.blink("#download");
@@ -155,7 +156,8 @@ function downloadFile() {
 		.done(function(data, status, xhr) {
 			window.app.dataLoaded = false;
 			window.app.load("", true, xhr.responseText);
-			console.log("downloadFile()\tFinish core data");
+			////console.log("downloadFile()\tFinish core data");
+			animation.log("Text data fetched");
 			// Get metadata
 			$.ajax({
 				type: "GET",
@@ -163,14 +165,15 @@ function downloadFile() {
 			}).done(function(data, status, xhr) {
 				// Get the data number
 				journal.archive.media = data["folder"]["childCount"];
-				console.log("downloadFile()\tFinish metadata");
+				animation.log("Start downloading media data ...");
 				downloadMedia();
 			}).fail(function() {
-				alert("Cannot load children list");
+				animation.log("Cannot find the media data", true);
 			});
 		})
 		.fail(function(xhr, status, error) {
-			alert("Cannot download the file. Do you enable CORS?");
+			animation.log("Cannot find any text data", true);
+			////alert("Cannot download the file. Do you enable CORS?");
 		})
 		.always(function() {
 			// Stop blinking and rotating
@@ -178,7 +181,7 @@ function downloadFile() {
 			// Change loading icons and re-enable click
 			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
 			animation.finished("#download");
-			console.log("downloadFile()\tFinish downloading");
+			////console.log("downloadFile()\tFinish downloading");
 		});
 	}
 }
@@ -215,15 +218,17 @@ function downloadMedia(url, id) {
 			// All the media have been loaded, so refresh button goes back to original status
 			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
 			clearInterval(id);
+			animation.log("Media data fetched");
 			animation.finished("#refresh-media");
 		}
-		console.log("downloadFile()\tFinish media data");
+		////console.log("downloadFile()\tFinish media data");
 	});
 }
 
 /* Upload journal.archive.data to OneDrive, also created a backup */
 function uploadFile() {
-	console.log("Starting uploadFile()");
+	////console.log("Starting uploadFile()");
+	animation.log("Start uploading ...");
 	// Change loading icons and disable click
 	$("#upload").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	var id = animation.blink("#upload"),
@@ -253,7 +258,8 @@ function uploadFile() {
 		////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
 	.done(function() {
 		$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f 50%,#343434 0%,#343434 100%)");
-		console.log("uploadFile():\t Done backup");
+		////console.log("uploadFile():\t Done backup");
+		animation.log("Data backup finished");
 		// Clean the unnecessary data
 		var tmp = edit.minData();
 		$.ajax({
@@ -263,14 +269,17 @@ function uploadFile() {
 			data: JSON.stringify(tmp)
 		})
 		.done(function(data, status, xhr) {
-			console.log("uploadFile():\t Done!");
+			////console.log("uploadFile():\t Done!");
+			animation.log("Data uploaded");
 		})
 		.fail(function() {
-			alert("Cannot upload files");
+			animation.log("Cannot upload data. Please try fixing the problem manually", true);
+			////alert("Cannot upload files");
 		})
 	})
 	.fail(function() {
-		alert("Cannot backup the file");
+		animation.log("Cannot backup data. Please see if there is any name conflict", true);
+		////alert("Cannot backup the file");
 	})
 	.always(function() {
 		// Stop blinking
@@ -278,7 +287,7 @@ function uploadFile() {
 		// Change loading icons and re-enable click
 		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#");
 		animation.finished("#upload");
-		console.log("uploadFile()\tFinish uploading");
+		////console.log("uploadFile()\tFinish uploading");
 	})
 }
 
@@ -300,6 +309,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 			var result = response.results[0];
 			if (result == undefined) {
 				// Not found
+				animatino.log("Cannot find matched result", true);
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found

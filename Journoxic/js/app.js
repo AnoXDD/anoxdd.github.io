@@ -108,7 +108,7 @@ app.init = function() {
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
 		if (app.currentDisplayed == -1) {
-			console.log("delete\tNothing to delete!")
+			animation.log("No entry is selected", true);
 			animation.deny(this);
 			return;
 		}
@@ -124,7 +124,8 @@ app.init = function() {
 app.load = function(filter, forceReload, newContent) {
 	if (newContent == "") {
 		// Try to add nothing
-		console.log("app.load()\tNo new content!");
+		////console.log("app.load()\tNo new content!");
+		animation.log("Cannot load data: no new content is specified", true);
 		animation.deny("#refresh-media");
 		return;
 	} else if (newContent == undefined) {
@@ -133,7 +134,8 @@ app.load = function(filter, forceReload, newContent) {
 			return key != undefined;
 		});
 		if (journal.archive.data.length == 0) {
-			console.log("app.load()\tNo archive data!");
+			////console.log("app.load()\tNo archive data!");
+			animation.log("Cannot load data: no archive data is found", true);
 			animation.deny("#refresh-media");
 			return;
 		}
@@ -154,6 +156,7 @@ app.load = function(filter, forceReload, newContent) {
 		// app.loadScript("data/data.js", loadFunction, true);
 		if (newContent) {
 			// New contents available! Refresh the new data
+			animation.log("Find new content with " + newContent.length + " entries");
 			console.log("app.load(): data.length = " + newContent.length);
 			app.loadScript(newContent, loadFunction, false);
 			edit.saveDataCache();
@@ -162,6 +165,7 @@ app.load = function(filter, forceReload, newContent) {
 	if (forceReload) {
 		// Start to reload
 		// Remove all the child elements and always
+		animation.log("Force reload data");
 		console.log("==================Force loaded==================");
 		$("#list").empty();
 		app.lastLoaded = 0;

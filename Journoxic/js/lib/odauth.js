@@ -151,6 +151,7 @@ function showLoginButton() {
 // otherwise it will remove the textual link that showLoginButton() created.
 function removeLoginButton() {
 	// Show everything app needs
+	animation.log("Welcome back");
 	$("#sign-in-prompt").remove();
 	headerShowMenu();
 	$("#search-new").fadeIn();

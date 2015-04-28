@@ -115,7 +115,7 @@ animation.finished = function(selector) {
 			$(this).html(text).css({ background: "" });
 		}).fadeIn(300);
 	}
-}
+};
 
 animation.warning = function(selector) {
 	if (animation.isShown(selector)) {
@@ -127,7 +127,7 @@ animation.warning = function(selector) {
 			$(this).html(text).css({ background: "" });
 		}).fadeIn(300);
 	}
-}
+};
 
 animation.deny = function(selector) {
 	if (animation.isShown(selector)) {
@@ -143,7 +143,39 @@ animation.deny = function(selector) {
 
 animation.invalid = function(selector) {
 	$(selector).effect("highlight", { color: "#8d8d8d" });
-}
+};
+
+/* Log something on the menu to let the user now */
+animation.log = function(message, error) {
+	var id = new Date().getTime(),
+		htmlContent;
+	if (error)
+		htmlContent = '<p class="error" id=' + id + ">" + message + "</p>";
+	else
+		htmlContent = "<p id=" + id + ">" + message + "</p>";
+	$(htmlContent).appendTo("#feedback").css("opacity", "1").click(function() {
+		$(this).slideUp(200, function() {
+			$(this).remove();
+		});
+	});
+	// Auto dim
+	setTimeout(function() {
+		$("p#" + id).removeAttr("style");
+	}, 2000);
+	// Auto remove itself
+	var click = function() {
+		if ($("p#" + id).css("opacity") != 1)
+			$("p#" + id).trigger("click");
+		else
+			setTimeout(click, 5000);
+	}
+	setTimeout(click, 5000);
+	console.log("From user log: \t" + new Date() + ": " + message);
+	////$("#feedback").html(message).css("opacity", "1");
+	////setTimeout(function() {
+	////	$("#feedback").css("opacity", ".01");
+	////}, 2000);
+};
 
 function headerShowMenu(name) {
 	animation.hideIcon(".actions a");

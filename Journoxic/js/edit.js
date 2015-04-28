@@ -1,5 +1,13 @@
 /* The script for editing anything */
 
+/*
+ Todo:	edit.photoHeader to get the general header for photos
+			then fix edit.photoSave
+		Add a reponse log area under buttons or somewhere to tell the user what is going on
+
+*/
+
+
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
@@ -195,6 +203,7 @@ edit.quit = function(save, selector) {
 /* Save cache for edit-pane to journal.archive.data */
 edit.save = function(response, selector) {
 	var id, html;
+	animation.log("Saving data ...");
 	if (selector) {
 		html = $(selector).html();
 		$(selector).html("&#xE10C").removeAttr("onclick").removeAttr("href");
@@ -216,6 +225,8 @@ edit.save = function(response, selector) {
 			// Show finish animation
 			animation.finished("#add-save-local");
 		}
+		clearInterval(id);
+		animation.log("Data saved");
 	})
 }
 
@@ -827,10 +838,11 @@ edit.photo = function() {
 	if (images) {
 		// Test if this entry really doesn't have any images at all
 		if (!(Object.keys(journal.archive.map).length > 0)) {
-					$("#add-photo").html("&#xE114").attr({
-			onclick: "edit.addMedia(0)",
-			href: "#"
-		});
+			$("#add-photo").html("&#xE114").attr({
+				onclick: "edit.addMedia(0)",
+				href: "#"
+			});
+			animation.log("Cannot load images: please download all the media on the main menu", true);
 			animation.deny("#add-photo");
 			return;
 		}
@@ -853,7 +865,7 @@ edit.photo = function() {
 				change: false,
 			};
 			edit.photos.push(image);
-		} else  {
+		} else {
 			// File not found, remove this file
 			images.splice(i--, 1);
 			localStorage["images"] = JSON.stringify(images);
@@ -897,7 +909,7 @@ edit.photo = function() {
 			if (suffix != ".jpg" && suffix != ".png")
 				// Only support these two types
 				continue;
-			// Use size to filter out duplicate photos
+			// Use size to filter out duplicate pahotos
 			for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
 				if (tmp[i]["size"] == size) {
 					found = true;
@@ -935,12 +947,15 @@ edit.photo = function() {
 			href: "#"
 		}).fadeIn();
 		animation.setConfirm(0);
+		animation.log("Photo loaded");
 		animation.finished("#add-photo");
-	}).fail(function() {
+	})
+	.fail(function() {
 		$("#add-photo").html("&#xE114").attr({
 			onclick: "edit.addMedia(0)",
 			href: "#"
 		});
+		animation.log("Cannot load image: failed to find images under data/" + dateStr, true);
 		animation.deny("#add-photo");
 	});
 }
@@ -965,8 +980,9 @@ edit.photoSave = function(callback) {
 	} else {
 		// Get the photos whose locations to be changed
 		var photoQueue = [],
-			timeHeader = edit.photos[0]["name"].substring(0, 6),
+			timeHeader,
 			newImagesData = [];
+		// Get the correct header for the photo
 		for (var i = 0; i != edit.photos.length; ++i) {
 			var name = edit.photos[i]["name"];
 			if (edit.photos[i]["change"]) {
@@ -984,6 +1000,13 @@ edit.photoSave = function(callback) {
 				newImagesData.push({
 					fileName: name
 				});
+			}
+			// Get the correct header folder
+			if (timeHeader == undefined) {
+				var timeHeaderTmp = parseInt(name);
+				if (!isNaN(name) && name.toString().length == 6)
+					// Correct format
+					timeHeader = timeHeaderTmp.toString();
 			}
 		}
 		// Store all the files in the resource folder that don't change locations later in the cache
@@ -1042,9 +1065,11 @@ edit.photoSave = function(callback) {
 					url: data["@content.downloadUrl"],
 					size: data["size"]
 				}
+				animation.log("Photo changes saved");
 				console.log("edit.photoSave()\tFinish update metadata");
 			})
 			.fail(function(xhr, status, error) {
+				animation.log("Cannot load photo: " + name, true);
 				animation.warning("#add-photo");
 				console.log(error);
 			})

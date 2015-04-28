@@ -156,7 +156,7 @@ app.load = function(filter, forceReload, newContent) {
 		// app.loadScript("data/data.js", loadFunction, true);
 		if (newContent) {
 			// New contents available! Refresh the new data
-			animation.log("Find new content with " + newContent.length + " entries");
+			animation.log("Find new content with " + newContent.length + " chars");
 			console.log("app.load(): data.length = " + newContent.length);
 			app.loadScript(newContent, loadFunction, false);
 			edit.saveDataCache();

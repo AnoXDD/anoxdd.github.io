@@ -173,14 +173,14 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
-edit.quit = function(save, selector) {
+edit.quit = function(selector) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	edit.mediaIndex = {};
 	edit.localChange = [];
 	if (save) {
 		// Save to local contents
-		edit.save(false, selector);
+		edit.save(selector);
 	}
 	edit.photos = [];
 	edit.removalList = {};
@@ -201,7 +201,7 @@ edit.quit = function(save, selector) {
 }
 
 /* Save cache for edit-pane to journal.archive.data */
-edit.save = function(response, selector) {
+edit.save = function(selector) {
 	var id, html;
 	animation.log("Saving data ...");
 	if (selector) {
@@ -216,16 +216,13 @@ edit.save = function(response, selector) {
 		edit.sortArchive();
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
-		if (response) {
-			clearInterval(id);
-			$(selector).html(html).attr({
-				onclick: "edit.save(true, '#add-save-local')",
-				href: "#"
-			});
-			// Show finish animation
-			animation.finished("#add-save-local");
-		}
 		clearInterval(id);
+		$(selector).html(html).attr({
+			onclick: "edit.save('" + selector + "')",
+			href: "#"
+		});
+		// Show finish animation
+		animation.finished(selector);
 		animation.log("Data saved");
 	})
 }
@@ -838,10 +835,6 @@ edit.photo = function() {
 	if (images) {
 		// Test if this entry really doesn't have any images at all
 		if (!(Object.keys(journal.archive.map).length > 0)) {
-			$("#add-photo").html("&#xE114").attr({
-				onclick: "edit.addMedia(0)",
-				href: "#"
-			});
 			animation.log("Cannot load images: please download all the media on the main menu", true);
 			animation.deny("#add-photo");
 			return;
@@ -1004,9 +997,9 @@ edit.photoSave = function(callback) {
 			// Get the correct header folder
 			if (timeHeader == undefined) {
 				var timeHeaderTmp = parseInt(name);
-				if (!isNaN(name) && name.toString().length == 6)
+				if (!isNaN(timeHeaderTmp) && timeHeaderTmp.toString().length >= 6)
 					// Correct format
-					timeHeader = timeHeaderTmp.toString();
+					timeHeader = timeHeaderTmp.toString().substring(0, 6);
 			}
 		}
 		// Store all the files in the resource folder that don't change locations later in the cache
@@ -1069,7 +1062,7 @@ edit.photoSave = function(callback) {
 				console.log("edit.photoSave()\tFinish update metadata");
 			})
 			.fail(function(xhr, status, error) {
-				animation.log("Cannot load photo: " + name, true);
+				animation.log("Cannot load photo: " + timeHeader + name, true);
 				animation.warning("#add-photo");
 				console.log(error);
 			})

@@ -1843,34 +1843,6 @@ body {
 	height: 70px;
 }
 
-	.header #feedback {
-		position: relative;
-		top: 10px;
-		z-index: 1;
-		transition: opacity .5s ease;
-	}
-
-		.header #feedback p {
-			font-size: 10px;
-			color: #BABABA;
-			margin-bottom: 2px;
-			padding: 4px 15px;
-			background: #555555;
-			box-shadow: 1px 1px 1px #2B2B2B;
-			transition: opacity .5s ease;
-			opacity: .2;
-			float: right;
-			clear: both;
-		}
-
-			.header #feedback p:hover {
-				opacity: 1;
-			}
-
-		.header #feedback p.error {
-			color: #000;
-			background: #fff;
-		}
 
 
 	.header #sign-in-prompt {
@@ -1928,6 +1900,35 @@ body {
 		.header #search-result #total-entry, .header #search-result #total-displayed, .header #search-result #total-char, .header #search-result #total-line {
 			padding-right: 20px;
 		}
+
+#feedback {
+	position: relative;
+	top: 2px;
+	z-index: 1;
+	transition: opacity .5s ease;
+}
+
+	#feedback p {
+		font-size: 10px;
+		color: #BABABA;
+		margin-bottom: 2px;
+		padding: 4px 15px;
+		background: #555555;
+		box-shadow: 1px 1px 1px #2B2B2B;
+		opacity: .3;
+		float: right;
+		clear: both;
+	}
+
+		#feedback p:hover {
+			opacity: 1;
+		}
+
+		#feedback p.error {
+			color: #000;
+			background: #fff;
+		}
+
 
 .actions {
 	display: inline-block;

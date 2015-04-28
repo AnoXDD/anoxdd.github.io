@@ -153,14 +153,14 @@ animation.log = function(message, error) {
 		htmlContent = '<p class="error" id=' + id + ">" + message + "</p>";
 	else
 		htmlContent = "<p id=" + id + ">" + message + "</p>";
-	$(htmlContent).appendTo("#feedback").css("opacity", "1").click(function() {
+	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).click(function() {
 		$(this).slideUp(200, function() {
 			$(this).remove();
 		});
 	});
 	// Auto dim
 	setTimeout(function() {
-		$("p#" + id).removeAttr("style");
+		$("p#" + id).fadeTo(400, .5);
 	}, 2000);
 	// Auto remove itself
 	var click = function() {

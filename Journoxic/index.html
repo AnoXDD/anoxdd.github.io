@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.8.0 Build 042715_2320</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.8.1 Build 042815_0012</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -29,8 +29,8 @@
 			<p>Total time:</p>
 			<p id="total-time">...</p>
 		</div>
-		<div id="feedback"></div>
 	</div>
+	<div id="feedback"></div>
 	<div class="actions">
 		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xE10B</a>
 		<a class="entry-option" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xE139</a>
@@ -44,8 +44,8 @@
 		<a class="entry-add" title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#x1f3ac</a>
 		<a class="entry-add" title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xE1D3</a>
 		<a class="entry-add" title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="#">&#xE167</a>
-		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save(true, '#add-save-local')" href="#">&#xE159</a>
-		<a class="entry-add" title="Save and quit" id="add-save" onclick="edit.quit(true, '#add-save')" href="#">&#xE105</a>
+		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xE159</a>
+		<a class="entry-add" title="Save and quit" id="add-save" onclick="edit.quit('#add-save')" href="#">&#xE105</a>
 		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xE107</a>
 		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xE1D9</a>
 		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE149</a>

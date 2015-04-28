@@ -157,19 +157,26 @@ animation.log = function(message, error) {
 		$(this).slideUp(200, function() {
 			$(this).remove();
 		});
+	}).hover(function() {
+		$(this).fadeTo(400, 1);
 	});
-	// Auto dim
-	setTimeout(function() {
-		$("p#" + id).fadeTo(400, .5);
-	}, 2000);
-	// Auto remove itself
-	var click = function() {
-		if ($("p#" + id).css("opacity") != 1)
-			$("p#" + id).trigger("click");
-		else
-			setTimeout(click, 5000);
+	if (error) {
+		// Add error message
+		message = "[ERR] " + message;
+	} else {
+		// Auto dim
+		setTimeout(function() {
+			$("p#" + id).fadeTo(400, .5);
+		}, 2000);
+		// Auto remove itself
+		var click = function() {
+			if ($("p#" + id).css("opacity") != 1)
+				$("p#" + id).trigger("click");
+			else
+				setTimeout(click, 5000);
+		}
+		setTimeout(click, 5000);
 	}
-	setTimeout(click, 5000);
 	console.log("From user log: \t" + new Date() + ": " + message);
 	////$("#feedback").html(message).css("opacity", "1");
 	////setTimeout(function() {

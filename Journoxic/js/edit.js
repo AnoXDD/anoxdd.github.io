@@ -173,15 +173,14 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 }
 
-edit.quit = function(selector) {
+edit.quit = function(selector, save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	edit.mediaIndex = {};
 	edit.localChange = [];
-	if (save) {
+	if (save)
 		// Save to local contents
 		edit.save(selector);
-	}
 	edit.photos = [];
 	edit.removalList = {};
 	// Set everything to initial state
@@ -223,7 +222,7 @@ edit.save = function(selector) {
 		});
 		// Show finish animation
 		animation.finished(selector);
-		animation.log("Data saved");
+		animation.log("Finished saving data");
 	})
 }
 
@@ -883,6 +882,7 @@ edit.photo = function() {
 			}
 		}
 	}
+	animation.log("Start loading images under data/" + dateStr + " ...");
 	var token = getTokenFromCookie(),
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
 	$.ajax({
@@ -940,7 +940,7 @@ edit.photo = function() {
 			href: "#"
 		}).fadeIn();
 		animation.setConfirm(0);
-		animation.log("Photo loaded");
+		animation.log("Photos loaded");
 		animation.finished("#add-photo");
 	})
 	.fail(function() {
@@ -1012,8 +1012,9 @@ edit.photoSave = function(callback) {
 		for (var i = 0; i != photoQueue.length; ++i) {
 			var requestJSON, url, newName,
 				token = getTokenFromCookie(),
-				name = photoQueue[i]["name"];
-			if (photoQueue[i]["resource"]) {
+				name = photoQueue[i]["name"],
+				isToResource = photoQueue[i]["resource"];
+			if (isToResource) {
 				// Would like to be added to entry, originally at data folder
 				newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
 				requestJSON = {
@@ -1026,9 +1027,6 @@ edit.photoSave = function(callback) {
 				// Still use the old name to find the file
 				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
 				// Add to cache
-				newImagesData.push({
-					fileName: newName
-				});
 			} else {
 				// Would like to be added to data, i.e. remove from resource folder
 				newName = name;
@@ -1038,13 +1036,6 @@ edit.photoSave = function(callback) {
 					}
 				};
 				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
-				// Remove from cache
-				for (var j = 0; j != newImagesData.length; ++j)
-					if (newImagesData[j]["fileName"] == name) {
-						delete newImagesData[name];
-						break;
-					}
-				delete journal.archive.map[name];
 			}
 			$.ajax({
 				type: "PATCH",
@@ -1058,18 +1049,35 @@ edit.photoSave = function(callback) {
 					url: data["@content.downloadUrl"],
 					size: data["size"]
 				}
-				animation.log("Photo changes saved");
+				animation.log("Photo transfer saved");
 				console.log("edit.photoSave()\tFinish update metadata");
 			})
 			.fail(function(xhr, status, error) {
-				animation.log("Cannot load photo: " + timeHeader + name, true);
+				animation.log("Cannot load photo: " + timeHeader + name + ". No transfer was made", true);
 				animation.warning("#add-photo");
 				console.log(error);
+				// Revert the transfer process
+				isToResource = !isToResource;
 			})
 			.always(function() {
+				// Get the result of transferring
+				if (isToResource) {
+					newImagesData.push({
+						fileName: newName
+					});
+				} else {
+					// To data, and remove from cache
+					for (var j = 0; j != newImagesData.length; ++j)
+						if (newImagesData[j]["fileName"] == name) {
+							delete newImagesData[name];
+							break;
+						}
+					delete journal.archive.map[name];
+				}
 				// Test if it is elligible for calling callback()
 				if (++processingPhoto == photoQueue.length) {
 					localStorage["images"] = JSON.stringify(newImagesData);
+					animation.log("Finished photo transfer");
 					callback();
 				}
 			});

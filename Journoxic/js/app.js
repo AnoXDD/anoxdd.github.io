@@ -165,7 +165,7 @@ app.load = function(filter, forceReload, newContent) {
 	if (forceReload) {
 		// Start to reload
 		// Remove all the child elements and always
-		animation.log("Force reload data");
+		animation.log("Data reloaded");
 		console.log("==================Force loaded==================");
 		$("#list").empty();
 		app.lastLoaded = 0;

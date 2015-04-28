@@ -1921,7 +1921,8 @@ body {
 	}
 
 		#feedback p:hover {
-			opacity: 1;
+			opacity: 1 !important;
+			transition: opacity .4s ease;
 		}
 
 		#feedback p.error {

@@ -309,10 +309,11 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 			var result = response.results[0];
 			if (result == undefined) {
 				// Not found
-				animatino.log("Cannot find matched result", true);
+				animation.log("Cannot find matched result", true);
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found
+				animation.log("Result found");
 				var artist = result["artistName"],
 					track = result["trackName"],
 					coverURL = result["artworkUrl100"];

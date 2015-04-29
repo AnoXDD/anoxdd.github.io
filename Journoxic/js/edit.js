@@ -181,6 +181,8 @@ edit.quit = function(selector, save) {
 	if (save)
 		// Save to local contents
 		edit.save(selector);
+	else
+		animation.log("Data discarded");
 	edit.photos = [];
 	edit.removalList = {};
 	// Set everything to initial state
@@ -272,13 +274,8 @@ edit.importCache = function(data) {
 		data["textTags"] = localStorage["textTags"];
 	else
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
-	// photos
-	if (localStorage["images"])
-		data["images"] = JSON.parse(localStorage["images"]);
-	else
-		localStorage["images"] = data["images"] ? JSON.stringify(data["images"]) : "[]";
-	// place, music, book, movie
-	var elem = ["place", "music", "book", "movie", "weblink"];
+	// photos, video, place, music, book, movie
+	var elem = ["images", "video" ,"place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {
 		var medium = elem[i];
 		if (localStorage[medium])
@@ -827,9 +824,11 @@ edit.convertTime = function(time) {
 /************************** PHOTO 0 ************************/
 
 edit.photo = function() {
-	if (edit.photos.length != 0)
+	if (edit.photos.length != 0) {
 		// Return if edit.photo is already displayed
+		animation.log("You have already displayed the images");
 		return;
+	}
 	var images = JSON.parse(localStorage["images"]);
 	if (images) {
 		// Test if this entry really doesn't have any images at all

@@ -300,18 +300,27 @@ edit.exportCache = function(index) {
 		data["attachments"] = 0;
 	data["iconTags"] = parseInt(localStorage["iconTags"]);
 	data["textTags"] = localStorage["textTags"];
-	data["images"] = JSON.parse(localStorage["images"]);
 	var media,
-		elem = ["place", "music", "book", "movie", "weblink"];
+		elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
+		attach = 0;
 	for (var i = 0; i < elem.length; ++i) {
-		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : i;
+		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
 		for (var j = 0; j < media.length; ++j) {
 			if (!media[j] || media[j]["title"] == "")
 				// null or undefined or empty title, remove this
 				media.splice(j--, 1);
 		}
 		data[elem[i]] = media.length == 0 ? undefined : media;
+		if (media.length == 0) {
+			// Empty content
+			data[elem[i]] = undefined;
+		} else {
+			// Change the attachment
+			attach = attach | Math.pow(2, i);
+			data[elem[i]] = media;
+		}
 	}
+	data["attachments"] = attach;
 	if (index < 0) {
 		// Create a new entry
 		journal.archive.data.push(data);

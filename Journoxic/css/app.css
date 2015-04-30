@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1902,9 +1902,10 @@ body {
 		}
 
 #feedback {
-	position: relative;
-	top: 2px;
-	z-index: 1;
+	position: absolute;
+	top: 80px;
+	right: 8px;
+	z-index: 99;
 	transition: opacity .5s ease;
 }
 
@@ -1914,7 +1915,6 @@ body {
 		margin-bottom: 2px;
 		padding: 4px 15px;
 		background: #555555;
-		box-shadow: 1px 1px 1px #2B2B2B;
 		opacity: .3;
 		float: right;
 		clear: both;
@@ -1923,12 +1923,20 @@ body {
 		#feedback p:hover {
 			opacity: 1 !important;
 			transition: opacity .4s ease;
+			box-shadow: 1px 1px 1px #2B2B2B;
+		}
+
+		#feedback p:active {
+			opacity: .5 !important;
 		}
 
 		#feedback p.error {
 			color: #000;
 			background: #fff;
+			box-shadow: 0 0 0;
 		}
+
+
 
 
 .actions {

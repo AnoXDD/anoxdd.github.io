@@ -275,7 +275,7 @@ edit.importCache = function(data) {
 	else
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
 	// photos, video, place, music, book, movie
-	var elem = ["images", "video" ,"place", "music", "book", "movie", "weblink"];
+	var elem = ["images", "video", "place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {
 		var medium = elem[i];
 		if (localStorage[medium])
@@ -298,7 +298,7 @@ edit.exportCache = function(index) {
 		data["coverType"] = 0;
 	if (!data["attachments"])
 		data["attachments"] = 0;
-	data["iconTags"] = parseInt(localStorage["iconTags"]);
+	data["iconTags"] = !isNaN(parseInt(localStorage["iconTags"])) ? parseInt(localStorage["iconTags"]) : 0;
 	data["textTags"] = localStorage["textTags"];
 	var media,
 		elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
@@ -751,6 +751,8 @@ edit.saveTag = function() {
 	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
 	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
+		// The entry is already added
+		animation.log('Tag "' + tagVal + '" is already added', true);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 	} else {
 		var found = false;
@@ -759,9 +761,21 @@ edit.saveTag = function() {
 			if ($(this).attr("title").toLowerCase() == tagVal) {
 				// Found
 				found = true;
+				var parent = $(this).parent().attr("class");
+				if (parent == "weather" || parent == "emotion") {
+					// Only one weather and emotion is allowed
+					if ($(this).css("height") == "0") {
+						// Hidden div, means another weather/emotion has already been added
+						animation.log('Tag "' + tagVal + '" cannot be added as an icon', true);
+						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+						return;
+					}
+				}
 				if (!$(this).hasClass("highlight")) {
+					animation.log('Tag "' + tagVal + '" is added as an icon');
 					$(this).trigger("click");
 				} else {
+					animation.log('Tag "' + tagVal + '" is already added as an icon', true);
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 					// Saved
 				}
@@ -830,6 +844,31 @@ edit.convertTime = function(time) {
 	return date.getTime();
 }
 
+/* Get my version of date with priority of 1) title content 2) created 3) now */
+edit.getDate = function() {
+	var dateStr;
+	// Get date from title, ignore what title looks like
+	if (localStorage["title"]) {
+		// Sometimes for some reason the first character is an "empty" char
+		dateStr = parseInt(localStorage["title"]);
+		if (!isNaN(dateStr) && dateStr.toString().length == 6) {
+			// Correct format
+			return dateStr;
+		}
+	}
+	var date;
+	if (localStorage["created"]) {
+		// Date will be based on created
+		date = new Date(parseInt(localStorage["created"]));
+	} else {
+		// Date will be based on now
+		date = new Date().getTime();
+		date = new Date(date - 14400000);
+	}
+	dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+	return dateStr;
+}
+
 /************************** PHOTO 0 ************************/
 
 edit.photo = function() {
@@ -878,17 +917,7 @@ edit.photo = function() {
 		// Get date from photos already existed
 		dateStr = images[0]["fileName"].substring(0, 6);
 	} else {
-		// Get date from title, ignore what title looks like
-		if (localStorage["title"]) {
-			// Sometimes for some reason the first character is an "empty" char
-			dateStr = parseInt(localStorage["title"]);
-			if (isNaN(dateStr) || dateStr.toString().length != 6) {
-				// Inorrect format, get from current date
-				var date = new Date().getTime();
-				date = new Date(date - 14400000);
-				dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
-			}
-		}
+		dateStr = edit.getDate();
 	}
 	animation.log("Start loading images under data/" + dateStr + " ...");
 	var token = getTokenFromCookie(),
@@ -1010,6 +1039,9 @@ edit.photoSave = function(callback) {
 					timeHeader = timeHeaderTmp.toString().substring(0, 6);
 			}
 		}
+		if (timeHeader == undefined)
+			// Still cannot find the correct header
+			timeHeader = edit.getDate();
 		// Store all the files in the resource folder that don't change locations later in the cache
 		localStorage["images"] = JSON.stringify(newImagesData);
 
@@ -1017,78 +1049,86 @@ edit.photoSave = function(callback) {
 		var resourceDir = "/drive/root:/Apps/Journal/resource",
 			contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
 			processingPhoto = 0;
-		for (var i = 0; i != photoQueue.length; ++i) {
-			var requestJSON, url, newName,
-				token = getTokenFromCookie(),
-				name = photoQueue[i]["name"],
-				isToResource = photoQueue[i]["resource"];
-			if (isToResource) {
-				// Would like to be added to entry, originally at data folder
-				newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
-				requestJSON = {
-					// New name of the file
-					name: newName,
-					parentReference: {
-						path: resourceDir
-					}
-				};
-				// Still use the old name to find the file
-				url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
-				// Add to cache
-			} else {
-				// Would like to be added to data, i.e. remove from resource folder
-				newName = name;
-				requestJSON = {
-					parentReference: {
-						path: contentDir
-					}
-				};
-				url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
-			}
-			$.ajax({
-				type: "PATCH",
-				url: url,
-				contentType: "application/json",
-				data: JSON.stringify(requestJSON)
-			})
-			.done(function(data, status, xhr) {
-				// Add the url of this new image to map
-				journal.archive.map[newName] = {
-					url: data["@content.downloadUrl"],
-					size: data["size"]
-				}
-				animation.log("Photo transfer saved");
-				console.log("edit.photoSave()\tFinish update metadata");
-			})
-			.fail(function(xhr, status, error) {
-				animation.log("Cannot load photo: " + timeHeader + name + ". No transfer was made", true);
-				animation.warning("#add-photo");
-				console.log(error);
-				// Revert the transfer process
-				isToResource = !isToResource;
-			})
-			.always(function() {
-				// Get the result of transferring
+		if (photoQueue.length != 0) {
+			// Process the photos
+			for (var i = 0; i != photoQueue.length; ++i) {
+				var requestJSON, url, newName,
+					token = getTokenFromCookie(),
+					name = photoQueue[i]["name"],
+					isToResource = photoQueue[i]["resource"];
 				if (isToResource) {
-					newImagesData.push({
-						fileName: newName
-					});
-				} else {
-					// To data, and remove from cache
-					for (var j = 0; j != newImagesData.length; ++j)
-						if (newImagesData[j]["fileName"] == name) {
-							delete newImagesData[name];
-							break;
+					// Would like to be added to entry, originally at data folder
+					newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
+					requestJSON = {
+						// New name of the file
+						name: newName,
+						parentReference: {
+							path: resourceDir
 						}
-					delete journal.archive.map[name];
+					};
+					// Still use the old name to find the file
+					url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
+					// Add to cache
+				} else {
+					// Would like to be added to data, i.e. remove from resource folder
+					newName = name;
+					requestJSON = {
+						parentReference: {
+							path: contentDir
+						}
+					};
+					url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
 				}
-				// Test if it is elligible for calling callback()
-				if (++processingPhoto == photoQueue.length) {
-					localStorage["images"] = JSON.stringify(newImagesData);
-					animation.log("Finished photo transfer");
-					callback();
-				}
-			});
+				$.ajax({
+					type: "PATCH",
+					url: url,
+					contentType: "application/json",
+					data: JSON.stringify(requestJSON)
+				})
+				.done(function(data, status, xhr) {
+					// Add the url of this new image to map
+					journal.archive.map[newName] = {
+						url: data["@content.downloadUrl"],
+						size: data["size"]
+					}
+					animation.log("Photo transfer saved");
+					console.log("edit.photoSave()\tFinish update metadata");
+				})
+				.fail(function(xhr, status, error) {
+					animation.log("Cannot load photo: " + timeHeader + name + ". No transfer was made", true);
+					animation.warning("#add-photo");
+					console.log(error);
+					// Revert the transfer process
+					isToResource = !isToResource;
+				})
+				.always(function() {
+					// Update the final destination
+					edit.photos[i]["resource"] = isToResource;
+					// Get the result of transferring
+					if (isToResource) {
+						newImagesData.push({
+							fileName: newName
+						});
+					} else {
+						// To data, and remove from cache
+						for (var j = 0; j != newImagesData.length; ++j)
+							if (newImagesData[j]["fileName"] == name) {
+								delete newImagesData[name];
+								break;
+							}
+						delete journal.archive.map[name];
+					}
+					// Test if it is elligible for calling callback()
+					if (++processingPhoto == photoQueue.length) {
+						localStorage["images"] = JSON.stringify(newImagesData);
+						animation.log("Finished photo transfer");
+						callback();
+					}
+				});
+			}
+		} else {
+			// Call callback directly
+			callback();
 		}
 	}
 }

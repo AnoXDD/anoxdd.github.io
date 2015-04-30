@@ -601,7 +601,7 @@ edit.mediaName = function(typeNum) {
 		case 6:
 			return "book";
 		case 7:
-			return "link";
+			return "weblink";
 		default:
 			return "";
 	}
@@ -764,7 +764,7 @@ edit.saveTag = function() {
 				var parent = $(this).parent().attr("class");
 				if (parent == "weather" || parent == "emotion") {
 					// Only one weather and emotion is allowed
-					if ($(this).css("height") == "0") {
+					if ($(this).css("height") == "0px") {
 						// Hidden div, means another weather/emotion has already been added
 						animation.log('Tag "' + tagVal + '" cannot be added as an icon', true);
 						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
@@ -1103,20 +1103,28 @@ edit.photoSave = function(callback) {
 				})
 				.always(function() {
 					// Update the final destination
-					edit.photos[i]["resource"] = isToResource;
-					// Get the result of transferring
-					if (isToResource) {
-						newImagesData.push({
-							fileName: newName
-						});
-					} else {
-						// To data, and remove from cache
-						for (var j = 0; j != newImagesData.length; ++j)
-							if (newImagesData[j]["fileName"] == name) {
-								delete newImagesData[name];
-								break;
+					for (var k = 0; k != edit.photos.length; ++k) {
+						// Still use the old name
+						if (edit.photos[k]["name"] == name) {
+							// Update the new name
+							edit.photos[k]["name"] == newName;
+							edit.photos[k]["resource"] = isToResource;
+							// Get the result of transferring
+							if (isToResource) {
+								newImagesData.push({
+									fileName: newName
+								});
+							} else {
+								// To data, and remove from cache
+								for (var j = 0; j != newImagesData.length; ++j)
+									if (newImagesData[j]["fileName"] == name) {
+										delete newImagesData[name];
+										break;
+									}
+								delete journal.archive.map[name];
 							}
-						delete journal.archive.map[name];
+							break;
+						}
 					}
 					// Test if it is elligible for calling callback()
 					if (++processingPhoto == photoQueue.length) {

@@ -1070,6 +1070,13 @@ edit.photoSave = function(callback) {
 					};
 					url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
 				}
+				// Update the new name
+				for (var j = 0; j != edit.photos.length; ++j) {
+					if (edit.photos[j]["name"] == name) {
+						edit.photos[j]["newName"] = newName;
+						break;
+					}
+				}
 				$.ajax({
 					type: "PATCH",
 					url: url,
@@ -1078,7 +1085,6 @@ edit.photoSave = function(callback) {
 				})
 				.done(function(data, status, xhr) {
 					var newName = data["name"];
-					console.log("PASSED");
 					// Add the url of this new image to map
 					journal.archive.map[newName] = {
 						url: data["@content.downloadUrl"],
@@ -1094,17 +1100,18 @@ edit.photoSave = function(callback) {
 				})
 				.always(function(data, status, xhr) {
 					// Update the final destination
-					for (var k = 0; k != edit.photos.length; ++k) {
-						// Still use the old name
-						if (edit.photos[k]["name"] == name) {
-							// Find the matched name
-							var newName = data["name"];
-							// Test if newName is undefined.
-							// Being undefined means an error, so nothing will be changed
-							if (newName != undefined) {
+					var newName = data["name"];
+					// Test if newName is undefined.
+					// Being undefined means an error, so nothing will be changed
+					if (newName != undefined) {
+						for (var k = 0; k != edit.photos.length; ++k) {
+							// Still use the old name
+							if (edit.photos[k]["newName"] == newName) {
+								// Find the matched name
+								var name = edit.photos[k]["name"],
+										resource = edit.photos[k]["resource"];
 								// Update the new name
 								edit.photos[k]["name"] = newName;
-								var resource = edit.photos[k]["resource"];
 								// Switch the location
 								edit.photos[k]["resource"] = !resource;
 								// Get the result of transferring
@@ -1122,8 +1129,8 @@ edit.photoSave = function(callback) {
 										}
 									delete journal.archive.map[name];
 								}
+								break;
 							}
-							break;
 						}
 					}
 					// Test if it is elligible for calling callback()

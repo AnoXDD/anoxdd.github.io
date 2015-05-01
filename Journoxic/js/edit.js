@@ -857,7 +857,7 @@ edit.getDate = function() {
 		date = new Date().getTime();
 		date = new Date(date - 14400000);
 	}
-	dateStr = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	return dateStr;
 }
 
@@ -1071,6 +1071,7 @@ edit.photoSave = function(callback) {
 					};
 					url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
 				}
+				photoQueue[i]["name"] = newName;
 				$.ajax({
 					type: "PATCH",
 					url: url,
@@ -1078,6 +1079,10 @@ edit.photoSave = function(callback) {
 					data: JSON.stringify(requestJSON)
 				})
 				.done(function(data, status, xhr) {
+					var newName = data["name"];
+					console.log(JSON.stringify(photoQueue[i]));
+					photoQueue[i]["name"] = newName;
+					console.log("PASSED");
 					// Add the url of this new image to map
 					journal.archive.map[newName] = {
 						url: data["@content.downloadUrl"],
@@ -1099,6 +1104,8 @@ edit.photoSave = function(callback) {
 						// Still use the old name
 						if (edit.photos[k]["name"] == name) {
 							// Update the new name
+												console.log(JSON.stringify(photoQueue[i]));
+							var newName = photoQueue[i]["name"];
 							edit.photos[k]["name"] = newName;
 							edit.photos[k]["resource"] = isToResource;
 							// Get the result of transferring

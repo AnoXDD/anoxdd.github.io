@@ -212,12 +212,12 @@ edit.save = function(selector) {
 	}
 	edit.processRemovalList();
 	edit.photoSave(function() {
+		clearInterval(id);
 		var index = edit.find(localStorage["created"]);
 		edit.exportCache(index);
 		edit.sortArchive();
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
-		clearInterval(id);
 		$(selector).html(html).attr({
 			onclick: "edit.save('" + selector + "')",
 			href: "#"
@@ -372,17 +372,9 @@ edit.exportCacheBody = function(data) {
 
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
-	delete localStorage["title"];
-	delete localStorage["body"];
-	delete localStorage["created"];
-	delete localStorage["currentEditing"];
-	delete localStorage["iconTags"];
-	delete localStorage["textTags"];
-	delete localStorage["place"];
-	delete localStorage["music"];
-	delete localStorage["movie"];
-	delete localStorage["book"];
-	delete localStorage["images"];
+	var deleteList = ["title", "body", "created", "currentEditing", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video"];
+	for (var i = 0; i != deleteList.length; ++i)
+		delete localStorage[deleteList[i]];
 }
 
 /* Save the entire journal.archive.data to cache after minimizing it */
@@ -1107,7 +1099,7 @@ edit.photoSave = function(callback) {
 						// Still use the old name
 						if (edit.photos[k]["name"] == name) {
 							// Update the new name
-							edit.photos[k]["name"] == newName;
+							edit.photos[k]["name"] = newName;
 							edit.photos[k]["resource"] = isToResource;
 							// Get the result of transferring
 							if (isToResource) {

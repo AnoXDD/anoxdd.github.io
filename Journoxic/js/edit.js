@@ -1006,18 +1006,17 @@ edit.photoSave = function(callback) {
 			newImagesData = [];
 		// Get the correct header for the photo
 		for (var i = 0; i != edit.photos.length; ++i) {
-			var name = edit.photos[i]["name"];
+			var name = edit.photos[i]["name"],
+				resource = edit.photos[i]["resource"];
 			if (edit.photos[i]["change"]) {
-				var resource = edit.photos[i]["resource"];
 				// Reset properties in edit.photos first
 				edit.photos[i]["change"] = false;
-				edit.photos[i]["resource"] = !resource;
 				photoQueue.push({
 					name: name,
 					// New location
 					resource: !resource
 				});
-			} else if (edit.photos[i]["resource"]) {
+			} else if (resource) {
 				// Update the data for those photos that don't change locations
 				newImagesData.push({
 					fileName: name
@@ -1071,7 +1070,6 @@ edit.photoSave = function(callback) {
 					};
 					url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
 				}
-				photoQueue[i]["name"] = newName;
 				$.ajax({
 					type: "PATCH",
 					url: url,
@@ -1080,8 +1078,6 @@ edit.photoSave = function(callback) {
 				})
 				.done(function(data, status, xhr) {
 					var newName = data["name"];
-					console.log(JSON.stringify(photoQueue[i]));
-					photoQueue[i]["name"] = newName;
 					console.log("PASSED");
 					// Add the url of this new image to map
 					journal.archive.map[newName] = {
@@ -1094,33 +1090,38 @@ edit.photoSave = function(callback) {
 				.fail(function(xhr, status, error) {
 					animation.log("Cannot load photo: " + timeHeader + name + ". No transfer was made", true);
 					animation.warning("#add-photo");
-					console.log(error);
 					// Revert the transfer process
-					isToResource = !isToResource;
 				})
-				.always(function() {
+				.always(function(data, status, xhr) {
 					// Update the final destination
 					for (var k = 0; k != edit.photos.length; ++k) {
 						// Still use the old name
 						if (edit.photos[k]["name"] == name) {
-							// Update the new name
-												console.log(JSON.stringify(photoQueue[i]));
-							var newName = photoQueue[i]["name"];
-							edit.photos[k]["name"] = newName;
-							edit.photos[k]["resource"] = isToResource;
-							// Get the result of transferring
-							if (isToResource) {
-								newImagesData.push({
-									fileName: newName
-								});
-							} else {
-								// To data, and remove from cache
-								for (var j = 0; j != newImagesData.length; ++j)
-									if (newImagesData[j]["fileName"] == name) {
-										delete newImagesData[name];
-										break;
-									}
-								delete journal.archive.map[name];
+							// Find the matched name
+							var newName = data["name"];
+							// Test if newName is undefined.
+							// Being undefined means an error, so nothing will be changed
+							if (newName != undefined) {
+								// Update the new name
+								edit.photos[k]["name"] = newName;
+								var resource = edit.photos[k]["resource"];
+								// Switch the location
+								edit.photos[k]["resource"] = !resource;
+								// Get the result of transferring
+								if (!resource) {
+									// Originally not at the resource, to resource
+									newImagesData.push({
+										fileName: newName
+									});
+								} else {
+									// To data, and remove from cache
+									for (var j = 0; j != newImagesData.length; ++j)
+										if (newImagesData[j]["fileName"] == name) {
+											delete newImagesData[name];
+											break;
+										}
+									delete journal.archive.map[name];
+								}
 							}
 							break;
 						}

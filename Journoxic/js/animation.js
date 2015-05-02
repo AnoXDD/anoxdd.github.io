@@ -1,11 +1,15 @@
-﻿/* A library for animations */
+/* A library for animations */
 window.animation = {};
 
 animation.degree = 0;
-animation.duration = 400;
+animation.duration = 200;
 
 animation.hideIcon = function(selector, callback) {
-	$(selector).fadeOut(0, callback).css({ top: "-80px" });
+	$(selector).fadeOut(animation.duration, function() {
+		if (callback)
+		callback();
+		$(this).css({ top: "-80px" });
+	});
 };
 
 animation.showIcon = function(selector, callback) {

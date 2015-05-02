@@ -1,5 +1,5 @@
 ﻿var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot",
-	token, mydata, mystatus, myxhr;
+	token, mydata, mystatus, myxhr; 
 
 /************************************************************************
 		EVERY PATH SHOULD _NOT_ BE _STARTED_ AND _ENDED_ WITH '/'

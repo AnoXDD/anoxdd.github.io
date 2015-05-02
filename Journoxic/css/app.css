@@ -1950,7 +1950,7 @@ body {
 	.actions a {
 		text-decoration: none;
 		text-align: center;
-		transition: background .2s ease, top .5s ease, transform 1.5s ease;
+		transition: background .2s ease, transform 1.5s ease;
 		color: #b7b7b7;
 		background: #3f3f3f;
 		border-radius: 20px;

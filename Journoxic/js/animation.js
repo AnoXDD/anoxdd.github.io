@@ -2,18 +2,14 @@
 window.animation = {};
 
 animation.degree = 0;
-animation.duration = 200;
+animation.duration = 250;
 
 animation.hideIcon = function(selector, callback) {
-	$(selector).fadeOut(animation.duration, function() {
-		if (callback)
-		callback();
-		$(this).css({ top: "-80px" });
-	});
+	$(selector).fadeOut(animation.duration, callback);
 };
 
 animation.showIcon = function(selector, callback) {
-	$(selector).fadeIn(animation.duration, callback).css({ top: "10px" });
+	$(selector).css({ top: "10px" }).fadeIn(animation.duration, callback);
 };
 
 animation.isShown = function(selector) {

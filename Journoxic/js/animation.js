@@ -2,15 +2,14 @@
 window.animation = {};
 
 animation.degree = 0;
+animation.duration = 400;
 
 animation.hideIcon = function(selector, callback) {
-	callback = callback || function() { };
-	$(selector).fadeOut(200).animate({ top: "-80px" }, 200, "swing", callback);
+	$(selector).fadeOut(0, callback).css({ top: "-80px" });
 };
 
 animation.showIcon = function(selector, callback) {
-	callback = callback || function() { };
-	$(selector).fadeIn(0).animate({ top: "10px" }, 200, "swing", callback);
+	$(selector).fadeIn(animation.duration, callback).css({ top: "10px" });
 };
 
 animation.isShown = function(selector) {
@@ -186,20 +185,22 @@ animation.log = function(message, error) {
 
 function headerShowMenu(name) {
 	animation.hideIcon(".actions a");
-	if (name == "edit")
-		name = ".entry-edit";
-	else if (name == "add")
-		name = ".entry-add";
-	else if (name == "comm")
-		name = ".entry-comm";
-	else
-		// name == undefined or other situations
-		name = ".entry-menu";
-	// Disable going back for edit-pane
-	if (name != ".entry-add" && name != ".entry-menu")
-		animation.showIcon("#show-menu");
-	if (name == ".entry-edit" && localStorage["_cache"] == 1)
-		animation.showIcon("#reread");
-	animation.showIcon(name);
+	setTimeout(function() {
+		if (name == "edit")
+			name = ".entry-edit";
+		else if (name == "add")
+			name = ".entry-add";
+		else if (name == "comm")
+			name = ".entry-comm";
+		else
+			// name == undefined or other situations
+			name = ".entry-menu";
+		// Disable going back for edit-pane
+		if (name != ".entry-add" && name != ".entry-menu")
+			animation.showIcon("#show-menu");
+		if (name == ".entry-edit" && localStorage["_cache"] == 1)
+			animation.showIcon("#reread");
+		animation.showIcon(name);
+	}, animation.duration + 50);
 };
 

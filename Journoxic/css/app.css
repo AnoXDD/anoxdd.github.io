@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1159,8 +1159,7 @@ body {
 
 	#detail .photo a, #attach-area .images a {
 		margin: 10px 0 10px;
-		position: relative;
-		font-size: 0;
+		font-size: 10px;
 		line-height: 0;
 		white-space: nowrap;
 	}
@@ -1178,9 +1177,11 @@ body {
 		}
 
 	#detail .photo img, #attach-area .images img {
-		max-width: 100%;
-		max-height: 100%;
-	}
+	
+		width: 100px;
+		height: 100px;
+		object-fit: cover;
+}
 
 	#detail .jplayer-wrap {
 		position: relative;
@@ -2380,22 +2381,26 @@ body {
 		transition: height .5s ease;
 	}
 
-		#edit-pane .images a {
+		#edit-pane .images a, #edit-pane .images canvas {
 			opacity: .1;
 			transition: opacity .4s ease;
-		}
+		
+			width: 100px;
+}
 
 		#edit-pane .images img {
 			padding: 1px;
 		}
 
-	#edit-pane #map-holder {
+	#edit-pane #map-holder, #edit-pane #photo-preview {
 		display: none;
 		position: relative;
 		top: -webkit-calc(-100% + 45px);
 		height: -webkit-calc(100% - 48px);
 		width: -webkit-calc(100% + 5px);
-	}
+	
+		opacity: 0;
+}
 
 	#edit-pane #map-selector {
 		background: #F3F3F3;
@@ -2408,6 +2413,12 @@ body {
 			background-image: none;
 		}
 
+	#edit-pane #photo-preview {
+    display: block;
+		
+	
+    width: 0px;
+}
 
 /* STARTING OTHER ATTACHED MEDIA */
 

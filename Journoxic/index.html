@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.8.10.0 Build 050115_0026</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.8.10.1 Build 050115_2246</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -284,6 +284,7 @@
 			<div id="map-holder">
 				<div id="map-selector"></div>
 			</div>
+			<div id="photo-preview"><img /></div>
 		</div>
 		<div id="attach-area">
 			<div class="icontags">
@@ -317,8 +318,7 @@
 				<p id="book-cover">&#xE1D3</p>
 				<p id="weblink-cover">&#xE167</p>
 			</div>
-			<div class="images">
-			</div>
+			<div class="images"></div>
 			<%
 			if( video ) {
 			for( i in video ) {

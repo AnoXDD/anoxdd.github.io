@@ -878,7 +878,7 @@ edit.photo = function() {
 			return;
 		}
 	}
-	$("#attach-area .images").css({ height: "200px" });
+	$("#attach-area .images").css({ height: "100px" });
 	// Add throttle
 	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
 	edit.photos = [];
@@ -968,6 +968,23 @@ edit.photo = function() {
 			onclick: "edit.addMedia(0)",
 			href: "#"
 		}).fadeIn();
+		// Set preview
+		$("#attach-area .images").hover(function() {
+			// Mouseover
+			$("#photo-preview").css("display", "block");
+		}, function() {
+			// Mouseout
+			$("#photo-preview").css("display", "none");
+		})
+		$("#attach-area .images img").each(function() {
+			$(this).hover(function() {
+				// Mouseover
+				$("#photo-preview img").attr("src", $(this).attr("src"));
+			}, function() {
+				// Mouseout
+				$("#photo-preview img").removeAttr("src");
+			})
+		})
 		animation.setConfirm(0);
 		animation.log("Photos loaded");
 		animation.finished("#add-photo");
@@ -1090,11 +1107,11 @@ edit.photoSave = function(callback) {
 						url: data["@content.downloadUrl"],
 						size: data["size"]
 					}
-					animation.log("Photo transfer saved");
+					animation.log("Photo transferred");
 					console.log("edit.photoSave()\tFinish update metadata");
 				})
 				.fail(function(xhr, status, error) {
-					animation.log("Cannot load photo: " + timeHeader + name + ". No transfer was made", true);
+					animation.log("One tranfer failed. No transfer was made", true);
 					animation.warning("#add-photo");
 					// Revert the transfer process
 				})

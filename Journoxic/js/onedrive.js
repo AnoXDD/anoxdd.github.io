@@ -213,8 +213,10 @@ function downloadMedia(url, id) {
 			journal.archive.map[itemList[key]["name"]] = data;
 		}
 		// Show progress
-		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + _.size(journal.archive.map) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
-		if (_.size(journal.archive.map) == journal.archive.media) {
+		var finished = _.size(journal.archive.map);
+		animation.log("Fetched " + finished + " of " + journal.archive.media);
+		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished) / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
+		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
 			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
 			clearInterval(id);

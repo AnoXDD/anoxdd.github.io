@@ -971,18 +971,18 @@ edit.photo = function() {
 		// Set preview
 		$("#attach-area .images").hover(function() {
 			// Mouseover
-			$("#photo-preview").css("display", "block");
+			$("#photo-preview").fadeIn();
 		}, function() {
 			// Mouseout
-			$("#photo-preview").css("display", "none");
+			$("#photo-preview").hide();
 		})
 		$("#attach-area .images img").each(function() {
 			$(this).hover(function() {
 				// Mouseover
-				$("#photo-preview img").attr("src", $(this).attr("src"));
+				$("#photo-preview img").css("opacity", 1).attr("src", $(this).attr("src"));
 			}, function() {
 				// Mouseout
-				$("#photo-preview img").removeAttr("src");
+				$("#photo-preview img").css("opacity", 0);
 			})
 		})
 		animation.setConfirm(0);

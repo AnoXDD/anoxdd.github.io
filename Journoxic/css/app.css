@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2378,19 +2378,36 @@ body {
 		overflow-x: hidden;
 		overflow-y: hidden;
 		transition: height .5s ease;
+		white-space: nowrap;
 	}
 
 		#edit-pane .images div, #edit-pane .images canvas {
 			opacity: .1;
 			transition: opacity .4s ease;
-		
 			margin: 0;
-			display: inline;
-}
+			display: inline-block;
+		}
 
 		#edit-pane .images img {
 			padding: 1px;
 		}
+
+		#edit-pane .images p {
+			position: relative;
+			font-size: 16px;
+			background: white;
+			height: 2px;
+			width: 30px;
+			bottom: 5px;
+			right: 4px;
+			padding: 16px 0 13px 0px;
+			text-align: center;
+			margin: -34px 0 0 70px;
+			display: block;
+			border-radius: 50px;
+			z-index: 5;
+		}
+
 
 	#edit-pane #map-holder, #edit-pane #photo-preview {
 		display: none;

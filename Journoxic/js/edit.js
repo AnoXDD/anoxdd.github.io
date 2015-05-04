@@ -972,9 +972,9 @@ edit.photo = function() {
 			href: "#"
 		}).fadeIn();
 		// Clicking on img functionality
-		$("#attach-area .images div").each(function() {
+		$("#attach-area .images div img").each(function() {
 			$(this).click(function() {
-				$(this).toggleClass("highlight");
+				$(this).parent().toggleClass("highlight");
 			});
 		});
 		// Set preview

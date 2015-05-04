@@ -2427,7 +2427,6 @@ body {
 	margin: auto auto auto auto;
 	display: block;
 	outline: black;
-	transition: opacity .2s ease;
 }
 
 /* STARTING OTHER ATTACHED MEDIA */

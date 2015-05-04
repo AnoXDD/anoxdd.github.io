@@ -100,6 +100,8 @@ edit.init = function(overwrite, index) {
 	$("#contents").fadeOut(400, function() {
 		// Initialize the pane, this line must be the first one!
 		$("#edit-pane").html(editPane).fadeIn();
+		// Hide photo preview panal
+		$("#photo-preview").hide();
 		// Enter to finish entry header
 		$("#entry-header").keyup(function(n) {
 			if (n.keyCode == 13) {
@@ -958,9 +960,9 @@ edit.photo = function() {
 			var htmlContent;
 			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
-				htmlContent = '<a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
+				htmlContent = '<li><a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a></li>';
 			else
-				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
+				htmlContent = '<li><a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a></li>';
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -971,20 +973,30 @@ edit.photo = function() {
 		// Set preview
 		$("#attach-area .images").hover(function() {
 			// Mouseover
-			$("#photo-preview").fadeIn();
+			$("#photo-preview").css("opacity", "initial").show({
+				effect: "fade",
+				duration: 200
+			});
 		}, function() {
 			// Mouseout
-			$("#photo-preview").hide();
-		})
+			$("#photo-preview").hide({
+				effect: "fade",
+				duration: 200
+			});
+		});
 		$("#attach-area .images img").each(function() {
 			$(this).hover(function() {
 				// Mouseover
-				$("#photo-preview img").css("opacity", 1).attr("src", $(this).attr("src"));
+				$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
 			}, function() {
 				// Mouseout
-				$("#photo-preview img").css("opacity", 0);
-			})
-		})
+				$("#photo-preview img").animate({ opacity: 0 }, 0);
+			}).disableSelection();
+		});
+		$("#attach-area .images").sortable({
+			containment: "#attach-area .images",
+			revert: true
+		});
 		animation.setConfirm(0);
 		animation.log("Photos loaded");
 		animation.finished("#add-photo");
@@ -1126,19 +1138,28 @@ edit.photoSave = function(callback) {
 							if (edit.photos[k]["newName"] == newName) {
 								// Find the matched name
 								var name = edit.photos[k]["name"],
-										resource = edit.photos[k]["resource"];
+									resource = edit.photos[k]["resource"],
+									photoIndex;
 								// Update the new name
 								edit.photos[k]["name"] = newName;
 								// Switch the location
 								edit.photos[k]["resource"] = !resource;
+								// Find the correct img to add or remove highlight class on it
+								$("#attach-area .images img").each(function(index) {
+									if ($(this).attr("src") == journal.archive.map[name]["url"]) {
+										photoIndex = index;
+									}
+								});
 								// Get the result of transferring
 								if (!resource) {
 									// Originally not at the resource, to resource
+									$("#attach-area .images a:eq(" + photoIndex + ")").addClass("highlight");
 									newImagesData.push({
 										fileName: newName
 									});
 								} else {
 									// To data, and remove from cache
+									$("#attach-area .images a:eq(" + photoIndex + ")").removeClass("highlight");
 									for (var j = 0; j != newImagesData.length; ++j)
 										if (newImagesData[j]["fileName"] == name) {
 											delete newImagesData[name];

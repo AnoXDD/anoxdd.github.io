@@ -963,7 +963,7 @@ edit.photo = function() {
 				htmlContent = '<a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
 			else
 				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
-			$("#attach-area .images ul").append(htmlContent);
+			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
 		$("#add-photo").html("&#xE114").attr({

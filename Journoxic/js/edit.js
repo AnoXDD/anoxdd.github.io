@@ -960,9 +960,10 @@ edit.photo = function() {
 			var htmlContent;
 			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
-				htmlContent = '<div class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></div>';
+				htmlContent = '<div class="highlight">';
 			else
-				htmlContent = '<div onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></div>';
+				htmlContent = '<div>';
+			htmlContent += '<img src="' + edit.photos[i]["url"] + '"/><p>&#xE13C</p></div>';
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -970,6 +971,12 @@ edit.photo = function() {
 			onclick: "edit.addMedia(0)",
 			href: "#"
 		}).fadeIn();
+		// Clicking on img functionality
+		$("#attach-area .images div").each(function() {
+			$(this).click(function() {
+				$(this).toggleClass("highlight");
+			});
+		});
 		// Set preview
 		$("#attach-area .images").hover(function() {
 			// Mouseover
@@ -983,7 +990,11 @@ edit.photo = function() {
 				effect: "fade",
 				duration: 200
 			});
-		});
+		}).sortable({
+			containment: "#attach-area .images",
+			handle: "p",
+			revert: true
+		}).disableSelection();
 		$("#attach-area .images img").each(function() {
 			$(this).hover(function() {
 				// Mouseover
@@ -993,10 +1004,6 @@ edit.photo = function() {
 				$("#photo-preview img").animate({ opacity: 0 }, 0);
 			})
 		});
-		$("#attach-area .images").sortable({
-			containment: "#attach-area .images",
-			revert: true
-		}).disableSelection();
 		animation.setConfirm(0);
 		animation.log("Photos loaded");
 		animation.finished("#add-photo");
@@ -1032,7 +1039,30 @@ edit.photoSave = function(callback) {
 		// Get the photos whose locations to be changed
 		var photoQueue = [],
 			timeHeader,
-			newImagesData = [];
+			/* New images attached to this entry */
+			newImagesData = [],
+			/* New edit.photos */
+			newPhotos = [];
+		// Sort edit.photos based on the sequence
+		$("#attach-area .images div").each(function() {
+			for (var i = 0; i != edit.photos.length; ++i) {
+				if ($(this).children("img").attr("src") == edit.photos[i]["url"]) {
+					// Matched
+					var data = edit.photos[i];
+					// Test if it switches location
+					if ($(this).hasClass("highlight")) {
+						if (!data["resource"])
+							data["change"] = !data["change"];
+					} else {
+						if (data["resource"])
+							data["change"] = !data["change"];
+					}
+					newPhotos.push(data);
+					break;
+				}
+			}
+		});
+		edit.photos = $.extend({}, newPhotos);
 		// Get the correct header for the photo
 		for (var i = 0; i != edit.photos.length; ++i) {
 			var name = edit.photos[i]["name"],

@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1157,7 +1157,7 @@ body {
 			margin-right: 5px;
 		}
 
-	#detail .photo a, #attach-area .images a {
+	#detail .photo a, #attach-area .images div {
 		margin: 10px 0 10px;
 		font-size: 10px;
 		line-height: 0;
@@ -2155,15 +2155,15 @@ body {
 			-webkit-transition: opacity .4s ease, height .4s ease;
 		}
 
-			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover, #edit-pane #attach-area .images a:hover {
+			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover, #edit-pane #attach-area .images div:hover {
 				opacity: .8 !important;
 			}
 
-			#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active, #edit-pane #attach-area .images a:active {
+			#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active, #edit-pane #attach-area .images div:active {
 				opacity: .5 !important;
 			}
 
-		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images a.highlight {
+		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images div.highlight {
 			opacity: 1;
 		}
 
@@ -2380,11 +2380,13 @@ body {
 		transition: height .5s ease;
 	}
 
-		#edit-pane .images a, #edit-pane .images canvas {
+		#edit-pane .images div, #edit-pane .images canvas {
 			opacity: .1;
 			transition: opacity .4s ease;
-			width: 100px;
-		}
+		
+			margin: 0;
+			display: inline;
+}
 
 		#edit-pane .images img {
 			padding: 1px;

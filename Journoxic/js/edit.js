@@ -963,7 +963,7 @@ edit.photo = function() {
 				htmlContent = '<div class="highlight">';
 			else
 				htmlContent = '<div>';
-			htmlContent += '<img src="' + edit.photos[i]["url"] + '"/></div>';
+			htmlContent += '<img src="' + edit.photos[i]["url"] + '"/><p>&#xE13C</p></div>';
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -972,9 +972,9 @@ edit.photo = function() {
 			href: "#"
 		}).fadeIn();
 		// Clicking on img functionality
-		$("#attach-area .images img").each(function() {
+		$("#attach-area .images div").each(function() {
 			$(this).click(function() {
-				$(this).parent().toggleClass("highlight");
+				$(this).toggleClass("highlight");
 			});
 		});
 		// Set preview
@@ -992,6 +992,7 @@ edit.photo = function() {
 			});
 		}).sortable({
 			containment: "#attach-area .images",
+			handle: "p",
 			revert: true
 		}).disableSelection();
 		$("#attach-area .images img").each(function() {

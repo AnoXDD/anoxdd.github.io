@@ -2392,18 +2392,6 @@ body {
 			padding: 1px;
 		}
 
-		#edit-pane .images span {
-			position: relative;
-		
-			width: 100px;
-			text-align: center;
-			background: rgba(255, 255, 255, 0.5);
-			color: black;
-			bottom: 6px;
-			right: 26px;
-			font-size: 20px;
-}
-
 	#edit-pane #map-holder, #edit-pane #photo-preview {
 		display: none;
 		position: relative;

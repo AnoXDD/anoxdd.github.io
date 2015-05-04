@@ -960,10 +960,10 @@ edit.photo = function() {
 			var htmlContent;
 			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
-				htmlContent = '<li><a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a></li>';
+				htmlContent = '<a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
 			else
-				htmlContent = '<li><a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a></li>';
-			$("#attach-area .images").append(htmlContent);
+				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
+			$("#attach-area .images ul").append(htmlContent);
 		}
 		// Stop throttle 
 		$("#add-photo").html("&#xE114").attr({

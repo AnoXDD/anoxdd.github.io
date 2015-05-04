@@ -960,9 +960,9 @@ edit.photo = function() {
 			var htmlContent;
 			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
-				htmlContent = '<a class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
+				htmlContent = '<div class="highlight" onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></div>';
 			else
-				htmlContent = '<a onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></a>';
+				htmlContent = '<div onclick="edit.photoClick(' + i + ')" href="#"><img src="' + edit.photos[i]["url"] + '"/></div>';
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -991,12 +991,12 @@ edit.photo = function() {
 			}, function() {
 				// Mouseout
 				$("#photo-preview img").animate({ opacity: 0 }, 0);
-			}).disableSelection();
+			})
 		});
 		$("#attach-area .images").sortable({
 			containment: "#attach-area .images",
 			revert: true
-		});
+		}).disableSelection();
 		animation.setConfirm(0);
 		animation.log("Photos loaded");
 		animation.finished("#add-photo");
@@ -1012,7 +1012,7 @@ edit.photo = function() {
 }
 
 edit.photoClick = function(index) {
-	$("#attach-area .images a:eq(" + index + ")").toggleClass("highlight");
+	$("#attach-area .images div:eq(" + index + ")").toggleClass("highlight");
 	// Tell the photos map that this photo would like to switch location
 	edit.photos[index]["change"] = !edit.photos[index]["change"];
 }
@@ -1153,13 +1153,13 @@ edit.photoSave = function(callback) {
 								// Get the result of transferring
 								if (!resource) {
 									// Originally not at the resource, to resource
-									$("#attach-area .images a:eq(" + photoIndex + ")").addClass("highlight");
+									$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight");
 									newImagesData.push({
 										fileName: newName
 									});
 								} else {
 									// To data, and remove from cache
-									$("#attach-area .images a:eq(" + photoIndex + ")").removeClass("highlight");
+									$("#attach-area .images div:eq(" + photoIndex + ")").removeClass("highlight");
 									for (var j = 0; j != newImagesData.length; ++j)
 										if (newImagesData[j]["fileName"] == name) {
 											delete newImagesData[name];

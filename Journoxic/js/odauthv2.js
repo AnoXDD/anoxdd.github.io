@@ -1,4 +1,4 @@
-﻿/*
+/*
  V2 odauth for code flow so that the user does not have to log out to get access token 
  Based on OneDrive API from github
  Embed odauth.js in your app like this:
@@ -124,21 +124,25 @@ function setCookie(token, expiresInSeconds, refresh_token) {
 
 /* Toggle auto refresh token, the default is true */
 function toggleAutoRefreshToken() {
+	var func = function() {
+		refreshToken();
+	}
 	if (toggleAutoRefreshToken.id) {
-		// Set to refresh token every 20 minute
-		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE194");
-		}).fadeIn(300);
-		animation.log("The access token will now be refreshed every 20 minute");
-		toggleAutoRefreshToken.id = setInterval(refreshToken, 1200000);
-	} else {
 		// Turn off auto refresh
-		$(selector).fadeOut(300, function() {
+		$("#toggle-refresh-token").fadeOut(300, function() {
 			$(this).html("&#xE149");
 		}).fadeIn(300);
 		animation.log("The access token auto-refresh is turned off");
 		clearInterval(toggleAutoRefreshToken.id);
-		toggleAutoRefreshToken = undefined;
+		toggleAutoRefreshToken.id = undefined;
+	} else {
+		// Set to refresh token every 20 minute
+		$("#toggle-refresh-token").fadeOut(300, function() {
+			$(this).html("&#xE194");
+		}).fadeIn(300);
+		animation.log("The access token will now be refreshed every 20 minute");
+		refreshToken();
+		toggleAutoRefreshToken.id = setInterval(func, 1200000);
 	}
 }
 
@@ -229,9 +233,11 @@ function showLoginButton() {
 // removed. if a customLoginButton() function is defined by your app, it will
 // be called with 'false' passed in to indicate the button should be removed.
 // otherwise it will remove the textual link that showLoginButton() created.
-function removeLoginButton() {
+function removeLoginButton(debug) {
 	// Refresh token
-	refreshToken();
+	if (!debug) {
+		refreshToken();
+	}
 	// Show everything app needs
 	animation.log("Welcome back");
 	$("#sign-in-prompt").remove();

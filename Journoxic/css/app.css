@@ -1949,6 +1949,7 @@ body {
 	.actions a {
 		text-decoration: none;
 		text-align: center;
+		vertical-align: middle;
 		transition: background .2s ease, transform 1.5s ease;
 		color: #b7b7b7;
 		background: #3f3f3f;
@@ -1973,7 +1974,12 @@ body {
 			color: #d0d0d0;
 		}
 
-
+		.actions a#refresh-media {
+			font-size: 14px;
+		
+			height: 29px;
+			padding-top: 11px;
+}
 
 /*===============================EDIT_PANE============================*/
 
@@ -2627,7 +2633,7 @@ body {
 	background-position: -490px -310px;
 }
 
-#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, Â  #attach-area .weblink a, Â  #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
+#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, Ã‚Â  #attach-area .weblink a, Ã‚Â  #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
 	height: 50px;
 }
 

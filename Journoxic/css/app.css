@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -2389,7 +2389,7 @@ body {
 		}
 
 		#edit-pane .images img {
-			padding: 1px;
+			margin: 1px;
 		}
 
 		#edit-pane .images p {
@@ -2398,15 +2398,16 @@ body {
 			background: white;
 			height: 2px;
 			width: 30px;
-			bottom: 5px;
-			right: 4px;
+			bottom: 35px;
+			left: 68px;
 			padding: 16px 0 13px 0px;
 			text-align: center;
-			margin: -34px 0 0 70px;
+			/* margin: -15px 0 0 70px; */
 			display: block;
 			border-radius: 50px;
 			z-index: 5;
-		}
+		
+}
 
 
 	#edit-pane #map-holder, #edit-pane #photo-preview {

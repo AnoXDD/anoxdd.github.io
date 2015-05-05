@@ -167,12 +167,12 @@ function downloadFile() {
 				journal.archive.media = data["folder"]["childCount"];
 				animation.log("Start downloading media data ...");
 				downloadMedia();
-			}).fail(function() {
-				animation.log("Cannot find the media data", true);
+			}).fail(function(xhr, status, error) {
+				animation.log('Cannot find the media data. The server returns error "' + error + '"', true);
 			});
 		})
 		.fail(function(xhr, status, error) {
-			animation.log("Cannot find any text data", true);
+			animation.log('Cannot find any text data. The server returns error "' + error + '"', true);
 			////alert("Cannot download the file. Do you enable CORS?");
 		})
 		.always(function() {
@@ -274,13 +274,13 @@ function uploadFile() {
 			////console.log("uploadFile():\t Done!");
 			animation.log("Data uploaded");
 		})
-		.fail(function() {
-			animation.log("Cannot upload data. Please try fixing the problem manually", true);
+		.fail(function(xhr, status, error) {
+			animation.log('Cannot upload data. Please try fixing the problem manually. The server returns error "' + error + '"', true);
 			////alert("Cannot upload files");
 		})
 	})
-	.fail(function() {
-		animation.log("Cannot backup data. Please see if there is any name conflict", true);
+	.fail(function(xhr, status, error) {
+		animation.log('Cannot backup data. Please see if there is any name conflict. The server returns error "' + error + '"', true);
 		////alert("Cannot backup the file");
 	})
 	.always(function() {

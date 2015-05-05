@@ -963,7 +963,7 @@ edit.photo = function() {
 				htmlContent = '<div class="highlight">';
 			else
 				htmlContent = '<div>';
-			htmlContent += '<img src="' + edit.photos[i]["url"] + '"/><p>&#xE13C</p></div>';
+			htmlContent += '<img src="' + edit.photos[i]["url"] + '"/></div>';
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -973,8 +973,11 @@ edit.photo = function() {
 		}).fadeIn();
 		// Clicking on img functionality
 		$("#attach-area .images div img").each(function() {
-			$(this).click(function() {
+			$(this).on("contextmenu", function() {
+				// Right click to select the images
 				$(this).parent().toggleClass("highlight");
+				// Return false to disable other functionalities
+				return false;
 			});
 		});
 		// Set preview
@@ -992,7 +995,7 @@ edit.photo = function() {
 			});
 		}).sortable({
 			containment: "#attach-area .images",
-			handle: "p",
+			//handle: "p",
 			revert: true
 		}).disableSelection();
 		$("#attach-area .images img").each(function() {
@@ -1008,12 +1011,12 @@ edit.photo = function() {
 		animation.log("Photos loaded");
 		animation.finished("#add-photo");
 	})
-	.fail(function() {
+	.fail(function(xhr, status, error) {
 		$("#add-photo").html("&#xE114").attr({
 			onclick: "edit.addMedia(0)",
 			href: "#"
 		});
-		animation.log("Cannot load image: failed to find images under data/" + dateStr, true);
+		animation.log("Cannot load image: failed to find images under data/" + dateStr + '. The server returns error "' + error + '"', true);
 		animation.deny("#add-photo");
 	});
 }
@@ -1153,7 +1156,7 @@ edit.photoSave = function(callback) {
 					console.log("edit.photoSave()\tFinish update metadata");
 				})
 				.fail(function(xhr, status, error) {
-					animation.log("One tranfer failed. No transfer was made", true);
+					animation.log('One tranfer failed. No transfer was made. The server returns error "' + error + '"', true);
 					animation.warning("#add-photo");
 					// Revert the transfer process
 				})

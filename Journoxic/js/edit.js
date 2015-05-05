@@ -995,7 +995,7 @@ edit.photo = function() {
 			});
 		}).sortable({
 			containment: "#attach-area .images",
-			//handle: "p",
+			cursor: "crosshair",
 			revert: true
 		}).disableSelection();
 		$("#attach-area .images img").each(function() {
@@ -1067,7 +1067,7 @@ edit.photoSave = function(callback) {
 		});
 		edit.photos = $.extend({}, newPhotos);
 		// Get the correct header for the photo
-		for (var i = 0; i != edit.photos.length; ++i) {
+		for (var i = 0; i != Object.keys(edit.photos).length; ++i) {
 			var name = edit.photos[i]["name"],
 				resource = edit.photos[i]["resource"];
 			if (edit.photos[i]["change"]) {
@@ -1179,9 +1179,10 @@ edit.photoSave = function(callback) {
 								edit.photos[k]["resource"] = !resource;
 								// Find the correct img to add or remove highlight class on it
 								$("#attach-area .images img").each(function(index) {
+									if (journal.archive.map[name]) {
 									if ($(this).attr("src") == journal.archive.map[name]["url"]) {
 										photoIndex = index;
-									}
+									}}
 								});
 								// Get the result of transferring
 								if (!resource) {

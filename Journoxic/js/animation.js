@@ -84,8 +84,10 @@ animation.blink = function(selector) {
 		var pulse = function() {
 			$(selector).fadeOut(700);
 			$(selector).fadeIn(700);
-		}
-		return setInterval(pulse, 1800);
+		};
+		var id = setInterval(pulse, 1800);
+		console.log("animation.blink()\t" + selector + ": id=" + id);
+		return id;
 	} else {
 		return undefined;
 	}
@@ -98,7 +100,9 @@ animation.rotate = function(selector) {
 		var pulse = function() {
 			$(selector).css("-webkit-transform", "rotate(" + (++animation.degree) * 360 + "deg)");
 		};
-		return setInterval(pulse, 2000);
+		var id = serInterval(pulse, 2000);
+		console.log("animation.rotate()\t" + selector + ": id=" + id);
+		return id;
 	} else {
 		return undefined;
 	}

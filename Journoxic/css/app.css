@@ -745,7 +745,7 @@ body {
 
 	#detail .upper {
 		height: 0;
-		/* padding: 1% 0; */
+		padding: 1% 0;
 		overflow-y: hidden;
 		margin-right: 5%;
 		transition: .5s ease;
@@ -1176,11 +1176,12 @@ body {
 			background-color: rgba(0,0,0,.1);
 		}
 
-	#detail .photo img, #attach-area .images img {
-		width: 100px;
-		height: 100px;
-		object-fit: cover;
-	}
+	#detail .photo img {
+    max-height: 100%;
+
+	
+    max-width: 100%;
+}
 
 	#detail .jplayer-wrap {
 		position: relative;
@@ -1380,7 +1381,7 @@ body {
 		left: 50%;
 		top: 50%;
 		border-width: 10px;
-		border-style: solid;
+		/* border-style: solid; */
 		-webkit-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
 		-moz-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
 		-ms-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
@@ -2381,6 +2382,11 @@ body {
 		white-space: nowrap;
 	}
 
+ #attach-area .images img {
+		width: 100px;
+		height: 100px;
+		object-fit: cover;
+	}
 		#edit-pane .images div, #edit-pane .images canvas {
 			opacity: .1;
 			transition: opacity .4s ease;

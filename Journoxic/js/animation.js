@@ -82,10 +82,10 @@ animation.setConfirm = function(name) {
 animation.blink = function(selector) {
 	if (animation.isShown(selector)) {
 		var pulse = function() {
-			$(selector).fadeOut(700);
-			$(selector).fadeIn(700);
+			$(selector).fadeOut();
+			$(selector).fadeIn();
 		}
-		return setInterval(pulse, 1800);
+		return setInterval(pulse, 1000);
 	} else {
 		return undefined;
 	}
@@ -109,9 +109,13 @@ animation.finished = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE10B").css({ background: "#fff" });
+			$(this).html("&#xE10B").css({
+				background: "#fff"
+			});
 		}).fadeIn(300).delay(500).fadeOut(300, function() {
-			$(this).html(text).css({ background: "" });
+			$(this).html(text).css({
+				background: ""
+			});
 		}).fadeIn(300);
 	}
 };
@@ -121,9 +125,13 @@ animation.warning = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE171").css({ background: "#fff" });
+			$(this).html("&#xE171").css({
+				background: "#fff"
+			});
 		}).fadeIn(300).delay(500).fadeOut(300, function() {
-			$(this).html(text).css({ background: "" });
+			$(this).html(text).css({
+				background: ""
+			});
 		}).fadeIn(300);
 	}
 };
@@ -133,15 +141,23 @@ animation.deny = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE10A").css({ color: "#000", background: "#fff" });
+			$(this).html("&#xE10A").css({
+				color: "#000",
+				background: "#fff"
+			});
 		}).fadeIn(300).delay(500).fadeOut(300, function() {
-			$(this).html(text).css({ background: "", color: "" });
+			$(this).html(text).css({
+				background: "",
+				color: ""
+			});
 		}).fadeIn(300);
 	}
 };
 
 animation.invalid = function(selector) {
-	$(selector).effect("highlight", { color: "#8d8d8d" });
+	$(selector).effect("highlight", {
+		color: "#8d8d8d"
+	});
 };
 
 /* Log something on the menu to let the user now */

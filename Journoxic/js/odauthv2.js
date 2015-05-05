@@ -12,9 +12,13 @@
 
 function odauth(wasClicked) {
 	ensureHttps();
-	var token = getTokenFromCookie();
+	var token = getTokenFromCookie(),
+		refresh = getRefreshFromCookie();
 	if (token) {
 		onAuthenticated(token);
+	} else if (refresh) {
+		// refreshToken() is called in removeLoginButton()
+		removeLoginButton();
 	} else if (wasClicked) {
 		challengeForAuth();
 	} else {
@@ -66,7 +70,15 @@ function getAuthInfoFromUrl() {
 }
 
 function getTokenFromCookie() {
-	return getFromCookie("odauth");
+	var expiration = getExpireFromCookie(),
+		now = new Date().getTime();
+	// One minute window
+	if (expiration - 60000 > now) {
+		// Not expired
+		return getFromCookie("odauth");
+	} else {
+		return "";
+	}
 }
 
 function getRefreshFromCookie() {
@@ -108,6 +120,26 @@ function setCookie(token, expiresInSeconds, refresh_token) {
 	}
 
 	document.cookie = cookie;
+}
+
+/* Toggle auto refresh token, the default is true */
+function toggleAutoRefreshToken() {
+	if (toggleAutoRefreshToken.id) {
+		// Set to refresh token every 20 minute
+		$(selector).fadeOut(300, function() {
+			$(this).html("&#xE194");
+		}).fadeIn(300);
+		animation.log("The access token will now be refreshed every 20 minute");
+		toggleAutoRefreshToken.id = setInterval(refreshToken, 1200000);
+	} else {
+		// Turn off auto refresh
+		$(selector).fadeOut(300, function() {
+			$(this).html("&#xE149");
+		}).fadeIn(300);
+		animation.log("The access token auto-refresh is turned off");
+		clearInterval(toggleAutoRefreshToken.id);
+		toggleAutoRefreshToken = undefined;
+	}
 }
 
 /* Refresh the token to get a new access token */
@@ -198,6 +230,8 @@ function showLoginButton() {
 // be called with 'false' passed in to indicate the button should be removed.
 // otherwise it will remove the textual link that showLoginButton() created.
 function removeLoginButton() {
+	// Refresh token
+	refreshToken();
 	// Show everything app needs
 	animation.log("Welcome back");
 	$("#sign-in-prompt").remove();

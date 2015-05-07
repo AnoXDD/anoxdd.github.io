@@ -46,7 +46,8 @@ function onAuthCallback() {
 			"&redirect_uri=" + appinfo.redirectUri +
 			"&client_secret=" + appinfo.clientSecret +
 			"&code=" + code +
-			"&grant_type=authorization_code"
+			"&grant_type=authorization_code",
+		dataType: "jsonp"
 	}).done(function(data, status, xhr) {
 		// Try to get the access token and expiry
 		var token = data["access_token"],
@@ -159,7 +160,8 @@ function refreshToken() {
 				"&redirect_uri=" + appinfo.redirectUri +
 				"&client_secret=" + appinfo.clientSecret +
 				"&refresh_token=" + refresh +
-				"&grant_type=authorization_code"
+				"&grant_type=authorization_code",
+			dataType: "jsonp"
 		}).done(function(data, status, xhr) {
 			var token = data["access_token"],
 				refresh = data["refresh_token"],

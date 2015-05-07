@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.8.21 Build 050415_2046</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.9.2 Build 050415_2152</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -47,10 +47,12 @@
 		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xE105</a>
 		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xE107</a>
 		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xE1D9</a>
-		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE149</a>
+		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE117</a>
 		<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xE10E</a>
 		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xE118</a>
 		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xE11C</a>
+		<a class="entry-comm" title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xE192</a>
+		<a class="entry-comm" title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xE149</a>
 		<a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xE150</a>
 		<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xE109</a>
 		<a class="entry-edit" title="Edit this entry" id="edit" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xE104</a>
@@ -68,7 +70,7 @@
 		</div>
 		<div id="edit-pane"></div>
 	</div>
-	<script id="odauth" src="js/lib/odauth.js" clientid="000000004C14D0D9" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
+	<script id="odauth" src="js/odauthv2.js" clientid="000000004C14D0D9" clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/lib/modernizr.min.js"></script>

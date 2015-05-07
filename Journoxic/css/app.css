@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	width: 5px;
@@ -1177,10 +1177,10 @@ body {
 		}
 
 	#detail .photo img {
-    max-height: 100%;
+	max-height: 100%;
 
 	
-    max-width: 100%;
+	max-width: 100%;
 }
 
 	#detail .jplayer-wrap {

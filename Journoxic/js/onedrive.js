@@ -1,4 +1,9 @@
-﻿var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot",
+﻿/* 
+ Handle all the network activities besides the authentication problem in odauth.js
+ */
+
+
+var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot",
 	token, mydata, mystatus, myxhr; 
 
 /************************************************************************

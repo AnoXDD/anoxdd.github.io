@@ -181,7 +181,7 @@ function getAppInfo() {
 		alert("the script tag for odauth.js should have its id set to 'odauth'");
 	}
 
-	var clientId = scriptTag.getAttribute("clientid");
+	var clientId = scriptTag.getAttribute("clientId");
 	if (!clientId) {
 		alert("the odauth script tag needs a clientId attribute set to your application id");
 	}

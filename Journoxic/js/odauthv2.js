@@ -36,7 +36,7 @@ function ensureHttps() {
 function onAuthCallback() {
 	var authInfo = getAuthInfoFromUrl(),
 		code = authInfo["code"],
-		appinfo = getAppInfo();
+		appinfo = window.opener.getAppInfo();
 	// Redeem the code: post to get authentication token
 	$.ajax({
 		type: "POST",

@@ -53,7 +53,7 @@ function onAuthCallback() {
 		var token = data["access_token"],
 			refresh = data["refresh_token"],
 			expiry = parseInt(data["expires_in"]);
-		setCookie(token, expiry, refresh);
+		window.opener.setCookie(token, expiry, refresh);
 		window.opener.onAuthenticated(token, window);
 	});
 }
@@ -160,8 +160,7 @@ function refreshToken() {
 				"&redirect_uri=" + appinfo.redirectUri +
 				"&client_secret=" + appinfo.clientSecret +
 				"&refresh_token=" + refresh +
-				"&grant_type=authorization_code",
-			dataType: "jsonp"
+				"&grant_type=authorization_code"
 		}).done(function(data, status, xhr) {
 			var token = data["access_token"],
 				refresh = data["refresh_token"],

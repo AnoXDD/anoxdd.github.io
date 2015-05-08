@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -1954,6 +1954,7 @@ body {
 		padding-top: 10px;
 		position: relative;
 		text-align: center;
+		vertical-align: middle;
 		text-decoration: none;
 		top: -80px;
 		transition: background .2s ease, transform 1.5s ease;
@@ -1970,6 +1971,14 @@ body {
 			background: #4e4e4e;
 			color: #d0d0d0;
 		}
+
+		.actions a#refresh-media {
+    font-size: 12px;
+			
+		
+    padding-top: 12px;
+    height: 28px;
+}
 
 
 

@@ -1,4 +1,7 @@
 /* A library for animations */
+
+// Todo: refresh-media should change its font back after "blink" to say finished (set font to inherit)
+
 window.animation = {};
 
 animation.degree = 0;

@@ -1,13 +1,5 @@
 /* The script for editing anything */
 
-/*
- Todo:	edit.photoHeader to get the general header for photos
-			then fix edit.photoSave
-		Add a reponse log area under buttons or somewhere to tell the user what is going on
-
-*/
-
-
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
@@ -53,12 +45,14 @@ edit.init = function(overwrite, index) {
 			// Read from available caches
 			if (localStorage["created"]) {
 				var index = edit.find(localStorage["created"]);
-				if (index != -1)
+				if (index != -1) {
 					data = journal.archive.data[index];
-			} else
+				}
+			} else {
 				// Nothing found, start a new one
 				// Placeholder
 				;
+			}
 		} else if (overwrite == undefined) {
 			// Do not overwrite or overwrite is undefined
 			if (index != undefined) {
@@ -71,8 +65,9 @@ edit.init = function(overwrite, index) {
 			return;
 		}
 	} else {
-		if (index != undefined)
+		if (index != undefined) {
 			data = journal.archive.data[index];
+		}
 	}
 	// If still no available data to be stored, create a new one
 	data = data || edit.newContent();
@@ -117,8 +112,9 @@ edit.init = function(overwrite, index) {
 		});
 		// Enter to add tag
 		$("#entry-tag").keyup(function(n) {
-			if (n.keyCode == 13)
+			if (n.keyCode == 13) {
 				edit.saveTag();
+			}
 		});
 		// Click to remove tags
 		$("#attach-area .texttags .other p").click(function() {
@@ -134,10 +130,12 @@ edit.init = function(overwrite, index) {
 				getCoverPhoto(selectorHeader, term, false, medium);
 			}
 		}
-		if (localStorage["title"])
+		if (localStorage["title"]) {
 			$("#entry-header").val(localStorage["title"]);
-		if (localStorage["body"])
+		}
+		if (localStorage["body"]) {
 			$("#entry-body").text(localStorage["body"]);
+		}
 		// Tag processing
 		var tagsHtml = app.bitwise().getTagsHTML(),
 			tagsName = app.bitwise().getTagsArray(),
@@ -146,12 +144,13 @@ edit.init = function(overwrite, index) {
 		console.log("edit.init()\ticonTags = " + iconTags);
 		for (var i = 0; i != tagsHtml.length; ++i) {
 			var parent = "#attach-area .icontags";
-			if (tagsHtml[i].charAt(0) == "w")
+			if (tagsHtml[i].charAt(0) == "w") {
 				parent += " .weather";
-			else if (tagsHtml[i].charAt(0) == "e")
+			} else if (tagsHtml[i].charAt(0) == "e") {
 				parent += " .emotion";
-			else
+			} else {
 				parent += " .other";
+			}
 			// Processed existed tags
 			$(parent).append(
 				"<p class='icons " + tagsHtml[i] +
@@ -160,9 +159,11 @@ edit.init = function(overwrite, index) {
 				"')></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
-		for (var i = 0; i != tagsHtml.length; ++i)
-			if ($.inArray(tagsHtml[i], iconTags) != -1)
+		for (var i = 0; i != tagsHtml.length; ++i) {
+			if ($.inArray(tagsHtml[i], iconTags) != -1) {
 				$("#edit-pane #attach-area .icontags p." + tagsHtml[i]).trigger("click");
+			}
+		}
 		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
 			// Only scroll horizontally
 			this.scrollLeft -= (delta * 50);
@@ -179,11 +180,12 @@ edit.quit = function(selector, save) {
 	edit.time = 0;
 	edit.mediaIndex = {};
 	edit.localChange = [];
-	if (save)
+	if (save) {
 		// Save to local contents
 		edit.save(selector);
-	else
+	} else {
 		animation.log("Data discarded");
+	}
 	edit.photos = [];
 	edit.removalList = {};
 	// Set everything to initial state
@@ -243,40 +245,47 @@ edit.processRemovalList = function() {
 /* Sync between the local and caches. Local cache will overwrite data if there is */
 edit.importCache = function(data) {
 	// Title
-	if (localStorage["title"])
+	if (localStorage["title"]) {
 		data["title"] = localStorage["title"];
-	else if (data["title"])
+	} else if (data["title"]) {
 		localStorage["title"] = data["title"];
+	}
 	// Body
 	if (localStorage["body"]) {
-		if (!data["text"])
+		if (!data["text"]) {
 			data["text"] = {};
+		}
 		data["text"]["body"];
 	} else {
-		if (data["text"])
-			if (data["text"]["body"])
+		if (data["text"]) {
+			if (data["text"]["body"]) {
 				localStorage["body"] = data["text"]["body"];
+			}
+		}
 	}
 	// created is not modifiable from user-side
 	localStorage["created"] = data["time"]["created"];
 	// iconTags
-	if (localStorage["iconTags"])
+	if (localStorage["iconTags"]) {
 		data["iconTags"] = localStorage["iconTags"];
-	else
+	} else {
 		localStorage["iconTags"] = data["iconTags"] ? data["iconTags"] : 0;
+	}
 	// textTags
-	if (localStorage["textTags"])
+	if (localStorage["textTags"]) {
 		data["textTags"] = localStorage["textTags"];
-	else
+	} else {
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
+	}
 	// photos, video, place, music, book, movie
 	var elem = ["images", "video", "place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {
 		var medium = elem[i];
-		if (localStorage[medium])
+		if (localStorage[medium]) {
 			data[medium] = JSON.parse(localStorage[medium]);
-		else
+		} else {
 			localStorage[medium] = data[medium] ? JSON.stringify(data[medium]) : "[]";
+		}
 	}
 	// Return value
 	return data;
@@ -288,10 +297,12 @@ edit.exportCache = function(index) {
 	// Title
 	data["title"] = localStorage["title"] || "Untitled";
 	data["processed"] = 0;
-	if (!data["coverType"])
+	if (!data["coverType"]) {
 		data["coverType"] = 0;
-	if (!data["attachments"])
+	}
+	if (!data["attachments"]) {
 		data["attachments"] = 0;
+	}
 	data["iconTags"] = !isNaN(parseInt(localStorage["iconTags"])) ? parseInt(localStorage["iconTags"]) : 0;
 	data["textTags"] = localStorage["textTags"];
 	var media,
@@ -300,9 +311,10 @@ edit.exportCache = function(index) {
 	for (var i = 0; i < elem.length; ++i) {
 		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
 		for (var j = 0; j < media.length; ++j) {
-			if (!media[j] || media[j]["title"] == "")
+			if (!media[j] || media[j]["title"] == "") {
 				// null or undefined or empty title, remove this
 				media.splice(j--, 1);
+			}
 		}
 		data[elem[i]] = media.length == 0 ? undefined : media;
 		if (media.length == 0) {
@@ -325,8 +337,9 @@ edit.exportCache = function(index) {
 	}
 }; /* Read the cache and process start, created and end time from the text body */
 edit.exportCacheBody = function(data) {
-	if (!data["time"])
+	if (!data["time"]) {
 		data["time"] = {};
+	}
 	data["time"]["created"] = parseInt(localStorage["created"]);
 	// Test if begin and end time is overwritten
 	var lines = localStorage["body"].split(/\r*\n/);
@@ -352,8 +365,9 @@ edit.exportCacheBody = function(data) {
 			--i;
 		}
 	}
-	if (!data["text"])
+	if (!data["text"]) {
 		data["text"] = {};
+	}
 	var newBody = lines.join("\r\n");
 	data["text"]["body"] = newBody;
 	data["text"]["chars"] = newBody.length;
@@ -364,8 +378,9 @@ edit.exportCacheBody = function(data) {
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
 	var deleteList = ["title", "body", "created", "currentEditing", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video"];
-	for (var i = 0; i != deleteList.length; ++i)
+	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
+	}
 }; /* Save the entire journal.archive.data to cache after minimizing it */
 edit.saveDataCache = function(data) {
 	localStorage["archive"] = JSON.stringify(journal.archive.data);
@@ -386,9 +401,11 @@ edit.tryReadCache = function() {
 /* Return the index of data found */
 edit.find = function(created) {
 	for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
-		if (journal.archive.data[key]["time"])
-			if (journal.archive.data[key]["time"]["created"] == created)
+		if (journal.archive.data[key]["time"]) {
+			if (journal.archive.data[key]["time"]["created"] == created) {
 				return key;
+			}
+		}
 	}
 	// Nothing found
 	return -1;
@@ -398,15 +415,20 @@ edit.parseJSON = function(string) {
 		elements = "title time text video weblink book music movie images voice place iconTags2 textTags".split(" "),
 		dict = {};
 	// Add to cache
-	if (dict["title"])
+	if (dict["title"]) {
 		localStorage["title"] = dict["title"];
-	if (dict["text"])
-		if (dict["text"]["body"])
+	}
+	if (dict["text"]) {
+		if (dict["text"]["body"]) {
 			localStorage["body"] = dict["text"]["body"];
+		}
+	}
 	// Add undefined object to make it displayable
-	for (var key = 0, len = elements.length; key != len; ++key)
-		if (dict[elements[key]] == undefined)
+	for (var key = 0, len = elements.length; key != len; ++key) {
+		if (dict[elements[key]] == undefined) {
 			dict[elements[key]] = undefined;
+		}
+	}
 	return dict;
 }; /* Return an empty content object array entry */
 edit.newContent = function() {
@@ -435,10 +457,12 @@ edit.minData = function() {
 		delete tmp[key]["type"];
 		delete tmp[key]["year"];
 		// Remove undefined object
-		for (var i = 0; i < tmp[key].length; ++i)
-			if (tmp[key][i] == undefined || tmp[key][i] == "undefined")
+		for (var i = 0; i < tmp[key].length; ++i) {
+			if (tmp[key][i] == undefined || tmp[key][i] == "undefined") {
 				// Splice this key and also decrement i
 				tmp[key].splice(i--, 1);
+			}
+		}
 	};
 	return tmp;
 }; /* Sort journal.archive.data */
@@ -491,40 +515,41 @@ edit.addMedia = function(typeNum) {
 		length = $(selectorHeader).length,
 		htmlContent;
 	switch (typeNum) {
-		case 0:
-			// Images
-			edit.photo();
-			// Do not execute the codes after switch block
-			return;
-		case 2:
-			// Place
-			htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
-			break;
-		case 4:
-			// Music
-			htmlContent = "<div class=\"music\"><a title=\"Edit\" onclick=\"edit.music(" + length + ")\" href=\"#\"><img class=\"thumb <% if( music[i].thumb ) { music[i].thumb; } %>\"><span></span><input disabled class=\"title\" placeholder=\"Track name\" autocomplete=\"off\" /><input disabled class=\"desc\" placeholder=\"Artist\" autocomplete=\"off\" /></a></div>";
-			break;
-		case 5:
-			// Movie
-			htmlContent = "<div class=\"movie\"><a title=\"Edit\" onclick=\"edit.movie(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Movie title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Director\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
-			break;
-		case 6:
-			// Book
-			htmlContent = "<div class=\"book\"><a title=\"Edit\" onclick=\"edit.book(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Book title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Author\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
-			break;
-		case 7:
-			// Weblink
-			htmlContent = "<div class=\"weblink\"><a title=\"Edit\" onclick=\"edit.weblink(" + length + ")\" href=\"#\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" placeholder=\"Title\" /><input disabled class=\"desc\" placeholder=\"http://\" /></a></div>";
-			break;
-		default:
+	case 0:
+		// Images
+		edit.photo();
+		// Do not execute the codes after switch block
+		return;
+	case 2:
+		// Place
+		htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
+		break;
+	case 4:
+		// Music
+		htmlContent = "<div class=\"music\"><a title=\"Edit\" onclick=\"edit.music(" + length + ")\" href=\"#\"><img class=\"thumb <% if( music[i].thumb ) { music[i].thumb; } %>\"><span></span><input disabled class=\"title\" placeholder=\"Track name\" autocomplete=\"off\" /><input disabled class=\"desc\" placeholder=\"Artist\" autocomplete=\"off\" /></a></div>";
+		break;
+	case 5:
+		// Movie
+		htmlContent = "<div class=\"movie\"><a title=\"Edit\" onclick=\"edit.movie(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Movie title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Director\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
+		break;
+	case 6:
+		// Book
+		htmlContent = "<div class=\"book\"><a title=\"Edit\" onclick=\"edit.book(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Book title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Author\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
+		break;
+	case 7:
+		// Weblink
+		htmlContent = "<div class=\"weblink\"><a title=\"Edit\" onclick=\"edit.weblink(" + length + ")\" href=\"#\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" placeholder=\"Title\" /><input disabled class=\"desc\" placeholder=\"http://\" /></a></div>";
+		break;
+	default:
 
 	}
-	if (length > 0)
+	if (length > 0) {
 		// Elements already exist
 		$(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
-	else
+	} else {
 		// Have to create a new one
 		$(htmlContent).appendTo("#attach-area");
+	}
 	$(selectorHeader + ":eq(" + length + ") a").trigger("click");
 };
 edit.removeMedia = function(typeNum) {
@@ -535,32 +560,34 @@ edit.removeMedia = function(typeNum) {
 	edit.cleanupMediaEdit();
 };
 edit.addToRemovalList = function(name) {
-	if (!edit.removalList[name])
+	if (!edit.removalList[name]) {
 		edit.removalList[name] = [];
-	if (edit.removalList[name].indexOf(edit.mediaIndex[name]) != -1)
+	}
+	if (edit.removalList[name].indexOf(edit.mediaIndex[name]) != -1) {
 		// Only add when this element does not exist
 		edit.removalList[name].push(edit.mediaIndex[name]);
+	}
 }; /* Get the name of media by value */
 edit.mediaName = function(typeNum) {
 	switch (typeNum) {
-		case 0:
-			return "photo";
-		case 1:
-			return "video";
-		case 2:
-			return "place";
-		case 3:
-			return "voice";
-		case 4:
-			return "music";
-		case 5:
-			return "movie";
-		case 6:
-			return "book";
-		case 7:
-			return "weblink";
-		default:
-			return "";
+	case 0:
+		return "photo";
+	case 1:
+		return "video";
+	case 2:
+		return "place";
+	case 3:
+		return "voice";
+	case 4:
+		return "music";
+	case 5:
+		return "movie";
+	case 6:
+		return "book";
+	case 7:
+		return "weblink";
+	default:
+		return "";
 	}
 }; /* A function to be called by confirm */
 edit.confirm = function() {
@@ -599,25 +626,26 @@ edit.confirm = function() {
 edit.cleanupMediaEdit = function() {
 	$("#edit-pane").off("keyup");
 	switch (edit.isEditing) {
-		case 2:
-			edit.locationHide();
-			break;
-		case 4:
-			edit.musicHide();
-			break;
-		case 5:
-			edit.movieHide();
-			break;
-		case 6:
-			edit.bookHide();
-			break;
-		case 7:
-			edit.weblinkHide();
+	case 2:
+		edit.locationHide();
+		break;
+	case 4:
+		edit.musicHide();
+		break;
+	case 5:
+		edit.movieHide();
+		break;
+	case 6:
+		edit.bookHide();
+		break;
+	case 7:
+		edit.weblinkHide();
 	}
 }; /* Get a header for selector */
 edit.getSelectorHeader = function(type, index) {
-	if (index == undefined)
+	if (index == undefined) {
 		return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
+	}
 	return "#attach-area ." + type + ":eq(" + index + ") ";
 }; /************************** ANIMATION *****************************/
 
@@ -626,13 +654,15 @@ edit.toggleIcon = function(htmlName) {
 		parent = $(selector).parent().attr("class"),
 		iconVal = app.bitwise().getIconval($(selector).attr("title").toLowerCase());
 	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
-		if (parent == "weather" || parent == "emotion")
+		if (parent == "weather" || parent == "emotion") {
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
+		}
 		// Now highlighted
 		localStorage["iconTags"] = app.bitwise().or(parseInt(localStorage["iconTags"]), iconVal);
 	} else {
-		if (parent == "weather" || parent == "emotion")
+		if (parent == "weather" || parent == "emotion") {
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
+		}
 		// Dimmed
 		localStorage["iconTags"] = app.bitwise().andnot(parseInt(localStorage["iconTags"]), iconVal);
 	}
@@ -677,11 +707,11 @@ edit.windowMode = function() {
 	$(".header").fadeIn(400, function() {
 		$("#text-area p").toggleClass("fullscreen");
 		$("#text-area").animate({ width: "64%" }, function() {
-			$("#attach-area").fadeIn();
-			// Re-enable auto-height
-			app.layout();
-		})
-		.children().toggleClass("fullscreen");
+				$("#attach-area").fadeIn();
+				// Re-enable auto-height
+				app.layout();
+			})
+			.children().toggleClass("fullscreen");
 	});
 }; /************************** TITLE *********************************/
 
@@ -730,10 +760,11 @@ edit.saveTag = function() {
 			// Marked for a new entry
 			$("#attach-area .texttags .other").append("<p title='Click to remove' onclick=edit.removeTag('" + tagVal + "')>#" + tagVal + "</p>");
 			// Add to the cache
-			if (localStorage["textTags"] == "")
+			if (localStorage["textTags"] == "") {
 				localStorage["textTags"] = tagVal;
-			else
+			} else {
 				localStorage["textTags"] += "|" + tagVal;
+			}
 		}
 	}
 	// Clean the entry
@@ -745,10 +776,11 @@ edit.removeTag = function(tagName) {
 	tagArray.join("|");
 	// Remove from the panal
 	$("#attach-area .texttags p").each(function() {
-		if ($(this).text() == "#" + tagName)
+		if ($(this).text() == "#" + tagName) {
 			$(this).animate({ width: "0" }, function() {
 				$(this).remove();
 			});
+		}
 	});
 };
 edit.refreshSummary = function() {
@@ -854,108 +886,110 @@ edit.photo = function() {
 	var token = getTokenFromCookie(),
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
 	$.ajax({
-		type: "GET",
-		url: url
-	}).done(function(data, status, xhr) {
-		if (data["@odata.nextLink"]) {
-			// More content available!
-			// Do nothing right now
-		}
-		var itemList = data["value"];
-		for (var key = 0, len = itemList.length; key != len; ++key) {
-			var size = itemList[key]["size"],
-				name = itemList[key]["name"],
-				suffix = name.substring(name.length - 4),
-				found = false;
-			if (suffix != ".jpg" && suffix != ".png")
-				// Only support these two types
-				continue;
-			// Use size to filter out duplicate pahotos
-			for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
-				if (tmp[i]["size"] == size) {
-					found = true;
-					break;
+			type: "GET",
+			url: url
+		}).done(function(data, status, xhr) {
+			if (data["@odata.nextLink"]) {
+				// More content available!
+				// Do nothing right now
+			}
+			var itemList = data["value"];
+			for (var key = 0, len = itemList.length; key != len; ++key) {
+				var size = itemList[key]["size"],
+					name = itemList[key]["name"],
+					suffix = name.substring(name.length - 4),
+					found = false;
+				if (suffix != ".jpg" && suffix != ".png") {
+					// Only support these two types
+					continue;
+				}
+				// Use size to filter out duplicate pahotos
+				for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
+					if (tmp[i]["size"] == size) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					// Abandon this image
+					continue;
+				} else {
+					var data = {
+						name: name,
+						url: itemList[key]["@content.downloadUrl"],
+						size: size,
+						resource: false,
+						change: false,
+					};
+					edit.photos.push(data);
 				}
 			}
-			if (found) {
-				// Abandon this image
-				continue;
-			} else {
-				var data = {
-					name: name,
-					url: itemList[key]["@content.downloadUrl"],
-					size: size,
-					resource: false,
-					change: false,
-				};
-				edit.photos.push(data);
+			console.log("edit.photo()\tFinish media data");
+			// Add to images div
+			for (var i = 0; i != edit.photos.length; ++i) {
+				var htmlContent;
+				if (edit.photos[i]["resource"]) {
+					// The image should be highlighted if it is already at resource folder
+					htmlContent = "<div class=\"highlight\">";
+				} else {
+					htmlContent = "<div>";
+				}
+				htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
+				$("#attach-area .images").append(htmlContent);
 			}
-		}
-		console.log("edit.photo()\tFinish media data");
-		// Add to images div
-		for (var i = 0; i != edit.photos.length; ++i) {
-			var htmlContent;
-			if (edit.photos[i]["resource"])
-				// The image should be highlighted if it is already at resource folder
-				htmlContent = "<div class=\"highlight\">";
-			else
-				htmlContent = "<div>";
-			htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
-			$("#attach-area .images").append(htmlContent);
-		}
-		// Stop throttle 
-		$("#add-photo").html("&#xE114").attr({
-			onclick: "edit.addMedia(0)",
-			href: "#"
-		}).fadeIn();
-		// Clicking on img functionality
-		$("#attach-area .images div img").each(function() {
-			$(this).on("contextmenu", function() {
-				// Right click to select the images
-				$(this).parent().toggleClass("highlight");
-				// Return false to disable other functionalities
-				return false;
+			// Stop throttle 
+			$("#add-photo").html("&#xE114").attr({
+				onclick: "edit.addMedia(0)",
+				href: "#"
+			}).fadeIn();
+			// Clicking on img functionality
+			$("#attach-area .images div img").each(function() {
+				$(this).on("contextmenu", function() {
+					// Right click to select the images
+					$(this).parent().toggleClass("highlight");
+					// Return false to disable other functionalities
+					return false;
+				});
 			});
-		});
-		// Set preview
-		$("#attach-area .images").hover(function() {
-			// Mouseover
-			$("#photo-preview").css("opacity", "initial").show({
-				effect: "fade",
-				duration: 200
-			});
-		}, function() {
-			// Mouseout
-			$("#photo-preview").hide({
-				effect: "fade",
-				duration: 200
-			});
-		}).sortable({
-			containment: "#attach-area .images",
-			cursor: "crosshair",
-			revert: true
-		}).disableSelection();
-		$("#attach-area .images img").each(function() {
-			$(this).hover(function() {
+			// Set preview
+			$("#attach-area .images").hover(function() {
 				// Mouseover
-				$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
+				$("#photo-preview").css("opacity", "initial").show({
+					effect: "fade",
+					duration: 200
+				});
 			}, function() {
 				// Mouseout
-				$("#photo-preview img").animate({ opacity: 0 }, 0);
+				$("#photo-preview").hide({
+					effect: "fade",
+					duration: 200
+				});
+			}).sortable({
+				containment: "#attach-area .images",
+				cursor: "crosshair",
+				revert: true
+			}).disableSelection();
+			$("#attach-area .images img").each(function() {
+				$(this).hover(function() {
+					// Mouseover
+					$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
+				}, function() {
+					// Mouseout
+					$("#photo-preview img").animate({ opacity: 0 }, 0);
+				});
 			});
+			animation.setConfirm(0);
+			animation.log("Photos loaded");
+			animation.finished("#add-photo");
+		})
+		.fail(function(xhr, status, error) {
+			$("#add-photo").html("&#xE114").attr({
+				onclick: "edit.addMedia(0)",
+				href: "#"
+			});
+			animation.log("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+			animation.deny("#add-photo");
 		});
-		animation.setConfirm(0);
-		animation.log("Photos loaded");
-		animation.finished("#add-photo");
-	})
-	.fail(function(xhr, status, error) {
-		$("#add-photo").html("&#xE114").attr({
-			onclick: "edit.addMedia(0)",
-			href: "#"
-		});
-		animation.log("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
-		animation.deny("#add-photo");
-	});
 };
 edit.photoClick = function(index) {
 	$("#attach-area .images div:eq(" + index + ")").toggleClass("highlight");
@@ -988,11 +1022,13 @@ edit.photoSave = function(callback) {
 					var data = edit.photos[i];
 					// Test if it switches location
 					if ($(this).hasClass("highlight")) {
-						if (!data["resource"])
+						if (!data["resource"]) {
 							data["change"] = !data["change"];
+						}
 					} else {
-						if (data["resource"])
+						if (data["resource"]) {
 							data["change"] = !data["change"];
+						}
 					}
 					newPhotos.push(data);
 					break;
@@ -1021,14 +1057,16 @@ edit.photoSave = function(callback) {
 			// Get the correct header folder
 			if (timeHeader == undefined) {
 				var timeHeaderTmp = parseInt(name);
-				if (!isNaN(timeHeaderTmp) && timeHeaderTmp.toString().length >= 6)
+				if (!isNaN(timeHeaderTmp) && timeHeaderTmp.toString().length >= 6) {
 					// Correct format
 					timeHeader = timeHeaderTmp.toString().substring(0, 6);
+				}
 			}
 		}
-		if (timeHeader == undefined)
+		if (timeHeader == undefined) {
 			// Still cannot find the correct header
 			timeHeader = edit.getDate();
+		}
 		// Store all the files in the resource folder that don't change locations later in the cache
 		localStorage["images"] = JSON.stringify(newImagesData);
 
@@ -1039,7 +1077,9 @@ edit.photoSave = function(callback) {
 		if (photoQueue.length != 0) {
 			// Process the photos
 			for (var i = 0; i != photoQueue.length; ++i) {
-				var requestJson, url, newName,
+				var requestJson,
+					url,
+					newName,
 					token = getTokenFromCookie(),
 					name = photoQueue[i]["name"],
 					isToResource = photoQueue[i]["resource"];
@@ -1074,78 +1114,80 @@ edit.photoSave = function(callback) {
 					}
 				}
 				$.ajax({
-					type: "PATCH",
-					url: url,
-					contentType: "application/json",
-					data: JSON.stringify(requestJson)
-				})
-				.done(function(data, status, xhr) {
-					var newName = data["name"];
-					// Add the url of this new image to map
-					journal.archive.map[newName] = {
-						url: data["@content.downloadUrl"],
-						size: data["size"]
-					};
+						type: "PATCH",
+						url: url,
+						contentType: "application/json",
+						data: JSON.stringify(requestJson)
+					})
+					.done(function(data, status, xhr) {
+						var newName = data["name"];
+						// Add the url of this new image to map
+						journal.archive.map[newName] = {
+							url: data["@content.downloadUrl"],
+							size: data["size"]
+						};
 						animation.log("Photo transferred");
-					console.log("edit.photoSave()\tFinish update metadata");
-				})
-				.fail(function(xhr, status, error) {
-					animation.log("One tranfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
-					animation.warning("#add-photo");
-					// Revert the transfer process
-				})
-				.always(function(data, status, xhr) {
-					// Update the final destination
-					var newName = data["name"];
-					// Test if newName is undefined.
-					// Being undefined means an error, so nothing will be changed
-					if (newName != undefined) {
-						for (var k = 0; k != edit.photos.length; ++k) {
-							// Still use the old name
-							if (edit.photos[k]["newName"] == newName) {
-								// Find the matched name
-								var name = edit.photos[k]["name"],
-									resource = edit.photos[k]["resource"],
-									photoIndex;
-								// Update the new name
-								edit.photos[k]["name"] = newName;
-								// Switch the location
-								edit.photos[k]["resource"] = !resource;
-								// Find the correct img to add or remove highlight class on it
-								$("#attach-area .images img").each(function(index) {
-									if (journal.archive.map[name]) {
-									if ($(this).attr("src") == journal.archive.map[name]["url"]) {
-										photoIndex = index;
-									}}
-								});
-								// Get the result of transferring
-								if (!resource) {
-									// Originally not at the resource, to resource
-									$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight");
-									newImagesData.push({
-										fileName: newName
-									});
-								} else {
-									// To data, and remove from cache
-									$("#attach-area .images div:eq(" + photoIndex + ")").removeClass("highlight");
-									for (var j = 0; j != newImagesData.length; ++j)
-										if (newImagesData[j]["fileName"] == name) {
-											delete newImagesData[name];
-											break;
+						console.log("edit.photoSave()\tFinish update metadata");
+					})
+					.fail(function(xhr, status, error) {
+						animation.log("One tranfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+						animation.warning("#add-photo");
+						// Revert the transfer process
+					})
+					.always(function(data, status, xhr) {
+						// Update the final destination
+						var newName = data["name"];
+						// Test if newName is undefined.
+						// Being undefined means an error, so nothing will be changed
+						if (newName != undefined) {
+							for (var k = 0; k != edit.photos.length; ++k) {
+								// Still use the old name
+								if (edit.photos[k]["newName"] == newName) {
+									// Find the matched name
+									var name = edit.photos[k]["name"],
+										resource = edit.photos[k]["resource"],
+										photoIndex;
+									// Update the new name
+									edit.photos[k]["name"] = newName;
+									// Switch the location
+									edit.photos[k]["resource"] = !resource;
+									// Find the correct img to add or remove highlight class on it
+									$("#attach-area .images img").each(function(index) {
+										if (journal.archive.map[name]) {
+											if ($(this).attr("src") == journal.archive.map[name]["url"]) {
+												photoIndex = index;
+											}
 										}
-									delete journal.archive.map[name];
+									});
+									// Get the result of transferring
+									if (!resource) {
+										// Originally not at the resource, to resource
+										$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight");
+										newImagesData.push({
+											fileName: newName
+										});
+									} else {
+										// To data, and remove from cache
+										$("#attach-area .images div:eq(" + photoIndex + ")").removeClass("highlight");
+										for (var j = 0; j != newImagesData.length; ++j) {
+											if (newImagesData[j]["fileName"] == name) {
+												delete newImagesData[name];
+												break;
+											}
+										}
+										delete journal.archive.map[name];
+									}
+									break;
 								}
-								break;
 							}
 						}
-					}
-					// Test if it is elligible for calling callback()
-					if (++processingPhoto == photoQueue.length) {
-						localStorage["images"] = JSON.stringify(newImagesData);
-						animation.log("Finished photo transfer");
-						callback();
-					}
-				});
+						// Test if it is elligible for calling callback()
+						if (++processingPhoto == photoQueue.length) {
+							localStorage["images"] = JSON.stringify(newImagesData);
+							animation.log("Finished photo transfer");
+							callback();
+						}
+					});
 			}
 		} else {
 			// Call callback directly
@@ -1160,8 +1202,9 @@ edit.photoHide = function() {
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
-	if (index == edit.mediaIndex["place"] || index == undefined)
+	if (index == edit.mediaIndex["place"] || index == undefined) {
 		return;
+	}
 	edit.cleanupMediaEdit();
 	// Just start a new one
 	animation.setConfirm(2);
@@ -1256,9 +1299,10 @@ edit.location = function(index) {
 	});
 };
 edit.locationHide = function() {
-	if (edit.mediaIndex["place"] < 0)
+	if (edit.mediaIndex["place"] < 0) {
 		// Invalid call
 		return;
+	}
 	var selectorHeader = edit.getSelectorHeader("place");
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true);
@@ -1281,10 +1325,11 @@ edit.locationSave = function(index) {
 		latitude = parseFloat($(selectorHeader + ".latitude").val()),
 		longitude = parseFloat($(selectorHeader + ".longitude").val()),
 		newElem = {};
-	if (!data)
+	if (!data) {
 		data = [];
-	else
+	} else {
 		data = JSON.parse(data);
+	}
 	newElem["title"] = $(selectorHeader + ".title").val();
 	// Test if both latitude and longitude are valid 
 	if (!isNaN(latitude) && !isNaN(longitude)) {
@@ -1319,24 +1364,26 @@ edit.locationPin = function() {
 }; /* Reverse geocoding */
 edit.locationGeocode = function(pos) {
 	var mapOptions = {
-		zoom: 16,
-		center: pos,
-	}, map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
-	marker = new google.maps.Marker({
-		map: map,
-		position: pos
-	}),
-	selectorHeader = edit.getSelectorHeader("place");
+		    zoom: 16,
+		    center: pos,
+	    },
+		map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
+		marker = new google.maps.Marker({
+			map: map,
+			position: pos
+		}),
+		selectorHeader = edit.getSelectorHeader("place");
 	// Set on the map
 	map.setCenter(pos);
 	// Reverse geocoding to get current address
 	var geocoder = new google.maps.Geocoder();
 	geocoder.geocode({ 'latLng': pos }, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
-			if (results[0])
+			if (results[0]) {
 				$(selectorHeader + ".title").val(results[0].formatted_address);
-			else
+			} else {
 				alert("No results found");
+			}
 		} else {
 			alert("Geocoder failed due to: " + status);
 		}
@@ -1375,8 +1422,9 @@ edit.bookSave = function(index) {
 
 edit.itunes = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
-	if (index == edit.mediaIndex[type] || index == undefined)
+	if (index == edit.mediaIndex[type] || index == undefined) {
 		return;
+	}
 	edit.cleanupMediaEdit();
 	edit.mediaIndex[type] = index;
 	var selectorHeader = edit.getSelectorHeader(type);
@@ -1399,9 +1447,10 @@ edit.itunes = function(index, typeNum) {
 };
 edit.itunesHide = function(typeNum) {
 	var type = edit.mediaName(typeNum);
-	if (edit.mediaIndex[type] < 0)
+	if (edit.mediaIndex[type] < 0) {
 		// Invalid call
 		return;
+	}
 	var selectorHeader = edit.getSelectorHeader(type);
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
@@ -1418,9 +1467,9 @@ edit.itunesHide = function(typeNum) {
 edit.itunesSave = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
 	data = localStorage[type],
-	selectorHeader = edit.getSelectorHeader(type, index),
-	title = $(selectorHeader + ".title").val(),
-	author = $(selectorHeader + ".desc").val();
+		selectorHeader = edit.getSelectorHeader(type, index),
+		title = $(selectorHeader + ".title").val(),
+		author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
@@ -1431,8 +1480,9 @@ edit.itunesSave = function(index, typeNum) {
 }; /************************** WEBLINK 7 **************************/
 
 edit.weblink = function(index) {
-	if (index == edit.mediaIndex["weblink"] || index == undefined)
+	if (index == edit.mediaIndex["weblink"] || index == undefined) {
 		return;
+	}
 	edit.cleanupMediaEdit();
 	edit.mediaIndex["weblink"] = index;
 	var selectorHeader = edit.getSelectorHeader("weblink");
@@ -1448,9 +1498,10 @@ edit.weblink = function(index) {
 	edit.isEditing = 7;
 };
 edit.weblinkHide = function() {
-	if (edit.mediaIndex["weblink"] < 0)
+	if (edit.mediaIndex["weblink"] < 0) {
 		// Invalid call
 		return;
+	}
 	var selectorHeader = edit.getSelectorHeader("weblink");
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
@@ -1466,9 +1517,9 @@ edit.weblinkHide = function() {
 };
 edit.weblinkSave = function(index) {
 	var data = localStorage["weblink"],
-	selectorHeader = edit.getSelectorHeader("weblink", index),
-	title = $(selectorHeader + ".title").val(),
-	url = $(selectorHeader + ".desc").val();
+		selectorHeader = edit.getSelectorHeader("weblink", index),
+		title = $(selectorHeader + ".title").val(),
+		url = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
@@ -1483,4 +1534,3 @@ edit.weblinkSave = function(index) {
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 };
-

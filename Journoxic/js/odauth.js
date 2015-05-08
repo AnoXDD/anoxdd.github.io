@@ -35,11 +35,9 @@ function odauth(wasClicked) {
 	var token = getTokenFromCookie();
 	if (token) {
 		onAuthenticated(token);
-	}
-	else if (wasClicked) {
+	} else if (wasClicked) {
 		challengeForAuth();
-	}
-	else {
+	} else {
 		showLoginButton();
 	}
 }
@@ -63,11 +61,12 @@ function getAuthInfoFromUrl() {
 	if (window.location.hash) {
 		var authResponse = window.location.hash.substring(1);
 		var authInfo = JSON.parse(
-		  "{\"" + authResponse.replace(/&/g, "\",\"").replace(/=/g, "\":\"") + "\"}",
-		  function(key, value) { return key === "" ? value : decodeURIComponent(value); });
+			"{\"" + authResponse.replace(/&/g, "\",\"").replace(/=/g, "\":\"") + "\"}",
+			function(key, value) {
+				return key === "" ? value : decodeURIComponent(value);
+			});
 		return authInfo;
-	}
-	else {
+	} else {
 		alert("failed to receive auth token");
 	}
 }
@@ -81,8 +80,7 @@ function getTokenFromCookie() {
 		var end = cookies.indexOf(";", start);
 		if (end < 0) {
 			end = cookies.length;
-		}
-		else {
+		} else {
 			postCookie = cookies.substring(end);
 		}
 
@@ -164,11 +162,11 @@ function removeLoginButton() {
 function challengeForAuth() {
 	var appInfo = getAppInfo();
 	var url =
-	  "https://login.live.com/oauth20_authorize.srf" +
-	  "?client_id=" + appInfo.clientId +
-	  "&scope=" + encodeURIComponent(appInfo.scopes) +
-	  "&response_type=token" +
-	  "&redirect_uri=" + encodeURIComponent(appInfo.redirectUri);
+		"https://login.live.com/oauth20_authorize.srf" +
+			"?client_id=" + appInfo.clientId +
+			"&scope=" + encodeURIComponent(appInfo.scopes) +
+			"&response_type=token" +
+			"&redirect_uri=" + encodeURIComponent(appInfo.redirectUri);
 	popup(url);
 }
 
@@ -184,15 +182,16 @@ function popup(url) {
 	var top = screenY + Math.max(outerHeight - height, 0) / 2;
 
 	var features = [
-				"width=" + width,
-				"height=" + height,
-				"top=" + top,
-				"left=" + left,
-				"status=no",
-				"resizable=yes",
-				"toolbar=no",
-				"menubar=no",
-				"scrollbars=yes"];
+		"width=" + width,
+		"height=" + height,
+		"top=" + top,
+		"left=" + left,
+		"status=no",
+		"resizable=yes",
+		"toolbar=no",
+		"menubar=no",
+		"scrollbars=yes"
+	];
 	var popup = window.open(url, "oauth", features.join(","));
 	if (!popup) {
 		alert("failed to pop up auth window");

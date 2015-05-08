@@ -42,59 +42,60 @@ app.init = function() {
 	// Initialize preloaded tags
 	app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
 	var tagsArray = app.bitwise().getTagsArray();
-	for (var key = 0; key != tagsArray.length; ++key)
+	for (var key = 0; key != tagsArray.length; ++key) {
 		app.preloadedTags.push("#" + tagsArray[key]);
+	}
 	// Clear the field of search input every time on focus
 	$("#query").keyup(function(n) {
-		if (n.keyCode == 13) {
-			app.command = $("#query").val();
-			$("#query").effect("highlight", { color: "#dddddd" });
-			thisApp.load(app.command, true);
-		}
-	})
-	// Autocomplete for preloaded tags
-	.bind("keydown", function(event) {
-		// Don't navigate away from the field on tab when selecting an item
-		if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
-			event.preventDefault();
-		}
-	})
-	.autocomplete({
-		minLength: 1,
-		autoFocus: true,
-		source: function(request, response) {
-			// Remove elements that are already there
-			var terms = $("#query").val().split(" "),
-				availableTags = app.preloadedTags.sort();
-			for (var i = 0; i < availableTags.length; ++i) {
-				for (var j = 0; j < terms.length; ++j) {
-					if (availableTags[i] == terms[j]) {
-						// Same element found, remove it
-						terms.splice(j, 1);
-						availableTags.splice(i, 1);
-						break;
+			if (n.keyCode == 13) {
+				app.command = $("#query").val();
+				$("#query").effect("highlight", { color: "#dddddd" });
+				thisApp.load(app.command, true);
+			}
+		})
+		// Autocomplete for preloaded tags
+		.bind("keydown", function(event) {
+			// Don't navigate away from the field on tab when selecting an item
+			if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
+				event.preventDefault();
+			}
+		})
+		.autocomplete({
+			minLength: 1,
+			autoFocus: true,
+			source: function(request, response) {
+				// Remove elements that are already there
+				var terms = $("#query").val().split(" "),
+					availableTags = app.preloadedTags.sort();
+				for (var i = 0; i < availableTags.length; ++i) {
+					for (var j = 0; j < terms.length; ++j) {
+						if (availableTags[i] == terms[j]) {
+							// Same element found, remove it
+							terms.splice(j, 1);
+							availableTags.splice(i, 1);
+							break;
+						}
 					}
 				}
+				// Delegate back to autocomplete, but extract the last term
+				response($.ui.autocomplete.filter(availableTags, request.term.split(/ \s*/).pop()));
+			},
+			focus: function() {
+				// Prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui) {
+				var terms = this.value.split(/ \s*/);
+				// Remove the current input
+				terms.pop();
+				// Add the selected item
+				terms.push(ui.item.value);
+				// Add placeholder to get the comma-and-space at the end
+				terms.push("");
+				this.value = terms.join(" ");
+				return false;
 			}
-			// Delegate back to autocomplete, but extract the last term
-			response($.ui.autocomplete.filter(availableTags, request.term.split(/ \s*/).pop()));
-		},
-		focus: function() {
-			// Prevent value inserted on focus
-			return false;
-		},
-		select: function(event, ui) {
-			var terms = this.value.split(/ \s*/);
-			// Remove the current input
-			terms.pop();
-			// Add the selected item
-			terms.push(ui.item.value);
-			// Add placeholder to get the comma-and-space at the end
-			terms.push("");
-			this.value = terms.join(" ");
-			return false;
-		}
-	});
+		});
 	// Change the format of time on hover
 	$("#search-result").hover(function() {
 		$("#search-result").hide();
@@ -182,21 +183,23 @@ app.load = function(filter, forceReload, newContent) {
 		$("#total-line").text(app.displayedLines);
 		$("#total-time").text(app.displayedTime);
 		// Refresh every stuff
-		for (var key = 0, len = journal.archive.data.length; key != len; ++key)
+		for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
 			journal.archive.data[key]["processed"] = 0;
+		}
 		loadFunction();
 	}
 	// Show the final result anyway
 	$("#search-result").fadeIn(500);
-	if (filter == undefined)
+	if (filter == undefined) {
 		filter == "";
+	}
 }; // Load a script and passed in a function
 app.loadScript = function(data, func, isScript) {
 	if (isScript) {
 		var newScript = document.createElement("script"),
-				newFunction = function() {
-					func();
-				};
+			newFunction = function() {
+				func();
+			};
 		newScript.src = data;
 		newScript.charset = "utf-8";
 		newScript.onload = newFunction;
@@ -279,18 +282,20 @@ app.list.prototype = {
 			lastQualifiedLoaded = app.lastQualified;
 		// Adjust if the number of contents needed to be loaded is more than all the available contents
 		// Load the contents
-		if (app.lastLoaded >= journal.archive.data.length)
+		if (app.lastLoaded >= journal.archive.data.length) {
 			currentLoaded = app.lastLoaded = journal.archive.data.length - 1;
+		}
 		contents[currentLoaded].index = currentLoaded;
 		// Test if current entry satisfies the filter
 		while (true) {
 			if (this.qualify(contents[currentLoaded], filter)) {
 				var lastTime;
 				// Get the time of last clip
-				if (lastQualifiedLoaded == -1)
+				if (lastQualifiedLoaded == -1) {
 					lastTime = 0;
-				else
+				} else {
 					lastTime = contents[lastQualifiedLoaded].time.start || contents[lastQualifiedLoaded].time.created;
+				}
 				// Go to load/change html of the content
 				currentList.html(journal.archive.data[currentLoaded], lastTime);
 				// Track the index of this data
@@ -301,8 +306,9 @@ app.list.prototype = {
 				app.displayedLines += contents[currentLoaded].text.lines;
 				if (contents[currentLoaded].time.end) {
 					var timeDelta = (contents[currentLoaded].time.end - contents[currentLoaded].time.start) / 60000;
-					if (!isNaN(timeDelta))
+					if (!isNaN(timeDelta)) {
 						app.displayedTime += timeDelta;
+					}
 				}
 				$("#search-result").hide().fadeIn(500);
 				$("#total-displayed").text(app.displayedNum);
@@ -310,17 +316,19 @@ app.list.prototype = {
 				$("#total-line").text(app.displayedLines);
 				$("#total-time").text(app.displayedTime);
 				// Find the qualified entry, break the loop if scrollbar is not visible yet
-				if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total)
+				if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
 					continue;
+				}
 				break;
 			} else {
 				// Not qualified; add an empty list
 				this.htmlEmpty();
 				// 1) Increment currentLoaded to try to load the next entry candidate
 				// 2) Tests if this is the last entry to be loaded. If so, break the circle
-				if (++currentLoaded == journal.total)
+				if (++currentLoaded == journal.total) {
 					// Break out of the loop
 					break;
+				}
 			}
 		}
 		// Update loaded contents
@@ -337,11 +345,13 @@ app.list.prototype = {
 	qualify: function(data, filter) {
 		////console.log("Call app.list.qualify(" + data["title"] + ", " + filter + ")");
 		// Test if the filter is there
-		if (!filter)
+		if (!filter) {
 			return true;
+		}
 		// Clear multiple white spaces
-		while (filter.search("  ") != -1)
+		while (filter.search("  ") != -1) {
 			filter = filter.replace("  ", " ");
+		}
 		/* The elements of all the filter */
 		var elements = filter.toLowerCase().split(" ");
 		// Iterate for all the elements
@@ -356,11 +366,12 @@ app.list.prototype = {
 					if (data["textTags"]) {
 						var textTagArray = data["textTags"].split("|"),
 							subfound = false;
-						for (tag in textTagArray)
+						for (tag in textTagArray) {
 							if (textTagArray[tag] == element[subkey].substr(1)) {
 								subfound = true;
 								break;
 							}
+						}
 						if (subfound) {
 							////console.log("\t- Tags Found!");
 							// Found
@@ -382,12 +393,13 @@ app.list.prototype = {
 					// Type
 					var typeArray = app.bitwise().content(data["attachments"]),
 						type = element[subkey].substr(1),
-					subfound = false;
-					for (var key = 0; key != typeArray.length; ++key)
+						subfound = false;
+					for (var key = 0; key != typeArray.length; ++key) {
 						if (type == typeArray[key]) {
 							subfound = true;
 							break;
 						}
+					}
 					if (subfound) {
 						////console.log("\t- Type match!");
 						// Found
@@ -422,12 +434,14 @@ app.list.prototype = {
 					}
 				}
 				// Any one matches will break the inner loop
-				if (found)
+				if (found) {
 					break;
+				}
 			}
 			// If any one matches in the inner loop, the outer loop will continue until any one doe not match or all the tests have been passed
-			if (found)
+			if (found) {
 				continue;
+			}
 			console.log("Reach end");
 			// No result found
 			return false;
@@ -445,10 +459,11 @@ app.list.prototype = {
 			minute = date.getMinutes(),
 			minute = minute < 10 ? "0" + minute : minute;
 		hour = hour < 10 ? "0" + hour : hour;
-		if (!timeOnly)
+		if (!timeOnly) {
 			return app.month_array[month] + " " + day + ", " + year + " " + hour + ":" + minute;
-		else
+		} else {
 			return hour + ":" + minute;
+		}
 	},
 	/* Converts the content to html and append to the list of contents */
 	html: function(data, lastTime) { // [d]
@@ -456,50 +471,51 @@ app.list.prototype = {
 		data.summary = data.text.ext;
 		// Find the cover type
 		switch (data.coverType) {
-			default:
-				data.type = "text";
-				data.ext = "";
-				// data.ext = "<p>" + data.contentsExt + "</p>";
-				break;
-			case 1:
-				data.type = "photo";
-				data.ext = this.thumb(data, "images");
-				break;
-			case 2:
-				data.type = "video";
-				data.ext = this.thumb(data, "video");
-				break;
-			case 3:
-				data.type = "music";
-				data.ext = this.thumb(data, "music");
-				break;
-			case 4:
-				data.type = "voice";
-				data.ext = this.thumb("dummy");
-				break;
-			case 5:
-				data.type = "book";
-				data.ext = this.thumb(data, "book");
-				break;
-			case 6:
-				data.type = "movie";
-				data.ext = this.thumb(data, "movie");
-				break;
-			case 7:
-				data.type = "place";
-				data.ext = this.thumb("dummy");
-				break;
-			case 8:
-				data.type = "weblink";
-				data.ext = this.thumb(data, "weblink");
-				break;
+		default:
+			data.type = "text";
+			data.ext = "";
+			// data.ext = "<p>" + data.contentsExt + "</p>";
+			break;
+		case 1:
+			data.type = "photo";
+			data.ext = this.thumb(data, "images");
+			break;
+		case 2:
+			data.type = "video";
+			data.ext = this.thumb(data, "video");
+			break;
+		case 3:
+			data.type = "music";
+			data.ext = this.thumb(data, "music");
+			break;
+		case 4:
+			data.type = "voice";
+			data.ext = this.thumb("dummy");
+			break;
+		case 5:
+			data.type = "book";
+			data.ext = this.thumb(data, "book");
+			break;
+		case 6:
+			data.type = "movie";
+			data.ext = this.thumb(data, "movie");
+			break;
+		case 7:
+			data.type = "place";
+			data.ext = this.thumb("dummy");
+			break;
+		case 8:
+			data.type = "weblink";
+			data.ext = this.thumb(data, "weblink");
+			break;
 		}
 		// Get the created time
 		var createTime = data.time.start || data.time.created;
 		data.datetime = this.date(createTime);
 		data.endtime = "";
-		if (data.time.end)
+		if (data.time.end) {
 			data.datetime += " - " + this.date(data.time.end, 1);
+		}
 		// Separator
 		var dateArr = this.isInSameMonth(createTime, lastTime);
 		data.year = dateArr[0];
@@ -508,13 +524,14 @@ app.list.prototype = {
 		data.attached = this.attached(data.attachments);
 		var item = $(app.itemView(data));
 		// The event when clicking the list
-		item.find(">a").on("click", function(j) {
+		item.find(" > a").on("click", function(j) {
 			j.preventDefault();
 			// Show edit panel
 			headerShowMenu("edit");
 			// Remove all the photos that have already been loaded
-			if (app.photos)
+			if (app.photos) {
 				app.photos.remove();
+			}
 			// De-hightlight the data that is displayed
 			////console.log(app.currentDisplayed);
 			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeAttr("style");
@@ -568,14 +585,17 @@ app.list.prototype = {
 			var first = typeContents[0],
 				g = "";
 			// Check the validity of the file
-			if (!first.fileName)
+			if (!first.fileName) {
 				return "<div class=\"dummy\"></div>";
-			if (type != "images" && type != "video")
+			}
+			if (type != "images" && type != "video") {
 				// Check the validity of the file
-				if (!!first.thumb)
+				if (!!first.thumb) {
 					first = first.thumb;
-				else
+				} else {
 					return "<div class=\"dummy\"></div>";
+				}
+			}
 			////var width = first.width,
 			////    height = first.height;
 			////if (type == "video") {
@@ -591,14 +611,17 @@ app.list.prototype = {
 			// Match to see if this filename is already in the map
 			var fileName;
 			if (type == "images") {
-				if (journal.archive.map[first.fileName])
+				if (journal.archive.map[first.fileName]) {
 					fileName = journal.archive.map[first.fileName]["url"];
-				if (fileName == undefined)
+				}
+				if (fileName == undefined) {
 					return "<div class=\"dummy\"></div>";
+				}
 			}
 			if (type == "video") {
-				if (journal.archive.map[first.fileName + "_thumb.jpg"])
+				if (journal.archive.map[first.fileName + "_thumb.jpg"]) {
 					fileName = journal.archive.map[first.fileName + "_thumb.jpg"]["url"];
+				}
 			}
 			// Check the validity of photos
 			////if (!fileName.match(/.(jpg|png)$/) && !!first.type)
@@ -606,15 +629,19 @@ app.list.prototype = {
 			////		fileName = fileName + "." + first.type;
 			////	else
 			////		return '<div class="dummy"></div>';
-			if (thumbPropertiesHtml)
+			if (thumbPropertiesHtml) {
 				thumbPropertiesHtml = " style=\"" + thumbPropertiesHtml + "\"";
+			}
 			var j = "<img src=\"" + fileName + "\"" + thumbPropertiesHtml + ">";
-			if (Modernizr.canvas)
+			if (Modernizr.canvas) {
 				j = "<canvas width=\"160\" height=\"160\" data-src=\"" + fileName + "\"></canvas>";
-			if (first.urlType > 1 && type == "weblink")
+			}
+			if (first.urlType > 1 && type == "weblink") {
 				g = "<span class=\"weblink-video\"></span>";
-			if (type == "video")
+			}
+			if (type == "video") {
 				g = "<span class=\"video-play\"></span>";
+			}
 			returnHtml = "<div class=\"thumb\">" + j + "" + g + "</div>";
 		}
 		return returnHtml || "<div class=\"dummy\"></div>";
@@ -646,9 +673,10 @@ app.list.prototype = {
 				// mmyy
 				var month = parseInt(singleTime.substr(0, 2)),
 					year = parseInt(singleTime.substr(2, 2));
-				if (isNaN(month) || isNaN(year))
+				if (isNaN(month) || isNaN(year)) {
 					// Parse failed
 					return false;
+				}
 				// Return the result
 				return (date.getYear() % 100 == year && date.getMonth() + 1 == month);
 			} else if (singleTime.length == 6) {
@@ -656,9 +684,10 @@ app.list.prototype = {
 				var month = parseInt(singleTime.substr(0, 2)),
 					day = parseInt(singleTime.substr(2, 2)),
 					year = parseInt(singleTime.substr(4, 2));
-				if (isNaN(month) || isNaN(day) || isNaN(year))
+				if (isNaN(month) || isNaN(day) || isNaN(year)) {
 					// Parse failed
 					return false;
+				}
 				// Return the result
 				return (date.getYear() % 100 == year && date.getMonth() + 1 == month && date.getDate() == day);
 			} else {
@@ -676,23 +705,26 @@ app.list.prototype = {
 					endMonth = parseInt(endTime.substr(0, 2)),
 					endYear;
 				// Automatically fill endYear if the user does not specify it
-				if (endTime.length == 2)
+				if (endTime.length == 2) {
 					endYear = startYear;
-				else if (endTime.length == 4)
+				} else if (endTime.length == 4) {
 					endYear = parseInt(endTime.substr(2, 2));
-				else
+				} else {
 					// Invalid length
 					return false;
-				if (isNaN(startMonth) || isNaN(startYear) || isNaN(endMonth) || isNaN(endYear))
+				}
+				if (isNaN(startMonth) || isNaN(startYear) || isNaN(endMonth) || isNaN(endYear)) {
 					// Parse failed
 					return false;
+				}
 				var month = date.getMonth() + 1,
 					year = date.getYear() % 100;
 				// Test if the time is in range
-				if (month >= startMonth && month <= endMonth && year >= startYear && year <= endYear)
+				if (month >= startMonth && month <= endMonth && year >= startYear && year <= endYear) {
 					return true;
-				else
+				} else {
 					return false;
+				}
 			} else if (startTime.length == 6) {
 				// mmyydd
 				var startMonth = parseInt(startTime.substr(0, 2)),
@@ -714,9 +746,10 @@ app.list.prototype = {
 					// Illegal endTime length
 					return false;
 				}
-				if (isNaN(startMonth) || isNaN(startDay) || isNaN(startYear) || isNaN(endMonth) || isNaN(endDay) || isNaN(endTime))
+				if (isNaN(startMonth) || isNaN(startDay) || isNaN(startYear) || isNaN(endMonth) || isNaN(endDay) || isNaN(endTime)) {
 					// Parse failed
 					return false;
+				}
 				var startDate = new Date(2000 + startYear, startMonth - 1, startDay),
 					endDate = new Date(2000 + endYear, endMonth - 1, endDay, 23, 59, 59);
 				// Test if the time is in range
@@ -736,8 +769,9 @@ app.list.prototype = {
 			newMonth = newDate.getMonth(),
 			newYear = newDate.getFullYear();
 		// Just initialized
-		if (oldTime == 0)
+		if (oldTime == 0) {
 			return [newYear, app.month_array[newMonth]];
+		}
 		var oldDate = new Date(oldTime),
 			oldMonth = oldDate.getMonth(),
 			oldYear = oldDate.getFullYear();
@@ -751,8 +785,9 @@ app.detail = function() { // [m]
 		dataClip.chars = dataClip.text.chars + " Chars";
 		dataClip.lines = dataClip.text.lines + " Lines";
 		dataClip.contents = this.text(dataClip.text.body);
-		if (dataClip.weblink)
+		if (dataClip.weblink) {
 			this.thumb(dataClip, "weblink", 50, 50);
+		}
 		if (dataClip.book) {
 			this.thumb(dataClip, "book", 50, 70);
 			for (var i = 0; i != dataClip["book"].length; ++i) {
@@ -785,14 +820,17 @@ app.detail = function() { // [m]
 		////			dataClip.voice[element].humanTime = app.util.runTime(dataClip.voice[element].runTime);
 		if (dataClip.iconTags) {
 			var j = app.bitwise().iconTags(dataClip.iconTags);
-			if (j.length > 0)
+			if (j.length > 0) {
 				dataClip.iconTags2 = j;
+			}
 		}
 		// To avoid undefined error in _.template
 		var elements = "video weblink book music movie images voice place iconTags2 textTags iconTags".split(" ");
-		for (var i = 0, len = elements.length; i < len; ++i)
-			if (dataClip[elements[i]] == undefined)
+		for (var i = 0, len = elements.length; i < len; ++i) {
+			if (dataClip[elements[i]] == undefined) {
 				dataClip[elements[i]] = undefined;
+			}
+		}
 		// Set the read status of the clip to read
 		dataClip.processed = 1;
 	}
@@ -801,8 +839,9 @@ app.detail = function() { // [m]
 	app.cDetail.css("display", "inline-block").html(l);
 	app.app.addClass("detail-view");
 	// Hide center if no images available
-	if (!dataClip["images"])
+	if (!dataClip["images"]) {
 		$(".center").hide();
+	}
 	// Back button
 	$(".btn-back", app.cDetail).on("click", function() {
 		this.hideDetail();
@@ -813,10 +852,11 @@ app.detail = function() { // [m]
 		if (data["images"]) {
 			for (var key = 0; key != data["images"].length; ++key) {
 				var file = data["images"][key].fileName;
-				if (journal.archive.map[file])
+				if (journal.archive.map[file]) {
 					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"><span></span></a>");
-				else
+				} else {
 					animation.log("Cannot load file " + file + ". Please make sure you have downloaded it", true);
+				}
 			}
 		}
 		$(".center").hide();
@@ -828,7 +868,7 @@ app.detail = function() { // [m]
 		var photos = $(".upper > a", app.cDetail);
 		// Activate the photo viewer on click
 		if (photos.length > 0) {
-			app.photos = new app.PhotoViewer(photos.find(">img").clone());
+			app.photos = new app.PhotoViewer(photos.find(" > img").clone());
 			photos.on("click", function(o) {
 				o.preventDefault();
 				var n = $(this).index();
@@ -840,8 +880,9 @@ app.detail = function() { // [m]
 	// Click the icons to search
 	$(".icontags > span").on("click", function() {
 		var tag = app.bitwise().getTypeByClass(this.className);
-		if (tag != "")
+		if (tag != "") {
 			app.load("#" + tag, true);
+		}
 	});
 	////$(window).on("keyup.detail-key", function(n) {
 	////	if (n.keyCode == 8) {
@@ -851,8 +892,9 @@ app.detail = function() { // [m]
 	// Add online media url to the classes
 	var eachOp = function() {
 		var className = $(this).attr("class");
-		if (journal.archive.map[className])
-		$(this).attr("href", journal.archive.map[className]["url"]).removeAttr("class");
+		if (journal.archive.map[className]) {
+			$(this).attr("href", journal.archive.map[className]["url"]).removeAttr("class");
+		}
 	};
 	$(".lower .video a").each(eachOp);
 	$(".lower .voice a").each(eachOp);
@@ -883,8 +925,9 @@ app.detail.prototype = {
 		if (thumbClip && thumbClip.length > 0) {
 			thumbClip = thumbClip[0]; // [k]
 			// Invalid data
-			if (!thumbClip)
+			if (!thumbClip) {
 				return false;
+			}
 			////var fileData = thumbClip.data, // [j]
 			////styleArray = (fileData.width && fileData.height) ? app.util.crop(fileData.width, fileData.height, width, height) : {},
 			// Manual input
@@ -892,12 +935,15 @@ app.detail.prototype = {
 				styleHtml = app.util.style(styleArray),
 				// !!!!!IMPORTANT!!!!! THE DIRECTORY OF THE FILE
 				fileDir = app.resource + thumbClip.thumb;
-			if (!fileDir.match(/.(jpg|png)$/))
+			if (!fileDir.match(/.(jpg|png)$/)) {
 				fileDir = fileDir + ".jpg";
-			if (styleHtml)
+			}
+			if (styleHtml) {
 				styleHtml = " style=\"" + styleHtml + "\"";
-			if (!(thumbClip.thumb === undefined))
+			}
+			if (!(thumbClip.thumb === undefined)) {
 				thumbClip.thumb = "<img src=\"" + fileDir + "\"" + styleHtml + ">";
+			}
 		}
 	},
 	/* Hide the detail-view */
@@ -914,8 +960,9 @@ app.detail.prototype = {
 		app.app.removeClass("detail-view");
 		//// $(window).off("keyup.detail-key");
 		// Remove all the photos
-		if (app.photos)
+		if (app.photos) {
 			app.photos.remove();
+		}
 	}
 };
 // Change the layout the main container
@@ -1148,22 +1195,30 @@ app.bitwise = function() {
 	return {
 		content: function(contentFlag) { // [Q, S]
 			var retArray = []; // [R]
-			if (this.is(contentFlag, photoVal))
+			if (this.is(contentFlag, photoVal)) {
 				retArray.push("photo");
-			if (this.is(contentFlag, videoVal))
+			}
+			if (this.is(contentFlag, videoVal)) {
 				retArray.push("video");
-			if (this.is(contentFlag, musicVal))
+			}
+			if (this.is(contentFlag, musicVal)) {
 				retArray.push("music");
-			if (this.is(contentFlag, voiceVal))
+			}
+			if (this.is(contentFlag, voiceVal)) {
 				retArray.push("voice");
-			if (this.is(contentFlag, bookVal))
+			}
+			if (this.is(contentFlag, bookVal)) {
 				retArray.push("book");
-			if (this.is(contentFlag, movieVal))
+			}
+			if (this.is(contentFlag, movieVal)) {
 				retArray.push("movie");
-			if (this.is(contentFlag, placeVal))
+			}
+			if (this.is(contentFlag, placeVal)) {
 				retArray.push("place");
-			if (this.is(contentFlag, weblinkVal))
+			}
+			if (this.is(contentFlag, weblinkVal)) {
 				retArray.push("weblink");
+			}
 			return retArray;
 		},
 		/* Get the array of html names from a typeVal */
@@ -1183,10 +1238,11 @@ app.bitwise = function() {
 		 Return false if the string is either invalid or not found
 		 */
 		getNum: function(typeVal, stringVal) {
-			if (iconVal.hasOwnProperty(stringVal.toLowerCase()))
+			if (iconVal.hasOwnProperty(stringVal.toLowerCase())) {
 				return this.is(typeVal, iconVal[stringVal.toLowerCase()]);
-			else
+			} else {
 				return false;
+			}
 		},
 		/* Return the value in iconVal */
 		getIconval: function(tagName) {
@@ -1209,11 +1265,14 @@ app.bitwise = function() {
 		 Return -1 if the value is not found
 		 */
 		getValueByClass: function(className) {
-			for (val in iconName)
-				if (iconName.hasOwnProperty(val))
-					if (iconName[val] == className)
-					// Found
+			for (val in iconName) {
+				if (iconName.hasOwnProperty(val)) {
+					if (iconName[val] == className) {
+						// Found
 						return val;
+					}
+				}
+			}
 			return -1;
 		},
 		/*
@@ -1222,13 +1281,17 @@ app.bitwise = function() {
 		 */
 		getTypeByClass: function(className) {
 			var classVal = this.getValueByClass(className);
-			if (classVal == -1)
+			if (classVal == -1) {
 				return "";
-			for (var str in iconVal)
-				if (iconVal.hasOwnProperty(str))
-					if (iconVal[str] == classVal)
-					// Found
+			}
+			for (var str in iconVal) {
+				if (iconVal.hasOwnProperty(str)) {
+					if (iconVal[str] == classVal) {
+						// Found
 						return str;
+					}
+				}
+			}
 			return "";
 		},
 		/* Set typeVal on typesVal. Return typesVal | typeVal */
@@ -1262,7 +1325,8 @@ app.PhotoViewer = function(c, d) {
 		return false;
 	}
 	this.list = c;
-	this.callback = d || function() { };
+	this.callback = d || function() {
+	};
 	this.make();
 	this.init();
 };
@@ -1296,7 +1360,7 @@ app.PhotoViewer.prototype = {
 	},
 	init: function() {
 		var c = this;
-		this.viewer = $("body>div#photoviewer");
+		this.viewer = $("body > div#photoviewer");
 	},
 	bind: function() {
 		if (!!this._bind) {
@@ -1304,9 +1368,9 @@ app.PhotoViewer.prototype = {
 			return false;
 		}
 		var j = this;
-		var g = this.viewer = $("body>div#photoviewer");
+		var g = this.viewer = $("body > div#photoviewer");
 		this.pagination = $("div.pagination>ul>li", this.viewer);
-		var c = g.find(">div.swipe");
+		var c = g.find(" > div.swipe");
 		this.swipe = new Swipe(c[0], {
 			continuous: false,
 			callback: j.callback,
@@ -1323,7 +1387,7 @@ app.PhotoViewer.prototype = {
 		////$("input.btn-next", g).on("click", function() {
 		////	j.next();
 		////});
-		var h = c.find(">ul>li>img");
+		var h = c.find(" > ul > li > img");
 
 		function d(n) {
 			var k = $(window),
@@ -1337,13 +1401,14 @@ app.PhotoViewer.prototype = {
 				r.css(p);
 			});
 		}
+
 		d();
 		$(window).on("resize", d);
 		var f = $("div.control", g);
 		h.on("click", function() {
 			f.fadeToggle(200);
 		});
-		var e = c.find(">ul>li");
+		var e = c.find(" > ul > li");
 		e.on("click", function(k) {
 			if (k, this == k.toElement) {
 				j.close();
@@ -1481,6 +1546,7 @@ app.VideoPlayer = function(f, o) {
 		player.jPlayer("volume", p);
 		$(".vp-volume-bar-value", f).css("width", p + "%");
 	}
+
 	$(".vp-volume-bar", f).grab({
 		onstart: function() {
 			self.dragging = true;
@@ -1501,6 +1567,7 @@ app.VideoPlayer = function(f, o) {
 		player.jPlayer("playHead", p);
 		$(".vp-play-bar", f).css("width", p + "%");
 	}
+
 	$(".vp-progress", f).grab({
 		onstart: function() {
 			self.dragging = true;
@@ -1534,9 +1601,9 @@ app.VideoPlayer = function(f, o) {
 };
 $(document).ready(function() {
 	app.app = $("div#app");
-	app.contents = app.app.find(">#contents");
-	app.cList = app.app.find(">#contents>#list");
-	app.cDetail = app.app.find(">#contents>#detail");
+	app.contents = app.app.find(" > #contents");
+	app.cList = app.app.find(" > #contents > #list");
+	app.cDetail = app.app.find(" > #contents > #detail");
 	app.itemView = _.template($("#list-view").html());
 	app.detailView = _.template($("#detail-view").html());
 	app.layout();

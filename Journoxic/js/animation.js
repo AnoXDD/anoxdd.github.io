@@ -16,11 +16,13 @@ animation.isShown = function(selector) {
 	return $(selector).css("top") === "10px";
 };
 animation.toggleIcon = function(selector, callback) {
-	callback = callback || function() { };
-	if (animation.isShown(selector))
+	callback = callback || function() {
+	};
+	if (animation.isShown(selector)) {
 		animation.hideIcon(selector, callback);
-	else
+	} else {
 		animation.showIcon(selector, callback);
+	}
 }; /* Set the name of confirm */
 animation.setConfirm = function(name) {
 	if (name === edit.confirmName) {
@@ -28,10 +30,10 @@ animation.setConfirm = function(name) {
 			// Always show
 			animation.showIcon("#confirm");
 			switch (name) {
-				case 2:
-					// Place
-					animation.toggleIcon("#pin-point");
-					break;
+			case 2:
+				// Place
+				animation.toggleIcon("#pin-point");
+				break;
 			}
 		} else {
 			// Do not need to follow the steps below, just toggle it
@@ -47,10 +49,10 @@ animation.setConfirm = function(name) {
 			$("#confirm").html("&#xE106");
 			title = "Remove this medium";
 			switch (name) {
-				case 2:
-					// Place
-					animation.showIcon("#pin-point");
-					break;
+			case 2:
+				// Place
+				animation.showIcon("#pin-point");
+				break;
 			}
 		} else {
 			$("#confirm").html("&#xE10B");
@@ -67,9 +69,10 @@ animation.setConfirm = function(name) {
 		} else if (name === "save") {
 			title = "Save entry";
 		}
-		if (title == undefined)
+		if (title == undefined) {
 			// Not a valid call
 			return;
+		}
 		$("#confirm").css("title", title);
 		edit.confirmName = name;
 	});
@@ -163,10 +166,11 @@ animation.invalid = function(selector) {
 animation.log = function(message, error) {
 	var id = new Date().getTime(),
 		htmlContent;
-	if (error)
+	if (error) {
 		htmlContent = "<p class=\"error\" id=" + id + ">" + message + "</p>";
-	else
+	} else {
 		htmlContent = "<p id=" + id + ">" + message + "</p>";
+	}
 	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).click(function() {
 		$(this).slideUp(200, function() {
 			$(this).remove();
@@ -184,10 +188,11 @@ animation.log = function(message, error) {
 		}, 2000);
 		// Auto remove itself
 		var click = function() {
-			if ($("p#" + id).css("opacity") != 1)
+			if ($("p#" + id).css("opacity") != 1) {
 				$("p#" + id).trigger("click");
-			else
+			} else {
 				setTimeout(click, 5000);
+			}
 		};
 		setTimeout(click, 5000);
 	}
@@ -201,21 +206,23 @@ animation.log = function(message, error) {
 function headerShowMenu(name) {
 	animation.hideIcon(".actions a");
 	setTimeout(function() {
-		if (name === "edit")
+		if (name === "edit") {
 			name = ".entry-edit";
-		else if (name === "add")
+		} else if (name === "add") {
 			name = ".entry-add";
-		else if (name === "comm")
+		} else if (name === "comm") {
 			name = ".entry-comm";
-		else
+		} else {
 			// name == undefined or other situations
 			name = ".entry-menu";
+		}
 		// Disable going back for edit-pane
-		if (name !== ".entry-add" && name !== ".entry-menu")
+		if (name !== ".entry-add" && name !== ".entry-menu") {
 			animation.showIcon("#show-menu");
-		if (name === ".entry-edit" && localStorage["_cache"] == 1)
+		}
+		if (name === ".entry-edit" && localStorage["_cache"] == 1) {
 			animation.showIcon("#reread");
+		}
 		animation.showIcon(name);
 	}, animation.duration + 50);
 };
-

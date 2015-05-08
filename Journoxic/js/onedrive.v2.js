@@ -29,8 +29,9 @@ function downloadFile() {
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
 		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
-		if (isNaN(percent))
+		if (isNaN(percent)) {
 			percent = 0;
+		}
 		$(this).html(percent + "%");
 	}, function() {
 		$(this).html("&#xE117");
@@ -39,39 +40,39 @@ function downloadFile() {
 		if (token != "") {
 			// Get text data
 			$.ajax({
-				type: "GET",
-				url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
-			})
-			.done(function(data, status, xhr) {
-				window.app.dataLoaded = false;
-				window.app.load("", true, xhr.responseText);
-				////console.log("downloadFile()\tFinish core data");
-				animation.log("Text data fetched");
-				// Get metadata
-				$.ajax({
 					type: "GET",
-					url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
-				}).done(function(data, status, xhr) {
-					// Get the data number
-					journal.archive.media = data["folder"]["childCount"];
-					animation.log("Start downloading media data ...");
-					downloadMedia();
-				}).fail(function(xhr, status, error) {
-					animation.log("Cannot find the media data. The server returns error \"" + error + "\"", true);
+					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+				})
+				.done(function(data, status, xhr) {
+					window.app.dataLoaded = false;
+					window.app.load("", true, xhr.responseText);
+					////console.log("downloadFile()\tFinish core data");
+					animation.log("Text data fetched");
+					// Get metadata
+					$.ajax({
+						type: "GET",
+						url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
+					}).done(function(data, status, xhr) {
+						// Get the data number
+						journal.archive.media = data["folder"]["childCount"];
+						animation.log("Start downloading media data ...");
+						downloadMedia();
+					}).fail(function(xhr, status, error) {
+						animation.log("Cannot find the media data. The server returns error \"" + error + "\"", true);
+					});
+				})
+				.fail(function(xhr, status, error) {
+					animation.log("Cannot find any text data. The server returns error \"" + error + "\"", true);
+					////alert("Cannot download the file. Do you enable CORS?");
+				})
+				.always(function() {
+					// Stop blinking and rotating
+					clearInterval(id1);
+					// Change loading icons and re-enable click
+					$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
+					animation.finished("#download");
+					////console.log("downloadFile()\tFinish downloading");
 				});
-			})
-			.fail(function(xhr, status, error) {
-				animation.log("Cannot find any text data. The server returns error \"" + error + "\"", true);
-				////alert("Cannot download the file. Do you enable CORS?");
-			})
-			.always(function() {
-				// Stop blinking and rotating
-				clearInterval(id1);
-				// Change loading icons and re-enable click
-				$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
-				animation.finished("#download");
-				////console.log("downloadFile()\tFinish downloading");
-			});
 		}
 	});
 }
@@ -84,8 +85,9 @@ function downloadFile() {
  * @returns {} 
  */
 function downloadMedia(url, id) {
-	if (id == undefined)
+	if (id == undefined) {
 		id = animation.rotate("#refresh-media");
+	}
 	// Reset map
 	if (url == undefined) {
 		// Initial call
@@ -97,9 +99,10 @@ function downloadMedia(url, id) {
 		type: "GET",
 		url: url
 	}).done(function(data, status, xhr) {
-		if (data["@odata.nextLink"])
+		if (data["@odata.nextLink"]) {
 			// More content available!
 			downloadMedia(data["@odata.nextLink"], id);
+		}
 		var itemList = data["value"];
 		for (var key = 0, len = itemList.length; key != len; ++key) {
 			var dataElement = {
@@ -158,7 +161,7 @@ function uploadFile() {
 			})
 			////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
 			.done(function() {
-				$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f 50%,#343434 0%,#343434 100%)");
+				$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%, #3f3f3f 50%, #343434 0%, #343434 100%)");
 				////console.log("uploadFile():\t Done backup");
 				animation.log("Data backup finished");
 				// Clean the unnecessary data
@@ -197,12 +200,14 @@ function uploadFile() {
 function getCoverPhoto(selectorHeader, term, more, type) {
 	var id = animation.blink(selectorHeader + ".thumb"),
 		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
-	if (typeof (type) == "number")
+	if (typeof (type) == "number") {
 		type = edit.mediaName(type);
-	if (type == "movie")
+	}
+	if (type == "movie") {
 		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=movie&entity=movieArtist,movie&term=";
-	else if (type == "book")
+	} else if (type == "book") {
 		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=ebook&entity=ebook&term=";
+	}
 	$.ajax({
 		url: url + term,
 		dataType: "jsonp",
@@ -229,4 +234,3 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 		}
 	});
 }
-

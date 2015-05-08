@@ -4,7 +4,10 @@
 
 
 var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot",
-	token, mydata, mystatus, myxhr; 
+	token,
+	mydata,
+	mystatus,
+	myxhr;
 
 /************************************************************************
 		EVERY PATH SHOULD _NOT_ BE _STARTED_ AND _ENDED_ WITH '/'
@@ -15,8 +18,9 @@ var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot",
  Leave dir empty if under the root
  */
 function mkdir(dir, name, overwrite) {
-	if (dir != "")
+	if (dir != "") {
 		dir = ":/" + dir + ":";
+	}
 	$.ajax({
 		type: "POST",
 		url: ROOTURL + dir + "/children" + "?access_token=" + token,
@@ -48,10 +52,11 @@ function mkdir(dir, name, overwrite) {
  Return an empty array if something goes wrong
  */
 function ls(dir, detail) {
-	if (dir == undefined)
+	if (dir == undefined) {
 		dir = "";
-	else if (dir && dir != "")
+	} else if (dir && dir != "") {
 		dir = ":/" + dir + "/:";
+	}
 	var array = [];
 	$.ajax({
 		type: "GET",
@@ -61,10 +66,11 @@ function ls(dir, detail) {
 			response = $.parseJSON(xhr.responseText);
 			for (child in response["children"]) {
 				if (child) {
-					if (detail)
+					if (detail) {
 						array.push(response["children"][child]);
-					else
+					} else {
 						array.push(response["children"][child]["name"]);
+					}
 				}
 			}
 			console.log(array);
@@ -78,8 +84,9 @@ function ls(dir, detail) {
  */
 function cat(dir, name) {
 	console.log("Starting cat()");
-	if (dir && dir != "")
+	if (dir && dir != "") {
 		dir += "/";
+	}
 	$.ajax({
 		type: "GET",
 		// url: ROOTURL + dir + name + ":/content?access_token=" + token,
@@ -99,10 +106,11 @@ function cat(dir, name) {
  */
 function emacs(dir, name, content) {
 	console.log("Starting emacs()");
-	if (dir == "")
+	if (dir == "") {
 		dir = ":/";
-	else if (dir && dir != "")
+	} else if (dir && dir != "") {
 		dir = ":/" + dir + "/";
+	}
 	$.ajax({
 		type: "PUT",
 		url: ROOTURL + dir + name + ":/content?access_token=" + token,
@@ -145,8 +153,9 @@ function downloadFile() {
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
 		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
-		if (isNaN(percent))
+		if (isNaN(percent)) {
 			percent = 0;
+		}
 		$(this).html(percent + "%");
 	}, function() {
 		$(this).html("&#xE117");
@@ -155,46 +164,47 @@ function downloadFile() {
 	if (token != "") {
 		// Get text data
 		$.ajax({
-			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
-		})
-		.done(function(data, status, xhr) {
-			window.app.dataLoaded = false;
-			window.app.load("", true, xhr.responseText);
-			////console.log("downloadFile()\tFinish core data");
-			animation.log("Text data fetched");
-			// Get metadata
-			$.ajax({
 				type: "GET",
-				url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
-			}).done(function(data, status, xhr) {
-				// Get the data number
-				journal.archive.media = data["folder"]["childCount"];
-				animation.log("Start downloading media data ...");
-				downloadMedia();
-			}).fail(function(xhr, status, error) {
-				animation.log("Cannot find the media data. The server returns error \"" + error + "\"", true);
+				url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+			})
+			.done(function(data, status, xhr) {
+				window.app.dataLoaded = false;
+				window.app.load("", true, xhr.responseText);
+				////console.log("downloadFile()\tFinish core data");
+				animation.log("Text data fetched");
+				// Get metadata
+				$.ajax({
+					type: "GET",
+					url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
+				}).done(function(data, status, xhr) {
+					// Get the data number
+					journal.archive.media = data["folder"]["childCount"];
+					animation.log("Start downloading media data ...");
+					downloadMedia();
+				}).fail(function(xhr, status, error) {
+					animation.log("Cannot find the media data. The server returns error \"" + error + "\"", true);
+				});
+			})
+			.fail(function(xhr, status, error) {
+				animation.log("Cannot find any text data. The server returns error \"" + error + "\"", true);
+				////alert("Cannot download the file. Do you enable CORS?");
+			})
+			.always(function() {
+				// Stop blinking and rotating
+				clearInterval(id1);
+				// Change loading icons and re-enable click
+				$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
+				animation.finished("#download");
+				////console.log("downloadFile()\tFinish downloading");
 			});
-		})
-		.fail(function(xhr, status, error) {
-			animation.log("Cannot find any text data. The server returns error \"" + error + "\"", true);
-			////alert("Cannot download the file. Do you enable CORS?");
-		})
-		.always(function() {
-			// Stop blinking and rotating
-			clearInterval(id1);
-			// Change loading icons and re-enable click
-			$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
-			animation.finished("#download");
-			////console.log("downloadFile()\tFinish downloading");
-		});
 	}
 }
 
 /* Recusively read all the children under resource folder */
 function downloadMedia(url, id) {
-	if (id == undefined)
+	if (id == undefined) {
 		id = animation.rotate("#refresh-media");
+	}
 	// Reset map
 	if (url == undefined) {
 		// Initial call
@@ -206,9 +216,10 @@ function downloadMedia(url, id) {
 		type: "GET",
 		url: url
 	}).done(function(data, status, xhr) {
-		if (data["@odata.nextLink"])
+		if (data["@odata.nextLink"]) {
 			// More content available!
 			downloadMedia(data["@odata.nextLink"], id);
+		}
 		var itemList = data["value"];
 		for (var key = 0, len = itemList.length; key != len; ++key) {
 			var data = {
@@ -257,57 +268,59 @@ function uploadFile() {
 		data = { name: fileName };
 	// Backup the original file
 	$.ajax({
-		type: "PATCH",
-		url: "https://api.onedrive.com/v1.0/drive/special/approot:/data/data.js?access_token=" + token,
-		contentType: "application/json",
-		data: JSON.stringify(data)
-	})
-		////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
-	.done(function() {
-		$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f 50%,#343434 0%,#343434 100%)");
-		////console.log("uploadFile():\t Done backup");
-		animation.log("Data backup finished");
-		// Clean the unnecessary data
-		var tmp = edit.minData();
-		$.ajax({
-			type: "PUT",
-			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
-			contentType: "text/plain",
-			data: JSON.stringify(tmp)
+			type: "PATCH",
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/data/data.js?access_token=" + token,
+			contentType: "application/json",
+			data: JSON.stringify(data)
 		})
-		.done(function(data, status, xhr) {
-			////console.log("uploadFile():\t Done!");
-			animation.log("Data uploaded");
+		////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
+		.done(function() {
+			$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%, #3f3f3f 50%, #343434 0%, #343434 100%)");
+			////console.log("uploadFile():\t Done backup");
+			animation.log("Data backup finished");
+			// Clean the unnecessary data
+			var tmp = edit.minData();
+			$.ajax({
+					type: "PUT",
+					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+					contentType: "text/plain",
+					data: JSON.stringify(tmp)
+				})
+				.done(function(data, status, xhr) {
+					////console.log("uploadFile():\t Done!");
+					animation.log("Data uploaded");
+				})
+				.fail(function(xhr, status, error) {
+					animation.log("Cannot upload data. Please try fixing the problem manually. The server returns error \"" + error + "\"", true);
+					////alert("Cannot upload files");
+				});
 		})
 		.fail(function(xhr, status, error) {
-			animation.log("Cannot upload data. Please try fixing the problem manually. The server returns error \"" + error + "\"", true);
-			////alert("Cannot upload files");
-		});
+			animation.log("Cannot backup data. Please see if there is any name conflict. The server returns error \"" + error + "\"", true);
+			////alert("Cannot backup the file");
 		})
-	.fail(function(xhr, status, error) {
-		animation.log("Cannot backup data. Please see if there is any name conflict. The server returns error \"" + error + "\"", true);
-		////alert("Cannot backup the file");
-	})
-	.always(function() {
-		// Stop blinking
-		clearInterval(id);
-		// Change loading icons and re-enable click
-		$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#");
-		animation.finished("#upload");
-		////console.log("uploadFile()\tFinish uploading");
-	});
+		.always(function() {
+			// Stop blinking
+			clearInterval(id);
+			// Change loading icons and re-enable click
+			$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#");
+			animation.finished("#upload");
+			////console.log("uploadFile()\tFinish uploading");
+		});
 }
 
 /* Download the cover photo from iTunes. type can be either number or string*/
 function getCoverPhoto(selectorHeader, term, more, type) {
 	var id = animation.blink(selectorHeader + ".thumb"),
 		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
-	if (typeof (type) == "number")
+	if (typeof (type) == "number") {
 		type = edit.mediaName(type);
-	if (type == "movie")
+	}
+	if (type == "movie") {
 		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=movie&entity=movieArtist,movie&term=";
-	else if (type == "book")
+	} else if (type == "book") {
 		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=ebook&entity=ebook&term=";
+	}
 	$.ajax({
 		url: url + term,
 		dataType: "jsonp",
@@ -334,4 +347,3 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 		}
 	});
 }
-

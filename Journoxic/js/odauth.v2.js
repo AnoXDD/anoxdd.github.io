@@ -71,21 +71,39 @@ function getAuthInfoFromUrl() {
 	}
 }
 
-function getTokenFromCookie() {
-	if (getFromCookie("odauth")) {
-		// Test if access token already exists
-		return getFromCookie("odauth");
+/**
+ * Get a valid access token then do the callback
+ * @param {function} callback - the callback function
+ * @returns {}
+ */
+function getTokenCallback(callback) {
+	if (getTokenFromCookie()) {
+		var token = getTokenFromCookie();
+		callback(token);
 	} else if (getRefreshFromCookie()) {
-		// Test if refresh cookie already exists
-
+		// Previos session expired
+		animation.log("Previous session expired");
+		refreshToken(callback);
 	}
+}
+
+/**
+ * Get the access token from the cookie
+ * @returns {string} - The token if found, empty string otherwise
+ */
+function getTokenFromCookie() {
+	return getFromCookie("odauth");
 }
 
 function getRefreshFromCookie() {
 	return getFromCookie("refresh");
 }
 
-/* Get the cookie component specifying the name */
+/**
+ * Get the cookie component specifying the name
+ * @param {string} name - the name to be searched
+ * @returns {string} the result. Empty string if not found
+ */
 function getFromCookie(name) {
 	name += "=";
 	var cookies = document.cookie,
@@ -106,6 +124,13 @@ function getFromCookie(name) {
 	return "";
 }
 
+/**
+ * Set the cookie of access token and refresh token to cookie
+ * @param {string} token - the access token
+ * @param {number} expiresInSeconds - the expire time in seconds of access token
+ * @param {string} refreshToken - the refresh token
+ * @returns {} 
+ */
 function setCookie(token, expiresInSeconds, refreshToken) {
 	var expiration = new Date();
 	expiration.setTime(expiration.getTime() + expiresInSeconds * 1000);
@@ -126,7 +151,10 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 	document.cookie = cookie;
 }
 
-/* Toggle auto refresh token, the default is true */
+/**
+ * Toggle auto refresh token, the default is true
+ * @returns {}
+ */
 function toggleAutoRefreshToken() {
 	var func = function() {
 		refreshToken();
@@ -150,8 +178,12 @@ function toggleAutoRefreshToken() {
 	}
 }
 
-/* Refresh the token to get a new access token */
-function refreshToken() {
+/**
+ * Refresh the token to get a new access token, then call the callback
+ * @param {function} callback - callback function, should be with a parameter to handle the ACCESS TOKEN passed in
+ * @returns {} 
+ */
+function refreshToken(callback) {
 	animation.log("Refreshing access token ...");
 	var refresh = getRefreshFromCookie(),
 		appinfo = getAppInfo();
@@ -171,6 +203,7 @@ function refreshToken() {
 				expiry = parseInt(data["expires_in"]);
 			setCookie(token, expiry, refresh);
 			animation.log("Access token refreshed");
+			callback(token);
 		}).fail(function(xhr, status, error) {
 			animation.log("Cannot refresh access token. The server returns \"" + status + "\"");
 		});

@@ -63,7 +63,7 @@ function getAuthInfoFromUrl() {
 	if (window.location.hash) {
 		var authResponse = window.location.hash.substring(1);
 		var authInfo = JSON.parse(
-		  '{"' + authResponse.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+		  "{\"" + authResponse.replace(/&/g, "\",\"").replace(/=/g, "\":\"") + "\"}",
 		  function(key, value) { return key === "" ? value : decodeURIComponent(value); });
 		return authInfo;
 	}
@@ -78,7 +78,7 @@ function getTokenFromCookie() {
 	var start = cookies.indexOf(name);
 	if (start >= 0) {
 		start += name.length;
-		var end = cookies.indexOf(';', start);
+		var end = cookies.indexOf(";", start);
 		if (end < 0) {
 			end = cookies.length;
 		}

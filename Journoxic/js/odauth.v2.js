@@ -63,7 +63,7 @@ function getAuthInfoFromUrl() {
 	if (window.location.search) {
 		var authResponse = window.location.search.substring(1);
 		var authInfo = JSON.parse(
-		  '{"' + authResponse.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+		  "{\"" + authResponse.replace(/&/g, "\",\"").replace(/=/g, "\":\"") + "\"}",
 		  function(key, value) { return key === "" ? value : decodeURIComponent(value); });
 		return authInfo;
 	} else {
@@ -72,23 +72,17 @@ function getAuthInfoFromUrl() {
 }
 
 function getTokenFromCookie() {
-	var expiration = getExpireFromCookie(),
-		now = new Date().getTime();
-	// One minute window
-	if (expiration - 60000 > now) {
-		// Not expired
+	if (getFromCookie("odauth")) {
+		// Test if access token already exists
 		return getFromCookie("odauth");
-	} else {
-		return "";
+	} else if (getRefreshFromCookie()) {
+		// Test if refresh cookie already exists
+
 	}
 }
 
 function getRefreshFromCookie() {
 	return getFromCookie("refresh");
-}
-
-function getExpireFromCookie() {
-	return getFromCookie("expires");
 }
 
 /* Get the cookie component specifying the name */
@@ -98,7 +92,7 @@ function getFromCookie(name) {
 		start = cookies.indexOf(name);
 	if (start >= 0) {
 		start += name.length;
-		var end = cookies.indexOf(';', start);
+		var end = cookies.indexOf(";", start);
 		if (end < 0) {
 			end = cookies.length;
 		} else {
@@ -112,15 +106,23 @@ function getFromCookie(name) {
 	return "";
 }
 
-function setCookie(token, expiresInSeconds, refresh_token) {
+function setCookie(token, expiresInSeconds, refreshToken) {
 	var expiration = new Date();
 	expiration.setTime(expiration.getTime() + expiresInSeconds * 1000);
-	var cookie = "odauth=" + token + "; refresh=" + refresh_token + "; path=/; expires=" + expiration.getTime();
+	// Access token
+	var cookie = "odauth=" + token + "; path=/; expires=" + expiration.getTime();
 	console.log("setCookie(): cookie = " + cookie);
 	if (document.location.protocol.toLowerCase() == "https") {
 		cookie = cookie + ";secure";
 	}
-
+	document.cookie = cookie;
+	// Refresh token
+	// Expire when the browser closes
+	cookie = "refresh=" + refreshToken + "; path=/";//; expires=" + expiration.getTime();
+	console.log("setCookie(): cookie = " + cookie);
+	if (document.location.protocol.toLowerCase() == "https") {
+		cookie = cookie + ";secure";
+	}
 	document.cookie = cookie;
 }
 
@@ -128,7 +130,7 @@ function setCookie(token, expiresInSeconds, refresh_token) {
 function toggleAutoRefreshToken() {
 	var func = function() {
 		refreshToken();
-	}
+	};
 	if (toggleAutoRefreshToken.id) {
 		// Turn off auto refresh
 		$("#toggle-refresh-token").fadeOut(300, function() {
@@ -138,20 +140,21 @@ function toggleAutoRefreshToken() {
 		clearInterval(toggleAutoRefreshToken.id);
 		toggleAutoRefreshToken.id = undefined;
 	} else {
-		// Set to refresh token every 20 minute
+		// Set to refresh token every 30 minute
 		$("#toggle-refresh-token").fadeOut(300, function() {
 			$(this).html("&#xE194");
 		}).fadeIn(300);
-		animation.log("The access token will now be refreshed every 20 minute");
+		animation.log("The access token will now be refreshed every 30 minute");
 		//refreshToken();
-		toggleAutoRefreshToken.id = setInterval(func, 1200000);
+		toggleAutoRefreshToken.id = setInterval(func, 1800000);
 	}
 }
 
 /* Refresh the token to get a new access token */
 function refreshToken() {
 	animation.log("Refreshing access token ...");
-	var refresh = getRefreshFromCookie();
+	var refresh = getRefreshFromCookie(),
+		appinfo = getAppInfo();
 	if (refresh) {
 		$.ajax({
 			type: "POST",
@@ -169,7 +172,7 @@ function refreshToken() {
 			setCookie(token, expiry, refresh);
 			animation.log("Access token refreshed");
 		}).fail(function(xhr, status, error) {
-			animation.log('Cannot refresh access token. The server returns "' + status + '"');
+			animation.log("Cannot refresh access token. The server returns \"" + status + "\"");
 		});
 	} else {
 		// No refresh token, then try to sign in

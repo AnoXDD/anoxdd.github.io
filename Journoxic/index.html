@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.9.8 Build 050615_1728</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.9.9 Build 050615_1841</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -55,7 +55,7 @@
 		<a class="entry-comm" title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xE149</a>
 		<a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xE150</a>
 		<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xE109</a>
-		<a class="entry-edit" title="Edit this entry" id="edit" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xE104</a>
+		<a class="entry-edit" title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xE104</a>
 		<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xE106</a>
 		<a class="entry-menu" title="Edit entries" id="edit">&#xE14C</a>
 		<a class="entry-menu" title="Sync contents" id="comm">&#xE148</a>
@@ -70,7 +70,7 @@
 		</div>
 		<div id="edit-pane"></div>
 	</div>
-	<script id="odauth" src="js/odauthv2.js" clientid="000000004C14D0D9" clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
+	<script id="odauth" src="js/odauth.v2.js" clientid="000000004C14D0D9" clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/lib/modernizr.min.js"></script>
@@ -82,7 +82,7 @@
 	<script src="js/animation.js"></script>
 	<script src="js/edit.js"></script>
 	<script src="js/app.js"></script>
-	<script src="js/onedrive.js"></script>
+	<script src="js/onedrive.v2.js"></script>
 	<script type="text/x-template" id="list-view">
 		<li>
 			<%

@@ -139,30 +139,30 @@ edit.init = function(overwrite, index) {
 		if (localStorage["body"])
 			$("#entry-body").text(localStorage["body"]);
 		// Tag processing
-		var tagsHTML = app.bitwise().getTagsHTML(),
+		var tagsHtml = app.bitwise().getTagsHTML(),
 			tagsName = app.bitwise().getTagsArray(),
 			/* The array of html names for highlighted icons */
 			iconTags = app.bitwise().iconTags(parseInt(localStorage["iconTags"]));
 		console.log("edit.init()\ticonTags = " + iconTags);
-		for (var i = 0; i != tagsHTML.length; ++i) {
+		for (var i = 0; i != tagsHtml.length; ++i) {
 			var parent = "#attach-area .icontags";
-			if (tagsHTML[i].charAt(0) == 'w')
+			if (tagsHtml[i].charAt(0) == "w")
 				parent += " .weather";
-			else if (tagsHTML[i].charAt(0) == 'e')
+			else if (tagsHtml[i].charAt(0) == "e")
 				parent += " .emotion";
 			else
 				parent += " .other";
 			// Processed existed tags
 			$(parent).append(
-				"<p class='icons " + tagsHTML[i] +
+				"<p class='icons " + tagsHtml[i] +
 				"' title=" + tagsName[i].capitalize() +
-				" onclick=edit.toggleIcon('" + tagsHTML[i] +
+				" onclick=edit.toggleIcon('" + tagsHtml[i] +
 				"')></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
-		for (var i = 0; i != tagsHTML.length; ++i)
-			if ($.inArray(tagsHTML[i], iconTags) != -1)
-				$("#edit-pane #attach-area .icontags p." + tagsHTML[i]).trigger("click");
+		for (var i = 0; i != tagsHtml.length; ++i)
+			if ($.inArray(tagsHtml[i], iconTags) != -1)
+				$("#edit-pane #attach-area .icontags p." + tagsHtml[i]).trigger("click");
 		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
 			// Only scroll horizontally
 			this.scrollLeft -= (delta * 50);
@@ -173,8 +173,7 @@ edit.init = function(overwrite, index) {
 	});
 	headerShowMenu("add");
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
-}
-
+};
 edit.quit = function(selector, save) {
 	clearInterval(edit.intervalId);
 	edit.time = 0;
@@ -201,9 +200,7 @@ edit.quit = function(selector, save) {
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
-}
-
-/* Save cache for edit-pane to journal.archive.data */
+}; /* Save cache for edit-pane to journal.archive.data */
 edit.save = function(selector) {
 	var id, html;
 	animation.log("Saving data ...");
@@ -227,10 +224,8 @@ edit.save = function(selector) {
 		// Show finish animation
 		animation.finished(selector);
 		animation.log("Finished saving data");
-	})
-}
-
-/* Process removal list to do the final cleanup of contents */
+	});
+}; /* Process removal list to do the final cleanup of contents */
 edit.processRemovalList = function() {
 	for (var key = 0; key < edit.removalList.length; ++key) {
 		if (localStorage[key]) {
@@ -241,9 +236,7 @@ edit.processRemovalList = function() {
 			localStorage[key] = JSON.stringify(data);
 		}
 	}
-}
-
-/******************************************************************
+}; /******************************************************************
  **************************** CACHE *******************************
  ******************************************************************/
 
@@ -287,8 +280,7 @@ edit.importCache = function(data) {
 	}
 	// Return value
 	return data;
-}
-
+};
 edit.exportCache = function(index) {
 	var data = journal.archive.data[index] || {};
 	// Process body from cache
@@ -331,9 +323,7 @@ edit.exportCache = function(index) {
 		journal.archive.data[index] = data;
 		app.currentDisplayed = -1;
 	}
-}
-
-/* Read the cache and process start, created and end time from the text body */
+}; /* Read the cache and process start, created and end time from the text body */
 edit.exportCacheBody = function(data) {
 	if (!data["time"])
 		data["time"] = {};
@@ -370,35 +360,26 @@ edit.exportCacheBody = function(data) {
 	data["text"]["lines"] = lines.length;
 	data["text"]["ext"] = newBody.substring(0, 50);
 	return data;
-}
-
+};
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
 	var deleteList = ["title", "body", "created", "currentEditing", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video"];
 	for (var i = 0; i != deleteList.length; ++i)
 		delete localStorage[deleteList[i]];
-}
-
-/* Save the entire journal.archive.data to cache after minimizing it */
+}; /* Save the entire journal.archive.data to cache after minimizing it */
 edit.saveDataCache = function(data) {
 	localStorage["archive"] = JSON.stringify(journal.archive.data);
-}
-
-/* Clean the cache for journal.archive.data */
+}; /* Clean the cache for journal.archive.data */
 edit.removeDataCache = function() {
 	delete localStorage["archive"];
-}
-
-/* Try to read journal.archive.data from cache */
+}; /* Try to read journal.archive.data from cache */
 edit.tryReadCache = function() {
 	if (localStorage["archive"]) {
 		// Seems that there is available data
 		journal.archive.data = JSON.parse(localStorage["archive"]);
 		app.load("", true);
 	}
-}
-
-/******************************************************************
+}; /******************************************************************
  **************************** DATA ********************************
  ******************************************************************/
 
@@ -411,9 +392,7 @@ edit.find = function(created) {
 	}
 	// Nothing found
 	return -1;
-}
-
-/* Parse the json to fit _.template. This function also syncs data to localStorage */
+}; /* Parse the json to fit _.template. This function also syncs data to localStorage */
 edit.parseJSON = function(string) {
 	var dict = JSON.parse(string),
 		elements = "title time text video weblink book music movie images voice place iconTags2 textTags".split(" "),
@@ -429,9 +408,7 @@ edit.parseJSON = function(string) {
 		if (dict[elements[key]] == undefined)
 			dict[elements[key]] = undefined;
 	return dict;
-}
-
-/* Return an empty content object array entry */
+}; /* Return an empty content object array entry */
 edit.newContent = function() {
 	var dict = {};
 	// Set created time
@@ -439,9 +416,7 @@ edit.newContent = function() {
 	dict["time"]["created"] = new Date().getTime();
 	dict["textTags"] = "";
 	return dict;
-}
-
-/* Minimize the data, remove unnecessary tags */
+}; /* Minimize the data, remove unnecessary tags */
 edit.minData = function() {
 	var tmp = journal.archive.data.filter(function(key) {
 		return key != undefined;
@@ -466,17 +441,13 @@ edit.minData = function() {
 				tmp[key].splice(i--, 1);
 	};
 	return tmp;
-}
-
-/* Sort journal.archive.data */
+}; /* Sort journal.archive.data */
 edit.sortArchive = function() {
 	journal.archive.data.sort(function(a, b) {
 		// From the latest to oldest
 		return b["time"]["created"] - a["time"]["created"];
 	});
-}
-
-/******************************************************************
+}; /******************************************************************
  ************************ CONTENT CONTROL *************************
  ******************************************************************/
 
@@ -502,9 +473,7 @@ edit.undo = function() {
 	////			}
 	////		}
 	////	}
-}
-
-/* NOT USABLE */
+}; /* NOT USABLE */
 edit.change = function(key, value) {
 	////	var dict = {};
 	////	if (localStorage[key])
@@ -515,9 +484,7 @@ edit.change = function(key, value) {
 	////	edit.localChange.push(dict);
 	////	localStorage[key] = value;
 
-}
-
-/************************** EDITING *******************************/
+}; /************************** EDITING *******************************/
 
 edit.addMedia = function(typeNum) {
 	var selectorHeader = "#attach-area ." + edit.mediaName(typeNum),
@@ -531,23 +498,23 @@ edit.addMedia = function(typeNum) {
 			return;
 		case 2:
 			// Place
-			htmlContent = '<div class="place"><a title="Edit" onclick="edit.location(' + length + ')" href="#"><div class="thumb"></div><input disabled title="Place" class="title place-search" autocomplete="off"/><input disabled title="Latitude" class="desc latitude" autocomplete="off" /><p>,</p><input disabled title="Longitude" class="desc longitude" autocomplete="off" /></a></div>';
+			htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
 			break;
 		case 4:
 			// Music
-			htmlContent = '<div class="music"><a title="Edit" onclick="edit.music(' + length + ')" href="#"><img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span><input disabled class="title" placeholder="Track name" autocomplete="off" /><input disabled class="desc" placeholder="Artist" autocomplete="off" /></a></div>';
+			htmlContent = "<div class=\"music\"><a title=\"Edit\" onclick=\"edit.music(" + length + ")\" href=\"#\"><img class=\"thumb <% if( music[i].thumb ) { music[i].thumb; } %>\"><span></span><input disabled class=\"title\" placeholder=\"Track name\" autocomplete=\"off\" /><input disabled class=\"desc\" placeholder=\"Artist\" autocomplete=\"off\" /></a></div>";
 			break;
 		case 5:
 			// Movie
-			htmlContent = '<div class="movie"><a title="Edit" onclick="edit.movie(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Movie title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Director" autocomplete="off" onclick="this.select()" /></a></div>';
+			htmlContent = "<div class=\"movie\"><a title=\"Edit\" onclick=\"edit.movie(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Movie title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Director\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
 			break;
 		case 6:
 			// Book
-			htmlContent = '<div class="book"><a title="Edit" onclick="edit.book(' + length + ')" href="#"><img class="thumb"><span></span><input disabled class="title" placeholder="Book title" autocomplete="off" onclick="this.select()" /><input disabled class="desc" placeholder="Author" autocomplete="off" onclick="this.select()" /></a></div>';
+			htmlContent = "<div class=\"book\"><a title=\"Edit\" onclick=\"edit.book(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Book title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Author\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
 			break;
 		case 7:
 			// Weblink
-			htmlContent = '<div class="weblink"><a title="Edit" onclick="edit.weblink(' + length + ')" href="#"><div class="thumb"><span></span></div><input disabled class="title" placeholder="Title" /><input disabled class="desc" placeholder="http://" /></a></div>';
+			htmlContent = "<div class=\"weblink\"><a title=\"Edit\" onclick=\"edit.weblink(" + length + ")\" href=\"#\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" placeholder=\"Title\" /><input disabled class=\"desc\" placeholder=\"http://\" /></a></div>";
 			break;
 		default:
 
@@ -559,25 +526,21 @@ edit.addMedia = function(typeNum) {
 		// Have to create a new one
 		$(htmlContent).appendTo("#attach-area");
 	$(selectorHeader + ":eq(" + length + ") a").trigger("click");
-}
-
+};
 edit.removeMedia = function(typeNum) {
 	var type = edit.mediaName(typeNum);
 	selectorHeader = edit.getSelectorHeader(type);
 	$(selectorHeader).fadeOut();
 	edit.addToRemovalList(type);
 	edit.cleanupMediaEdit();
-}
-
+};
 edit.addToRemovalList = function(name) {
 	if (!edit.removalList[name])
 		edit.removalList[name] = [];
 	if (edit.removalList[name].indexOf(edit.mediaIndex[name]) != -1)
 		// Only add when this element does not exist
 		edit.removalList[name].push(edit.mediaIndex[name]);
-}
-
-/* Get the name of media by value */
+}; /* Get the name of media by value */
 edit.mediaName = function(typeNum) {
 	switch (typeNum) {
 		case 0:
@@ -599,9 +562,7 @@ edit.mediaName = function(typeNum) {
 		default:
 			return "";
 	}
-}
-
-/* A function to be called by confirm */
+}; /* A function to be called by confirm */
 edit.confirm = function() {
 	if (typeof (edit.confirmName) == "string") {
 		if (edit.confirmName == "discard") {
@@ -634,9 +595,7 @@ edit.confirm = function() {
 		// Media removal
 		edit.removeMedia(edit.confirmName);
 	}
-}
-
-/* Get ready for next editing */
+}; /* Get ready for next editing */
 edit.cleanupMediaEdit = function() {
 	$("#edit-pane").off("keyup");
 	switch (edit.isEditing) {
@@ -655,16 +614,12 @@ edit.cleanupMediaEdit = function() {
 		case 7:
 			edit.weblinkHide();
 	}
-}
-
-/* Get a header for selector */
+}; /* Get a header for selector */
 edit.getSelectorHeader = function(type, index) {
 	if (index == undefined)
 		return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
 	return "#attach-area ." + type + ":eq(" + index + ") ";
-}
-
-/************************** ANIMATION *****************************/
+}; /************************** ANIMATION *****************************/
 
 edit.toggleIcon = function(htmlName) {
 	var selector = "#attach-area .icontags p." + htmlName,
@@ -681,12 +636,10 @@ edit.toggleIcon = function(htmlName) {
 		// Dimmed
 		localStorage["iconTags"] = app.bitwise().andnot(parseInt(localStorage["iconTags"]), iconVal);
 	}
-}
-
+};
 edit.toggleLight = function() {
 	$("#text-area").toggleClass("dark").children().toggleClass("dark");
-}
-
+};
 edit.fullScreen = function() {
 	// Disable auto-height
 	$(window).off("resize");
@@ -709,8 +662,7 @@ edit.fullScreen = function() {
 	});
 	$("#text-area").children().toggleClass("fullscreen");
 	$("#text-area p").toggleClass("fullscreen");
-}
-
+};
 edit.windowMode = function() {
 	// Exit dark mode
 	$("#text-area").removeClass("dark").children().removeClass("dark");
@@ -731,22 +683,18 @@ edit.windowMode = function() {
 		})
 		.children().toggleClass("fullscreen");
 	});
-}
-
-/************************** TITLE *********************************/
+}; /************************** TITLE *********************************/
 
 edit.saveTitle = function() {
 	localStorage["title"] = $("#entry-header").val();
-}
-
-/************************** TITLE HEADER **************************/
+}; /************************** TITLE HEADER **************************/
 
 edit.saveTag = function() {
 	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
 	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
 		// The entry is already added
-		animation.log('Tag "' + tagVal + '" is already added', true);
+		animation.log("Tag \"" + tagVal + "\" is already added", true);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 	} else {
 		var found = false;
@@ -760,16 +708,16 @@ edit.saveTag = function() {
 					// Only one weather and emotion is allowed
 					if ($(this).css("height") == "0px") {
 						// Hidden div, means another weather/emotion has already been added
-						animation.log('Tag "' + tagVal + '" cannot be added as an icon', true);
+						animation.log("Tag \"" + tagVal + "\" cannot be added as an icon", true);
 						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 						return;
 					}
 				}
 				if (!$(this).hasClass("highlight")) {
-					animation.log('Tag "' + tagVal + '" is added as an icon');
+					animation.log("Tag \"" + tagVal + "\" is added as an icon");
 					$(this).trigger("click");
 				} else {
-					animation.log('Tag "' + tagVal + '" is already added as an icon', true);
+					animation.log("Tag \"" + tagVal + "\" is already added as an icon", true);
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 					// Saved
 				}
@@ -790,8 +738,7 @@ edit.saveTag = function() {
 	}
 	// Clean the entry
 	$("#entry-tag").val("");
-}
-
+};
 edit.removeTag = function(tagName) {
 	var tagArray = localStorage["textTags"].split("|");
 	delete tagArray[tagName];
@@ -801,10 +748,9 @@ edit.removeTag = function(tagName) {
 		if ($(this).text() == "#" + tagName)
 			$(this).animate({ width: "0" }, function() {
 				$(this).remove();
-			})
-	})
-}
-
+			});
+	});
+};
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
 		char = text.length;
@@ -812,22 +758,17 @@ edit.refreshSummary = function() {
 	// Cache the data
 	localStorage["body"] = text;
 	$("#entry-line").text(text.split(/\r*\n/).length);
-}
-
+};
 edit.refreshTime = function() {
 	++edit.time;
 	var date = new Date();
 	var timeString = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
 	$("#entry-time").text(timeString);
 	$("#entry-elapsed").text(parseInt(edit.time / 60) + ":" + edit.format(edit.time % 60));
-}
-
-/* =printf("%2d", n); add an zero if n < 10 */
+}; /* =printf("%2d", n); add an zero if n < 10 */
 edit.format = function(n) {
 	return n < 10 ? "0" + n : n;
-}
-
-/* Convert my format of time to the milliseconds since epoch */
+}; /* Convert my format of time to the milliseconds since epoch */
 edit.convertTime = function(time) {
 	var month = parseInt(time.substring(0, 2)),
 		day = parseInt(time.substring(2, 4)),
@@ -836,9 +777,7 @@ edit.convertTime = function(time) {
 		minute = parseInt(time.substring(9, 11)),
 		date = new Date(2000 + year, month - 1, day, hour, minute);
 	return date.getTime();
-}
-
-/* Get my version of date with priority of 1) title content 2) created 3) now */
+}; /* Get my version of date with priority of 1) title content 2) created 3) now */
 edit.getDate = function() {
 	var dateStr;
 	// Get date from title, ignore what title looks like
@@ -861,9 +800,7 @@ edit.getDate = function() {
 	}
 	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	return dateStr;
-}
-
-/************************** PHOTO 0 ************************/
+}; /************************** PHOTO 0 ************************/
 
 edit.photo = function() {
 	if (edit.photos.length != 0) {
@@ -960,10 +897,10 @@ edit.photo = function() {
 			var htmlContent;
 			if (edit.photos[i]["resource"])
 				// The image should be highlighted if it is already at resource folder
-				htmlContent = '<div class="highlight">';
+				htmlContent = "<div class=\"highlight\">";
 			else
-				htmlContent = '<div>';
-			htmlContent += '<img src="' + edit.photos[i]["url"] + '"/></div>';
+				htmlContent = "<div>";
+			htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
@@ -1005,7 +942,7 @@ edit.photo = function() {
 			}, function() {
 				// Mouseout
 				$("#photo-preview img").animate({ opacity: 0 }, 0);
-			})
+			});
 		});
 		animation.setConfirm(0);
 		animation.log("Photos loaded");
@@ -1016,18 +953,15 @@ edit.photo = function() {
 			onclick: "edit.addMedia(0)",
 			href: "#"
 		});
-		animation.log("Cannot load image: failed to find images under data/" + dateStr + '. The server returns error "' + error + '"', true);
+		animation.log("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
 		animation.deny("#add-photo");
 	});
-}
-
+};
 edit.photoClick = function(index) {
 	$("#attach-area .images div:eq(" + index + ")").toggleClass("highlight");
 	// Tell the photos map that this photo would like to switch location
 	edit.photos[index]["change"] = !edit.photos[index]["change"];
-}
-
-/* 
+}; /* 
  This function is to be called only at edit.save() 
  because this function will contact OneDrive server to move files,
  which will cause async between client and the server
@@ -1105,14 +1039,14 @@ edit.photoSave = function(callback) {
 		if (photoQueue.length != 0) {
 			// Process the photos
 			for (var i = 0; i != photoQueue.length; ++i) {
-				var requestJSON, url, newName,
+				var requestJson, url, newName,
 					token = getTokenFromCookie(),
 					name = photoQueue[i]["name"],
 					isToResource = photoQueue[i]["resource"];
 				if (isToResource) {
 					// Would like to be added to entry, originally at data folder
 					newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
-					requestJSON = {
+					requestJson = {
 						// New name of the file
 						name: newName,
 						parentReference: {
@@ -1125,7 +1059,7 @@ edit.photoSave = function(callback) {
 				} else {
 					// Would like to be added to data, i.e. remove from resource folder
 					newName = name;
-					requestJSON = {
+					requestJson = {
 						parentReference: {
 							path: contentDir
 						}
@@ -1143,7 +1077,7 @@ edit.photoSave = function(callback) {
 					type: "PATCH",
 					url: url,
 					contentType: "application/json",
-					data: JSON.stringify(requestJSON)
+					data: JSON.stringify(requestJson)
 				})
 				.done(function(data, status, xhr) {
 					var newName = data["name"];
@@ -1151,12 +1085,12 @@ edit.photoSave = function(callback) {
 					journal.archive.map[newName] = {
 						url: data["@content.downloadUrl"],
 						size: data["size"]
-					}
-					animation.log("Photo transferred");
+					};
+						animation.log("Photo transferred");
 					console.log("edit.photoSave()\tFinish update metadata");
 				})
 				.fail(function(xhr, status, error) {
-					animation.log('One tranfer failed. No transfer was made. The server returns error "' + error + '"', true);
+					animation.log("One tranfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
 					animation.warning("#add-photo");
 					// Revert the transfer process
 				})
@@ -1218,14 +1152,11 @@ edit.photoSave = function(callback) {
 			callback();
 		}
 	}
-}
-
+};
 edit.photoHide = function() {
 	// Just hide everything, no further moves to be made
 	$("#attach-area .images").animate({ height: "0" }).fadeOut().html("");
-}
-
-/************************** LOCATION 2 ************************/
+}; /************************** LOCATION 2 ************************/
 
 /* Toggle location getter by using Google Map */
 edit.location = function(index) {
@@ -1251,11 +1182,11 @@ edit.location = function(index) {
 				center: pos,
 			};
 			map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-			searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName('place-search')[edit.mediaIndex["place"]], { types: ['geocode'] });
+			searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName("place-search")[edit.mediaIndex["place"]], { types: ["geocode"] });
 			markers = [];
 
-			google.maps.event.clearListeners(searchBox, 'place_changed');
-			google.maps.event.addListener(searchBox, 'place_changed', function() {
+			google.maps.event.clearListeners(searchBox, "place_changed");
+			google.maps.event.addListener(searchBox, "place_changed", function() {
 				var place = searchBox.getPlace(),
 					bounds = new google.maps.LatLngBounds();
 				if (!place) {
@@ -1282,7 +1213,7 @@ edit.location = function(index) {
 
 			// Bias the SearchBox results towards places that are within the bounds of the
 			// current map's viewport.
-			google.maps.event.addListener(map, 'bounds_changed', function() {
+			google.maps.event.addListener(map, "bounds_changed", function() {
 				var bounds = map.getBounds();
 				searchBox.setBounds(bounds);
 			});
@@ -1323,8 +1254,7 @@ edit.location = function(index) {
 			edit.locationHide();
 		}
 	});
-}
-
+};
 edit.locationHide = function() {
 	if (edit.mediaIndex["place"] < 0)
 		// Invalid call
@@ -1337,15 +1267,13 @@ edit.locationHide = function() {
 	// Save data by default
 	edit.locationSave(edit.mediaIndex["place"]);
 	// Remove the contents
-	$("#map-holder").fadeOut().html('<div id="map-selector"></div>');
+	$("#map-holder").fadeOut().html("<div id=\"map-selector\"></div>");
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["place"] = -1;
 	edit.isEditing = "";
-}
-
-/* Save the location and collapse the panal */
+}; /* Save the location and collapse the panal */
 edit.locationSave = function(index) {
 	// TODO change to fix each location
 	var data = localStorage["place"],
@@ -1366,8 +1294,7 @@ edit.locationSave = function(index) {
 	// Update the data
 	data[index] = newElem;
 	localStorage["place"] = JSON.stringify(data);
-}
-
+};
 edit.locationPin = function() {
 	// Show the location menu
 	var errorMsg = "Did you enable location sharing?",
@@ -1389,9 +1316,7 @@ edit.locationPin = function() {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
-}
-
-/* Reverse geocoding */
+}; /* Reverse geocoding */
 edit.locationGeocode = function(pos) {
 	var mapOptions = {
 		zoom: 16,
@@ -1411,56 +1336,42 @@ edit.locationGeocode = function(pos) {
 			if (results[0])
 				$(selectorHeader + ".title").val(results[0].formatted_address);
 			else
-				alert('No results found');
+				alert("No results found");
 		} else {
-			alert('Geocoder failed due to: ' + status);
+			alert("Geocoder failed due to: " + status);
 		}
 	});
-}
-
-/************************** MUSIC 4 **************************/
+}; /************************** MUSIC 4 **************************/
 
 edit.music = function(index) {
 	edit.itunes(index, 4);
-}
-
+};
 edit.musicHide = function() {
 	edit.itunesHide(4);
-}
-
+};
 edit.musicSave = function(index) {
 	edit.itunesSave(index, 4);
-}
-
-/************************** MOVIE 5 *************************/
+}; /************************** MOVIE 5 *************************/
 
 edit.movie = function(index) {
 	edit.itunes(index, 5);
-}
-
+};
 edit.movieHide = function() {
 	edit.itunesHide(5);
-}
-
+};
 edit.movieSave = function(index) {
 	edit.itunesSave(index, 5);
-}
-
-/************************** BOOK 6 **************************/
+}; /************************** BOOK 6 **************************/
 
 edit.book = function(index) {
 	edit.itunes(index, 6);
-}
-
+};
 edit.bookHide = function() {
 	edit.itunesHide(6);
-}
-
+};
 edit.bookSave = function(index) {
 	edit.itunesHide(index, 6);
-}
-
-/************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
+}; /************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
 
 edit.itunes = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
@@ -1485,8 +1396,7 @@ edit.itunes = function(index, typeNum) {
 		}
 	});
 	edit.isEditing = typeNum;
-}
-
+};
 edit.itunesHide = function(typeNum) {
 	var type = edit.mediaName(typeNum);
 	if (edit.mediaIndex[type] < 0)
@@ -1504,8 +1414,7 @@ edit.itunesHide = function(typeNum) {
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex[type] = -1;
 	edit.isEditing = -1;
-}
-
+};
 edit.itunesSave = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
 	data = localStorage[type],
@@ -1519,9 +1428,7 @@ edit.itunesSave = function(index, typeNum) {
 	};
 	data[index] = newElem;
 	localStorage[type] = JSON.stringify(data);
-}
-
-/************************** WEBLINK 7 **************************/
+}; /************************** WEBLINK 7 **************************/
 
 edit.weblink = function(index) {
 	if (index == edit.mediaIndex["weblink"] || index == undefined)
@@ -1539,8 +1446,7 @@ edit.weblink = function(index) {
 		}
 	});
 	edit.isEditing = 7;
-}
-
+};
 edit.weblinkHide = function() {
 	if (edit.mediaIndex["weblink"] < 0)
 		// Invalid call
@@ -1557,8 +1463,7 @@ edit.weblinkHide = function() {
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["weblink"] = -1;
 	edit.isEditing = -1;
-}
-
+};
 edit.weblinkSave = function(index) {
 	var data = localStorage["weblink"],
 	selectorHeader = edit.getSelectorHeader("weblink", index),
@@ -1571,13 +1476,11 @@ edit.weblinkSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage["weblink"] = JSON.stringify(data);
-}
-
-/******************************************************************
+}; /******************************************************************
  ************************ OTHERS **********************************
  ******************************************************************/
 
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
 

@@ -190,8 +190,7 @@ app.load = function(filter, forceReload, newContent) {
 	$("#search-result").fadeIn(500);
 	if (filter == undefined)
 		filter == "";
-}
-// Load a script and passed in a function
+}; // Load a script and passed in a function
 app.loadScript = function(data, func, isScript) {
 	if (isScript) {
 		var newScript = document.createElement("script"),
@@ -220,7 +219,7 @@ app.user = function() {
 	var e = "",
 		c = journal.archive.user;
 	if (c.ProfileHash) {
-		e += '<img src="' + app.resource + 'profile.jpg">';
+		e += "<img src=\"" + app.resource + "profile.jpg\">";
 	}
 	e += "<p>" + c.Name + "</p>";
 	var d = [];
@@ -232,8 +231,8 @@ app.user = function() {
 	if (d.length > 0) {
 		var f = Math.floor(Math.random() * d.length),
 			g = d[f];
-		$('<div id="bg-dimmed">').prependTo("body");
-		$('<div id="bg-image">').css("background-image", "url('" + g + "')").prependTo("body");
+		$("<div id=\"bg-dimmed\">").prependTo("body");
+		$("<div id=\"bg-image\">").css("background-image", "url('" + g + "')").prependTo("body");
 	}
 	$("#user").html(e);
 };
@@ -248,7 +247,7 @@ app.list = function(filter) {
 		c = d.children("ul");
 	// Load more if the user requests
 	if (!this.contents && c.length < 1) {
-		d.html('<ul></ul><div class="loadmore"></div>');
+		d.html("<ul></ul><div class=\"loadmore\"></div>");
 		this.contents = d.children("ul");
 		this.loadmore = d.children("div.loadmore");
 		this.loadmore.on("click", function() {
@@ -329,7 +328,7 @@ app.list.prototype = {
 			// Remove load more
 			$(".loadmore").remove();
 			// Append a sign to indicate all of the entries have been loaded
-			$("#list").append('<li><p class="separator"><span>EOF</span></p></li>');
+			$("#list").append("<li><p class=\"separator\"><span>EOF</span></p></li>");
 		}
 		app.lastQualified = lastQualifiedLoaded;
 		app.lastLoaded = currentLoaded;
@@ -353,7 +352,7 @@ app.list.prototype = {
 			// The for-loop will break if any match is found
 			for (subkey in element) {
 				// Tag
-				if (element[subkey].charAt(0) == '#') {
+				if (element[subkey].charAt(0) == "#") {
 					if (data["textTags"]) {
 						var textTagArray = data["textTags"].split("|"),
 							subfound = false;
@@ -378,7 +377,7 @@ app.list.prototype = {
 						}
 					}
 
-				} else if (element[subkey].charAt(0) == '%') {
+				} else if (element[subkey].charAt(0) == "%") {
 					////console.log("\t- Test type");
 					// Type
 					var typeArray = app.bitwise().content(data["attachments"]),
@@ -395,7 +394,7 @@ app.list.prototype = {
 						found = true;
 						break;
 					}
-				} else if (element[subkey].charAt(0) == '@') {
+				} else if (element[subkey].charAt(0) == "@") {
 					////console.log("\t- Test time");
 					// Time
 					var timeStr = element[subkey].substr(1);
@@ -405,7 +404,7 @@ app.list.prototype = {
 						found = true;
 						break;
 					}
-				} else if (element[subkey].charAt(0) == '+') {
+				} else if (element[subkey].charAt(0) == "+") {
 					////console.log("\t- Test body");
 					if (data["text"]["body"].match(new RegExp(element[subkey].substr(1), "i"))) {
 						////console.log("\t- Body match!");
@@ -502,9 +501,9 @@ app.list.prototype = {
 		if (data.time.end)
 			data.datetime += " - " + this.date(data.time.end, 1);
 		// Separator
-		var date_arr = this.isInSameMonth(createTime, lastTime);
-		data.year = date_arr[0];
-		data.month = date_arr[1];
+		var dateArr = this.isInSameMonth(createTime, lastTime);
+		data.year = dateArr[0];
+		data.month = dateArr[1];
 		// Get the attached data
 		data.attached = this.attached(data.attachments);
 		var item = $(app.itemView(data));
@@ -570,13 +569,13 @@ app.list.prototype = {
 				g = "";
 			// Check the validity of the file
 			if (!first.fileName)
-				return '<div class="dummy"></div>';
+				return "<div class=\"dummy\"></div>";
 			if (type != "images" && type != "video")
 				// Check the validity of the file
 				if (!!first.thumb)
 					first = first.thumb;
 				else
-					return '<div class="dummy"></div>';
+					return "<div class=\"dummy\"></div>";
 			////var width = first.width,
 			////    height = first.height;
 			////if (type == "video") {
@@ -595,7 +594,7 @@ app.list.prototype = {
 				if (journal.archive.map[first.fileName])
 					fileName = journal.archive.map[first.fileName]["url"];
 				if (fileName == undefined)
-					return '<div class="dummy"></div>';
+					return "<div class=\"dummy\"></div>";
 			}
 			if (type == "video") {
 				if (journal.archive.map[first.fileName + "_thumb.jpg"])
@@ -608,17 +607,17 @@ app.list.prototype = {
 			////	else
 			////		return '<div class="dummy"></div>';
 			if (thumbPropertiesHtml)
-				thumbPropertiesHtml = ' style="' + thumbPropertiesHtml + '"';
-			var j = '<img src="' + fileName + '"' + thumbPropertiesHtml + ">";
+				thumbPropertiesHtml = " style=\"" + thumbPropertiesHtml + "\"";
+			var j = "<img src=\"" + fileName + "\"" + thumbPropertiesHtml + ">";
 			if (Modernizr.canvas)
-				j = '<canvas width="160" height="160" data-src="' + fileName + '"></canvas>';
+				j = "<canvas width=\"160\" height=\"160\" data-src=\"" + fileName + "\"></canvas>";
 			if (first.urlType > 1 && type == "weblink")
-				g = '<span class="weblink-video"></span>';
+				g = "<span class=\"weblink-video\"></span>";
 			if (type == "video")
-				g = '<span class="video-play"></span>';
-			returnHtml = '<div class="thumb">' + j + "" + g + "</div>";
+				g = "<span class=\"video-play\"></span>";
+			returnHtml = "<div class=\"thumb\">" + j + "" + g + "</div>";
 		}
-		return returnHtml || '<div class="dummy"></div>';
+		return returnHtml || "<div class=\"dummy\"></div>";
 	},
 	/* Attach the attachments the contents have to the content */
 	attached: function(contentFlag) { // [d, h]
@@ -627,7 +626,7 @@ app.list.prototype = {
 		// Iterate to push all of the contents
 		for (var i = 0, len = typeArray.length; i < len; ++i) {
 			// Push all of the contents
-			retArray.push('<span class="' + typeArray[i] + '"></span>');
+			retArray.push("<span class=\"" + typeArray[i] + "\"></span>");
 		}
 		return retArray.join("");
 	},
@@ -815,7 +814,7 @@ app.detail = function() { // [m]
 			for (var key = 0; key != data["images"].length; ++key) {
 				var file = data["images"][key].fileName;
 				if (journal.archive.map[file])
-					$(".upper").append('<a href="' + journal.archive.map[file]["url"] + '"><img src="' + journal.archive.map[file]["url"] + '"><span></span></a>');
+					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"><span></span></a>");
 				else
 					animation.log("Cannot load file " + file + ". Please make sure you have downloaded it", true);
 			}
@@ -866,8 +865,8 @@ app.detail.prototype = {
 		// Replace all manual lines to a horizontal line
 		rawText = rawText.replace(/\t\t[*]\t[*]\t[*]/g, "<hr>");
 		// Replace all manual tabs to real tabs
-		rawText = rawText.replace(/\r\n\t\t/g, '</p><p class="t2">');
-		rawText = rawText.replace(/\r\n\t/g, '</p><p class="t1">');
+		rawText = rawText.replace(/\r\n\t\t/g, "</p><p class=\"t2\">");
+		rawText = rawText.replace(/\r\n\t/g, "</p><p class=\"t1\">");
 		// Replace all double lines to a new character
 		rawText = rawText.replace(/\n(|\r)\n(|\r)/ig, "</p></br><p>");
 		// Replace all other single lines to a new line
@@ -882,7 +881,7 @@ app.detail.prototype = {
 		// Seems that only the type of music, movie, book, weblink will be passed in 
 		var thumbClip = dataClip[thumbType]; // [m]
 		if (thumbClip && thumbClip.length > 0) {
-			var thumbClip = thumbClip[0]; // [k]
+			thumbClip = thumbClip[0]; // [k]
 			// Invalid data
 			if (!thumbClip)
 				return false;
@@ -896,9 +895,9 @@ app.detail.prototype = {
 			if (!fileDir.match(/.(jpg|png)$/))
 				fileDir = fileDir + ".jpg";
 			if (styleHtml)
-				styleHtml = ' style="' + styleHtml + '"';
+				styleHtml = " style=\"" + styleHtml + "\"";
 			if (!(thumbClip.thumb === undefined))
-				thumbClip.thumb = '<img src="' + fileDir + '"' + styleHtml + ">";
+				thumbClip.thumb = "<img src=\"" + fileDir + "\"" + styleHtml + ">";
 		}
 	},
 	/* Hide the detail-view */
@@ -994,15 +993,17 @@ app.util = {
 	style: function(styleArray) {
 		var c = [];
 		for (i in styleArray) {
-			c.push(i.replace(/([A-Z])/, "-$1").toLowerCase() + ":" + (typeof styleArray[i] == "number" ? styleArray[i] + "px" : styleArray[i]));
+			if (styleArray.hasOwnProperty(i)) {
+				c.push(i.replace(/([A-Z])/, "-$1").toLowerCase() + ":" + (typeof styleArray[i] == "number" ? styleArray[i] + "px" : styleArray[i]));
+			}
 		}
 		return c.join(";");
 	},
 	// Converts the second to human readable type
 	runTime: function(second) {
 		if (second && second > 0) {
-			var second = second / 1000,
-				e = "0",
+			second = second / 1000;
+			var e = "0",
 				c = "";
 			if (second >= 60) {
 				e = second / 60;
@@ -1058,7 +1059,6 @@ app.bitwise = function() {
 		makeup = 1099511627776,
 		home = 2199023255552,
 		car = 4398046511104,
-		D = 0,
 		photoVal = 1, // [k]
 		videoVal = 2, // [j]
 		musicVal = 4, // [w]
@@ -1170,8 +1170,10 @@ app.bitwise = function() {
 		iconTags: function(typeVal) {
 			var retArray = [];
 			for (i in iconName) {
-				if (this.is(typeVal, parseInt(i))) {
-					retArray.push(iconName[i]);
+				if (iconName.hasOwnProperty(i)) {
+					if (this.is(typeVal, parseInt(i))) {
+						retArray.push(iconName[i]);
+					}
 				}
 			}
 			return retArray;
@@ -1208,9 +1210,10 @@ app.bitwise = function() {
 		 */
 		getValueByClass: function(className) {
 			for (val in iconName)
-				if (iconName[val] == className)
+				if (iconName.hasOwnProperty(val))
+					if (iconName[val] == className)
 					// Found
-					return val;
+						return val;
 			return -1;
 		},
 		/*
@@ -1221,21 +1224,22 @@ app.bitwise = function() {
 			var classVal = this.getValueByClass(className);
 			if (classVal == -1)
 				return "";
-			for (str in iconVal)
-				if (iconVal[str] == classVal)
+			for (var str in iconVal)
+				if (iconVal.hasOwnProperty(str))
+					if (iconVal[str] == classVal)
 					// Found
-					return str;
+						return str;
 			return "";
 		},
 		/* Set typeVal on typesVal. Return typesVal | typeVal */
 		or: function(typesVal, typeVal) {
 			var newVal = this.get(typesVal).split("");
-			newVal[this.get(typeVal).indexOf("1")] = '1';
+			newVal[this.get(typeVal).indexOf("1")] = "1";
 			return parseInt(newVal.join(""), 2);
 		},
 		andnot: function(typesVal, typeVal) {
 			var newVal = this.get(typesVal).split("");
-			newVal[this.get(typeVal).indexOf("1")] = '0';
+			newVal[this.get(typeVal).indexOf("1")] = "0";
 			return parseInt(newVal.join(""), 2);
 		},
 		// Tests if testValue is in totalValue, i.e. typesVal has type of typeVal
@@ -1268,26 +1272,26 @@ app.PhotoViewer.prototype = {
 		if (f.length > 1) {
 			var c = $("<ul>");
 		}
-		var d = $('<ul class="swipe-wrap">');
+		var d = $("<ul class=\"swipe-wrap\">");
 		f.each(function(j) {
 			$("<li>").html(this).appendTo(d);
 			if (!!c) {
-				$("<li>").html('<a href="#' + j + '">' + j + "</a>").appendTo(c);
+				$("<li>").html("<a href=\"#" + j + "\">" + j + "</a>").appendTo(c);
 			}
 		});
-		var e = $('<div class="wrap swipe">').html(d);
-		var g = $('<div class="control">');
-		g.append('<input type="button" value="Close" class="btn-close"/>');
+		var e = $("<div class=\"wrap swipe\">").html(d);
+		var g = $("<div class=\"control\">");
+		g.append("<input type=\"button\" value=\"Close\" class=\"btn-close\"/>");
 		////if (f.length > 1) {
 		////	g.append('<input type="button" value="Prev" class="btn-prev"/>');
 		////	g.append('<input type="button" value="Next" class="btn-next"/>');
 		////}
 		if (!!c) {
-			c.css("width", f.length * 17).wrap('<div class="pagination"/>').parent().appendTo(g);
+			c.css("width", f.length * 17).wrap("<div class=\"pagination\"/>").parent().appendTo(g);
 		}
 		e.append(g);
-		e.append('<div class="background"></div>');
-		var h = $('<div id="photoviewer">').html(e);
+		e.append("<div class=\"background\"></div>");
+		var h = $("<div id=\"photoviewer\">").html(e);
 		h.appendTo("body");
 	},
 	init: function() {

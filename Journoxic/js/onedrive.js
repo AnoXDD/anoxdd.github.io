@@ -149,7 +149,7 @@ function downloadFile() {
 			percent = 0;
 		$(this).html(percent + "%");
 	}, function() {
-		$(this).html("&#xE149");
+		$(this).html("&#xE117");
 	})
 	var token = getTokenFromCookie();
 	if (token != "") {
@@ -223,7 +223,7 @@ function downloadMedia(url, id) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE149").css("background", "").unbind("mouseenter mouseleave");
+			$("#refresh-media").html("&#xE117").css("background", "").unbind("mouseenter mouseleave");
 			clearInterval(id);
 			animation.log("Media data fetched");
 			animation.finished("#refresh-media");

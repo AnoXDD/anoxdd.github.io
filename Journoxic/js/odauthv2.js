@@ -54,6 +54,8 @@ function onAuthCallback() {
 			expiry = parseInt(data["expires_in"]);
 		window.opener.setCookie(token, expiry, refresh);
 		window.opener.onAuthenticated(token, window);
+	}).fail(function() {
+		alert("Cannot get the code. Did you enable CORS?");
 	});
 }
 
@@ -141,7 +143,7 @@ function toggleAutoRefreshToken() {
 			$(this).html("&#xE194");
 		}).fadeIn(300);
 		animation.log("The access token will now be refreshed every 20 minute");
-		refreshToken();
+		//refreshToken();
 		toggleAutoRefreshToken.id = setInterval(func, 1200000);
 	}
 }

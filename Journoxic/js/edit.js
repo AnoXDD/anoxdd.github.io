@@ -20,11 +20,11 @@ edit.localChange = [];
  ********************** INIT & QUIT *******************************
  ******************************************************************/
 
-/* 
- Initialize the edit pane.
- localStorage["created"] will be used to track the entry being edited
- overwrite - boolean to determine whether or not to create a new entry (overwrite previously stored info)
- index - the index of the archive data (optional)
+/**
+ * Initializes the edit pane
+ * localStorage["created"] will be used to track the entry being edited
+ * @param {boolean} overwrite - Determines whether or not to create a new entry (overwrite previously stored info)
+ * @param {number} index - The index of the archive data (optional)
  */
 edit.init = function(overwrite, index) {
 	////console.log("edit.init(" + overwrite + ", " + index + ")");
@@ -202,7 +202,11 @@ edit.quit = function(selector, save) {
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
-}; /* Save cache for edit-pane to journal.archive.data */
+};
+/**
+ * Saves cache for edit-pane to journal.archive.data
+ * @param {string} selector - The selector to show the finished animation
+ */
 edit.save = function(selector) {
 	var id, html;
 	animation.log("Saving data ...");
@@ -226,8 +230,13 @@ edit.save = function(selector) {
 		// Show finish animation
 		animation.finished(selector);
 		animation.log("Finished saving data");
+		// Upload the file to OneDrive
+		uploadFile();
 	});
-}; /* Process removal list to do the final cleanup of contents */
+};
+/**
+ * Processes removal list to do the final cleanup of contents
+ */
 edit.processRemovalList = function() {
 	for (var key = 0; key < edit.removalList.length; ++key) {
 		if (localStorage[key]) {
@@ -242,7 +251,10 @@ edit.processRemovalList = function() {
  **************************** CACHE *******************************
  ******************************************************************/
 
-/* Sync between the local and caches. Local cache will overwrite data if there is */
+/**
+ * Syncs between the local and caches. Local cache will overwrite data if there is 
+ * @param {object} data - The data clip of entry to be processed
+ */
 edit.importCache = function(data) {
 	// Title
 	if (localStorage["title"]) {
@@ -255,7 +267,7 @@ edit.importCache = function(data) {
 		if (!data["text"]) {
 			data["text"] = {};
 		}
-		data["text"]["body"];
+		data["text"]["body"] = localStorage["body"];
 	} else {
 		if (data["text"]) {
 			if (data["text"]["body"]) {
@@ -335,7 +347,11 @@ edit.exportCache = function(index) {
 		journal.archive.data[index] = data;
 		app.currentDisplayed = -1;
 	}
-}; /* Read the cache and process start, created and end time from the text body */
+};
+/**
+ * Reads the cache and process start, created and end time from the text body
+ * @param {object} data - The data clip of entry to be processed
+ */
 edit.exportCacheBody = function(data) {
 	if (!data["time"]) {
 		data["time"] = {};
@@ -381,24 +397,39 @@ edit.cleanEditCache = function() {
 	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
 	}
-}; /* Save the entire journal.archive.data to cache after minimizing it */
-edit.saveDataCache = function(data) {
+};
+/**
+ * Saves the entire journal.archive.data to cache
+ */
+edit.saveDataCache = function() {
 	localStorage["archive"] = JSON.stringify(journal.archive.data);
-}; /* Clean the cache for journal.archive.data */
+};
+/**
+ * Cleans the cache for journal.archive.data
+ */
 edit.removeDataCache = function() {
 	delete localStorage["archive"];
-}; /* Try to read journal.archive.data from cache */
+};
+/**
+ * Tries to read journal.archive.data from cache and then copy it to journal.archive.data
+ */
 edit.tryReadCache = function() {
 	if (localStorage["archive"]) {
 		// Seems that there is available data
 		journal.archive.data = JSON.parse(localStorage["archive"]);
 		app.load("", true);
 	}
-}; /******************************************************************
+};
+
+/******************************************************************
  **************************** DATA ********************************
  ******************************************************************/
 
-/* Return the index of data found */
+/**
+ * Returns the index of data with a time specifed
+ * @param {string/number} created - The created time of entry to be searched
+ * @returns {number} - The index of data, -1 if not found
+ */
 edit.find = function(created) {
 	for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
 		if (journal.archive.data[key]["time"]) {
@@ -409,28 +440,10 @@ edit.find = function(created) {
 	}
 	// Nothing found
 	return -1;
-}; /* Parse the json to fit _.template. This function also syncs data to localStorage */
-edit.parseJSON = function(string) {
-	var dict = JSON.parse(string),
-		elements = "title time text video weblink book music movie images voice place iconTags2 textTags".split(" "),
-		dict = {};
-	// Add to cache
-	if (dict["title"]) {
-		localStorage["title"] = dict["title"];
-	}
-	if (dict["text"]) {
-		if (dict["text"]["body"]) {
-			localStorage["body"] = dict["text"]["body"];
-		}
-	}
-	// Add undefined object to make it displayable
-	for (var key = 0, len = elements.length; key != len; ++key) {
-		if (dict[elements[key]] == undefined) {
-			dict[elements[key]] = undefined;
-		}
-	}
-	return dict;
-}; /* Return an empty content object array entry */
+};
+/** 
+ * Returns an empty content object array entry 
+ */
 edit.newContent = function() {
 	var dict = {};
 	// Set created time
@@ -438,7 +451,10 @@ edit.newContent = function() {
 	dict["time"]["created"] = new Date().getTime();
 	dict["textTags"] = "";
 	return dict;
-}; /* Minimize the data, remove unnecessary tags */
+};
+/**
+ * Minimizes the data, remove unnecessary tags 
+ */
 edit.minData = function() {
 	var tmp = journal.archive.data.filter(function(key) {
 		return key != undefined;
@@ -465,13 +481,18 @@ edit.minData = function() {
 		}
 	};
 	return tmp;
-}; /* Sort journal.archive.data */
+};
+/**
+ * Sorts journal.archive.data 
+ */
 edit.sortArchive = function() {
 	journal.archive.data.sort(function(a, b) {
 		// From the latest to oldest
 		return b["time"]["created"] - a["time"]["created"];
 	});
-}; /******************************************************************
+};
+
+/******************************************************************
  ************************ CONTENT CONTROL *************************
  ******************************************************************/
 
@@ -497,7 +518,8 @@ edit.undo = function() {
 	////			}
 	////		}
 	////	}
-}; /* NOT USABLE */
+};
+/* NOT USABLE */
 edit.change = function(key, value) {
 	////	var dict = {};
 	////	if (localStorage[key])
@@ -508,39 +530,41 @@ edit.change = function(key, value) {
 	////	edit.localChange.push(dict);
 	////	localStorage[key] = value;
 
-}; /************************** EDITING *******************************/
+};
+
+/************************** EDITING *******************************/
 
 edit.addMedia = function(typeNum) {
 	var selectorHeader = "#attach-area ." + edit.mediaName(typeNum),
 		length = $(selectorHeader).length,
 		htmlContent;
 	switch (typeNum) {
-	case 0:
-		// Images
-		edit.photo();
-		// Do not execute the codes after switch block
-		return;
-	case 2:
-		// Place
-		htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
-		break;
-	case 4:
-		// Music
-		htmlContent = "<div class=\"music\"><a title=\"Edit\" onclick=\"edit.music(" + length + ")\" href=\"#\"><img class=\"thumb <% if( music[i].thumb ) { music[i].thumb; } %>\"><span></span><input disabled class=\"title\" placeholder=\"Track name\" autocomplete=\"off\" /><input disabled class=\"desc\" placeholder=\"Artist\" autocomplete=\"off\" /></a></div>";
-		break;
-	case 5:
-		// Movie
-		htmlContent = "<div class=\"movie\"><a title=\"Edit\" onclick=\"edit.movie(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Movie title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Director\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
-		break;
-	case 6:
-		// Book
-		htmlContent = "<div class=\"book\"><a title=\"Edit\" onclick=\"edit.book(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Book title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Author\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
-		break;
-	case 7:
-		// Weblink
-		htmlContent = "<div class=\"weblink\"><a title=\"Edit\" onclick=\"edit.weblink(" + length + ")\" href=\"#\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" placeholder=\"Title\" /><input disabled class=\"desc\" placeholder=\"http://\" /></a></div>";
-		break;
-	default:
+		case 0:
+			// Images
+			edit.photo();
+			// Do not execute the codes after switch block
+			return;
+		case 2:
+			// Place
+			htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
+			break;
+		case 4:
+			// Music
+			htmlContent = "<div class=\"music\"><a title=\"Edit\" onclick=\"edit.music(" + length + ")\" href=\"#\"><img class=\"thumb <% if( music[i].thumb ) { music[i].thumb; } %>\"><span></span><input disabled class=\"title\" placeholder=\"Track name\" autocomplete=\"off\" /><input disabled class=\"desc\" placeholder=\"Artist\" autocomplete=\"off\" /></a></div>";
+			break;
+		case 5:
+			// Movie
+			htmlContent = "<div class=\"movie\"><a title=\"Edit\" onclick=\"edit.movie(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Movie title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Director\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
+			break;
+		case 6:
+			// Book
+			htmlContent = "<div class=\"book\"><a title=\"Edit\" onclick=\"edit.book(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Book title\" autocomplete=\"off\" onclick=\"this.select()\" /><input disabled class=\"desc\" placeholder=\"Author\" autocomplete=\"off\" onclick=\"this.select()\" /></a></div>";
+			break;
+		case 7:
+			// Weblink
+			htmlContent = "<div class=\"weblink\"><a title=\"Edit\" onclick=\"edit.weblink(" + length + ")\" href=\"#\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" placeholder=\"Title\" /><input disabled class=\"desc\" placeholder=\"http://\" /></a></div>";
+			break;
+		default:
 
 	}
 	if (length > 0) {
@@ -567,29 +591,38 @@ edit.addToRemovalList = function(name) {
 		// Only add when this element does not exist
 		edit.removalList[name].push(edit.mediaIndex[name]);
 	}
-}; /* Get the name of media by value */
+};
+/* Get the name of media by value */
+/**
+ * Gets the name of media by num value
+ * @param {number} typeNum - The value of this media
+ * @returns {string} - The string name of the media. Empty if not applicable
+ */
 edit.mediaName = function(typeNum) {
 	switch (typeNum) {
-	case 0:
-		return "photo";
-	case 1:
-		return "video";
-	case 2:
-		return "place";
-	case 3:
-		return "voice";
-	case 4:
-		return "music";
-	case 5:
-		return "movie";
-	case 6:
-		return "book";
-	case 7:
-		return "weblink";
-	default:
-		return "";
+		case 0:
+			return "photo";
+		case 1:
+			return "video";
+		case 2:
+			return "place";
+		case 3:
+			return "voice";
+		case 4:
+			return "music";
+		case 5:
+			return "movie";
+		case 6:
+			return "book";
+		case 7:
+			return "weblink";
+		default:
+			return "";
 	}
-}; /* A function to be called by confirm */
+};
+/**
+ * A function to be called by confirm 
+ */
 edit.confirm = function() {
 	if (typeof (edit.confirmName) == "string") {
 		if (edit.confirmName == "discard") {
@@ -622,32 +655,43 @@ edit.confirm = function() {
 		// Media removal
 		edit.removeMedia(edit.confirmName);
 	}
-}; /* Get ready for next editing */
+};
+/**
+ * Cleans up all the media edit data to get ready for next editing 
+ */
 edit.cleanupMediaEdit = function() {
 	$("#edit-pane").off("keyup");
 	switch (edit.isEditing) {
-	case 2:
-		edit.locationHide();
-		break;
-	case 4:
-		edit.musicHide();
-		break;
-	case 5:
-		edit.movieHide();
-		break;
-	case 6:
-		edit.bookHide();
-		break;
-	case 7:
-		edit.weblinkHide();
+		case 2:
+			edit.locationHide();
+			break;
+		case 4:
+			edit.musicHide();
+			break;
+		case 5:
+			edit.movieHide();
+			break;
+		case 6:
+			edit.bookHide();
+			break;
+		case 7:
+			edit.weblinkHide();
 	}
-}; /* Get a header for selector */
+};
+/**
+ * Returns a header of the selector given the type of media and optional index
+ * @param {string} type - The string of media type
+ * @param {number} index (Optional) - The index of the media. If not specified, value will be retrieved from edit.mediaIndex
+ * @returns {string} - The selector header
+ */
 edit.getSelectorHeader = function(type, index) {
 	if (index == undefined) {
 		return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
 	}
 	return "#attach-area ." + type + ":eq(" + index + ") ";
-}; /************************** ANIMATION *****************************/
+};
+
+/************************** ANIMATION *****************************/
 
 edit.toggleIcon = function(htmlName) {
 	var selector = "#attach-area .icontags p." + htmlName,
@@ -707,17 +751,21 @@ edit.windowMode = function() {
 	$(".header").fadeIn(400, function() {
 		$("#text-area p").toggleClass("fullscreen");
 		$("#text-area").animate({ width: "64%" }, function() {
-				$("#attach-area").fadeIn();
-				// Re-enable auto-height
-				app.layout();
-			})
+			$("#attach-area").fadeIn();
+			// Re-enable auto-height
+			app.layout();
+		})
 			.children().toggleClass("fullscreen");
 	});
-}; /************************** TITLE *********************************/
+};
+
+/************************** TITLE *********************************/
 
 edit.saveTitle = function() {
 	localStorage["title"] = $("#entry-header").val();
-}; /************************** TITLE HEADER **************************/
+};
+
+/************************** TITLE HEADER **************************/
 
 edit.saveTag = function() {
 	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
@@ -797,10 +845,20 @@ edit.refreshTime = function() {
 	var timeString = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
 	$("#entry-time").text(timeString);
 	$("#entry-elapsed").text(parseInt(edit.time / 60) + ":" + edit.format(edit.time % 60));
-}; /* =printf("%2d", n); add an zero if n < 10 */
+};
+/**
+ * Returns a formatted string of a number. Equivalent to String.format("%2d", n)
+ * @param {number} n - The digit number to be formatted
+ * @returns {string} - The string to make the number at started with an 0 if length is 1
+ */
 edit.format = function(n) {
 	return n < 10 ? "0" + n : n;
-}; /* Convert my format of time to the milliseconds since epoch */
+};
+/**
+ * Converts my format of time to the milliseconds since epoch
+ * @param {string} time - My time string
+ * @returns {number} - The time since epoch
+ */
 edit.convertTime = function(time) {
 	var month = parseInt(time.substring(0, 2)),
 		day = parseInt(time.substring(2, 4)),
@@ -809,7 +867,14 @@ edit.convertTime = function(time) {
 		minute = parseInt(time.substring(9, 11)),
 		date = new Date(2000 + year, month - 1, day, hour, minute);
 	return date.getTime();
-}; /* Get my version of date with priority of 1) title content 2) created 3) now */
+};
+/**
+ * Returns my version of data with priority of
+ * 1) Title content
+ * 2) Created time
+ * 3) Time of calling this function
+ * @returns {string} - My format of the time
+ */
 edit.getDate = function() {
 	var dateStr;
 	// Get date from title, ignore what title looks like
@@ -832,7 +897,9 @@ edit.getDate = function() {
 	}
 	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	return dateStr;
-}; /************************** PHOTO 0 ************************/
+};
+
+/************************** PHOTO 0 ************************/
 
 edit.photo = function() {
 	if (edit.photos.length != 0) {
@@ -886,102 +953,102 @@ edit.photo = function() {
 	var token = getTokenFromCookie(),
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
 	$.ajax({
-			type: "GET",
-			url: url
-		}).done(function(data, status, xhr) {
-			if (data["@odata.nextLink"]) {
-				// More content available!
-				// Do nothing right now
+		type: "GET",
+		url: url
+	}).done(function(data, status, xhr) {
+		if (data["@odata.nextLink"]) {
+			// More content available!
+			// Do nothing right now
+		}
+		var itemList = data["value"];
+		for (var key = 0, len = itemList.length; key != len; ++key) {
+			var size = itemList[key]["size"],
+				name = itemList[key]["name"],
+				suffix = name.substring(name.length - 4),
+				found = false;
+			if (suffix != ".jpg" && suffix != ".png") {
+				// Only support these two types
+				continue;
 			}
-			var itemList = data["value"];
-			for (var key = 0, len = itemList.length; key != len; ++key) {
-				var size = itemList[key]["size"],
-					name = itemList[key]["name"],
-					suffix = name.substring(name.length - 4),
-					found = false;
-				if (suffix != ".jpg" && suffix != ".png") {
-					// Only support these two types
-					continue;
-				}
-				// Use size to filter out duplicate pahotos
-				for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
-					if (tmp[i]["size"] == size) {
-						found = true;
-						break;
-					}
-				}
-				if (found) {
-					// Abandon this image
-					continue;
-				} else {
-					var data = {
-						name: name,
-						url: itemList[key]["@content.downloadUrl"],
-						size: size,
-						resource: false,
-						change: false,
-					};
-					edit.photos.push(data);
+			// Use size to filter out duplicate pahotos
+			for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
+				if (tmp[i]["size"] == size) {
+					found = true;
+					break;
 				}
 			}
-			console.log("edit.photo()\tFinish media data");
-			// Add to images div
-			for (var i = 0; i != edit.photos.length; ++i) {
-				var htmlContent;
-				if (edit.photos[i]["resource"]) {
-					// The image should be highlighted if it is already at resource folder
-					htmlContent = "<div class=\"highlight\">";
-				} else {
-					htmlContent = "<div>";
-				}
-				htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
-				$("#attach-area .images").append(htmlContent);
+			if (found) {
+				// Abandon this image
+				continue;
+			} else {
+				var data = {
+					name: name,
+					url: itemList[key]["@content.downloadUrl"],
+					size: size,
+					resource: false,
+					change: false,
+				};
+				edit.photos.push(data);
 			}
-			// Stop throttle 
-			$("#add-photo").html("&#xE114").attr({
-				onclick: "edit.addMedia(0)",
-				href: "#"
-			}).fadeIn();
-			// Clicking on img functionality
-			$("#attach-area .images div img").each(function() {
-				$(this).on("contextmenu", function() {
-					// Right click to select the images
-					$(this).parent().toggleClass("highlight");
-					// Return false to disable other functionalities
-					return false;
-				});
+		}
+		console.log("edit.photo()\tFinish media data");
+		// Add to images div
+		for (var i = 0; i != edit.photos.length; ++i) {
+			var htmlContent;
+			if (edit.photos[i]["resource"]) {
+				// The image should be highlighted if it is already at resource folder
+				htmlContent = "<div class=\"highlight\">";
+			} else {
+				htmlContent = "<div>";
+			}
+			htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
+			$("#attach-area .images").append(htmlContent);
+		}
+		// Stop throttle 
+		$("#add-photo").html("&#xE114").attr({
+			onclick: "edit.addMedia(0)",
+			href: "#"
+		}).fadeIn();
+		// Clicking on img functionality
+		$("#attach-area .images div img").each(function() {
+			$(this).on("contextmenu", function() {
+				// Right click to select the images
+				$(this).parent().toggleClass("highlight");
+				// Return false to disable other functionalities
+				return false;
 			});
-			// Set preview
-			$("#attach-area .images").hover(function() {
+		});
+		// Set preview
+		$("#attach-area .images").hover(function() {
+			// Mouseover
+			$("#photo-preview").css("opacity", "initial").show({
+				effect: "fade",
+				duration: 200
+			});
+		}, function() {
+			// Mouseout
+			$("#photo-preview").hide({
+				effect: "fade",
+				duration: 200
+			});
+		}).sortable({
+			containment: "#attach-area .images",
+			cursor: "crosshair",
+			revert: true
+		}).disableSelection();
+		$("#attach-area .images img").each(function() {
+			$(this).hover(function() {
 				// Mouseover
-				$("#photo-preview").css("opacity", "initial").show({
-					effect: "fade",
-					duration: 200
-				});
+				$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
 			}, function() {
 				// Mouseout
-				$("#photo-preview").hide({
-					effect: "fade",
-					duration: 200
-				});
-			}).sortable({
-				containment: "#attach-area .images",
-				cursor: "crosshair",
-				revert: true
-			}).disableSelection();
-			$("#attach-area .images img").each(function() {
-				$(this).hover(function() {
-					// Mouseover
-					$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
-				}, function() {
-					// Mouseout
-					$("#photo-preview img").animate({ opacity: 0 }, 0);
-				});
+				$("#photo-preview img").animate({ opacity: 0 }, 0);
 			});
-			animation.setConfirm(0);
-			animation.log("Photos loaded");
-			animation.finished("#add-photo");
-		})
+		});
+		animation.setConfirm(0);
+		animation.log("Photos loaded");
+		animation.finished("#add-photo");
+	})
 		.fail(function(xhr, status, error) {
 			$("#add-photo").html("&#xE114").attr({
 				onclick: "edit.addMedia(0)",
@@ -995,11 +1062,11 @@ edit.photoClick = function(index) {
 	$("#attach-area .images div:eq(" + index + ")").toggleClass("highlight");
 	// Tell the photos map that this photo would like to switch location
 	edit.photos[index]["change"] = !edit.photos[index]["change"];
-}; /* 
- This function is to be called only at edit.save() 
- because this function will contact OneDrive server to move files,
- which will cause async between client and the server
- The callback function will be called after all the changes have been made
+};
+/**
+ * Saves the photo to OneDrive
+ * IMPORATNT: This function is to be called only at edit.save() because this function will contact OneDrive server to move files, which will cause async between client and the server 
+ * @param {function} callback - The callback function to be called after all the changes have been made
  */
 edit.photoSave = function(callback) {
 	if (edit.photos.length == 0) {
@@ -1114,11 +1181,11 @@ edit.photoSave = function(callback) {
 					}
 				}
 				$.ajax({
-						type: "PATCH",
-						url: url,
-						contentType: "application/json",
-						data: JSON.stringify(requestJson)
-					})
+					type: "PATCH",
+					url: url,
+					contentType: "application/json",
+					data: JSON.stringify(requestJson)
+				})
 					.done(function(data, status, xhr) {
 						var newName = data["name"];
 						// Add the url of this new image to map
@@ -1198,9 +1265,14 @@ edit.photoSave = function(callback) {
 edit.photoHide = function() {
 	// Just hide everything, no further moves to be made
 	$("#attach-area .images").animate({ height: "0" }).fadeOut().html("");
-}; /************************** LOCATION 2 ************************/
+};
 
-/* Toggle location getter by using Google Map */
+/************************** LOCATION 2 ************************/
+
+/**
+ * Toggles location panel getter using Google Map
+ * @param {number} index - The index of location element 
+ */
 edit.location = function(index) {
 	if (index == edit.mediaIndex["place"] || index == undefined) {
 		return;
@@ -1317,7 +1389,11 @@ edit.locationHide = function() {
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["place"] = -1;
 	edit.isEditing = "";
-}; /* Save the location and collapse the panal */
+};
+/**
+ * Saves the location and collapses the panal
+ * @param {number} index - The index of the location element
+ */
 edit.locationSave = function(index) {
 	// TODO change to fix each location
 	var data = localStorage["place"],
@@ -1361,12 +1437,16 @@ edit.locationPin = function() {
 		// Browser doesn't support Geolocation
 		alert(errorMsg);
 	}
-}; /* Reverse geocoding */
+};
+/**
+ * Reverses geocoding to get the address of this position add shows it on place element on the website
+ * @param {object} pos - The position object indicating the position to be reverse geocoded
+ */
 edit.locationGeocode = function(pos) {
 	var mapOptions = {
-		    zoom: 16,
-		    center: pos,
-	    },
+		zoom: 16,
+		center: pos,
+	},
 		map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
 		marker = new google.maps.Marker({
 			map: map,
@@ -1388,7 +1468,9 @@ edit.locationGeocode = function(pos) {
 			alert("Geocoder failed due to: " + status);
 		}
 	});
-}; /************************** MUSIC 4 **************************/
+};
+
+/************************** MUSIC 4 **************************/
 
 edit.music = function(index) {
 	edit.itunes(index, 4);
@@ -1398,7 +1480,9 @@ edit.musicHide = function() {
 };
 edit.musicSave = function(index) {
 	edit.itunesSave(index, 4);
-}; /************************** MOVIE 5 *************************/
+};
+
+/************************** MOVIE 5 *************************/
 
 edit.movie = function(index) {
 	edit.itunes(index, 5);
@@ -1408,7 +1492,9 @@ edit.movieHide = function() {
 };
 edit.movieSave = function(index) {
 	edit.itunesSave(index, 5);
-}; /************************** BOOK 6 **************************/
+};
+
+/************************** BOOK 6 **************************/
 
 edit.book = function(index) {
 	edit.itunes(index, 6);
@@ -1418,7 +1504,9 @@ edit.bookHide = function() {
 };
 edit.bookSave = function(index) {
 	edit.itunesHide(index, 6);
-}; /************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
+};
+
+/************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
 
 edit.itunes = function(index, typeNum) {
 	var type = edit.mediaName(typeNum);
@@ -1477,7 +1565,9 @@ edit.itunesSave = function(index, typeNum) {
 	};
 	data[index] = newElem;
 	localStorage[type] = JSON.stringify(data);
-}; /************************** WEBLINK 7 **************************/
+};
+
+/************************** WEBLINK 7 **************************/
 
 edit.weblink = function(index) {
 	if (index == edit.mediaIndex["weblink"] || index == undefined) {
@@ -1527,7 +1617,9 @@ edit.weblinkSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage["weblink"] = JSON.stringify(data);
-}; /******************************************************************
+};
+
+/******************************************************************
  ************************ OTHERS **********************************
  ******************************************************************/
 

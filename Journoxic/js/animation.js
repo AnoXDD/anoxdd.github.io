@@ -33,10 +33,10 @@ animation.setConfirm = function(name) {
 			// Always show
 			animation.showIcon("#confirm");
 			switch (name) {
-			case 2:
-				// Place
-				animation.toggleIcon("#pin-point");
-				break;
+				case 2:
+					// Place
+					animation.toggleIcon("#pin-point");
+					break;
 			}
 		} else {
 			// Do not need to follow the steps below, just toggle it
@@ -52,10 +52,10 @@ animation.setConfirm = function(name) {
 			$("#confirm").html("&#xE106");
 			title = "Remove this medium";
 			switch (name) {
-			case 2:
-				// Place
-				animation.showIcon("#pin-point");
-				break;
+				case 2:
+					// Place
+					animation.showIcon("#pin-point");
+					break;
 			}
 		} else {
 			$("#confirm").html("&#xE10B");
@@ -115,11 +115,13 @@ animation.finished = function(selector) {
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
 			$(this).html("&#xE10B").css({
-				background: "#fff"
+				background: "#fff",
+				"font-size": "inherit"
 			});
 		}).fadeIn(300).delay(500).fadeOut(300, function() {
 			$(this).html(text).css({
-				background: ""
+				background: "",
+				"font-size": ""
 			});
 		}).fadeIn(300);
 	}

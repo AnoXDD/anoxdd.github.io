@@ -16,7 +16,7 @@ animation.showIcon = function(selector, callback) {
 };
 
 animation.isShown = function(selector) {
-	return $(selector).css("top") === "10px";
+	return $(selector).css("top") === "10px" && $(selector).css("display") !== "none";
 };
 animation.toggleIcon = function(selector, callback) {
 	callback = callback || function() {

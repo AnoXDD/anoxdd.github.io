@@ -715,6 +715,8 @@ edit.toggleLight = function() {
 	$("#text-area").toggleClass("dark").children().toggleClass("dark");
 };
 edit.fullScreen = function() {
+	// Clean all the data to hide map selector and photo viewer
+	edit.cleanupMediaEdit();
 	// Disable auto-height
 	$(window).off("resize");
 	// Change the icon
@@ -929,9 +931,9 @@ edit.photo = function() {
 				url: journal.archive.map[name]["url"],
 				resource: true,
 				/* Whether this image is moved to the other location, 
-				 i.e. if it is deleted or added
+				 * i.e. if it is deleted or added
 				 */
-				change: false,
+				change: false
 			};
 			edit.photos.push(image);
 		} else {
@@ -1021,6 +1023,8 @@ edit.photo = function() {
 		// Set preview
 		$("#attach-area .images").hover(function() {
 			// Mouseover
+			// Clean up the data
+			edit.cleanupMediaEdit();
 			$("#photo-preview").css("opacity", "initial").show({
 				effect: "fade",
 				duration: 200
@@ -1370,6 +1374,9 @@ edit.location = function(index) {
 		}
 	});
 };
+/**
+ * Hides the map selector and saves the data
+ */
 edit.locationHide = function() {
 	if (edit.mediaIndex["place"] < 0) {
 		// Invalid call

@@ -200,10 +200,10 @@ function refreshToken(callback) {
 				expiry = parseInt(data["expires_in"]);
 			setCookie(token, expiry, refresh);
 			animation.log("Access token refreshed");
-			if (typeof(callback) === "function")
-			callback(token);
+			if (typeof (callback) === "function")
+				callback(token);
 		}).fail(function(xhr, status, error) {
-			animation.log("Cannot refresh access token. The server returns \"" + status + "\"");
+			animation.log("Cannot refresh access token. Please make sure CORS is enabled. The server returns \"" + status + "\"", true);
 		});
 	} else {
 		// No refresh token, then try to sign in

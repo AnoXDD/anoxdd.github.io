@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -22,8 +22,8 @@
 }
 
 @font-face {
-	font-family: 'Segoe UI Symbol';
-	src: url('../fonts/seguisym.ttf');
+	font-family: 'Font Awesome';
+	src: url('../fonts/fontawesome-webfont.ttf');
 }
 
 @font-face {
@@ -42,6 +42,23 @@
 	font-family: 'Segoe UI';
 	font-weight: bold;
 	src: url("../fonts/segoeuib.ttf");
+}
+
+@keyframe spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+}
+
+.spin {
+	-webkit-animation: spin 2s infinite linear;
+	animation: spin 2s infinite linear;
 }
 
 /*@font-face {
@@ -69,7 +86,7 @@ html, body {
 
 body, input, select, textarea {
 	-webkit-appearance: none;
-	font-family: 'Segoe UI', 'Segoe UI Symbol', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-family: 'Segoe UI', 'Font Awesome', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -991,156 +1008,191 @@ body {
 			width: 25px;
 		}
 
-			#detail .icontags span.w01 {
+			#detail .icontags span.w01, #edit-pane #attach-area .icontags p.w01 {
 				background-position: -90px -370px;
 			}
 
-			#detail .icontags span.w02 {
+			#detail .icontags span.w02, #edit-pane #attach-area .icontags p.w02 {
 				background-position: -115px -370px;
 			}
 
-			#detail .icontags span.w03 {
+			#detail .icontags span.w03, #edit-pane #attach-area .icontags p.w03 {
 				background-position: -140px -370px;
 			}
 
-			#detail .icontags span.w04 {
+			#detail .icontags span.w04, #edit-pane #attach-area .icontags p.w04 {
 				background-position: -165px -370px;
 			}
 
-			#detail .icontags span.w05 {
+			#detail .icontags span.w05, #edit-pane #attach-area .icontags p.w05 {
 				background-position: -190px -370px;
 			}
 
-			#detail .icontags span.c01 {
+			#detail .icontags span.w06, #edit-pane #attach-area .icontags p.w06 {
 				background-position: -215px -370px;
 			}
 
-			#detail .icontags span.c02 {
-				background-position: -240px -370px;
+			#detail .icontags span.c01:before, #edit-pane #attach-area .icontags p.c01:before {
+				content: "\f0c5";
+				background-image: none;
 			}
 
-			#detail .icontags span.c03 {
-				background-position: -265px -370px;
+						#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c01, 
+						#detail .icontags span.c05, #edit-pane #attach-area .icontags p.c05, 
+						#detail .icontags span.c06, #edit-pane #attach-area .icontags p.c06,
+						#detail .icontags span.c07, #edit-pane #attach-area .icontags p.c07,
+						#detail .icontags span.c08, #edit-pane #attach-area .icontags p.c08,
+						#detail .icontags span.c10, #edit-pane #attach-area .icontags p.c10,
+									#detail .icontags span.s01, #edit-pane #attach-area .icontags p.s01,
+			#detail .icontags span.s02, #edit-pane #attach-area .icontags p.s02,
+			#detail .icontags span.s03, #edit-pane #attach-area .icontags p.s03,
+			#detail .icontags span.s04, #edit-pane #attach-area .icontags p.s04,
+			#detail .icontags span.s05, #edit-pane #attach-area .icontags p.s05,
+			#detail .icontags span.s06, #edit-pane #attach-area .icontags p.s06,
+			#detail .icontags span.s07, #edit-pane #attach-area .icontags p.s07,
+			#detail .icontags span.s08, #edit-pane #attach-area .icontags p.s08,
+			#detail .icontags span.s09, #edit-pane #attach-area .icontags p.s09,
+			#detail .icontags span.s11, #edit-pane #attach-area .icontags p.s11,
+			#detail .icontags span.s12, #edit-pane #attach-area .icontags p.s12,
+			#detail .icontags span.s13, #edit-pane #attach-area .icontags p.s13,
+			#detail .icontags span.s14, #edit-pane #attach-area .icontags p.s14,
+			#detail .icontags span.s17, #edit-pane #attach-area .icontags p.s17,
+			#detail .icontags span.s18, #edit-pane #attach-area .icontags p.s18 {
+				background-image: initial;
+				background-color: #808080;
+				text-align: center;
+				position: relative;
+				padding-top: 4px;
+				height: 21px;
+				top: -8px;
+				border-radius: 30px;
+}
+
+			#detail .icontags span.c02, #edit-pane #attach-area .icontags p.c02 {
+				background-position: -240px -395px;
 			}
 
-			#detail .icontags span.c04 {
-				background-position: -290px -370px;
+			#detail .icontags span.c03, #edit-pane #attach-area .icontags p.c03 {
+				background-position: -265px -395px;
 			}
 
-			#detail .icontags span.c05 {
-				background-position: -315px -370px;
+			#detail .icontags span.c04, #edit-pane #attach-area .icontags p.c04 {
+				background-position: -290px -395px;
 			}
 
-			#detail .icontags span.c06 {
-				background-position: -340px -370px;
+			#detail .icontags span.c05:before, #edit-pane #attach-area .icontags p.c05:before {
+				content: "\f236";
 			}
 
-			#detail .icontags span.c07 {
-				background-position: -365px -370px;
+			#detail .icontags span.c06:before, #edit-pane #attach-area .icontags p.c06:before {
+				content: "\f121";
 			}
 
-			#detail .icontags span.c08 {
-				background-position: -390px -370px;
+			#detail .icontags span.c07:before, #edit-pane #attach-area .icontags p.c07:before {
+				content: "\f003";
 			}
 
-			#detail .icontags span.c09 {
-				background-position: -415px -370px;
+			#detail .icontags span.c08:before, #edit-pane #attach-area .icontags p.c08:before {
+				content: "\f040";
 			}
 
-			#detail .icontags span.c10 {
-				background-position: -440px -370px;
+			#detail .icontags span.c09, #edit-pane #attach-area .icontags p.c09 {
+				background-position: -415px -395px;
 			}
 
-			#detail .icontags span.e01 {
+			#detail .icontags span.c10:before, #edit-pane #attach-area .icontags p.c10:before {
+				content: "\f0c0";
+			}
+
+			#detail .icontags span.e01, #edit-pane #attach-area .icontags p.e01 {
 				background-position: -90px -395px;
 			}
 
-			#detail .icontags span.e02 {
+			#detail .icontags span.e02, #edit-pane #attach-area .icontags p.e02 {
 				background-position: -115px -395px;
 			}
 
-			#detail .icontags span.e03 {
+			#detail .icontags span.e03, #edit-pane #attach-area .icontags p.e03 {
 				background-position: -140px -395px;
 			}
 
-			#detail .icontags span.e04 {
+			#detail .icontags span.e04, #edit-pane #attach-area .icontags p.e04 {
 				background-position: -165px -395px;
 			}
 
-			#detail .icontags span.e05 {
+			#detail .icontags span.e05, #edit-pane #attach-area .icontags p.e05 {
 				background-position: -190px -395px;
 			}
 
-			#detail .icontags span.s01 {
-				background-position: -90px -420px;
+			#detail .icontags span.s01:before, #edit-pane #attach-area .icontags p.s01:before {
+content:"\f08a"			}
+
+			#detail .icontags span.s02:before, #edit-pane #attach-area .icontags p.s02:before {
+				content: "\f006";
 			}
 
-			#detail .icontags span.s02 {
-				background-position: -115px -420px;
+			#detail .icontags span.s03:before, #edit-pane #attach-area .icontags p.s03:before {
+				content: "\f0f5";
 			}
 
-			#detail .icontags span.s03 {
-				background-position: -140px -420px;
+			#detail .icontags span.s04:before, #edit-pane #attach-area .icontags p.s04:before {
+				content: "\f0f4";
 			}
 
-			#detail .icontags span.s04 {
-				background-position: -165px -420px;
+			#detail .icontags span.s05:before, #edit-pane #attach-area .icontags p.s05:before {
+				content: "\f129";
 			}
 
-			#detail .icontags span.s05 {
-				background-position: -190px -420px;
+			#detail .icontags span.s06:before, #edit-pane #attach-area .icontags p.s06:before {
+				content: "\f1ae";
 			}
 
-			#detail .icontags span.s06 {
-				background-position: -215px -420px;
+			#detail .icontags span.s07:before, #edit-pane #attach-area .icontags p.s07:before {
+content: "\f11b";
 			}
 
-			#detail .icontags span.s07 {
-				background-position: -240px -420px;
+			#detail .icontags span.s08:before, #edit-pane #attach-area .icontags p.s08:before {
+				content: "\f072";
 			}
 
-			#detail .icontags span.s08 {
-				background-position: -265px -420px;
+			#detail .icontags span.s09:before, #edit-pane #attach-area .icontags p.s09:before {
+				content: "\f055";
 			}
 
-			#detail .icontags span.s09 {
-				background-position: -290px -420px;
-			}
-
-			#detail .icontags span.s10 {
+			#detail .icontags span.s10, #edit-pane #attach-area .icontags p.s10 {
 				background-position: -315px -420px;
 			}
 
-			#detail .icontags span.s11 {
-				background-position: -340px -420px;
+			#detail .icontags span.s11:before, #edit-pane #attach-area .icontags p.s11:before {
+				content: "\f07a";
 			}
 
-			#detail .icontags span.s12 {
-				background-position: -365px -420px;
+			#detail .icontags span.s12:before, #edit-pane #attach-area .icontags p.s12:before {
+				content: "\f1b0";
 			}
 
-			#detail .icontags span.s13 {
-				background-position: -390px -420px;
+			#detail .icontags span.s13:before, #edit-pane #attach-area .icontags p.s13:before {
+				content: "\f0b1";
 			}
 
-			#detail .icontags span.s14 {
-				background-position: -415px -420px;
+			#detail .icontags span.s14:before, #edit-pane #attach-area .icontags p.s14:before {
+								content: "\f1e3";
 			}
 
-			#detail .icontags span.s15 {
+			#detail .icontags span.s15, #edit-pane #attach-area .icontags p.s15 {
 				background-position: -440px -420px;
 			}
 
-			#detail .icontags span.s16 {
+			#detail .icontags span.s16, #edit-pane #attach-area .icontags p.s16 {
 				background-position: -465px -420px;
 			}
 
-			#detail .icontags span.s17 {
-				background-position: -490px -420px;
+			#detail .icontags span.s17:before, #edit-pane #attach-area .icontags p.s17:before {
+				content: "\f015";
 			}
 
-			#detail .icontags span.s18 {
-				background-position: -515px -420px;
+			#detail .icontags span.s18:before, #edit-pane #attach-area .icontags p.s18:before {
+				content: "\f1b9"
 			}
 
 	#detail .texttags {
@@ -1972,20 +2024,6 @@ body {
 			color: #d0d0d0;
 		}
 
-		.actions a#refresh-media {
-			font-size: 12px;
-			padding-top: 12px;
-			height: 28px;
-		}
-
-		.actions a#toggle-light {
-			font-size: 18px;
-			padding-top: 8px;
-			height: 32px;
-		}
-
-
-
 /*===============================EDIT_PANE============================*/
 
 #edit-pane {
@@ -2074,10 +2112,16 @@ body {
 		display: inline-block;
 		font-size: 15px;
 		height: 27px;
-		padding: 7px 0 0 7px;
+		padding: 7px 0 0 10px;
 		position: relative;
-		width: 27px;
-	}
+		width: 24px;
+	
+}
+
+#edit-pane #entry-summary .entry-icons#elapsed {
+    padding: 7px 0 0 12px;
+    width: 22px;
+}
 
 	#edit-pane .entry-icons.fullscreen {
 		display: none !important;
@@ -2161,10 +2205,12 @@ body {
 			display: inline-block;
 			height: 25px;
 			margin-right: 5px;
-			/* margin-bottom: 5px; */
 			opacity: 0.1;
 			width: 25px;
-		}
+		
+			font-size: 12px;
+			color: white;
+}
 
 			#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover, #edit-pane #attach-area .images div:hover {
 				opacity: .8 !important;
@@ -2177,163 +2223,6 @@ body {
 		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images div.highlight {
 			opacity: 1;
 		}
-
-		#edit-pane #attach-area .icontags p.w01 {
-			background-position: -90px -370px;
-		}
-
-		#edit-pane #attach-area .icontags p.w02 {
-			background-position: -115px -370px;
-		}
-
-		#edit-pane #attach-area .icontags p.w03 {
-			background-position: -140px -370px;
-		}
-
-		#edit-pane #attach-area .icontags p.w04 {
-			background-position: -165px -370px;
-		}
-
-		#edit-pane #attach-area .icontags p.w05 {
-			background-position: -190px -370px;
-		}
-
-		#edit-pane #attach-area .icontags p.w06 {
-			background-position: -215px -370px;
-		}
-
-		#edit-pane #attach-area .icontags p.c01 {
-			background-position: -215px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c02 {
-			background-position: -240px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c03 {
-			background-position: -265px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c04 {
-			background-position: -290px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c05 {
-			background-position: -315px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c06 {
-			background-position: -340px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c07 {
-			background-position: -365px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c08 {
-			background-position: -390px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c09 {
-			background-position: -415px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.c10 {
-			background-position: -440px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.e01 {
-			background-position: -90px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.e02 {
-			background-position: -115px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.e03 {
-			background-position: -140px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.e04 {
-			background-position: -165px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.e05 {
-			background-position: -190px -395px;
-		}
-
-		#edit-pane #attach-area .icontags p.s01 {
-			background-position: -90px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s02 {
-			background-position: -115px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s03 {
-			background-position: -140px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s04 {
-			background-position: -165px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s05 {
-			background-position: -190px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s06 {
-			background-position: -215px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s07 {
-			background-position: -240px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s08 {
-			background-position: -265px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s09 {
-			background-position: -290px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s10 {
-			background-position: -315px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s11 {
-			background-position: -340px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s12 {
-			background-position: -365px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s13 {
-			background-position: -390px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s14 {
-			background-position: -415px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s15 {
-			background-position: -440px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s16 {
-			background-position: -465px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s17 {
-			background-position: -490px -420px;
-		}
-
-		#edit-pane #attach-area .icontags p.s18 {
-			background-position: -515px -420px;
-		}
-
 
 	#edit-pane #attach-area .texttags p {
 		background: #dadada;

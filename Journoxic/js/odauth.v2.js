@@ -160,7 +160,7 @@ function toggleAutoRefreshToken() {
 	if (toggleAutoRefreshToken.id) {
 		// Turn off auto refresh
 		$("#toggle-refresh-token").fadeOut(300, function() {
-			$(this).html("&#xE149");
+			$(this).html("&#xf205");
 		}).fadeIn(300);
 		animation.log("The access token will now stop refreshing");
 		clearInterval(toggleAutoRefreshToken.id);
@@ -168,7 +168,7 @@ function toggleAutoRefreshToken() {
 	} else {
 		// Set to refresh token every 30 minute
 		$("#toggle-refresh-token").fadeOut(300, function() {
-			$(this).html("&#xE194");
+			$(this).html("&#xf204");
 		}).fadeIn(300);
 		animation.log("The access token will now be refreshed every 30 minute");
 		//refreshToken();

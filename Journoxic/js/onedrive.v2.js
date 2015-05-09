@@ -24,7 +24,7 @@ function downloadFile() {
 	animation.log("Start downloading data...");
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
-	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	var id1 = animation.blink("#download");
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
@@ -34,7 +34,7 @@ function downloadFile() {
 		}
 		$(this).html(percent + "%");
 	}, function() {
-		$(this).html("&#xE117");
+		$(this).html("&#xf021");
 	});
 	getTokenCallback(function(token) {
 		if (token != "") {
@@ -69,7 +69,10 @@ function downloadFile() {
 					// Stop blinking and rotating
 					clearInterval(id1);
 					// Change loading icons and re-enable click
-					$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
+					$("#download").html("&#xf0ed").removeClass("spin").attr({
+							onclick: "downloadFile()",
+							href: "#"
+						});
 					animation.finished("#download");
 					////console.log("downloadFile()\tFinish downloading");
 				});
@@ -117,7 +120,7 @@ function downloadMedia(url, id) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE117").css("background", "").unbind("mouseenter mouseleave");
+			$("#refresh-media").html("&#xf021").css("background", "").unbind("mouseenter mouseleave");
 			clearInterval(id);
 			animation.log("Media data fetched");
 			animation.finished("#refresh-media");
@@ -134,7 +137,7 @@ function uploadFile() {
 	////console.log("Starting uploadFile()");
 	animation.log("Start uploading ...");
 	// Change loading icons and disable click
-	$("#upload").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
 		var id = animation.blink("#upload"),
 			d = new Date(),
@@ -189,7 +192,10 @@ function uploadFile() {
 				// Stop blinking
 				clearInterval(id);
 				// Change loading icons and re-enable click
-				$("#upload").html("&#xE11C").css("background", "").attr("onclick", "uploadFile()").attr("href", "#");
+				$("#upload").html("&#xE11C").removeClass("spin").css("background", "").attr({
+					onclick: "uploadFile()",
+					href: "#"
+				});
 				animation.finished("#upload");
 				////console.log("uploadFile()\tFinish uploading");
 			});

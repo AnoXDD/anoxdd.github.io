@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<title>Anoxic's Journal Viewer</title>
 	<link rel="stylesheet" href="css/app.css" type="text/css" />
-	<link rel="stylesheet" href="css/jquery-ui.css">
+	<link rel="stylesheet" href="css/jquery-ui.css" />
 </head>
 <body>
 	<div id="noscript">
@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.10.1 Build 050815_2138</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.11.0 Build 050815_2359</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -32,35 +32,35 @@
 	</div>
 	<div id="feedback"></div>
 	<div class="actions">
-		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xE10B</a>
-		<a class="entry-option" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xE139</a>
-		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#x1f506</a>
+		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
+		<a class="entry-option" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a>
+		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a>
 		<!--	<a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
-		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xE114</a>
-		<a class="entry-add" title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xE116</a>
-		<a class="entry-add" title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xE1C4</a>
-		<a class="entry-add" title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xE1D6</a>
-		<a class="entry-add" title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="#">&#xE189</a>
-		<a class="entry-add" title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#x1f3ac</a>
-		<a class="entry-add" title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xE1D3</a>
-		<a class="entry-add" title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="#">&#xE167</a>
-		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xE105</a>
-		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xE107</a>
-		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xE1D9</a>
-		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xE117</a>
-		<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xE10E</a>
-		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xE118</a>
-		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xE11C</a>
-		<a class="entry-comm" title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xE192</a>
-		<a class="entry-comm" title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xE149</a>
-		<a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xE150</a>
-		<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xE109</a>
-		<a class="entry-edit" title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xE104</a>
-		<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xE106</a>
-		<a class="entry-menu" title="Edit entries" id="edit">&#xE14C</a>
-		<a class="entry-menu" title="Sync contents" id="comm">&#xE148</a>
-		<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xE138</a>
-		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xE1A7</a>
+		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
+		<a class="entry-add" title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xf03d</a>
+		<a class="entry-add" title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xf041</a>
+		<a class="entry-add" title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xf130</a>
+		<a class="entry-add" title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="#">&#xf001</a>
+		<a class="entry-add" title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#xf008</a>
+		<a class="entry-add" title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xf02d</a>
+		<a class="entry-add" title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="#">&#xf0c1</a>
+		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xf0c7</a>
+		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a>
+		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xf065</a>
+		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xf021</a>
+		<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xf1da</a>
+		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a>
+		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xf0ee</a>
+		<a class="entry-comm" title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a>
+		<a class="entry-comm" title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xf205</a>
+		<a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a>
+		<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xf067</a>
+		<a class="entry-edit" title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xf044</a>
+		<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xf00d</a>
+		<a class="entry-menu" title="Edit entries" id="edit">&#xf040</a>
+		<a class="entry-menu" title="Sync contents" id="comm">&#xf233</a>
+		<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xf0c9</a>
+		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xf090</a>
 	</div>
 	<!-- Main frame of the viewer -->
 	<div id="app">
@@ -273,13 +273,13 @@
 		<div id="text-area">
 			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
-				<p class="entry-icons" id="chars" title="Chars">&#xE164</p>
+				<p class="entry-icons" id="chars" title="Chars">&#xf1dd</p>
 				<p class="entry-data" id="entry-char" title="Chars">0</p>
-				<p class="entry-icons" id="lines" title="Lines">&#xE15C</p>
+				<p class="entry-icons" id="lines" title="Lines">&#xf03a</p>
 				<p class="entry-data" id="entry-line" title="Lines">0</p>
-				<p class="entry-icons" id="time" title="Current time">&#xE121</p>
+				<p class="entry-icons" id="time" title="Current time">&#xf017</p>
 				<p class="entry-data" id="entry-time" title="Current time">000000 0000</p>
-				<p class="entry-icons" id="elapsed" title="Time elapsed">&#xE102</p>
+				<p class="entry-icons" id="elapsed" title="Time elapsed">&#xf04b</p>
 				<p class="entry-data" id="entry-elapsed" title="Time elapsed">0:00</p>
 			</div>
 			<textarea id="entry-body" onkeyup="edit.refreshSummary()"></textarea>
@@ -313,14 +313,14 @@
 				</div>
 			</div>
 			<div class="types">
-				<p id="photo-cover">&#xE114</p>
-				<p id="video-cover">&#xE116</p>
-				<p id="place-cover">&#xE1C4</p>
-				<p id="voice-cover">&#xE1D6</p>
-				<p id="music-cover">&#xE189</p>
-				<p id="movie-cover">&#x1f3ac</p>
-				<p id="book-cover">&#xE1D3</p>
-				<p id="weblink-cover">&#xE167</p>
+				<p id="photo-cover">&#xf03e</p>
+				<p id="video-cover">&#xf03d</p>
+				<p id="place-cover">&#xf041</p>
+				<p id="voice-cover">&#xf130</p>
+				<p id="music-cover">&#xf001</p>
+				<p id="movie-cover">&#xf008</p>
+				<p id="book-cover">&#xf02d</p>
+				<p id="weblink-cover">&#xf0c1</p>
 			</div>
 			<div class="images"></div>
 			<%

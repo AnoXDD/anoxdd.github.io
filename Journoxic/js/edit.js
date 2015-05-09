@@ -212,7 +212,9 @@ edit.save = function(selector) {
 	animation.log("Saving data ...");
 	if (selector) {
 		html = $(selector).html();
-		$(selector).html("&#xE10C").removeAttr("onclick").removeAttr("href");
+		$(selector).html("&#" +
+			"" +
+			"xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 		id = animation.blink(selector);
 	}
 	edit.processRemovalList();
@@ -223,7 +225,7 @@ edit.save = function(selector) {
 		edit.sortArchive();
 		journal.archive.data = edit.minData();
 		edit.saveDataCache();
-		$(selector).html(html).attr({
+		$(selector).html(html).removeClass("spin").attr({
 			onclick: "edit.save('" + selector + "')",
 			href: "#"
 		});
@@ -721,7 +723,7 @@ edit.fullScreen = function() {
 	$(window).off("resize");
 	// Change the icon
 	animation.hideIcon(".actions a", function() {
-		$("#toggle-screen").html("&#xE1D8").attr({
+		$("#toggle-screen").html("&#xf066").attr({
 			title: "Back to window",
 			onclick: "edit.windowMode()"
 		});
@@ -744,7 +746,7 @@ edit.windowMode = function() {
 	$("#text-area").removeClass("dark").children().removeClass("dark");
 	// Change the icon
 	headerShowMenu("add");
-	$("#toggle-screen").html("&#xE1D9").attr({
+	$("#toggle-screen").html("&#xf065").attr({
 		title: "Go fullscreen",
 		onclick: "edit.fullScreen()"
 	});
@@ -920,7 +922,7 @@ edit.photo = function() {
 	}
 	$("#attach-area .images").css({ height: "100px" });
 	// Add throttle
-	$("#add-photo").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	edit.photos = [];
 	for (var i = 0; i < images.length; ++i) {
 		var name = images[i]["fileName"];
@@ -1007,7 +1009,7 @@ edit.photo = function() {
 			$("#attach-area .images").append(htmlContent);
 		}
 		// Stop throttle 
-		$("#add-photo").html("&#xE114").attr({
+		$("#add-photo").html("&#xf03e").removeClass("spin").attr({
 			onclick: "edit.addMedia(0)",
 			href: "#"
 		}).fadeIn();
@@ -1054,7 +1056,7 @@ edit.photo = function() {
 		animation.finished("#add-photo");
 	})
 		.fail(function(xhr, status, error) {
-			$("#add-photo").html("&#xE114").attr({
+			$("#add-photo").html("&#xf03e").removeClass("spin").attr({
 				onclick: "edit.addMedia(0)",
 				href: "#"
 			});
@@ -1503,8 +1505,8 @@ edit.locationWeather = function(pos) {
 		dataType: "jsonp"
 	}).done(function(data, staus, xhr) {
 		var weather = data["currently"],
-			icon = data["icon"];
-		animation.log("Weather data retrieved. It is " + weather["temperature"] + "degrees. Have a good one");
+			icon = weather["icon"];
+		animation.log("Weather data retrieved. It is " + weather["temperature"] + " degrees. Have a good one");
 		// Test for different icon value
 		// clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night.
 		var selector;

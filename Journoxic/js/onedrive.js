@@ -148,7 +148,7 @@ function downloadFile() {
 	animation.log("Start downloading data...");
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
-	$("#download").html("&#xE10C").removeAttr("onclick").removeAttr("href");
+	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	var id1 = animation.blink("#download");
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
@@ -158,7 +158,7 @@ function downloadFile() {
 		}
 		$(this).html(percent + "%");
 	}, function() {
-		$(this).html("&#xE117");
+		$(this).html("&#xf021");
 	});
 	var token = getTokenFromCookie();
 	if (token != "") {
@@ -193,7 +193,7 @@ function downloadFile() {
 				// Stop blinking and rotating
 				clearInterval(id1);
 				// Change loading icons and re-enable click
-				$("#download").html("&#xE118").attr("onclick", "downloadFile()").attr("href", "#");
+				$("#download").html("&#xf0ed").attr("onclick", "downloadFile()").attr("href", "#");
 				animation.finished("#download");
 				////console.log("downloadFile()\tFinish downloading");
 			});
@@ -234,7 +234,7 @@ function downloadMedia(url, id) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xE117").css("background", "").unbind("mouseenter mouseleave");
+			$("#refresh-media").html("&#xf021").css("background", "").unbind("mouseenter mouseleave");
 			clearInterval(id);
 			animation.log("Media data fetched");
 			animation.finished("#refresh-media");

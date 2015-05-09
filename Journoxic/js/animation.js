@@ -49,7 +49,7 @@ animation.setConfirm = function(name) {
 		var title;
 		// Change how it looks
 		if (typeof (name) == "number") {
-			$("#confirm").html("&#xE106");
+			$("#confirm").html("&#xf00d");
 			title = "Remove this medium";
 			switch (name) {
 				case 2:
@@ -58,7 +58,7 @@ animation.setConfirm = function(name) {
 					break;
 			}
 		} else {
-			$("#confirm").html("&#xE10B");
+			$("#confirm").html("&#xf00c");
 		}
 		animation.showIcon("#confirm");
 		if (name === "delete") {
@@ -114,7 +114,7 @@ animation.finished = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE10B").css({
+			$(this).html("&#xf00c").css({
 				background: "#fff",
 				"font-size": "inherit"
 			});
@@ -132,7 +132,7 @@ animation.warning = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE171").css({
+			$(this).html("&#xf071").css({
 				background: "#fff"
 			});
 		}).fadeIn(300).delay(500).fadeOut(300, function() {

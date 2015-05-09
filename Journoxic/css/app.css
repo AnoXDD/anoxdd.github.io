@@ -44,7 +44,19 @@
 	src: url("../fonts/segoeuib.ttf");
 }
 
-@keyframe spin {
+@-webkit-keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+}
+
+@keyframes spin {
 	0% {
 		-webkit-transform: rotate(0deg);
 		transform: rotate(0deg);
@@ -1994,25 +2006,27 @@ content: "\f11b";
 	position: absolute;
 	right: 10px;
 	top: 13px;
+	border-spacing: 10px 0;
 }
 
-	.actions a {
+	.actions a, .actions p {
 		background: #3f3f3f;
 		border-radius: 20px;
 		color: #b7b7b7;
-		display: inline-block;
-		height: 30px;
-		margin-right: 10px;
-		padding-top: 10px;
+		display: table-cell;
+		height: 39px;
+		padding-bottom: 0px;
 		position: relative;
 		text-align: center;
 		vertical-align: middle;
 		text-decoration: none;
 		top: -80px;
 		transition: background .2s ease, transform 1.5s ease;
-		width: 40px;
+		width: 39px;
+		font-size: 18px;
 		z-index: 1;
-	}
+	
+}
 
 		.actions a:active {
 			background: #676767;
@@ -2514,7 +2528,7 @@ content: "\f11b";
 	overflow: hidden;
 	width: 20%;
 }
-
+	
 #attach-area .place p {
 	display: inline-block;
 }
@@ -2535,7 +2549,7 @@ content: "\f11b";
 	background-position: -490px -310px;
 }
 
-#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, Â #attach-area .weblink a, Â #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
+#attach-area .music a, #attach-area .voice a, #attach-area .place a, #attach-area .video a, Ã‚ #attach-area .weblink a, Ã‚ #attach-area .music .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb, #attach-area .weblink .thumb {
 	height: 50px;
 }
 

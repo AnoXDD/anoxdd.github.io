@@ -94,21 +94,6 @@ animation.blink = function(selector) {
 	}
 };
 
-
-/* Return undefined if it is not shown */
-animation.rotate = function(selector) {
-	if (animation.isShown(selector)) {
-		var pulse = function() {
-			$(selector).css("-webkit-transform", "rotate(" + (++animation.degree) * 360 + "deg)");
-		};
-		var id = setInterval(pulse, 2000);
-		console.log("animation.rotate()\t" + selector + ": id=" + id);
-		return id;
-	} else {
-		return undefined;
-	}
-};
-
 animation.finished = function(selector) {
 	if (animation.isShown(selector)) {
 		/* Keep a record of original text */

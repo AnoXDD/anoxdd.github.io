@@ -84,13 +84,9 @@ function downloadFile() {
  * Recusively reads all the children under resource folder and read them as media
  * This function will not refresh the token because it assumes that it will be only called after downloadFile()
  * @param {string} url - The address of "nextLink", should be empty at the first call. Used for recursion
- * @param {number} id - The id of rotating element that indicates the loading process
  * @returns {} 
  */
-function downloadMedia(url, id) {
-	if (id == undefined) {
-		id = animation.rotate("#refresh-media");
-	}
+function downloadMedia(url) {
 	// Reset map
 	if (url == undefined) {
 		// Initial call
@@ -104,7 +100,7 @@ function downloadMedia(url, id) {
 	}).done(function(data, status, xhr) {
 		if (data["@odata.nextLink"]) {
 			// More content available!
-			downloadMedia(data["@odata.nextLink"], id);
+			downloadMedia(data["@odata.nextLink"]);
 		}
 		var itemList = data["value"];
 		for (var key = 0, len = itemList.length; key != len; ++key) {
@@ -120,8 +116,7 @@ function downloadMedia(url, id) {
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xf021").css("background", "").unbind("mouseenter mouseleave");
-			clearInterval(id);
+			$("#refresh-media").html("&#xf021").removeClass("spin").css("background", "").unbind("mouseenter mouseleave");
 			animation.log("Media data fetched");
 			animation.finished("#refresh-media");
 		}

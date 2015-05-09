@@ -292,7 +292,7 @@ edit.importCache = function(data) {
 		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
 	}
 	// photos, video, place, music, book, movie
-	var elem = ["images", "video", "place", "music", "book", "movie", "weblink"];
+	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i != elem.length; ++i) {
 		var medium = elem[i];
 		if (localStorage[medium]) {
@@ -320,7 +320,7 @@ edit.exportCache = function(index) {
 	data["iconTags"] = !isNaN(parseInt(localStorage["iconTags"])) ? parseInt(localStorage["iconTags"]) : 0;
 	data["textTags"] = localStorage["textTags"];
 	var media,
-		elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
+		elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"],
 		attach = 0;
 	for (var i = 0; i < elem.length; ++i) {
 		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
@@ -452,6 +452,11 @@ edit.newContent = function() {
 	dict["time"] = {};
 	dict["time"]["created"] = new Date().getTime();
 	dict["textTags"] = "";
+	// photos, video, place, music, book, movie
+	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
+	for (var i = 0; i !== elem.length; ++i) {
+		dict[elem[i]] = undefined;
+	}
 	return dict;
 };
 /**

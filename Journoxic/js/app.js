@@ -1069,11 +1069,12 @@ app.bitwise = function() {
 	 * When adding a new element here, please make sure that	*
 	 * iconVal is also updated.									*
 	 ************************************************************/
-	var sunny = 1,
+	var clear = 1,
 		overcast = 2,
 		raining = 4,
 		snowing = 8,
 		thundering = 16,
+		windy = 32,
 		happy = 1024,
 		notBad = 2048,
 		surprised = 4096,
@@ -1116,11 +1117,12 @@ app.bitwise = function() {
 		weblinkVal = 128, // [P]
 		binaryString = "000000000000000000000000000000000000000000000000000000000000000"; // [c]
 	var iconName = {};
-	iconName[sunny] = "w01";
+	iconName[clear] = "w01";
 	iconName[overcast] = "w02";
 	iconName[raining] = "w03";
 	iconName[snowing] = "w04";
 	iconName[thundering] = "w05";
+	iconName[windy] = "w06";
 	iconName[happy] = "e01";
 	iconName[notBad] = "e02";
 	iconName[surprised] = "e03";
@@ -1155,11 +1157,12 @@ app.bitwise = function() {
 	iconName[car] = "s18";
 	/* Translate the string tag to the numerical value of icon tag */
 	var iconVal = {};
-	iconVal["sunny"] = 1;
+	iconVal["clear"] = 1;
 	iconVal["overcast"] = 2;
 	iconVal["raining"] = 4;
 	iconVal["snowing"] = 8;
 	iconVal["thundering"] = 16;
+	iconVal["windy"] = 32;
 	iconVal["happy"] = 1024;
 	iconVal["notbad"] = 2048;
 	iconVal["surprised"] = 4096;

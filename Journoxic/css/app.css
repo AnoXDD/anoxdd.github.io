@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -1973,12 +1973,16 @@ body {
 		}
 
 		.actions a#refresh-media {
-    font-size: 12px;
-			
-		
-    padding-top: 12px;
-    height: 28px;
-}
+			font-size: 12px;
+			padding-top: 12px;
+			height: 28px;
+		}
+
+		.actions a#toggle-light {
+			font-size: 18px;
+			padding-top: 8px;
+			height: 32px;
+		}
 
 
 
@@ -2194,44 +2198,48 @@ body {
 			background-position: -190px -370px;
 		}
 
-		#edit-pane #attach-area .icontags p.c01 {
+		#edit-pane #attach-area .icontags p.w06 {
 			background-position: -215px -370px;
 		}
 
+		#edit-pane #attach-area .icontags p.c01 {
+			background-position: -215px -395px;
+		}
+
 		#edit-pane #attach-area .icontags p.c02 {
-			background-position: -240px -370px;
+			background-position: -240px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c03 {
-			background-position: -265px -370px;
+			background-position: -265px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c04 {
-			background-position: -290px -370px;
+			background-position: -290px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c05 {
-			background-position: -315px -370px;
+			background-position: -315px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c06 {
-			background-position: -340px -370px;
+			background-position: -340px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c07 {
-			background-position: -365px -370px;
+			background-position: -365px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c08 {
-			background-position: -390px -370px;
+			background-position: -390px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c09 {
-			background-position: -415px -370px;
+			background-position: -415px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.c10 {
-			background-position: -440px -370px;
+			background-position: -440px -395px;
 		}
 
 		#edit-pane #attach-area .icontags p.e01 {
@@ -2425,7 +2433,6 @@ body {
 #edit-pane #map-holder, #edit-pane #photo-preview {
 	display: none;
 	height: -webkit-calc(100% - 48px);
-	opacity: 0;
 	position: relative;
 	top: -webkit-calc(-100% + 45px);
 	width: -webkit-calc(100% + 5px);

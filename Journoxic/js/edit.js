@@ -1351,11 +1351,11 @@ edit.location = function(index) {
 				}
 			});
 		}, function() {
-			alert(errorMsg);
+			animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		alert(errorMsg);
+		animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
 	}
 	edit.isEditing = 2;
 
@@ -1418,8 +1418,7 @@ edit.locationSave = function(index) {
 };
 edit.locationPin = function() {
 	// Show the location menu
-	var errorMsg = "Did you enable location sharing?",
-		selectorHeader = edit.getSelectorHeader("place");
+	var selectorHeader = edit.getSelectorHeader("place");
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -1430,12 +1429,13 @@ edit.locationPin = function() {
 			$(selectorHeader + ".latitude").val(latitude);
 			$(selectorHeader + ".longitude").val(longitude);
 			edit.locationGeocode(pos);
+			edit.locationWeather(pos);
 		}, function() {
-			alert(errorMsg);
+			animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		alert(errorMsg);
+		animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
 	}
 };
 /**
@@ -1445,7 +1445,7 @@ edit.locationPin = function() {
 edit.locationGeocode = function(pos) {
 	var mapOptions = {
 		zoom: 16,
-		center: pos,
+		center: pos
 	},
 		map = new google.maps.Map(document.getElementById("map-selector"), mapOptions),
 		marker = new google.maps.Marker({
@@ -1462,13 +1462,66 @@ edit.locationGeocode = function(pos) {
 			if (results[0]) {
 				$(selectorHeader + ".title").val(results[0].formatted_address);
 			} else {
-				alert("No results found");
+				animation.log("No results found", true);
 			}
 		} else {
-			alert("Geocoder failed due to: " + status);
+			animation.log("Cannot read the address. The server returns \"" + status + "\"");
 		}
 	});
 };
+/**
+ * Finds the weather info based on the position passed in. This function will only work if the weather icon in the edit-pane is not assigned to any value
+ * @param {object} pos - The position object indicating the position to find the weather
+ */
+edit.locationWeather = function(pos) {
+	// Test if the weather info already exists
+	var flag = false;
+	$("#attach-area .icontags .weather p").each(function() {
+		if ($(this).hasClass("highlight")) {
+			flag = true;
+		}
+	});
+	if (flag) {
+		// Weather info exists
+		return;
+	} else {
+		animation.log("Fetching weather info ...");
+	}
+
+	var apiKey = "6f1ee423e253fba5e40e3276ff3e6d33",
+		url = "https://api.forecast.io/forecast/" + apiKey + "/" + pos.lat() + "," + pos.lng() + "," + parseInt(new Date().getTime() / 1000) + "?units=si";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "jsonp"
+	}).done(function(data, staus, xhr) {
+		var weather = data["currently"],
+			icon = data["icon"];
+		animation.log("Weather data retrieved. It is " + weather["temperature"] + "degrees. Have a good one");
+		// Test for different icon value
+		// clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night.
+		var selector;
+		if (icon === "clear-day" || icon === "clear-night") {
+			selector = "w01";
+		} else if (icon === "cloudy" || icon === "partly-cloudy-day" || icon === "partly-cloudy-night") {
+			selector = "w02";
+		} else if (icon === "rain") {
+			selector = "w03";
+		} else if (icon === "snow" || icon === "sleet") {
+			selector = "w04";
+		} else if (icon === "wind") {
+			selector = "w06";
+		}
+		if (selector) {
+			// Available
+			animation.log("Weather info is updated");
+			$("#attach-area .icontags ." + selector).trigger("click");
+		} else {
+			// Weather info not applicable
+			animation.log("Cannot find the matched icon info. Is it \"" + data["summary"] + "\" now?");
+		}
+	});
+}
 
 /************************** MUSIC 4 **************************/
 

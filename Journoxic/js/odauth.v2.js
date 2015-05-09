@@ -72,7 +72,7 @@ function getAuthInfoFromUrl() {
 }
 
 /**
- * Get a valid access token then do the callback
+ * Gets a valid access token then do the callback
  * @param {function} callback - the callback function
  * @returns {}
  */
@@ -88,7 +88,7 @@ function getTokenCallback(callback) {
 }
 
 /**
- * Get the access token from the cookie
+ * Gets the access token from the cookie
  * @returns {string} - The token if found, empty string otherwise
  */
 function getTokenFromCookie() {
@@ -100,7 +100,7 @@ function getRefreshFromCookie() {
 }
 
 /**
- * Get the cookie component specifying the name
+ * Gets the cookie component specifying the name
  * @param {string} name - the name to be searched
  * @returns {string} the result. Empty string if not found
  */
@@ -125,11 +125,10 @@ function getFromCookie(name) {
 }
 
 /**
- * Set the cookie of access token and refresh token to cookie
+ * Sets the cookie of access token and refresh token to cookie
  * @param {string} token - the access token
  * @param {number} expiresInSeconds - the expire time in seconds of access token
  * @param {string} refreshToken - the refresh token
- * @returns {} 
  */
 function setCookie(token, expiresInSeconds, refreshToken) {
 	var expiration = new Date();
@@ -152,8 +151,7 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 }
 
 /**
- * Toggle auto refresh token, the default is true
- * @returns {}
+ * Toggles auto refresh token, the default is true
  */
 function toggleAutoRefreshToken() {
 	var func = function() {
@@ -179,9 +177,8 @@ function toggleAutoRefreshToken() {
 }
 
 /**
- * Refresh the token to get a new access token, then call the callback
- * @param {function} callback - callback function, should be with a parameter to handle the ACCESS TOKEN passed in
- * @returns {} 
+ * Refreshes the token to get a new access token, then call the callback
+ * @param {function} callback - A callback function that can have a parameter to handle the ACCESS TOKEN passed in. This function will only be called if the token is successfully refreshed
  */
 function refreshToken(callback) {
 	animation.log("Refreshing access token ...");
@@ -259,7 +256,9 @@ function showLoginButton() {
 	var refresh = getRefreshFromCookie();
 	if (refresh) {
 		// Get access token from refresh
-		refreshToken();
+		refreshToken(function() {
+			removeLoginButton();
+		});
 	} else {
 		// Prompt the user to re-login
 		animation.hideIcon(".actions a", function() {

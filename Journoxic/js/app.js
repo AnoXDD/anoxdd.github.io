@@ -903,7 +903,7 @@ app.detail = function() { // [m]
 		app.audioPlayer.quit();
 		var className = $(this).attr("class");
 		if (journal.archive.map[className]) {
-			var funcName = "app.audioPlayer(\"#detail .content .voice:eq(\" + n + \")\", journal.archive.map[className][\"url\"])";
+			var funcName = "app.audioPlayer(\"#detail .content .voice:eq(\" + n + \") a\", journal.archive.map[className][\"url\"])";
 			$(this).attr("onclick", funcName).removeAttr("class");
 		} else {
 			animation.log("Cannot load file " + className + ". Please make sure you have downloaded it", true);

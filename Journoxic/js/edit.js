@@ -1539,7 +1539,12 @@ edit.locationWeather = function(pos) {
 
 /************************** VOICE 3 ************************/
 
-edit.voice = function(index) {
+/**
+ * Edit a voice element given the index and an optional parameter of the link of the resource
+ * @param {number} index - The index of voice in all the voices
+ * @param {string} link (Optional) - The url to the address of the link, for newly created element
+ */
+edit.voice = function(index, link) {
 	if (index == edit.mediaIndex["voice"] || index == undefined) {
 		return;
 	}
@@ -1556,11 +1561,50 @@ edit.voice = function(index) {
 		}
 	});
 	edit.isEditing = 3;
-
+	// Attach to the voice element
+	var source;
+	// Set the source address
+	if (link) {
+		source = link;
+	} else {
+		// Find it from this dataclip
+		var fileName = $(selectorHeader + "a").attr("class");
+		source = journal.archive.map[fileName];
+	}
+	app.audioPlayer(selectorHeader + "a", source);
+	animation.setConfirm(3);
 };
 
 edit.voiceHide = function() {
+	if (edit.mediaIndex["voice"] < 0) {
+		// Invalid call
+		return;
+	}
+	var selectorHeader = edit.getSelectorHeader("voice");
+	// Disable input boxes
+	$(selectorHeader + "input").prop("disabled", true).off("keyup");
+	// Recover onclick event
+	$(selectorHeader + "a").attr("onclick", "edit.voice(" + edit.mediaIndex["voice"] + ")");
+	// Save data
+	edit.voiceSave(edit.mediaIndex["voice"]);
+	$("#edit-pane").off("keyup");
+	// Hide all the option button
+	animation.hideIcon(".entry-option");
+	edit.mediaIndex["voice"] = -1;
+	edit.isEditing = -1;
+}
 
+edit.voiceSave = function(index) {
+	var data = localStorage["voice"],
+		selectorHeader = edit.getSelectorHeader("voice", index),
+		title = $(selectorHeader + ".title").val();
+	data = data ? JSON.parse(data) : [];
+	var newElem = {
+		title: title,
+		fileName: $(selectorHeader + "a").val()
+	};
+	data[index] = newElem;
+	localStorage[type] = JSON.stringify(data);
 }
 
 /************************** MUSIC 4 **************************/
@@ -1645,16 +1689,17 @@ edit.itunesHide = function(typeNum) {
 	edit.mediaIndex[type] = -1;
 	edit.isEditing = -1;
 };
+
 edit.itunesSave = function(index, typeNum) {
-	var type = edit.mediaName(typeNum);
-	data = localStorage[type],
+	var type = edit.mediaName(typeNum),
+		data = localStorage[type],
 		selectorHeader = edit.getSelectorHeader(type, index),
 		title = $(selectorHeader + ".title").val(),
 		author = $(selectorHeader + ".desc").val();
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
-		author: author,
+		author: author
 	};
 	data[index] = newElem;
 	localStorage[type] = JSON.stringify(data);

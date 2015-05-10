@@ -1,7 +1,5 @@
 /* A library for animations */
 
-// Todo: refresh-media should change its font back after "blink" to say finished (set font to inherit)
-
 window.animation = {};
 
 animation.degree = 0;
@@ -79,7 +77,9 @@ animation.setConfirm = function(name) {
 		$("#confirm").css("title", title);
 		edit.confirmName = name;
 	});
-}; /* Return undefined if it is not shown */
+};
+
+/* Return undefined if it is not shown */
 animation.blink = function(selector) {
 	if (animation.isShown(selector)) {
 		var pulse = function() {

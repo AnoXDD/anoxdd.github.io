@@ -1537,6 +1537,32 @@ edit.locationWeather = function(pos) {
 	});
 }
 
+/************************** VOICE 3 ************************/
+
+edit.voice = function(index) {
+	if (index == edit.mediaIndex["voice"] || index == undefined) {
+		return;
+	}
+	edit.cleanupMediaEdit();
+	edit.mediaIndex["voice"] = index;
+	var selectorHeader = edit.getSelectorHeader("voice");
+	animation.setConfirm(3);
+	$(selectorHeader + "a").removeAttr("onclick");
+	$(selectorHeader + "input").prop("disabled", false);
+	// Press esc to save
+	$("#edit-pane").keyup(function(n) {
+		if (n.keyCode === 27) {
+			edit.voiceHide();
+		}
+	});
+	edit.isEditing = 3;
+
+};
+
+edit.voiceHide = function() {
+
+}
+
 /************************** MUSIC 4 **************************/
 
 edit.music = function(index) {

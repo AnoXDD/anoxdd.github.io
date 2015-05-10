@@ -34,6 +34,7 @@ app.pageLoaded = 1;
 app.preloadedTags = [];
 /* The keyword to be searched */
 app.command = "";
+
 app.init = function() {
 	// Enter to search
 	var thisApp = this;
@@ -47,12 +48,12 @@ app.init = function() {
 	}
 	// Clear the field of search input every time on focus
 	$("#query").keyup(function(n) {
-			if (n.keyCode == 13) {
-				app.command = $("#query").val();
-				$("#query").effect("highlight", { color: "#dddddd" });
-				thisApp.load(app.command, true);
-			}
-		})
+		if (n.keyCode == 13) {
+			app.command = $("#query").val();
+			$("#query").effect("highlight", { color: "#dddddd" });
+			thisApp.load(app.command, true);
+		}
+	})
 		// Autocomplete for preloaded tags
 		.bind("keydown", function(event) {
 			// Don't navigate away from the field on tab when selecting an item
@@ -471,43 +472,43 @@ app.list.prototype = {
 		data.summary = data.text.ext;
 		// Find the cover type
 		switch (data.coverType) {
-		default:
-			data.type = "text";
-			data.ext = "";
-			// data.ext = "<p>" + data.contentsExt + "</p>";
-			break;
-		case 1:
-			data.type = "photo";
-			data.ext = this.thumb(data, "images");
-			break;
-		case 2:
-			data.type = "video";
-			data.ext = this.thumb(data, "video");
-			break;
-		case 3:
-			data.type = "music";
-			data.ext = this.thumb(data, "music");
-			break;
-		case 4:
-			data.type = "voice";
-			data.ext = this.thumb("dummy");
-			break;
-		case 5:
-			data.type = "book";
-			data.ext = this.thumb(data, "book");
-			break;
-		case 6:
-			data.type = "movie";
-			data.ext = this.thumb(data, "movie");
-			break;
-		case 7:
-			data.type = "place";
-			data.ext = this.thumb("dummy");
-			break;
-		case 8:
-			data.type = "weblink";
-			data.ext = this.thumb(data, "weblink");
-			break;
+			default:
+				data.type = "text";
+				data.ext = "";
+				// data.ext = "<p>" + data.contentsExt + "</p>";
+				break;
+			case 1:
+				data.type = "photo";
+				data.ext = this.thumb(data, "images");
+				break;
+			case 2:
+				data.type = "video";
+				data.ext = this.thumb(data, "video");
+				break;
+			case 3:
+				data.type = "music";
+				data.ext = this.thumb(data, "music");
+				break;
+			case 4:
+				data.type = "voice";
+				data.ext = this.thumb("dummy");
+				break;
+			case 5:
+				data.type = "book";
+				data.ext = this.thumb(data, "book");
+				break;
+			case 6:
+				data.type = "movie";
+				data.ext = this.thumb(data, "movie");
+				break;
+			case 7:
+				data.type = "place";
+				data.ext = this.thumb("dummy");
+				break;
+			case 8:
+				data.type = "weblink";
+				data.ext = this.thumb(data, "weblink");
+				break;
 		}
 		// Get the created time
 		var createTime = data.time.start || data.time.created;
@@ -1480,128 +1481,122 @@ app.PhotoViewer.prototype = {
 		this.viewer.remove();
 	}
 };
-app.VideoPlayer = function(f, o) {
-	var h = o.rotation || 0,
-		e = o.width || 400,
-		m = o.height || 304,
-		j = $("div.vp-jplayer", f);
-	j.jPlayer({
-		ready: function() {
-			$(this).jPlayer("setMedia", {
-				m4v: o.media,
-				poster: o.poster
-			}).jPlayer("volume", 0.8);
-		},
-		swfPath: "static/lib",
-		solution: ($.browser.msie && parseFloat($.browser.version.substr(0, 1)) <= 9) ? "flash" : "html,flash",
-		supplied: "m4v",
-		size: {
-			width: e,
-			height: m,
-			cssClass: "vp-video-360p"
-		},
-		idPrefix: "vp",
-		sizeFull: {
-			width: "100%",
-			height: "100%",
-			cssClass: "vp-video-full"
-		},
-		fullScreen: false,
-		autohide: {
-			restored: $.browser.mozilla ? false : true,
-			full: $.browser.mozilla ? false : true,
-			hold: 2000
-		},
-		cssSelectorAncestor: ".vp-video",
-		cssSelector: {
-			videoPlay: ".vp-video-play",
-			play: ".vp-play",
-			pause: ".vp-pause",
-			seekBar: ".vp-seek-bar",
-			playBar: ".vp-play-bar",
-			mute: ".vp-mute",
-			unmute: ".vp-unmute",
-			volumeBar: ".vp-volume-bar",
-			volumeBarVaule: ".vp-volume-bar-value",
-			currentTime: ".vp-current-time",
-			duration: ".vp-duration",
-			fullScreen: ".vp-full-screen",
-			restoreScreen: ".vp-restore-screen",
-			gui: ".vp-gui",
-			noSolution: ".vp-no-solution"
-		},
-		eventName: ".videoPlayer"
-	});
-	var k = $("video", j),
-		g = 0;
-	if (h > 1 && $.browser.chrome) {
-		if (h == 90 || h == 270) {
-			g = m / e;
-			k.data("scale", g);
-		}
-		k.css("-webkit-transform", "rotate(" + h + "deg)" + (g ? " scale(" + g + ")" : ""));
-	}
-	var n = $(".vp-volume-bar", f);
 
-	function d(q) {
-		var p = ((q - n.offset().left) / n.width()) * 100;
-		p = (p > 100) ? 100 : p;
-		player.jPlayer("volume", p);
-		$(".vp-volume-bar-value", f).css("width", p + "%");
+/**
+ * Initializes an audio player within the selector provided
+ * @param {string} selector - The selector of the element to embed audio player, in jQuery style
+ * @param {string} source - The url of the source of music file
+ */
+app.audioPlayer = function(selector, source) {
+	var element = "<div id=\"audioplayer\">" +
+		"<button id=\"pButton\" class=\"play\" onclick=\"play()\"></button>" +
+		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + '"></audio>' +
+		"<div id=\"timeline\"><div id=\"playhead\"></div></div></div>";
+	// Add to the document
+	$(element).appendTo(selector);
+	var music = document.getElementById("music");
+	var duration;
+	var pButton = document.getElementById("pButton");
+	var playhead = document.getElementById("playhead");
+	var timeline = document.getElementById("timeline");
+	// timeline width adjusted for playhead
+	var timelineWidth = timeline.offsetWidth - playhead.offsetWidth;
+	// Boolean value so that mouse is moved on mouseUp only when the playhead is released 
+	var onplayhead = false;
+	// Synchronizes playhsead position with current point in audio 
+	var timeUpdate = function() {
+		var playPercent = timelineWidth * (music.currentTime / duration);
+		playhead.style.marginLeft = playPercent + "px";
+		if (music.currentTime == duration) {
+			pButton.className = "";
+			pButton.className = "play";
+		}
+	};
+	var moveplayHead = function(e) {
+		var newMargLeft = e.pageX - timeline.offsetLeft;
+		if (newMargLeft >= 0 && newMargLeft <= timelineWidth) {
+			playhead.style.marginLeft = newMargLeft + "px";
+		}
+		if (newMargLeft < 0) {
+			playhead.style.marginLeft = "0px";
+		}
+		if (newMargLeft > timelineWidth) {
+			playhead.style.marginLeft = timelineWidth + "px";
+		}
+	};
+	app.audioPlayer.play = function() {
+		// start music
+		if (music.paused) {
+			music.play();
+			// remove play, add pause
+			pButton.className = "";
+			pButton.className = "pause";
+		} else { // pause music
+			music.pause();
+			// remove pause, add play
+			pButton.className = "";
+			pButton.className = "play";
+		}
 	}
 
-	$(".vp-volume-bar", f).grab({
-		onstart: function() {
-			self.dragging = true;
-		},
-		onmove: function(p) {
-			d(p.position.x);
-		},
-		onfinish: function(p) {
-			self.dragging = false;
-			d(p.position.x);
-		}
-	});
-	var c = $(".vp-progress", f);
+	// Gets audio file duration
+	music.addEventListener("canplaythrough", function() {
+		duration = music.duration;
+	}, false);
 
-	function l(q) {
-		var p = ((q - (c.offset().left)) / c.width()) * 100;
-		p = (p > 100) ? 100 : p;
-		player.jPlayer("playHead", p);
-		$(".vp-play-bar", f).css("width", p + "%");
+	// timeupdate event listener
+	music.addEventListener("timeupdate", timeUpdate, false);
+
+	//Makes timeline clickable
+	var t = this;
+	timeline.addEventListener("click", function(e) {
+		moveplayHead(e);
+		// returns click as decimal (.77) of the total timelineWidth
+		var clickPercent = (e.pageX - timeline.offsetLeft) / timelineWidth;
+		music.currentTime = duration * clickPercent;
+	}, false);
+
+	// Makes playhead draggable 
+	playhead.addEventListener("mousedown", function() {
+		onplayhead = true;
+		window.addEventListener("mousemove", moveplayHead, true);
+		music.removeEventListener("timeupdate", timeUpdate, false);
+	}, false);
+
+	window.addEventListener("mouseup", function(e) {
+		if (onplayhead == true) {
+			moveplayhead(e);
+			window.removeEventListener("mousemove", moveplayHead, true);
+			// change current time
+			music.currentTime = duration * clickPercent(e);
+			music.addEventListener("timeupdate", timeUpdate, false);
+		}
+		app.audioPlayer.onplayhead = false;
+	}, false);
+}
+app.audioPlayer.prototype = {
+	// timeUpdate 
+	timeUpdate: function() {
+	},
+	clickPercent: function(e) {
+		return;
+	},
+	// mousemove EventListener
+	// Moves playhead as user drags
+	moveplayhead: function(e) {
+	},
+	// mouseDown EventListener
+	mouseDown: function() {
+	},
+	// mouseUp EventListener
+	// getting input from all mouse clicks
+	mouseUp: function(e) {
+	},
+
+	//Play and Pause
+	play: function() {
 	}
-
-	$(".vp-progress", f).grab({
-		onstart: function() {
-			self.dragging = true;
-		},
-		onmove: function(p) {
-			l(p.position.x);
-		},
-		onfinish: function(p) {
-			self.dragging = false;
-			l(p.position.x);
-		}
-	});
-	j.bind($.jPlayer.event.resize + ".videoPlayer", function(p) {
-		if (g > 0) {
-			if (p.jPlayer.status.cssClass == "vp-video-full") {
-				k.css("-webkit-transform", "rotate(" + h + "deg)");
-			} else {
-				k.css("-webkit-transform", "rotate(" + h + "deg) scale(" + g + ")");
-			}
-		}
-	});
-	j.bind($.jPlayer.event.play + ".videoPlayer", function(p) {
-		$(".vp-current-time", f).css("display", "block");
-		$(".vp-duration", f).css("display", "none");
-		$(".vp-jplayer", f).addClass("vp-played");
-	});
-	j.bind($.jPlayer.event.stop + ".videoPlayer", function(p) {
-		$(".vp-current-time", f).css("display", "none");
-		$(".vp-duration", f).css("display", "block");
-	});
-};
+}
 $(document).ready(function() {
 	app.app = $("div#app");
 	app.contents = app.app.find(" > #contents");

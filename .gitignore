@@ -392,3 +392,7 @@ FakesAssemblies/
 *.sln
 *.csproj
 *.config
+
+# Testing content
+test.html
+test/

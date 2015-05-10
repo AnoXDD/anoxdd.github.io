@@ -73,7 +73,7 @@ function getAuthInfoFromUrl() {
 
 /**
  * Gets a valid access token then do the callback
- * @param {function} callback - the callback function
+ * @param {function} callback - the callback function with optional arguments "token" to process the access token later
  * @returns {}
  */
 function getTokenCallback(callback) {

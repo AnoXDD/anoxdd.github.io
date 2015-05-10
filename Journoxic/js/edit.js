@@ -555,6 +555,10 @@ edit.addMedia = function(typeNum) {
 			// Place
 			htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
 			break;
+		case 3:
+			// Voice
+			edit.voiceSearch();
+			break;
 		case 4:
 			// Music
 			htmlContent = "<div class=\"music\"><a title=\"Edit\" onclick=\"edit.music(" + length + ")\" href=\"#\"><img class=\"thumb\"><span></span><input disabled class=\"title\" placeholder=\"Track name\" autocomplete=\"off\" /><input disabled class=\"desc\" placeholder=\"Artist\" autocomplete=\"off\" /></a></div>";
@@ -585,18 +589,41 @@ edit.addMedia = function(typeNum) {
 };
 edit.removeMedia = function(typeNum) {
 	var type = edit.mediaName(typeNum);
-	selectorHeader = edit.getSelectorHeader(type);
-	$(selectorHeader).fadeOut();
-	edit.addToRemovalList(type);
+	// Move voice and video data to data folder
+	switch (typeNum) {
+		case 1:
+			// Video
+			// Placeholder, do nothing now 
+			break;
+		case 3:
+			// Voice
+			edit.voiceRemove();
+			break;
+		default:
+			// In other cases, this step will be taken care of in their individual functions because it is not sure that if the transfer will be successful from the server side
+			edit.addToRemovalList(type);
+	}
 	edit.cleanupMediaEdit();
 };
-edit.addToRemovalList = function(name) {
-	if (!edit.removalList[name]) {
+/**
+ * Add a media element to pending removal list and make this element fade out from the view. 
+ * The list will not be removed until edit.quit() is called
+ * @param {string} name - The string of the type of media
+ * @param {number} index (Optional) - The index of the type of media to be added to the list
+ */
+edit.addToRemovalList = function(name, index) {
+	if(!edit.removalList[name]) {
 		edit.removalList[name] = [];
 	}
-	if (edit.removalList[name].indexOf(edit.mediaIndex[name]) != -1) {
+	if (index == undefined) {
+		index = edit.mediaIndex[name];
+	}
+	var selectorHeader = edit.getSelectorHeader(name, index);
+	// Fadeout the element
+	$(selectorHeader).fadeOut();
+	if (edit.removalList[name].indexOf(index) !== - 1) {
 		// Only add when this element does not exist
-		edit.removalList[name].push(edit.mediaIndex[name]);
+		edit.removalList[name].push(index);
 	}
 };
 /* Get the name of media by value */
@@ -606,7 +633,7 @@ edit.addToRemovalList = function(name) {
  * @returns {string} - The string name of the media. Empty if not applicable
  */
 edit.mediaName = function(typeNum) {
-	switch (typeNum) {
+	switch(typeNum) {
 		case 0:
 			return "photo";
 		case 1:
@@ -625,13 +652,13 @@ edit.mediaName = function(typeNum) {
 			return "weblink";
 		default:
 			return "";
-	}
+		}
 };
 /**
  * A function to be called by confirm 
  */
 edit.confirm = function() {
-	if (typeof (edit.confirmName) == "string") {
+	if(typeof (edit.confirmName) == "string") {
 		if (edit.confirmName == "discard") {
 			edit.quit(false);
 		} else if (edit.confirmName == "delete") {
@@ -683,7 +710,7 @@ edit.cleanupMediaEdit = function() {
 			break;
 		case 7:
 			edit.weblinkHide();
-	}
+		}
 };
 /**
  * Returns a header of the selector given the type of media and optional index
@@ -692,7 +719,7 @@ edit.cleanupMediaEdit = function() {
  * @returns {string} - The selector header
  */
 edit.getSelectorHeader = function(type, index) {
-	if (index == undefined) {
+	if(index == undefined) {
 		return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
 	}
 	return "#attach-area ." + type + ":eq(" + index + ") ";
@@ -779,7 +806,7 @@ edit.saveTitle = function() {
 edit.saveTag = function() {
 	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
-	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
+	if (localStorage["textTags"].split("|").indexOf(tagVal) != - 1) {
 		// The entry is already added
 		animation.log("Tag \"" + tagVal + "\" is already added", true);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
@@ -787,7 +814,7 @@ edit.saveTag = function() {
 		var found = false;
 		// Try to convert to iconTag
 		$("#attach-area .icontags p").each(function() {
-			if ($(this).attr("title").toLowerCase() == tagVal) {
+			if($(this).attr("title").toLowerCase() == tagVal) {
 				// Found
 				found = true;
 				var parent = $(this).parent().attr("class");
@@ -833,7 +860,7 @@ edit.removeTag = function(tagName) {
 	tagArray.join("|");
 	// Remove from the panal
 	$("#attach-area .texttags p").each(function() {
-		if ($(this).text() == "#" + tagName) {
+		if($(this).text() == "#" + tagName) {
 			$(this).animate({ width: "0" }, function() {
 				$(this).remove();
 			});
@@ -911,7 +938,7 @@ edit.getDate = function() {
 /************************** PHOTO 0 ************************/
 
 edit.photo = function() {
-	if (edit.photos.length != 0) {
+	if(edit.photos.length != 0) {
 		// Return if edit.photo is already displayed
 		animation.log("You have already displayed the images");
 		return;
@@ -959,115 +986,117 @@ edit.photo = function() {
 		dateStr = edit.getDate();
 	}
 	animation.log("Start loading images under data/" + dateStr + " ...");
-	var token = getTokenFromCookie(),
-		url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
-	$.ajax({
-		type: "GET",
-		url: url
-	}).done(function(data, status, xhr) {
-		if (data["@odata.nextLink"]) {
-			// More content available!
-			// Do nothing right now
-		}
-		var itemList = data["value"];
-		for (var key = 0, len = itemList.length; key != len; ++key) {
-			var size = itemList[key]["size"],
-				name = itemList[key]["name"],
-				suffix = name.substring(name.length - 4),
-				found = false;
-			if (suffix != ".jpg" && suffix != ".png") {
-				// Only support these two types
-				continue;
+	getTokenCallback(function(token) {
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+		$.ajax({
+			type: "GET",
+			url: url
+		}).done(function(data, status, xhr) {
+			if(data["@odata.nextLink"]) {
+				// More content available!
+				// Do nothing right now
+				animation.log("There seems to be so many items. Not all the items will be displayed", true);
 			}
-			// Use size to filter out duplicate pahotos
-			for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
-				if (tmp[i]["size"] == size) {
-					found = true;
-					break;
+			var itemList = data["value"];
+			for (var key = 0, len = itemList.length; key != len; ++key) {
+				var size = itemList[key]["size"],
+					name = itemList[key]["name"],
+					suffix = name.substring(name.length - 4),
+					found = false;
+				if (suffix != ".jpg" && suffix != ".png") {
+					// Only support these two types
+					continue;
+				}
+				// Use size to filter out duplicate pahotos
+				for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
+					if (tmp[i]["size"] == size) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					// Abandon this image
+					continue;
+				} else {
+					var data = {
+						name: name,
+						url: itemList[key]["@content.downloadUrl"],
+						size: size,
+						resource: false,
+						change: false,
+					};
+					edit.photos.push(data);
 				}
 			}
-			if (found) {
-				// Abandon this image
-				continue;
-			} else {
-				var data = {
-					name: name,
-					url: itemList[key]["@content.downloadUrl"],
-					size: size,
-					resource: false,
-					change: false,
-				};
-				edit.photos.push(data);
+			console.log("edit.photo()\tFinish media data");
+			// Add to images div
+			for (var i = 0; i != edit.photos.length; ++i) {
+				var htmlContent;
+				if (edit.photos[i]["resource"]) {
+					// The image should be highlighted if it is already at resource folder
+					htmlContent = "<div class=\"highlight\">";
+				} else {
+					htmlContent = "<div>";
+				}
+				htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
+				$("#attach-area .images").append(htmlContent);
 			}
-		}
-		console.log("edit.photo()\tFinish media data");
-		// Add to images div
-		for (var i = 0; i != edit.photos.length; ++i) {
-			var htmlContent;
-			if (edit.photos[i]["resource"]) {
-				// The image should be highlighted if it is already at resource folder
-				htmlContent = "<div class=\"highlight\">";
-			} else {
-				htmlContent = "<div>";
-			}
-			htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
-			$("#attach-area .images").append(htmlContent);
-		}
-		// Stop throttle 
-		$("#add-photo").html("&#xf03e").removeClass("spin").attr({
-			onclick: "edit.addMedia(0)",
-			href: "#"
-		}).fadeIn();
-		// Clicking on img functionality
-		$("#attach-area .images div img").each(function() {
-			$(this).on("contextmenu", function() {
-				// Right click to select the images
-				$(this).parent().toggleClass("highlight");
-				// Return false to disable other functionalities
-				return false;
-			});
-		});
-		// Set preview
-		$("#attach-area .images").hover(function() {
-			// Mouseover
-			// Clean up the data
-			edit.cleanupMediaEdit();
-			$("#photo-preview").css("opacity", "initial").show({
-				effect: "fade",
-				duration: 200
-			});
-		}, function() {
-			// Mouseout
-			$("#photo-preview").hide({
-				effect: "fade",
-				duration: 200
-			});
-		}).sortable({
-			containment: "#attach-area .images",
-			cursor: "crosshair",
-			revert: true
-		}).disableSelection();
-		$("#attach-area .images img").each(function() {
-			$(this).hover(function() {
-				// Mouseover
-				$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
-			}, function() {
-				// Mouseout
-				$("#photo-preview img").animate({ opacity: 0 }, 0);
-			});
-		});
-		animation.setConfirm(0);
-		animation.log("Photos loaded");
-		animation.finished("#add-photo");
-	})
-		.fail(function(xhr, status, error) {
+			// Stop throttle 
 			$("#add-photo").html("&#xf03e").removeClass("spin").attr({
 				onclick: "edit.addMedia(0)",
 				href: "#"
+			}).fadeIn();
+			// Clicking on img functionality
+			$("#attach-area .images div img").each(function() {
+				$(this).on("contextmenu", function() {
+					// Right click to select the images
+					$(this).parent().toggleClass("highlight");
+					// Return false to disable other functionalities
+					return false;
+				});
 			});
-			animation.log("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
-			animation.deny("#add-photo");
-		});
+			// Set preview
+			$("#attach-area .images").hover(function() {
+				// Mouseover
+				// Clean up the data
+				edit.cleanupMediaEdit();
+				$("#photo-preview").css("opacity", "initial").show({
+					effect: "fade",
+					duration: 200
+				});
+			}, function() {
+				// Mouseout
+				$("#photo-preview").hide({
+					effect: "fade",
+					duration: 200
+				});
+			}).sortable({
+				containment: "#attach-area .images",
+				cursor: "crosshair",
+				revert: true
+			}).disableSelection();
+			$("#attach-area .images img").each(function() {
+				$(this).hover(function() {
+					// Mouseover
+					$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
+				}, function() {
+					// Mouseout
+					$("#photo-preview img").animate({ opacity: 0 }, 0);
+				});
+			});
+			animation.setConfirm(0);
+			animation.log("Photos loaded");
+			animation.finished("#add-photo");
+		})
+			.fail(function(xhr, status, error) {
+				$("#add-photo").html("&#xf03e").removeClass("spin").attr({
+					onclick: "edit.addMedia(0)",
+					href: "#"
+				});
+				animation.log("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+				animation.deny("#add-photo");
+			});
+	});
 };
 edit.photoClick = function(index) {
 	$("#attach-area .images div:eq(" + index + ")").toggleClass("highlight");
@@ -1080,7 +1109,7 @@ edit.photoClick = function(index) {
  * @param {function} callback - The callback function to be called after all the changes have been made
  */
 edit.photoSave = function(callback) {
-	if (edit.photos.length == 0) {
+	if(edit.photos.length == 0) {
 		// Nothing to process
 		callback();
 		return;
@@ -1094,7 +1123,7 @@ edit.photoSave = function(callback) {
 			newPhotos = [];
 		// Sort edit.photos based on the sequence
 		$("#attach-area .images div").each(function() {
-			for (var i = 0; i != edit.photos.length; ++i) {
+			for(var i = 0; i != edit.photos.length; ++i) {
 				if ($(this).children("img").attr("src") == edit.photos[i]["url"]) {
 					// Matched
 					var data = edit.photos[i];
@@ -1113,7 +1142,7 @@ edit.photoSave = function(callback) {
 				}
 			}
 		});
-		edit.photos = $.extend({}, newPhotos);
+		edit.photos = $.extend({ }, newPhotos);
 		// Get the correct header for the photo
 		for (var i = 0; i != Object.keys(edit.photos).length; ++i) {
 			var name = edit.photos[i]["name"],
@@ -1154,119 +1183,120 @@ edit.photoSave = function(callback) {
 			processingPhoto = 0;
 		if (photoQueue.length != 0) {
 			// Process the photos
-			for (var i = 0; i != photoQueue.length; ++i) {
-				var requestJson,
-					url,
-					newName,
-					token = getTokenFromCookie(),
-					name = photoQueue[i]["name"],
-					isToResource = photoQueue[i]["resource"];
-				if (isToResource) {
-					// Would like to be added to entry, originally at data folder
-					newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
-					requestJson = {
-						// New name of the file
-						name: newName,
-						parentReference: {
-							path: resourceDir
-						}
-					};
-					// Still use the old name to find the file
-					url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
-					// Add to cache
-				} else {
-					// Would like to be added to data, i.e. remove from resource folder
-					newName = name;
-					requestJson = {
-						parentReference: {
-							path: contentDir
-						}
-					};
-					url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
-				}
-				// Update the new name
-				for (var j = 0; j != edit.photos.length; ++j) {
-					if (edit.photos[j]["name"] == name) {
-						edit.photos[j]["newName"] = newName;
-						break;
-					}
-				}
-				$.ajax({
-					type: "PATCH",
-					url: url,
-					contentType: "application/json",
-					data: JSON.stringify(requestJson)
-				})
-					.done(function(data, status, xhr) {
-						var newName = data["name"];
-						// Add the url of this new image to map
-						journal.archive.map[newName] = {
-							url: data["@content.downloadUrl"],
-							size: data["size"]
+			getTokenCallback(function(token) {
+				for(var i = 0; i != photoQueue.length; ++i) {
+					var requestJson,
+						url,
+						newName,
+						name = photoQueue[i]["name"],
+						isToResource = photoQueue[i]["resource"];
+					if (isToResource) {
+						// Would like to be added to entry, originally at data folder
+						newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
+						requestJson = {
+							// New name of the file
+							name: newName,
+							parentReference: {
+								path: resourceDir
+							}
 						};
-						animation.log("Photo transferred");
-						console.log("edit.photoSave()\tFinish update metadata");
+						// Still use the old name to find the file
+						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
+						// Add to cache
+					} else {
+						// Would like to be added to data, i.e. remove from resource folder
+						newName = name;
+						requestJson = {
+							parentReference: {
+								path: contentDir
+							}
+						};
+						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
+					}
+					// Update the new name
+					for (var j = 0; j != edit.photos.length; ++j) {
+						if (edit.photos[j]["name"] == name) {
+							edit.photos[j]["newName"] = newName;
+							break;
+						}
+					}
+					$.ajax({
+						type: "PATCH",
+						url: url,
+						contentType: "application/json",
+						data: JSON.stringify(requestJson)
 					})
-					.fail(function(xhr, status, error) {
-						animation.log("One tranfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
-						animation.warning("#add-photo");
-						// Revert the transfer process
-					})
-					.always(function(data, status, xhr) {
-						// Update the final destination
-						var newName = data["name"];
-						// Test if newName is undefined.
-						// Being undefined means an error, so nothing will be changed
-						if (newName != undefined) {
-							for (var k = 0; k != edit.photos.length; ++k) {
-								// Still use the old name
-								if (edit.photos[k]["newName"] == newName) {
-									// Find the matched name
-									var name = edit.photos[k]["name"],
-										resource = edit.photos[k]["resource"],
-										photoIndex;
-									// Update the new name
-									edit.photos[k]["name"] = newName;
-									// Switch the location
-									edit.photos[k]["resource"] = !resource;
-									// Find the correct img to add or remove highlight class on it
-									$("#attach-area .images img").each(function(index) {
-										if (journal.archive.map[name]) {
-											if ($(this).attr("src") == journal.archive.map[name]["url"]) {
-												photoIndex = index;
+						.done(function(data, status, xhr) {
+							var newName = data["name"];
+							// Add the url of this new image to map
+							journal.archive.map[newName] = {
+								url: data["@content.downloadUrl"],
+								size: data["size"]
+							};
+							animation.log("Photo transferred");
+							console.log("edit.photoSave()\tFinish update metadata");
+						})
+						.fail(function(xhr, status, error) {
+							animation.log("One tranfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+							animation.warning("#add-photo");
+							// Revert the transfer process
+						})
+						.always(function(data, status, xhr) {
+							// Update the final destination
+							var newName = data["name"];
+							// Test if newName is undefined.
+							// Being undefined means an error, so nothing will be changed
+							if (newName != undefined) {
+								for (var k = 0; k != edit.photos.length; ++k) {
+									// Still use the old name
+									if (edit.photos[k]["newName"] == newName) {
+										// Find the matched name
+										var name = edit.photos[k]["name"],
+											resource = edit.photos[k]["resource"],
+											photoIndex;
+										// Update the new name
+										edit.photos[k]["name"] = newName;
+										// Switch the location
+										edit.photos[k]["resource"] = !resource;
+										// Find the correct img to add or remove highlight class on it
+										$("#attach-area .images img").each(function(index) {
+											if(journal.archive.map[name]) {
+												if ($(this).attr("src") == journal.archive.map[name]["url"]) {
+													photoIndex = index;
+												}
 											}
-										}
-									});
-									// Get the result of transferring
-									if (!resource) {
-										// Originally not at the resource, to resource
-										$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight");
-										newImagesData.push({
-											fileName: newName
 										});
-									} else {
-										// To data, and remove from cache
-										$("#attach-area .images div:eq(" + photoIndex + ")").removeClass("highlight");
-										for (var j = 0; j != newImagesData.length; ++j) {
-											if (newImagesData[j]["fileName"] == name) {
-												delete newImagesData[name];
-												break;
+										// Get the result of transferring
+										if (!resource) {
+											// Originally not at the resource, to resource
+											$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight");
+											newImagesData.push({
+												fileName: newName
+											});
+										} else {
+											// To data, and remove from cache
+											$("#attach-area .images div:eq(" + photoIndex + ")").removeClass("highlight");
+											for (var j = 0; j != newImagesData.length; ++j) {
+												if (newImagesData[j]["fileName"] == name) {
+													delete newImagesData[name];
+													break;
+												}
 											}
+											delete journal.archive.map[name];
 										}
-										delete journal.archive.map[name];
+										break;
 									}
-									break;
 								}
 							}
-						}
-						// Test if it is elligible for calling callback()
-						if (++processingPhoto == photoQueue.length) {
-							localStorage["images"] = JSON.stringify(newImagesData);
-							animation.log("Finished photo transfer");
-							callback();
-						}
-					});
-			}
+							// Test if it is elligible for calling callback()
+							if (++processingPhoto == photoQueue.length) {
+								localStorage["images"] = JSON.stringify(newImagesData);
+								animation.log("Finished photo transfer");
+								callback();
+							}
+						});
+				}
+			});
 		} else {
 			// Call callback directly
 			callback();
@@ -1285,7 +1315,7 @@ edit.photoHide = function() {
  * @param {number} index - The index of location element 
  */
 edit.location = function(index) {
-	if (index == edit.mediaIndex["place"] || index == undefined) {
+	if(index == edit.mediaIndex["place"] || index == undefined) {
 		return;
 	}
 	edit.cleanupMediaEdit();
@@ -1346,7 +1376,7 @@ edit.location = function(index) {
 
 			// Press enter to search
 			$("#attach-area .place .desc").keyup(function(n) {
-				if (n.keyCode == 13) {
+				if(n.keyCode == 13) {
 					var latitude = parseFloat($(selectorHeader + ".latitude").val()),
 						longitude = parseFloat($(selectorHeader + ".longitude").val());
 					if (isNaN(latitude)) {
@@ -1376,7 +1406,7 @@ edit.location = function(index) {
 	$(selectorHeader + "a").removeAttr("onclick");
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if (n.keyCode == 27) {
+		if(n.keyCode == 27) {
 			edit.locationHide();
 		}
 	});
@@ -1385,7 +1415,7 @@ edit.location = function(index) {
  * Hides the map selector and saves the data
  */
 edit.locationHide = function() {
-	if (edit.mediaIndex["place"] < 0) {
+	if(edit.mediaIndex["place"] < 0) {
 		// Invalid call
 		return;
 	}
@@ -1401,7 +1431,7 @@ edit.locationHide = function() {
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["place"] = -1;
+	edit.mediaIndex["place"] = - 1;
 	edit.isEditing = "";
 };
 /**
@@ -1414,7 +1444,7 @@ edit.locationSave = function(index) {
 		selectorHeader = edit.getSelectorHeader("place", index),
 		latitude = parseFloat($(selectorHeader + ".latitude").val()),
 		longitude = parseFloat($(selectorHeader + ".longitude").val()),
-		newElem = {};
+		newElem = { };
 	if (!data) {
 		data = [];
 	} else {
@@ -1472,7 +1502,7 @@ edit.locationGeocode = function(pos) {
 	// Reverse geocoding to get current address
 	var geocoder = new google.maps.Geocoder();
 	geocoder.geocode({ 'latLng': pos }, function(results, status) {
-		if (status == google.maps.GeocoderStatus.OK) {
+		if(status == google.maps.GeocoderStatus.OK) {
 			if (results[0]) {
 				$(selectorHeader + ".title").val(results[0].formatted_address);
 			} else {
@@ -1491,7 +1521,7 @@ edit.locationWeather = function(pos) {
 	// Test if the weather info already exists
 	var flag = false;
 	$("#attach-area .icontags .weather p").each(function() {
-		if ($(this).hasClass("highlight")) {
+		if($(this).hasClass("highlight")) {
 			flag = true;
 		}
 	});
@@ -1545,7 +1575,7 @@ edit.locationWeather = function(pos) {
  * @param {string} link (Optional) - The url to the address of the link, for newly created element
  */
 edit.voice = function(index, link) {
-	if (index == edit.mediaIndex["voice"] || index == undefined) {
+	if(index == edit.mediaIndex["voice"] || index == undefined) {
 		return;
 	}
 	edit.cleanupMediaEdit();
@@ -1556,7 +1586,7 @@ edit.voice = function(index, link) {
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if (n.keyCode === 27) {
+		if(n.keyCode === 27) {
 			edit.voiceHide();
 		}
 	});
@@ -1574,9 +1604,8 @@ edit.voice = function(index, link) {
 	app.audioPlayer(selectorHeader + "a", source);
 	animation.setConfirm(3);
 };
-
 edit.voiceHide = function() {
-	if (edit.mediaIndex["voice"] < 0) {
+	if(edit.mediaIndex["voice"] < 0) {
 		// Invalid call
 		return;
 	}
@@ -1590,10 +1619,9 @@ edit.voiceHide = function() {
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["voice"] = -1;
-	edit.isEditing = -1;
+	edit.mediaIndex["voice"] = - 1;
+	edit.isEditing = - 1;
 }
-
 edit.voiceSave = function(index) {
 	var data = localStorage["voice"],
 		selectorHeader = edit.getSelectorHeader("voice", index),
@@ -1605,6 +1633,44 @@ edit.voiceSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage[type] = JSON.stringify(data);
+}
+/**
+ * Removes the voice element from the data. Transfer the data in resource folder to data folder
+ */
+edit.voiceRemove = function() {
+	var index = edit.mediaIndex["voice"],
+		file = JSON.parse(localStorage["voice"])[index]["fileName"],
+		title = JSON.parse(localStorage["voice"])[index]["title"],
+		dateStr = edit.getDate();
+	getTokenCallback(function(token) {
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + file + "?access_token=" + token,
+			data = {
+				"parentReference": {
+					"path": "/drive/root:/Apps/Journal/data/" + dateStr
+				}
+			};
+		$.ajax({
+			type: "PATCH",
+			url: url,
+			contentType: "application/json",
+			data: JSON.stringify(data)
+		}).done(function(data) {
+			animation.log("File " + title + " transferred to data/" + dateStr);
+			edit.addToRemovalList("voice", index);
+		}).fail(function(xhs, status, error) {
+			animation.log("File " + title + " cannot be removed . No transfer was made. The server returns error \"" + error + "\"", true);
+			animation.warning("#confirm");
+		});
+	});
+}
+/**
+ * Search for all the voices from the data folder and add it to the edit.voice
+ */
+edit.voiceSearch = function() {
+
+}
+edit.voiceNew = function() {
+
 }
 
 /************************** MUSIC 4 **************************/
@@ -1657,14 +1723,14 @@ edit.itunes = function(index, typeNum) {
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search
-		if (n.keyCode == 13) {
+		if(n.keyCode == 13) {
 			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
 			getCoverPhoto(selectorHeader, term, true, typeNum);
 		}
 	});
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if (n.keyCode == 27) {
+		if(n.keyCode == 27) {
 			edit.itunesHide(typeNum);
 		}
 	});
@@ -1686,8 +1752,8 @@ edit.itunesHide = function(typeNum) {
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex[type] = -1;
-	edit.isEditing = -1;
+	edit.mediaIndex[type] = - 1;
+	edit.isEditing = - 1;
 };
 
 edit.itunesSave = function(index, typeNum) {
@@ -1708,7 +1774,7 @@ edit.itunesSave = function(index, typeNum) {
 /************************** WEBLINK 7 **************************/
 
 edit.weblink = function(index) {
-	if (index == edit.mediaIndex["weblink"] || index == undefined) {
+	if(index == edit.mediaIndex["weblink"] || index == undefined) {
 		return;
 	}
 	edit.cleanupMediaEdit();
@@ -1719,14 +1785,14 @@ edit.weblink = function(index) {
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if (n.keyCode == 27) {
+		if(n.keyCode == 27) {
 			edit.weblinkHide(7);
 		}
 	});
 	edit.isEditing = 7;
 };
 edit.weblinkHide = function() {
-	if (edit.mediaIndex["weblink"] < 0) {
+	if(edit.mediaIndex["weblink"] < 0) {
 		// Invalid call
 		return;
 	}
@@ -1740,8 +1806,8 @@ edit.weblinkHide = function() {
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["weblink"] = -1;
-	edit.isEditing = -1;
+	edit.mediaIndex["weblink"] = - 1;
+	edit.isEditing = - 1;
 };
 edit.weblinkSave = function(index) {
 	var data = localStorage["weblink"],

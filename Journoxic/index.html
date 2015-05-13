@@ -13,7 +13,7 @@
 	</div>
 	<!-- Search bar -->
 	<div class="header">
-		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.12.3 Build 050915_2311</p>
+		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. v3.12.4 Build 051215_2322</p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
@@ -330,7 +330,7 @@
 			for( i in video ) {
 			%>
 			<div class="video">
-				<a class="<%- video[i].fileName %>" href="#" target="_blank">
+				<a class="<%- video[i].fileName %>" href="#">
 					<div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
 					<input disabled class="title" value="<%- video[i].title %>" />
 				</a>
@@ -343,7 +343,7 @@
 			for( i in voice ) {
 			%>
 			<div class="voice">
-				<a class="<%- voice[i].fileName %>" href="#" target="_blank" title="Listen to it">
+				<a class="<%- voice[i].fileName %>" href="#" title="Listen to it">
 					<div class="thumb"><span></span></div>
 					<input disabled class="title" value="<%- voice[i].title %>" />
 				</a>

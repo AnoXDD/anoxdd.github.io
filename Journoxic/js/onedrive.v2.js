@@ -1,4 +1,4 @@
-﻿/**
+/**
  *  Handle all the network activities besides the authentication problem in odauth.js
  * 
  * <What's new>
@@ -94,6 +94,7 @@ function downloadMedia(url) {
 		journal.archive.map = {};
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=name,size&access_token=" + token;
 	}
+	$("#refresh-media").addClass("spin");
 	$.ajax({
 		type: "GET",
 		url: url

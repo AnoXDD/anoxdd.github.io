@@ -35,6 +35,8 @@ app.pageLoaded = 1;
 app.preloadedTags = [];
 /* The keyword to be searched */
 app.command = "";
+/* The boolean indicates if some mutually exclusive functions should be running if any others are */
+app.isFunction = true;
 
 app.init = function() {
 	// Enter to search
@@ -904,7 +906,7 @@ app.detail = function() { // [m]
 		app.audioPlayer.quit();
 		var className = $(this).attr("class");
 		if (journal.archive.map[className]) {
-			var funcName = "app.audioPlayer(\"#detail .content .voice:eq(" + n + ") a\"," + journal.archive.map[className]["url"];
+			var funcName = "app.audioPlayer(\"#detail .content .voice:eq(" + n + ") a\",\"" + journal.archive.map[className]["url"] + "\")";
 			$(this).attr("onclick", funcName).removeAttr("class");
 		} else {
 			animation.log("Cannot load file " + className + ". Please make sure you have downloaded it", true);
@@ -1499,11 +1501,19 @@ app.PhotoViewer.prototype = {
  * @param {string} source - The url of the source of music file
  */
 app.audioPlayer = function(selector, source) {
+	if (app.isFunction) {
+		app.isFunction = false;
+	} else {
+		// Do not continue
+		return;
+	}
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
 		"<div id=\"timeline\"><div id=\"playhead\"></div></div></div>";
 	// Add to the document
 	$(element).appendTo(selector);
+	// Give places to the bar
+	$(selector + " p").css("padding-top", "0px");
 	var music = document.getElementById("music"),
 		playhead = document.getElementById("playhead"),
 		timeline = document.getElementById("timeline"),
@@ -1521,7 +1531,7 @@ app.audioPlayer = function(selector, source) {
 		}
 	};
 	var moveplayHead = function(e) {
-		var newMargLeft = e.pageX - timeline.offsetLeft;
+		var newMargLeft = e.pageX - timeline.getBoundingClientRect().left;
 		if (newMargLeft >= 0 && newMargLeft <= timelineWidth) {
 			playhead.style.marginLeft = newMargLeft + "px";
 		}
@@ -1546,7 +1556,7 @@ app.audioPlayer = function(selector, source) {
 	timeline.addEventListener("click", function(e) {
 		moveplayHead(e);
 		// returns click as decimal (.77) of the total timelineWidth
-		var clickPercent = (e.pageX - timeline.offsetLeft) / timelineWidth;
+		var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
 		music.currentTime = duration * clickPercent;
 	}, false);
 
@@ -1562,8 +1572,8 @@ app.audioPlayer = function(selector, source) {
 			moveplayHead(e);
 			window.removeEventListener("mousemove", moveplayHead, true);
 			// returns click as decimal (.77) of the total timelineWidth
-			var clickPercent = (e.pageX - timeline.offsetLeft) / timelineWidth;
-			music.currentTime = duration * clickPercent;
+			var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
+			music.currentTime = duration * clickPercent; 
 			music.addEventListener("timeupdate", timeUpdate, false);
 		}
 		app.audioPlayer.onplayhead = false;
@@ -1596,6 +1606,10 @@ app.audioPlayer.play = function() {
 app.audioPlayer.quit = function() {
 	// Remove audioplayer
 	$("#audioplayer").remove();
+	// Reset the css
+		$("#detail .content .voice p").css("padding-top", "");
+		// Reset this variable
+		app.isFunction = true;
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
 }

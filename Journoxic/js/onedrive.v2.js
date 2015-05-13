@@ -90,7 +90,7 @@ function downloadMedia(url) {
 	// Reset map
 	if (url == undefined) {
 		// Initial call
-		var token = getTokenFromCookie();
+		var token = getTokenFromCookie(); 
 		journal.archive.map = {};
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=name,size&access_token=" + token;
 	}

@@ -1507,13 +1507,14 @@ app.audioPlayer = function(selector, source) {
 		// Do not continue
 		return;
 	}
+	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
 		"<div id=\"timeline\"><div id=\"playhead\"></div></div></div>";
 	// Add to the document
 	$(element).appendTo(selector);
 	// Give places to the bar
-	$(selector + " p").css("padding-top", "0px");
+	$(selector + " p").css("padding-top", "3px");
 	var music = document.getElementById("music"),
 		playhead = document.getElementById("playhead"),
 		timeline = document.getElementById("timeline"),
@@ -1527,7 +1528,8 @@ app.audioPlayer = function(selector, source) {
 		var playPercent = timelineWidth * (music.currentTime / duration);
 		playhead.style.marginLeft = playPercent + "px";
 		if (music.currentTime === duration) {
-			$("#play-media").html("&#xf04b");
+			// Replay back
+			$("#play-media").html("&#xf04b").removeClass("play");
 		}
 	};
 	var moveplayHead = function(e) {
@@ -1547,6 +1549,12 @@ app.audioPlayer = function(selector, source) {
 	music.addEventListener("canplaythrough", function() {
 		duration = music.duration;
 	}, false);
+	if (isNaN(duration)) {
+		// Address expires
+		animation.log("Audio file expires. Please re-download the media", true);
+		return false;
+	} else {
+	animation.log("Audio file located");}
 
 	// timeupdate event listener
 	music.addEventListener("timeupdate", timeUpdate, false);
@@ -1568,7 +1576,7 @@ app.audioPlayer = function(selector, source) {
 	}, false);
 
 	window.addEventListener("mouseup", function(e) {
-		if (onplayhead == true) {
+		if (onplayhead) {
 			moveplayHead(e);
 			window.removeEventListener("mousemove", moveplayHead, true);
 			// returns click as decimal (.77) of the total timelineWidth
@@ -1579,24 +1587,22 @@ app.audioPlayer = function(selector, source) {
 		app.audioPlayer.onplayhead = false;
 	}, false);
 
-	$("#play-media").html("&#xf04b");
 	animation.showIcon("#play-media");
 	animation.showIcon("#stop-media");
-	animation.log("Audio file loaded");
 }
 /**
  * Handles the play and pause of the audio player after loading
  */
 app.audioPlayer.play = function() {
 	// Test if the media is playing
-	if ($("#play-media").html() === "&#xf04b") {
+	if ($("#play-media").hasClass("play")) {
 		// Is playing
 		music.pause();
-		$("#play-media").html("&#xf04c");
+		$("#play-media").html("&#xf04b").removeClass("play");
 	} else {
 		// Is pausing
 		music.play();
-		$("#play-media").html("&#xf04b");
+		$("#play-media").html("&#xf04c").addClass("play");
 	}
 }
 /**
@@ -1604,8 +1610,11 @@ app.audioPlayer.play = function() {
  * @returns {} 
  */
 app.audioPlayer.quit = function() {
+	$("#play-media").html("&#xf04b").removeClass("play");
 	// Remove audioplayer
-	$("#audioplayer").remove();
+	$("#audioplayer").fadeOut(400, function() {
+		$(this).remove();
+	});
 	// Reset the css
 		$("#detail .content .voice p").css("padding-top", "");
 		// Reset this variable

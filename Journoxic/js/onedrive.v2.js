@@ -135,8 +135,7 @@ function uploadFile() {
 	// Change loading icons and disable click
 	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
-		var id = animation.blink("#upload"),
-			d = new Date(),
+		var d = new Date(),
 			month = d.getMonth() + 1,
 			day = d.getDate(),
 			year = d.getFullYear() % 100,
@@ -185,8 +184,6 @@ function uploadFile() {
 				////alert("Cannot backup the file");
 			})
 			.always(function() {
-				// Stop blinking
-				clearInterval(id);
 				// Change loading icons and re-enable click
 				$("#upload").html("&#xE11C").removeClass("spin").css("background", "").attr({
 					onclick: "uploadFile()",
@@ -200,8 +197,7 @@ function uploadFile() {
 
 /* Download the cover photo from iTunes. type can be either number or string*/
 function getCoverPhoto(selectorHeader, term, more, type) {
-	var id = animation.blink(selectorHeader + ".thumb"),
-		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
+	var url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
 	if (typeof (type) == "number") {
 		type = edit.mediaName(type);
 	}
@@ -232,7 +228,6 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 				}
 				$(selectorHeader + ".thumb").attr("src", coverUrl);
 			}
-			clearInterval(id);
 		}
 	});
 }

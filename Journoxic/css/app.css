@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -1014,7 +1014,7 @@ body {
 		padding-right: 20px;
 	}
 
-	#detail .voice p, #detail .place p {
+	#detail .voice p, #detail .place p, #detail .video .title {
 		padding-top: 15px;
 		transition: padding-top .4s ease;
 	}

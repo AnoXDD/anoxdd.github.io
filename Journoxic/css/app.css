@@ -2594,17 +2594,16 @@ body {
 
 
 #audioplayer {
-	display: inline-block;
 	width: 70%;
 }
 
 	#audioplayer #timeline {
+		display: inline-block;
 		background: #BFBFBF;
 		border-radius: 15px;
-		float: left;
+		margin-top: 5px;
 		height: 10px;
-		margin-top: 10px;
-		width: 100%;
+		width: 70%;
 	}
 
 	#audioplayer #playhead {
@@ -2614,3 +2613,19 @@ body {
 		width: 14px;
 		margin-top: -2px;
 	}
+
+	#audioplayer #music-position, #audioplayer #music-length {
+    display: inline-block;
+		
+	
+    font-size: 12px;
+    width: 7%;
+}
+
+#audioplayer #music-length {
+    padding-left: 10px;
+}
+
+#audioplayer #music-position {
+    padding-right: 10px;
+}

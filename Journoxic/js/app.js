@@ -1510,7 +1510,7 @@ app.audioPlayer = function(selector, source) {
 	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
-		"<p id=\"music-position\">00:00</p><div id=\"timeline\"><div id=\"playhead\"></div></div><p id=\"music-length\">00:00</p></div>";
+		"<div id=\"music-position\">00:00</div><div id=\"timeline\"><div id=\"playhead\"></div></div><div id=\"music-length\">00:00</div></div>";
 	// Add to the document
 	$(element).appendTo(selector);
 	// Give places to the bar
@@ -1534,10 +1534,12 @@ app.audioPlayer = function(selector, source) {
 	var timeUpdate = function() {
 		var playPercent = timelineWidth * (music.currentTime / duration);
 		playhead.style.marginLeft = playPercent + "px";
-		$("#music-position").html(formatTime(playPercent * duration));
 		if (music.currentTime === duration) {
 			// Replay back
 			$("#play-media").html("&#xf04b").removeClass("play");
+			console.log("DFDFD");
+		} else {
+			$("#music-position").html(formatTime(music.currentTime));
 		}
 	};
 	var moveplayHead = function(e) {
@@ -1556,18 +1558,13 @@ app.audioPlayer = function(selector, source) {
 	music.addEventListener("canplaythrough", function() {
 		duration = music.duration;
 	}, false);
-	if (isNaN(duration)) {
-		// Address expires
-		animation.log("Audio file expires. Please re-download the media", true);
-		return false;
-	} else {
-		animation.log("Audio file located");
-		// Update the length
-		$(".music-length").html(formatTime(duration));
-	}
-
 	// timeupdate event listener
 	music.addEventListener("timeupdate", timeUpdate, false);
+	music.addEventListener("loadedmetadata", function() {
+		animation.log("Audio file loaded");
+		// Update the length
+		$("#music-length").html(formatTime(music.duration));
+	});
 
 	//Makes timeline clickable
 	var t = this;
@@ -1610,6 +1607,11 @@ app.audioPlayer.play = function() {
 		music.pause();
 		$("#play-media").html("&#xf04b").removeClass("play");
 	} else {
+		if (isNaN(music.duration)) {
+			// Address expires
+			animation.log("Audio file expires. Please re-download the media", true);
+			return false;
+		}
 		// Is pausing
 		music.play();
 		$("#play-media").html("&#xf04c").addClass("play");
@@ -1629,6 +1631,8 @@ app.audioPlayer.quit = function() {
 	$("#detail .content .voice p").css("padding-top", "");
 	// Reset this variable
 	app.isFunction = true;
+	// Unbine all the action listener
+
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
 }

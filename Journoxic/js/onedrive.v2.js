@@ -25,7 +25,6 @@ function downloadFile() {
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
 	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
-	var id1 = animation.blink("#download");
 	// Show progress on hover
 	$("#refresh-media").hover(function() {
 		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
@@ -66,8 +65,6 @@ function downloadFile() {
 					////alert("Cannot download the file. Do you enable CORS?");
 				})
 				.always(function() {
-					// Stop blinking and rotating
-					clearInterval(id1);
 					// Change loading icons and re-enable click
 					$("#download").html("&#xf0ed").removeClass("spin").attr({
 							onclick: "downloadFile()",

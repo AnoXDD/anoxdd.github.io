@@ -1,6 +1,4 @@
 //(function(window, $) {
-window.journal = {};
-window.app = {};
 journal.archive = {};
 journal.archive.data = [];
 /* The number of the total media */
@@ -36,6 +34,8 @@ app.preloadedTags = [];
 app.command = "";
 
 app.init = function() {
+	// Version number show up
+	$("#version").html(app.version);
 	// Enter to search
 	var thisApp = this;
 	// Header fix

@@ -1510,7 +1510,7 @@ app.audioPlayer = function(selector, source) {
 	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
-		"<div id=\"timeline\"><div id=\"playhead\"></div></div></div>";
+		"<p id=\"music-position\">00:00</p><div id=\"timeline\"><div id=\"playhead\"></div></div><p id=\"music-length\">00:00</p></div>";
 	// Add to the document
 	$(element).appendTo(selector);
 	// Give places to the bar
@@ -1523,10 +1523,18 @@ app.audioPlayer = function(selector, source) {
 		timelineWidth = timeline.offsetWidth - playhead.offsetWidth,
 	/* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
 	onplayhead = false;
+	var formatTime = function(timeNum) {
+		var minute = parseInt(timeNum / 60),
+			second = parseInt(timeNum % 60);
+		minute = minute < 10 ? "0" + minute : minute;
+		second = second < 10 ? "0" + second : second;
+		return minute + ":" + second;
+	}
 	// Synchronizes playhsead position with current point in audio 
 	var timeUpdate = function() {
 		var playPercent = timelineWidth * (music.currentTime / duration);
 		playhead.style.marginLeft = playPercent + "px";
+		$("#music-position").html(formatTime(playPercent * duration));
 		if (music.currentTime === duration) {
 			// Replay back
 			$("#play-media").html("&#xf04b").removeClass("play");
@@ -1544,7 +1552,6 @@ app.audioPlayer = function(selector, source) {
 			playhead.style.marginLeft = timelineWidth + "px";
 		}
 	};
-
 	// Gets audio file duration
 	music.addEventListener("canplaythrough", function() {
 		duration = music.duration;
@@ -1554,7 +1561,10 @@ app.audioPlayer = function(selector, source) {
 		animation.log("Audio file expires. Please re-download the media", true);
 		return false;
 	} else {
-	animation.log("Audio file located");}
+		animation.log("Audio file located");
+		// Update the length
+		$(".music-length").html(formatTime(duration));
+	}
 
 	// timeupdate event listener
 	music.addEventListener("timeupdate", timeUpdate, false);
@@ -1581,7 +1591,7 @@ app.audioPlayer = function(selector, source) {
 			window.removeEventListener("mousemove", moveplayHead, true);
 			// returns click as decimal (.77) of the total timelineWidth
 			var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
-			music.currentTime = duration * clickPercent; 
+			music.currentTime = duration * clickPercent;
 			music.addEventListener("timeupdate", timeUpdate, false);
 		}
 		app.audioPlayer.onplayhead = false;
@@ -1616,9 +1626,9 @@ app.audioPlayer.quit = function() {
 		$(this).remove();
 	});
 	// Reset the css
-		$("#detail .content .voice p").css("padding-top", "");
-		// Reset this variable
-		app.isFunction = true;
+	$("#detail .content .voice p").css("padding-top", "");
+	// Reset this variable
+	app.isFunction = true;
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
 }

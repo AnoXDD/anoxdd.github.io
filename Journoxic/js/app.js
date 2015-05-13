@@ -1,3 +1,6 @@
+window.journal = {};
+window.app = {};
+
 //(function(window, $) {
 journal.archive = {};
 journal.archive.data = [];
@@ -34,8 +37,6 @@ app.preloadedTags = [];
 app.command = "";
 
 app.init = function() {
-	// Version number show up
-	$("#version").html(app.version);
 	// Enter to search
 	var thisApp = this;
 	// Header fix

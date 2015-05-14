@@ -1510,7 +1510,7 @@ app.audioPlayer = function(selector, source) {
 	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
-		"<div id=\"music-position\">00:00</div><div id=\"timeline\"><div id=\"playhead\"></div></div><div id=\"music-length\">00:00</div></div>";
+		"<div id=\"music-position\">00:00</div><div id=\"timeline\"><div id=\"playhead\"></div></div><div id=\"music-length\">--:--</div></div>";
 	// Add to the document
 	$(element).appendTo(selector);
 	// Give places to the bar
@@ -1564,6 +1564,9 @@ app.audioPlayer = function(selector, source) {
 		animation.log("Audio file loaded");
 		// Update the length
 		$("#music-length").html(formatTime(music.duration));
+		// Show the play icon
+		animation.showIcon("#play-media");
+		animation.showIcon("#stop-media");
 	});
 
 	//Makes timeline clickable
@@ -1593,9 +1596,6 @@ app.audioPlayer = function(selector, source) {
 		}
 		app.audioPlayer.onplayhead = false;
 	}, false);
-
-	animation.showIcon("#play-media");
-	animation.showIcon("#stop-media");
 }
 /**
  * Handles the play and pause of the audio player after loading

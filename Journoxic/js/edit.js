@@ -1632,7 +1632,7 @@ edit.voiceSave = function(index) {
 		fileName: $(selectorHeader + "a").val()
 	};
 	data[index] = newElem;
-	localStorage[type] = JSON.stringify(data);
+	localStorage["voice"] = JSON.stringify(data);
 }
 /**
  * Removes the voice element from the data. Transfer the data in resource folder to data folder

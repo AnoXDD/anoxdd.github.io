@@ -345,7 +345,7 @@
 			for( i in voice ) {
 			%>
 			<div class="voice">
-				<a class="<%- voice[i].fileName %>" href="#" title="Listen to it">
+				<a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" href="#" title="Listen to it">
 					<div class="thumb"><span></span></div>
 					<input disabled class="title" value="<%- voice[i].title %>" />
 				</a>

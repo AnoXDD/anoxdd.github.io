@@ -1950,7 +1950,9 @@ body {
 		margin: 0 10%;
 		padding: 5px 15px;
 		width: 16%;
-	}
+	
+		font-size: 10px;
+}
 
 		.header .search-text:focus {
 			outline: 0;
@@ -2594,6 +2596,7 @@ body {
 
 
 #audioplayer {
+	margin-top: 2px;
 	width: 70%;
 }
 
@@ -2620,12 +2623,15 @@ body {
 	
     font-size: 12px;
     width: 7%;
+    text-align: center;
+    background: #E3E3E3;
+    border-radius: 10px;
 }
 
 #audioplayer #music-length {
-    padding-left: 10px;
+    margin-left: 5px;
 }
 
 #audioplayer #music-position {
-    padding-right: 10px;
+    margin-right: 4px;
 }

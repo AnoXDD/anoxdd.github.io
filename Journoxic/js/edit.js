@@ -36,7 +36,7 @@ edit.init = function(overwrite, index) {
 		// There is cache
 		if (overwrite == true) {
 			edit.cleanEditCache();
-			if (index != undefined) {
+			if (index != undefined && index != -1) {
 				// Modify an entry
 				data = journal.archive.data[index];
 				localStorage["created"] = data["time"]["created"];
@@ -1629,7 +1629,7 @@ edit.voiceSave = function(index) {
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
-		fileName: $(selectorHeader + "a").val()
+		fileName: $(selectorHeader + "a").attr("class")
 	};
 	data[index] = newElem;
 	localStorage["voice"] = JSON.stringify(data);

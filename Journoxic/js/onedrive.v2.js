@@ -182,7 +182,7 @@ function uploadFile() {
 			})
 			.always(function() {
 				// Change loading icons and re-enable click
-				$("#upload").html("&#xE11C").removeClass("spin").css("background", "").attr({
+				$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
 					onclick: "uploadFile()",
 					href: "#"
 				});

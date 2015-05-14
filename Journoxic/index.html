@@ -332,7 +332,7 @@
 			for( i in video ) {
 			%>
 			<div class="video">
-				<a class="<%- video[i].fileName %>" href="#">
+				<a class="<%- video[i].fileName %>">
 					<div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
 					<input disabled class="title" value="<%- video[i].title %>" />
 				</a>
@@ -345,7 +345,7 @@
 			for( i in voice ) {
 			%>
 			<div class="voice">
-				<a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" href="#" title="Listen to it">
+				<a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" title="Listen to it">
 					<div class="thumb"><span></span></div>
 					<input disabled class="title" value="<%- voice[i].title %>" />
 				</a>

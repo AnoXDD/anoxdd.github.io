@@ -1634,8 +1634,9 @@ app.audioPlayer.quit = function() {
 	// Unbine all the action listener
 	app.audioPlayer.music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate);
 	app.audioPlayer.music.removeEventListener("loadedmetadata", app.audioPlayer.loadedData);
-	app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click, false);
-	app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown, false);
+	app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click);
+	app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);
+	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
 }

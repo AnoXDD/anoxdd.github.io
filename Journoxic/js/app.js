@@ -1585,7 +1585,7 @@ app.audioPlayer = function(selector, source) {
 	}
 	// Gets audio file duration
 	app.audioPlayer.music.addEventListener("canplaythrough", function() {
-		duration = music.duration;
+		duration = app.audioPlayer.music.duration;
 	}, false);
 	// timeupdate event listener
 	app.audioPlayer.music.addEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
@@ -1632,10 +1632,15 @@ app.audioPlayer.quit = function() {
 	// Reset this variable
 	app.isFunction = true;
 	// Unbine all the action listener
+	if (app.audioPlayer.music) {
 	app.audioPlayer.music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate);
 	app.audioPlayer.music.removeEventListener("loadedmetadata", app.audioPlayer.loadedData);
+	}
+	if (app.audioPlayer.timeline) {
 	app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click);
-	app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);
+	}
+	if (app.audioPlayer.playhead) {
+	app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);}
 	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");

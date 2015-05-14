@@ -27,6 +27,8 @@ edit.localChange = [];
  * @param {number} index - The index of the archive data (optional)
  */
 edit.init = function(overwrite, index) {
+	// Sometimes the user just presses the edit button without quitting the audioPlayer elsewhere
+	app.audioPlayer.quit();
 	////console.log("edit.init(" + overwrite + ", " + index + ")");
 	edit.editView = _.template($("#edit-view").html());
 	var editPane, data;
@@ -210,6 +212,11 @@ edit.quit = function(selector, save) {
 edit.save = function(selector) {
 	var id, html;
 	animation.log("Saving data ...");
+	if (animation.isShown("#confirm")) {
+		// Confirm button will be pressed automatically if shown
+		animation.log("Pending changes saved");
+		edit.confirm();
+	}
 	if (selector) {
 		html = $(selector).html();
 		$(selector).html("&#" +
@@ -612,7 +619,7 @@ edit.removeMedia = function(typeNum) {
  * @param {number} index (Optional) - The index of the type of media to be added to the list
  */
 edit.addToRemovalList = function(name, index) {
-	if(!edit.removalList[name]) {
+	if (!edit.removalList[name]) {
 		edit.removalList[name] = [];
 	}
 	if (index == undefined) {
@@ -621,7 +628,7 @@ edit.addToRemovalList = function(name, index) {
 	var selectorHeader = edit.getSelectorHeader(name, index);
 	// Fadeout the element
 	$(selectorHeader).fadeOut();
-	if (edit.removalList[name].indexOf(index) !== - 1) {
+	if (edit.removalList[name].indexOf(index) !== -1) {
 		// Only add when this element does not exist
 		edit.removalList[name].push(index);
 	}
@@ -633,7 +640,7 @@ edit.addToRemovalList = function(name, index) {
  * @returns {string} - The string name of the media. Empty if not applicable
  */
 edit.mediaName = function(typeNum) {
-	switch(typeNum) {
+	switch (typeNum) {
 		case 0:
 			return "photo";
 		case 1:
@@ -652,13 +659,13 @@ edit.mediaName = function(typeNum) {
 			return "weblink";
 		default:
 			return "";
-		}
+	}
 };
 /**
  * A function to be called by confirm 
  */
 edit.confirm = function() {
-	if(typeof (edit.confirmName) == "string") {
+	if (typeof (edit.confirmName) == "string") {
 		if (edit.confirmName == "discard") {
 			edit.quit(false);
 		} else if (edit.confirmName == "delete") {
@@ -710,7 +717,7 @@ edit.cleanupMediaEdit = function() {
 			break;
 		case 7:
 			edit.weblinkHide();
-		}
+	}
 };
 /**
  * Returns a header of the selector given the type of media and optional index
@@ -719,7 +726,7 @@ edit.cleanupMediaEdit = function() {
  * @returns {string} - The selector header
  */
 edit.getSelectorHeader = function(type, index) {
-	if(index == undefined) {
+	if (index == undefined) {
 		return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
 	}
 	return "#attach-area ." + type + ":eq(" + index + ") ";
@@ -806,7 +813,7 @@ edit.saveTitle = function() {
 edit.saveTag = function() {
 	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
-	if (localStorage["textTags"].split("|").indexOf(tagVal) != - 1) {
+	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
 		// The entry is already added
 		animation.log("Tag \"" + tagVal + "\" is already added", true);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
@@ -814,7 +821,7 @@ edit.saveTag = function() {
 		var found = false;
 		// Try to convert to iconTag
 		$("#attach-area .icontags p").each(function() {
-			if($(this).attr("title").toLowerCase() == tagVal) {
+			if ($(this).attr("title").toLowerCase() == tagVal) {
 				// Found
 				found = true;
 				var parent = $(this).parent().attr("class");
@@ -860,7 +867,7 @@ edit.removeTag = function(tagName) {
 	tagArray.join("|");
 	// Remove from the panal
 	$("#attach-area .texttags p").each(function() {
-		if($(this).text() == "#" + tagName) {
+		if ($(this).text() == "#" + tagName) {
 			$(this).animate({ width: "0" }, function() {
 				$(this).remove();
 			});
@@ -938,7 +945,7 @@ edit.getDate = function() {
 /************************** PHOTO 0 ************************/
 
 edit.photo = function() {
-	if(edit.photos.length != 0) {
+	if (edit.photos.length != 0) {
 		// Return if edit.photo is already displayed
 		animation.log("You have already displayed the images");
 		return;
@@ -992,7 +999,7 @@ edit.photo = function() {
 			type: "GET",
 			url: url
 		}).done(function(data, status, xhr) {
-			if(data["@odata.nextLink"]) {
+			if (data["@odata.nextLink"]) {
 				// More content available!
 				// Do nothing right now
 				animation.log("There seems to be so many items. Not all the items will be displayed", true);
@@ -1109,7 +1116,7 @@ edit.photoClick = function(index) {
  * @param {function} callback - The callback function to be called after all the changes have been made
  */
 edit.photoSave = function(callback) {
-	if(edit.photos.length == 0) {
+	if (edit.photos.length == 0) {
 		// Nothing to process
 		callback();
 		return;
@@ -1123,7 +1130,7 @@ edit.photoSave = function(callback) {
 			newPhotos = [];
 		// Sort edit.photos based on the sequence
 		$("#attach-area .images div").each(function() {
-			for(var i = 0; i != edit.photos.length; ++i) {
+			for (var i = 0; i != edit.photos.length; ++i) {
 				if ($(this).children("img").attr("src") == edit.photos[i]["url"]) {
 					// Matched
 					var data = edit.photos[i];
@@ -1142,7 +1149,7 @@ edit.photoSave = function(callback) {
 				}
 			}
 		});
-		edit.photos = $.extend({ }, newPhotos);
+		edit.photos = $.extend({}, newPhotos);
 		// Get the correct header for the photo
 		for (var i = 0; i != Object.keys(edit.photos).length; ++i) {
 			var name = edit.photos[i]["name"],
@@ -1184,7 +1191,7 @@ edit.photoSave = function(callback) {
 		if (photoQueue.length != 0) {
 			// Process the photos
 			getTokenCallback(function(token) {
-				for(var i = 0; i != photoQueue.length; ++i) {
+				for (var i = 0; i != photoQueue.length; ++i) {
 					var requestJson,
 						url,
 						newName,
@@ -1260,7 +1267,7 @@ edit.photoSave = function(callback) {
 										edit.photos[k]["resource"] = !resource;
 										// Find the correct img to add or remove highlight class on it
 										$("#attach-area .images img").each(function(index) {
-											if(journal.archive.map[name]) {
+											if (journal.archive.map[name]) {
 												if ($(this).attr("src") == journal.archive.map[name]["url"]) {
 													photoIndex = index;
 												}
@@ -1315,7 +1322,7 @@ edit.photoHide = function() {
  * @param {number} index - The index of location element 
  */
 edit.location = function(index) {
-	if(index == edit.mediaIndex["place"] || index == undefined) {
+	if (index == edit.mediaIndex["place"] || index == undefined) {
 		return;
 	}
 	edit.cleanupMediaEdit();
@@ -1376,7 +1383,7 @@ edit.location = function(index) {
 
 			// Press enter to search
 			$("#attach-area .place .desc").keyup(function(n) {
-				if(n.keyCode == 13) {
+				if (n.keyCode == 13) {
 					var latitude = parseFloat($(selectorHeader + ".latitude").val()),
 						longitude = parseFloat($(selectorHeader + ".longitude").val());
 					if (isNaN(latitude)) {
@@ -1406,7 +1413,7 @@ edit.location = function(index) {
 	$(selectorHeader + "a").removeAttr("onclick");
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if(n.keyCode == 27) {
+		if (n.keyCode == 27) {
 			edit.locationHide();
 		}
 	});
@@ -1415,7 +1422,7 @@ edit.location = function(index) {
  * Hides the map selector and saves the data
  */
 edit.locationHide = function() {
-	if(edit.mediaIndex["place"] < 0) {
+	if (edit.mediaIndex["place"] < 0) {
 		// Invalid call
 		return;
 	}
@@ -1431,7 +1438,7 @@ edit.locationHide = function() {
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["place"] = - 1;
+	edit.mediaIndex["place"] = -1;
 	edit.isEditing = "";
 };
 /**
@@ -1444,7 +1451,7 @@ edit.locationSave = function(index) {
 		selectorHeader = edit.getSelectorHeader("place", index),
 		latitude = parseFloat($(selectorHeader + ".latitude").val()),
 		longitude = parseFloat($(selectorHeader + ".longitude").val()),
-		newElem = { };
+		newElem = {};
 	if (!data) {
 		data = [];
 	} else {
@@ -1502,7 +1509,7 @@ edit.locationGeocode = function(pos) {
 	// Reverse geocoding to get current address
 	var geocoder = new google.maps.Geocoder();
 	geocoder.geocode({ 'latLng': pos }, function(results, status) {
-		if(status == google.maps.GeocoderStatus.OK) {
+		if (status == google.maps.GeocoderStatus.OK) {
 			if (results[0]) {
 				$(selectorHeader + ".title").val(results[0].formatted_address);
 			} else {
@@ -1521,7 +1528,7 @@ edit.locationWeather = function(pos) {
 	// Test if the weather info already exists
 	var flag = false;
 	$("#attach-area .icontags .weather p").each(function() {
-		if($(this).hasClass("highlight")) {
+		if ($(this).hasClass("highlight")) {
 			flag = true;
 		}
 	});
@@ -1575,7 +1582,7 @@ edit.locationWeather = function(pos) {
  * @param {string} link (Optional) - The url to the address of the link, for newly created element
  */
 edit.voice = function(index, link) {
-	if(index == edit.mediaIndex["voice"] || index == undefined) {
+	if (index == edit.mediaIndex["voice"] || index == undefined) {
 		return;
 	}
 	edit.cleanupMediaEdit();
@@ -1586,7 +1593,7 @@ edit.voice = function(index, link) {
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if(n.keyCode === 27) {
+		if (n.keyCode === 27) {
 			edit.voiceHide();
 		}
 	});
@@ -1599,16 +1606,17 @@ edit.voice = function(index, link) {
 	} else {
 		// Find it from this dataclip
 		var fileName = $(selectorHeader + "a").attr("class");
-		source = journal.archive.map[fileName];
+		source = journal.archive.map[fileName]["url"];
 	}
 	app.audioPlayer(selectorHeader + "a", source);
 	animation.setConfirm(3);
 };
 edit.voiceHide = function() {
-	if(edit.mediaIndex["voice"] < 0) {
+	if (edit.mediaIndex["voice"] < 0) {
 		// Invalid call
 		return;
 	}
+	app.audioPlayer.quit();
 	var selectorHeader = edit.getSelectorHeader("voice");
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
@@ -1619,8 +1627,8 @@ edit.voiceHide = function() {
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["voice"] = - 1;
-	edit.isEditing = - 1;
+	edit.mediaIndex["voice"] = -1;
+	edit.isEditing = -1;
 }
 edit.voiceSave = function(index) {
 	var data = localStorage["voice"],
@@ -1723,14 +1731,14 @@ edit.itunes = function(index, typeNum) {
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search
-		if(n.keyCode == 13) {
+		if (n.keyCode == 13) {
 			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
 			getCoverPhoto(selectorHeader, term, true, typeNum);
 		}
 	});
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if(n.keyCode == 27) {
+		if (n.keyCode == 27) {
 			edit.itunesHide(typeNum);
 		}
 	});
@@ -1752,8 +1760,8 @@ edit.itunesHide = function(typeNum) {
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex[type] = - 1;
-	edit.isEditing = - 1;
+	edit.mediaIndex[type] = -1;
+	edit.isEditing = -1;
 };
 
 edit.itunesSave = function(index, typeNum) {
@@ -1774,7 +1782,7 @@ edit.itunesSave = function(index, typeNum) {
 /************************** WEBLINK 7 **************************/
 
 edit.weblink = function(index) {
-	if(index == edit.mediaIndex["weblink"] || index == undefined) {
+	if (index == edit.mediaIndex["weblink"] || index == undefined) {
 		return;
 	}
 	edit.cleanupMediaEdit();
@@ -1785,14 +1793,14 @@ edit.weblink = function(index) {
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if(n.keyCode == 27) {
+		if (n.keyCode == 27) {
 			edit.weblinkHide(7);
 		}
 	});
 	edit.isEditing = 7;
 };
 edit.weblinkHide = function() {
-	if(edit.mediaIndex["weblink"] < 0) {
+	if (edit.mediaIndex["weblink"] < 0) {
 		// Invalid call
 		return;
 	}
@@ -1806,8 +1814,8 @@ edit.weblinkHide = function() {
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");
-	edit.mediaIndex["weblink"] = - 1;
-	edit.isEditing = - 1;
+	edit.mediaIndex["weblink"] = -1;
+	edit.isEditing = -1;
 };
 edit.weblinkSave = function(index) {
 	var data = localStorage["weblink"],

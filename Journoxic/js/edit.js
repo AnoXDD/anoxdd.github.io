@@ -395,7 +395,7 @@ edit.exportCacheBody = function(data) {
 };
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
-	var deleteList = ["title", "body", "created", "currentEditing", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video"];
+	var deleteList = ["title", "body", "created", "currentEditing", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
 	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
 	}

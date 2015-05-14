@@ -2599,7 +2599,8 @@ body {
 
 #audioplayer {
 	margin-top: 2px;
-	width: 70%;
+	font-size: 12px;
+	width: 100%;
 }
 
 	#audioplayer #timeline {
@@ -2608,7 +2609,7 @@ body {
 		border-radius: 15px;
 		margin-top: 5px;
 		height: 10px;
-		width: 70%;
+		width: -webkit-calc(70% - 6em);
 	}
 
 	#audioplayer #playhead {
@@ -2624,7 +2625,7 @@ body {
 		
 	
     font-size: 12px;
-    width: 7%;
+    width: 3em;
     text-align: center;
     background: #E3E3E3;
     border-radius: 10px;

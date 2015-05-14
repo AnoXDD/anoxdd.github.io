@@ -1515,15 +1515,15 @@ app.audioPlayer = function(selector, source) {
 	$(element).appendTo(selector);
 	// Give places to the bar
 	$(selector + " p").css("padding-top", "3px");
-	var music = document.getElementById("music"),
-		playhead = document.getElementById("playhead"),
-		timeline = document.getElementById("timeline"),
-		duration,
-	/* Timeline width adjusted for playhead */
+	app.audioPlayer.music = document.getElementById("music");
+	app.audioPlayer.playhead = document.getElementById("playhead");
+	app.audioPlayer.timeline = document.getElementById("timeline");
+	var duration,
+		/* Timeline width adjusted for playhead */
 		timelineWidth = timeline.offsetWidth - playhead.offsetWidth,
-	/* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
-	onplayhead = false;
-	var formatTime = function(timeNum) {
+		/* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
+		onplayhead = false;
+	app.audioPlayer.formatTime = function(timeNum) {
 		var minute = parseInt(timeNum / 60),
 			second = parseInt(timeNum % 60);
 		minute = minute < 10 ? "0" + minute : minute;
@@ -1531,18 +1531,17 @@ app.audioPlayer = function(selector, source) {
 		return minute + ":" + second;
 	}
 	// Synchronizes playhsead position with current point in audio 
-	var timeUpdate = function() {
+	app.audioPlayer.timeUpdate = function() {
 		var playPercent = timelineWidth * (music.currentTime / duration);
 		playhead.style.marginLeft = playPercent + "px";
 		if (music.currentTime === duration) {
 			// Replay back
 			$("#play-media").html("&#xf04b").removeClass("play");
-			console.log("DFDFD");
 		} else {
-			$("#music-position").html(formatTime(music.currentTime));
+			$("#music-position").html(app.audioPlayer.formatTime(music.currentTime));
 		}
 	};
-	var moveplayHead = function(e) {
+	app.audioPlayer.moveplayHead = function(e) {
 		var newMargLeft = e.pageX - timeline.getBoundingClientRect().left;
 		if (newMargLeft >= 0 && newMargLeft <= timelineWidth) {
 			playhead.style.marginLeft = newMargLeft + "px";
@@ -1554,48 +1553,49 @@ app.audioPlayer = function(selector, source) {
 			playhead.style.marginLeft = timelineWidth + "px";
 		}
 	};
-	// Gets audio file duration
-	music.addEventListener("canplaythrough", function() {
-		duration = music.duration;
-	}, false);
-	// timeupdate event listener
-	music.addEventListener("timeupdate", timeUpdate, false);
-	music.addEventListener("loadedmetadata", function() {
-		animation.log("Audio file loaded");
-		// Update the length
-		$("#music-length").html(formatTime(music.duration));
-		// Show the play icon
-		animation.showIcon("#play-media");
-		animation.showIcon("#stop-media");
-	});
-
-	//Makes timeline clickable
-	var t = this;
-	timeline.addEventListener("click", function(e) {
-		moveplayHead(e);
+	app.audioPlayer.click = function(e) {
+		app.audioPlayer.moveplayHead(e);
 		// returns click as decimal (.77) of the total timelineWidth
 		var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
 		music.currentTime = duration * clickPercent;
-	}, false);
-
-	// Makes playhead draggable 
-	playhead.addEventListener("mousedown", function() {
-		onplayhead = true;
-		window.addEventListener("mousemove", moveplayHead, true);
-		music.removeEventListener("timeupdate", timeUpdate, false);
-	}, false);
-
-	window.addEventListener("mouseup", function(e) {
-		if (onplayhead) {
-			moveplayHead(e);
-			window.removeEventListener("mousemove", moveplayHead, true);
+	};
+	app.audioPlayer.mouseDown = function() {
+		app.audioPlayer.onplayhead = true;
+		window.addEventListener("mousemove", app.audioPlayer.moveplayHead, true);
+		music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
+	};
+	app.audioPlayer.mouseUp = function(e) {
+		if (app.audioPlayer.onplayhead) {
+			app.audioPlayer.moveplayHead(e);
+			window.removeEventListener("mousemove", app.audioPlayer.moveplayHead, true);
 			// returns click as decimal (.77) of the total timelineWidth
 			var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
 			music.currentTime = duration * clickPercent;
-			music.addEventListener("timeupdate", timeUpdate, false);
+			music.addEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
 		}
 		app.audioPlayer.onplayhead = false;
+	}
+	app.audioPlayer.loadedData = function() {
+		animation.log("Audio file loaded");
+		// Update the length
+		$("#music-length").html(app.audioPlayer.formatTime(music.duration));
+		// Show the play icon
+		animation.showIcon("#play-media");
+		animation.showIcon("#stop-media");
+	}
+	// Gets audio file duration
+	app.audioPlayer.music.addEventListener("canplaythrough", function() {
+		duration = music.duration;
 	}, false);
+	// timeupdate event listener
+	app.audioPlayer.music.addEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
+	app.audioPlayer.music.addEventListener("loadedmetadata", app.audioPlayer.loadedData);
+
+	//Makes timeline clickable
+	app.audioPlayer.timeline.addEventListener("click", app.audioPlayer.click, false);
+	// Makes playhead draggable 
+	app.audioPlayer.playhead.addEventListener("mousedown", app.audioPlayer.mouseDown, false);
+	window.addEventListener("mouseup", app.audioPlayer.mouseUp, false);
 }
 /**
  * Handles the play and pause of the audio player after loading
@@ -1632,7 +1632,10 @@ app.audioPlayer.quit = function() {
 	// Reset this variable
 	app.isFunction = true;
 	// Unbine all the action listener
-
+	app.audioPlayer.music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate);
+	app.audioPlayer.music.removeEventListener("loadedmetadata", app.audioPlayer.loadedData);
+	app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click, false);
+	app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown, false);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
 }

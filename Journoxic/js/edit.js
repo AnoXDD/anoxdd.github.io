@@ -1673,7 +1673,7 @@ edit.voiceRemove = function() {
 			// Remove from map
 			delete journal.archive.map[file];
 		}).fail(function(xhs, status, error) {
-			animation.log("File " + title + " cannot be removed . No transfer was made. The server returns error \"" + error + "\"", true);
+			animation.log("File " + title + " cannot be removed. No transfer was made. The server returns error \"" + error + "\"", true);
 			animation.warning("#confirm");
 		});
 	});
@@ -1852,114 +1852,126 @@ edit.playableSearch = function(typeNum) {
 		$.ajax({
 			type: "GET",
 			url: url
-		}).done(function(data, status, xhr) {
-			if (data["@odata.nextLink"]) {
-				// More content available!
-				// Do nothing right now
-				animation.log("There seems to be so many items. Not all the items will be added", true);
-			}
-			var itemList = data["value"],
-				result = [];
-			// Iterate to find all the results
-			for (var key = 0, len = itemList.length; key !== len; ++key) {
-				var name = itemList[key]["name"],
-					suffix = name.substring(name.length - 4),
-					found = false;
-				// Test supported file types
-				switch (typeNum) {
-					case 1:
-						// Video
-						found = suffix === ".mp4";
-						break;
-					case 3:
-						// Voice
-						found = suffix === ".mp3" || suffix === ".wav";
-						break;
-					default:
-						console.log("WTF IS GOING ON?");
-						return;
+		})
+			.done(function(data, status, xhr) {
+				if (data["@odata.nextLink"]) {
+					// More content available!
+					// Do nothing right now
+					animation.log("There seems to be so many items. Not all the items will be added", true);
 				}
-				if (found) {
-					result.push(name);
+				var itemList = data["value"],
+					result = [];
+				// Iterate to find all the results
+				for (var key = 0, len = itemList.length; key !== len; ++key) {
+					var name = itemList[key]["name"],
+						suffix = name.substring(name.length - 4),
+						found = false;
+					// Test supported file types
+					switch (typeNum) {
+						case 1:
+							// Video
+							found = suffix === ".mp4";
+							break;
+						case 3:
+							// Voice
+							found = suffix === ".mp3" || suffix === ".wav";
+							break;
+						default:
+							console.log("WTF IS GOING ON?");
+							return;
+					}
+					if (found) {
+						result.push(name);
+					}
 				}
-			}
-			var length = result.length,
-				resourceDir = "/drive/root:/Apps/Journal/resource",
-				contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
-				finished = 0;
-			animation.log(length + " found");
-			// Moving to the data folder
-			for (var i = 0; i !== length; ++i) {
-				var newName = dateStr + (new Date().getTime() + i) + result[i].substring(result[i].length - 4),
-					requestJson = {
-						// New name of the file
-						name: newName,
-						parentReference: {
-							path: resourceDir
-						}
-					},
-					// Still use the old name to find the file
-					url = "https://api.onedrive.com/v1.0" + contentDir + "/" + result[i] + "?select=name,size&access_token=" + token;
-				$.ajax({
-					type: "PATCH",
-					url: url,
-					contentType: "application/json",
-					data: JSON.stringify(requestJson)
-				})
-					.done(function(data, status, xhr) {
-						var url = data["@content.downloadUrl"],
-							size = data["size"];
+				var length = result.length,
+					resourceDir = "/drive/root:/Apps/Journal/resource",
+					contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
+					finished = 0;
+				animation.log(length + " found");
+				// Moving to the data folder
+				for (var i = 0; i !== length; ++i) {
+					var newName = dateStr + (new Date().getTime() + i) + result[i].substring(result[i].length - 4),
+						requestJson = {
+							// New name of the file
+							name: newName,
+							parentReference: {
+								path: resourceDir
+							}
+						},
+						// Still use the old name to find the file
+						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + result[i] + "?select=name,size&access_token=" + token;
+					$.ajax({
+						type: "PATCH",
+						url: url,
+						contentType: "application/json",
+						data: JSON.stringify(requestJson)
+					})
+						.done(function(data, status, xhr) {
+							var url = data["@content.downloadUrl"],
+								size = data["size"];
 							name = data["name"];
-						switch (typeNum) {
-							case 1:
-								// Video
-								animation.log(++finished + " of " + length + " video transferred");
-								break;
-							case 3:
-								// Voice
-								animation.log(++finished + " of " + length + " voice transferred");
-								var index = $("#attach-area .voice").length;
-								edit.voice(index, url);
-								journal.archive.map[name] = {
-									url: data["@content.downloadUrl"],
-									size: data["size"]
-								}
-								break;
-						}
-					})
-					.fail(function(xhr, status, error) {
-						++finished;
-						animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
-						switch (typeNum) {
-							case 1:
-								// Video
-								animation.warning("add-video");
-								break;
-							case 3:
-								// Voice
-								animation.warning("#add-voice");
-								break;
-						}
-					})
-					.always(function(data, status, xhr) {
-						if (finished === length) {
-							// Finished all the processing
-							switch(typeNum) {
+							switch (typeNum) {
 								case 1:
 									// Video
-									animation.log("Finished video transfer");
+									animation.log(++finished + " of " + length + " video transferred");
 									break;
 								case 3:
 									// Voice
-									animation.log("Finished audio transfer");
+									animation.log(++finished + " of " + length + " voice transferred");
+									var index = $("#attach-area .voice").length;
+									edit.voice(index, url);
+									journal.archive.map[name] = {
+										url: data["@content.downloadUrl"],
+										size: data["size"]
+									}
 									break;
 							}
-						}
-					});
-			}
-		});
+						})
+						.fail(function(xhr, status, error) {
+							++finished;
+							animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+							switch (typeNum) {
+								case 1:
+									// Video
+									animation.warning("add-video");
+									break;
+								case 3:
+									// Voice
+									animation.warning("#add-voice");
+									break;
+							}
+						})
+						.always(function(data, status, xhr) {
+							if (finished === length) {
+								// Finished all the processing
+								switch (typeNum) {
+									case 1:
+										// Video
+										animation.log("Finished video transfer");
+										break;
+									case 3:
+										// Voice
+										animation.log("Finished audio transfer");
+										break;
+								}
+							}
+						});
+				}
+			})
+			.fail(function(xhr, status, error) {
+				switch (typeNum) {
+					case 1:
+						// Video
+						animation.log("Cannot load videos: failed to find videos under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+						break;
+					case 3:
+						// Voice
+						animation.log("Cannot load audios: failed to find audios under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+						break;
+				}
+			});
 	});
-
 }
 
 /******************************************************************

@@ -1030,7 +1030,7 @@ edit.photo = function() {
 						url: itemList[key]["@content.downloadUrl"],
 						size: size,
 						resource: false,
-						change: false,
+						change: false
 					};
 					edit.photos.push(data);
 				}
@@ -1240,11 +1240,12 @@ edit.photoSave = function(callback) {
 								url: data["@content.downloadUrl"],
 								size: data["size"]
 							};
-							animation.log("Photo transferred");
+							animation.log((++processingPhoto) + " of " + photoQueue.length + " photo transferred");
 							console.log("edit.photoSave()\tFinish update metadata");
 						})
 						.fail(function(xhr, status, error) {
-							animation.log("One tranfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+							++processingPhoto;
+							animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
 							animation.warning("#add-photo");
 							// Revert the transfer process
 						})
@@ -1296,7 +1297,7 @@ edit.photoSave = function(callback) {
 								}
 							}
 							// Test if it is elligible for calling callback()
-							if (++processingPhoto == photoQueue.length) {
+							if (processingPhoto == photoQueue.length) {
 								localStorage["images"] = JSON.stringify(newImagesData);
 								animation.log("Finished photo transfer");
 								callback();
@@ -1314,6 +1315,10 @@ edit.photoHide = function() {
 	// Just hide everything, no further moves to be made
 	$("#attach-area .images").animate({ height: "0" }).fadeOut().html("");
 };
+
+/************************** VIDEO 1 ************************/
+
+
 
 /************************** LOCATION 2 ************************/
 
@@ -1578,7 +1583,7 @@ edit.locationWeather = function(pos) {
 
 /**
  * Edit a voice element given the index and an optional parameter of the link of the resource
- * @param {number} index - The index of voice in all the voices
+ * @param {number} index (Optional) - The index of voice in all the voices. If none specified, it will add to the end of the current voice list
  * @param {string} link (Optional) - The url to the address of the link, for newly created element
  */
 edit.voice = function(index, link) {
@@ -1665,6 +1670,8 @@ edit.voiceRemove = function() {
 		}).done(function(data) {
 			animation.log("File " + title + " transferred to data/" + dateStr);
 			edit.addToRemovalList("voice", index);
+			// Remove from map
+			delete journal.archive.map[file];
 		}).fail(function(xhs, status, error) {
 			animation.log("File " + title + " cannot be removed . No transfer was made. The server returns error \"" + error + "\"", true);
 			animation.warning("#confirm");
@@ -1675,8 +1682,10 @@ edit.voiceRemove = function() {
  * Search for all the voices from the data folder and add it to the edit.voice
  */
 edit.voiceSearch = function() {
-
 }
+/**
+ * Use the microphone to record a new voice
+ */
 edit.voiceNew = function() {
 
 }
@@ -1715,68 +1724,6 @@ edit.bookHide = function() {
 };
 edit.bookSave = function(index) {
 	edit.itunesHide(index, 6);
-};
-
-/************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
-
-edit.itunes = function(index, typeNum) {
-	var type = edit.mediaName(typeNum);
-	if (index == edit.mediaIndex[type] || index == undefined) {
-		return;
-	}
-	edit.cleanupMediaEdit();
-	edit.mediaIndex[type] = index;
-	var selectorHeader = edit.getSelectorHeader(type);
-	animation.setConfirm(typeNum);
-	$(selectorHeader + "a").removeAttr("onclick");
-	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
-		// Press enter to search
-		if (n.keyCode == 13) {
-			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
-			getCoverPhoto(selectorHeader, term, true, typeNum);
-		}
-	});
-	// Press esc to save
-	$("#edit-pane").keyup(function(n) {
-		if (n.keyCode == 27) {
-			edit.itunesHide(typeNum);
-		}
-	});
-	edit.isEditing = typeNum;
-};
-edit.itunesHide = function(typeNum) {
-	var type = edit.mediaName(typeNum);
-	if (edit.mediaIndex[type] < 0) {
-		// Invalid call
-		return;
-	}
-	var selectorHeader = edit.getSelectorHeader(type);
-	// Disable input boxes
-	$(selectorHeader + "input").prop("disabled", true).off("keyup");
-	// Recover onclick event
-	$(selectorHeader + "a").attr("onclick", "edit." + type + "(" + edit.mediaIndex[type] + ")");
-	// Save data
-	edit.itunesSave(edit.mediaIndex[type], typeNum);
-	$("#edit-pane").off("keyup");
-	// Hide all the option button
-	animation.hideIcon(".entry-option");
-	edit.mediaIndex[type] = -1;
-	edit.isEditing = -1;
-};
-
-edit.itunesSave = function(index, typeNum) {
-	var type = edit.mediaName(typeNum),
-		data = localStorage[type],
-		selectorHeader = edit.getSelectorHeader(type, index),
-		title = $(selectorHeader + ".title").val(),
-		author = $(selectorHeader + ".desc").val();
-	data = data ? JSON.parse(data) : [];
-	var newElem = {
-		title: title,
-		author: author
-	};
-	data[index] = newElem;
-	localStorage[type] = JSON.stringify(data);
 };
 
 /************************** WEBLINK 7 **************************/
@@ -1825,11 +1772,195 @@ edit.weblinkSave = function(index) {
 	data = data ? JSON.parse(data) : [];
 	var newElem = {
 		title: title,
-		url: url,
+		url: url
 	};
 	data[index] = newElem;
 	localStorage["weblink"] = JSON.stringify(data);
 };
+
+/************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
+
+edit.itunes = function(index, typeNum) {
+	var type = edit.mediaName(typeNum);
+	if (index == edit.mediaIndex[type] || index == undefined) {
+		return;
+	}
+	edit.cleanupMediaEdit();
+	edit.mediaIndex[type] = index;
+	var selectorHeader = edit.getSelectorHeader(type);
+	animation.setConfirm(typeNum);
+	$(selectorHeader + "a").removeAttr("onclick");
+	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
+		// Press enter to search
+		if (n.keyCode == 13) {
+			var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
+			getCoverPhoto(selectorHeader, term, true, typeNum);
+		}
+	});
+	// Press esc to save
+	$("#edit-pane").keyup(function(n) {
+		if (n.keyCode == 27) {
+			edit.itunesHide(typeNum);
+		}
+	});
+	edit.isEditing = typeNum;
+};
+edit.itunesHide = function(typeNum) {
+	var type = edit.mediaName(typeNum);
+	if (edit.mediaIndex[type] < 0) {
+		// Invalid call
+		return;
+	}
+	var selectorHeader = edit.getSelectorHeader(type);
+	// Disable input boxes
+	$(selectorHeader + "input").prop("disabled", true).off("keyup");
+	// Recover onclick event
+	$(selectorHeader + "a").attr("onclick", "edit." + type + "(" + edit.mediaIndex[type] + ")");
+	// Save data
+	edit.itunesSave(edit.mediaIndex[type], typeNum);
+	$("#edit-pane").off("keyup");
+	// Hide all the option button
+	animation.hideIcon(".entry-option");
+	edit.mediaIndex[type] = -1;
+	edit.isEditing = -1;
+};
+edit.itunesSave = function(index, typeNum) {
+	var type = edit.mediaName(typeNum),
+		data = localStorage[type],
+		selectorHeader = edit.getSelectorHeader(type, index),
+		title = $(selectorHeader + ".title").val(),
+		author = $(selectorHeader + ".desc").val();
+	data = data ? JSON.parse(data) : [];
+	var newElem = {
+		title: title,
+		author: author
+	};
+	data[index] = newElem;
+	localStorage[type] = JSON.stringify(data);
+};
+
+/************* GENERIC FOR VOICE & VIDEO ***************/
+
+/**
+ * Add a playable item from the data folder to the edit view (video and audio)
+ * @param {Number} typeNum - The type number of the content to be added. 1: video. 3: voice.
+ */
+edit.playableSearch = function(typeNum) {
+	getTokenCallback(function(token) {
+		var dateStr = edit.getDate(),
+			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+		$.ajax({
+			type: "GET",
+			url: url
+		}).done(function(data, status, xhr) {
+			if (data["@odata.nextLink"]) {
+				// More content available!
+				// Do nothing right now
+				animation.log("There seems to be so many items. Not all the items will be added", true);
+			}
+			var itemList = data["value"],
+				result = [];
+			// Iterate to find all the results
+			for (var key = 0, len = itemList.length; key !== len; ++key) {
+				var name = itemList[key]["name"],
+					suffix = name.substring(name.length - 4),
+					found = false;
+				// Test supported file types
+				switch (typeNum) {
+					case 1:
+						// Video
+						found = suffix === ".mp4";
+						break;
+					case 3:
+						// Voice
+						found = suffix === ".mp3" || suffix === ".wav";
+						break;
+					default:
+						console.log("WTF IS GOING ON?");
+						return;
+				}
+				if (found) {
+					result.push(name);
+				}
+			}
+			var length = result.length,
+				resourceDir = "/drive/root:/Apps/Journal/resource",
+				contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
+				finished = 0;
+			animation.log(length + " found");
+			// Moving to the data folder
+			for (var i = 0; i !== length; ++i) {
+				var newName = dateStr + (new Date().getTime() + i) + result[i].substring(result[i].length - 4),
+					requestJson = {
+						// New name of the file
+						name: newName,
+						parentReference: {
+							path: resourceDir
+						}
+					},
+					// Still use the old name to find the file
+					url = "https://api.onedrive.com/v1.0" + contentDir + "/" + result[i] + "?select=name,size&access_token=" + token;
+				$.ajax({
+					type: "PATCH",
+					url: url,
+					contentType: "application/json",
+					data: JSON.stringify(requestJson)
+				})
+					.done(function(data, status, xhr) {
+						var url = data["@content.downloadUrl"],
+							size = data["size"];
+							name = data["name"];
+						switch (typeNum) {
+							case 1:
+								// Video
+								animation.log(++finished + " of " + length + " video transferred");
+								break;
+							case 3:
+								// Voice
+								animation.log(++finished + " of " + length + " voice transferred");
+								var index = $("#attach-area .voice").length;
+								edit.voice(index, url);
+								journal.archive.map[name] = {
+									url: data["@content.downloadUrl"],
+									size: data["size"]
+								}
+								break;
+						}
+					})
+					.fail(function(xhr, status, error) {
+						++finished;
+						animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+						switch (typeNum) {
+							case 1:
+								// Video
+								animation.warning("add-video");
+								break;
+							case 3:
+								// Voice
+								animation.warning("#add-voice");
+								break;
+						}
+					})
+					.always(function(data, status, xhr) {
+						if (finished === length) {
+							// Finished all the processing
+							switch(typeNum) {
+								case 1:
+									// Video
+									animation.log("Finished video transfer");
+									break;
+								case 3:
+									// Voice
+									animation.log("Finished audio transfer");
+									break;
+							}
+						}
+					});
+			}
+		});
+	});
+
+}
 
 /******************************************************************
  ************************ OTHERS **********************************

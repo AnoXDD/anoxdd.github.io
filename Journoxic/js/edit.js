@@ -33,7 +33,7 @@ edit.init = function(overwrite, index) {
 	app.audioPlayer.quit();
 	////console.log("edit.init(" + overwrite + ", " + index + ")");
 	edit.editView = _.template($("#edit-view").html());
-	var editPane, data;
+	var data;
 
 	// Test if there are cached data
 	if (localStorage["_cache"] == 1) {
@@ -90,8 +90,26 @@ edit.init = function(overwrite, index) {
 	edit.isEditing = -1;
 	// Add to cache, all the cache processing starts here
 	data = edit.importCache(data);
+	// Process edit.voices and edit.videos
+	edit.videos = [];
+	edit.voices = [];
+	var processGroup = ["video", "voice"];
+	for (var h = 0; h !== processGroup.length; ++h) {
+		if (data[processGroup[h]]) {
+			for (var i = 0; i !== data[processGroup[h]].length; ++i) {
+				var name = data[processGroup[h]][i]["fileName"];
+				edit.videos.push({
+					name: name,
+					title: data[processGroup[h]][i]["title"],
+					size: journal.archive.map[name]["size"],
+					resource: true,
+					change: false
+				});
+			}
+		}
+	}
 	console.log(Object.keys(data));
-	editPane = $(edit.editView(data));
+	var editPane = $(edit.editView(data));
 
 	// Content processing
 	$(".header div").fadeOut();
@@ -408,6 +426,9 @@ edit.cleanEditCache = function() {
 	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
 	}
+	edit.photos = [];
+	edit.voices = [];
+	edit.videos = [];
 };
 /**
  * Saves the entire journal.archive.data to cache
@@ -1333,7 +1354,6 @@ edit.photoHide = function() {
 /************************** VIDEO 1 ************************/
 
 
-
 /************************** LOCATION 2 ************************/
 
 /**
@@ -1672,28 +1692,7 @@ edit.voiceRemove = function() {
 		file = JSON.parse(localStorage["voice"])[index]["fileName"],
 		title = JSON.parse(localStorage["voice"])[index]["title"],
 		dateStr = edit.getDate();
-	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + file + "?access_token=" + token,
-			data = {
-				"parentReference": {
-					"path": "/drive/root:/Apps/Journal/data/" + dateStr
-				}
-			};
-		$.ajax({
-			type: "PATCH",
-			url: url,
-			contentType: "application/json",
-			data: JSON.stringify(data)
-		}).done(function(data) {
-			animation.log("File " + title + " transferred to data/" + dateStr);
-			edit.addToRemovalList("voice", index);
-			// Remove from map
-			delete journal.archive.map[file];
-		}).fail(function(xhs, status, error) {
-			animation.log("File " + title + " cannot be removed. No transfer was made. The server returns error \"" + error + "\"", true);
-			animation.warning("#confirm");
-		});
-	});
+
 }
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
@@ -1867,6 +1866,7 @@ edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {
 		var dateStr = edit.getDate(),
 			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+		animation.log("Fetching resource on the server ...");
 		$.ajax({
 			type: "GET",
 			url: url
@@ -1901,7 +1901,8 @@ edit.playableSearch = function(typeNum) {
 						contentUrl = itemList[key]["@content.downloadUrl"],
 						suffix = name.substring(name.length - 4),
 						elementData = {
-							name: name,
+							name: "",
+							title: name.substring(0, name.length - 4),
 							url: contentUrl,
 							size: size,
 							resource: false,
@@ -1954,6 +1955,7 @@ edit.playableSearch = function(typeNum) {
 							break;
 					}
 				}
+				animation.log("Done");
 			})
 			.fail(function(xhr, status, error) {
 				animation.log("Cannot load data from the server. The server returns error \"" + error + "\"", true);
@@ -1971,105 +1973,126 @@ edit.playableSearch = function(typeNum) {
 	});
 }
 /**
- * Save the all the playable items.
+ * Save all the playable items. Forward animation.log is required.
  * This function will contact OneDrive server and will upload the data as soon as saving is complete
  * @param {Number} typeNum - The type number of the content to be saved. 1: video. 3: voice.
  */
 edit.playableSave = function(typeNum) {
-	var length = result.length,
+	var dateStr = edit.getDate(),
 		resourceDir = "/drive/root:/Apps/Journal/resource",
 		contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
-		finished = 0;
-	animation.log(length + " found");
-	// Moving to the data folder
-	for (var i = 0; i !== length; ++i) {
-		var newName = dateStr + (new Date().getTime() + i) + result[i].substring(result[i].length - 4),
-			requestJson = {
-				// New name of the file
-				name: newName,
-				parentReference: {
-					path: resourceDir
-				}
-			},
-			// Still use the old name to find the file
-			url = "https://api.onedrive.com/v1.0" + contentDir + "/" + result[i] + "?select=name,size&access_token=" + token;
-		$.ajax({
-			type: "PATCH",
-			url: url,
-			contentType: "application/json",
-			data: JSON.stringify(requestJson)
-		})
-			.done(function(data, status, xhr) {
-				var url = data["@content.downloadUrl"],
-				size = data["size"],
-				name = data["name"];
-				switch (typeNum) {
-					case 1:
-						// Video
-						animation.log(++finished + " of " + length + " video transferred");
-						break;
-					case 3:
-						// Voice
-						animation.log(++finished + " of " + length + " voice transferred");
-						var index = $("#attach-area .voice").length;
-						edit.voice(index, url);
-						journal.archive.map[name] = {
-							url: url,
-							size: size
-						}
-						break;
-				}
-			})
-		.fail(function(xhr, status, error) {
-			++finished;
-			animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
-			switch (typeNum) {
-				case 1:
-					// Video
-					animation.warning("#add-video");
-					break;
-				case 3:
-					// Voice
-					animation.warning("#add-voice");
-					break;
-			}
-		})
-		.always(function(data, status, xhr) {
-			if (finished === length) {
-				// Finished all the processing
-				switch (typeNum) {
-					case 1:
-						// Video
-						animation.log("Finished video transfer");
-						break;
-					case 3:
-						// Voice
-						animation.log("Finished audio transfer");
-						break;
-				}
-			}
-		});
-	}
-})
-.fail(function(xhr, status, error) {
+		dataGroup,
+		localData,
+		pending = 0,
+		total = 0;
+	// Transferring all the data
 	switch (typeNum) {
 		case 1:
 			// Video
-			animation.log("Cannot load videos: failed to find videos under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+			dataGroup = edit.videos;
+			localData = JSON.parse(localStorage["video"]);
 			break;
 		case 3:
-			// Voice
-			animation.log("Cannot load audios: failed to find audios under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+			dataGroup = edit.voices;
+			localData = JSON.parse(localStorage["voice"]);
 			break;
+		default:
+			return;
 	}
+	// Sync from localStorage to dataGroup
+	for (var i = 0; i !== localData.length; ++i) {
+		for (var j = 0; j !== dataGroup.length; ++j) {
+			if (localData[i]["fileName"] === dataGroup[j]["name"]) {
+				// Matched
+				dataGroup[j]["title"] = localData[i]["title"];
+				break;
+			}
+		}
+	}
+	total = dataGroup.length;
+	pending = total;
+	getTokenCallback(function() {
+		for (var i = 0; i !== dataGroup.length; ++i) {
+			if (dataGroup[i]["change"]) {
+				// This element wants to change its location
+				var name = dataGroup[i]["name"],
+					newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
+					path,
+					requestJson,
+					url;
+				dataGroup[i]["success"] = false;
+				if (dataGroup[i]["resource"]) {
+					// Wants to be removed, search for the title in the cache
+					for (var j = 0; j !== localData.length; ++j) {
+						if (localData[j]["fileName"] === name) {
+							// Find the corresponding name
+							newName = title + name.substring(name.length - 4);
+							break;
+						}
+					}
+					path = contentDir;
+				} else {
+					// Wants to be added to the entry
+					path = resourceDir;
+				}
+				requestJson = {
+					name: newName,
+					parentReference: {
+						path: path
+					}
+				};
+				url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?select=name,size&access_token=" + token;
+				$.ajax({
+					type: "PATCH",
+					url: url,
+					contentType: "application/json",
+					data: JSON.stringify(requestJson)
+				})
+					.done(function(data, status, xhr) {
+						--pending;
+						var url = data["@content.downloadUrl"],
+							size = data["size"],
+							name = data["name"],
+							title = "";
+						// Search for this name
+						for (var j = 0; j !== dataGroup.length; ++j) {
+							if (dataGroup[j]["size"] == size) {
+								// Size matched
+								title = dataGroup[j]["title"] + " ";
+								break;
+							}
+						}
+						animation.log(edit.mediaName(typeNum).capitalize() + " file " + title + "transferred");
+					})
+					.fail(function(xhr, status, error) {
+						--pending;
+						animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+						animation.warning("#add-" + edit.mediaName(typeNum));
+					})
+					.always(function(data, status, xhr) {
+						if (pending <= 0) {
+							// Finished all the processing
+							animation.log("Finished " + edit.mediaName(typeNum) + "transfer");
+						}
+					});
+
+			} else {
+				// No need to change, decrement by one immediately
+				--pending;
+			}
+		}
+	});
 });
 
-}
 
 /******************************************************************
  ************************ OTHERS **********************************
  ******************************************************************/
 
+/**
+ * Capitalize the first chatacter of a string
+ * @returns {String} - The capitalized string
+ */
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 };

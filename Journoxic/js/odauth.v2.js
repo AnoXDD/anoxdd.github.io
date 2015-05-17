@@ -72,7 +72,7 @@ function getAuthInfoFromUrl() {
 }
 
 /**
- * Gets a valid access token then do the callback
+ * Gets a valid access token then do the callback. This method will guarantee token will be available in the next 5 minutes
  * @param {function} callback - the callback function with optional arguments "token" to process the access token later
  * @returns {}
  */
@@ -132,7 +132,8 @@ function getFromCookie(name) {
  */
 function setCookie(token, expiresInSeconds, refreshToken) {
 	var expiration = new Date();
-	expiration.setTime(expiration.getTime() + expiresInSeconds * 1000);
+	// Expiration set up back 5 minutes
+	expiration.setTime(expiration.getTime() + expiresInSeconds * 1000 - 300000);
 	// Access token
 	var cookie = "odauth=" + token + "; path=/; expires=" + expiration.getTime();
 	console.log("setCookie(): cookie = " + cookie);

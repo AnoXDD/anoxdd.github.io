@@ -8,6 +8,8 @@ edit.confirmName = "";
 edit.currentEditing = -1;
 
 edit.photos = [];
+edit.voices = [];
+edit.videos = [];
 
 edit.mediaIndex = {};
 edit.isEditing = -1;
@@ -548,8 +550,13 @@ edit.change = function(key, value) {
 
 /************************** EDITING *******************************/
 
-edit.addMedia = function(typeNum) {
-	var selectorHeader = "#attach-area ." + edit.mediaName(typeNum),
+/**
+ * Add a medium to the edit pane, given the typeNum
+ * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
+ * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url" and "title" key
+ */
+edit.addMedia = function(typeNum, arg) {
+	var selectorHeader = "#attach-area ." + edit.mediaName(Math.abs(typeNum)),
 		length = $(selectorHeader).length,
 		htmlContent;
 	switch (typeNum) {
@@ -565,6 +572,10 @@ edit.addMedia = function(typeNum) {
 		case 3:
 			// Voice
 			edit.voiceSearch();
+			break;
+		case -3:
+			// Helper for voice
+			htmlContent = "<div class=\"voice\"><a onclick=\"edit.voice(" + length + ",\"" + arg["url"] + "\")\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
 			break;
 		case 4:
 			// Music
@@ -583,7 +594,7 @@ edit.addMedia = function(typeNum) {
 			htmlContent = "<div class=\"weblink\"><a title=\"Edit\" onclick=\"edit.weblink(" + length + ")\" href=\"#\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" placeholder=\"Title\" /><input disabled class=\"desc\" placeholder=\"http://\" /></a></div>";
 			break;
 		default:
-
+			return;
 	}
 	if (length > 0) {
 		// Elements already exist
@@ -592,7 +603,10 @@ edit.addMedia = function(typeNum) {
 		// Have to create a new one
 		$(htmlContent).appendTo("#attach-area");
 	}
-	$(selectorHeader + ":eq(" + length + ") a").trigger("click");
+	if (typeNum > 0) {
+		// Normal call instead of helper call
+		$(selectorHeader + ":eq(" + length + ") a").trigger("click");
+	}
 };
 edit.removeMedia = function(typeNum) {
 	var type = edit.mediaName(typeNum);
@@ -1612,6 +1626,9 @@ edit.voice = function(index, link) {
 		// Find it from this dataclip
 		var fileName = $(selectorHeader + "a").attr("class");
 		source = journal.archive.map[fileName]["url"];
+		if (source == undefined) {
+			// Todo: print error info here
+		}
 	}
 	app.audioPlayer(selectorHeader + "a", source);
 	animation.setConfirm(3);
@@ -1843,6 +1860,7 @@ edit.itunesSave = function(index, typeNum) {
 
 /**
  * Add a playable item from the data folder to the edit view (video and audio)
+ * This function will simply fetch the data and will not make any difference on OneDrive server
  * @param {Number} typeNum - The type number of the content to be added. 1: video. 3: voice.
  */
 edit.playableSearch = function(typeNum) {
@@ -1860,118 +1878,192 @@ edit.playableSearch = function(typeNum) {
 					animation.log("There seems to be so many items. Not all the items will be added", true);
 				}
 				var itemList = data["value"],
-					result = [];
-				// Iterate to find all the results
-				for (var key = 0, len = itemList.length; key !== len; ++key) {
-					var name = itemList[key]["name"],
-						suffix = name.substring(name.length - 4),
-						found = false;
-					// Test supported file types
-					switch (typeNum) {
-						case 1:
-							// Video
-							found = suffix === ".mp4";
-							break;
-						case 3:
-							// Voice
-							found = suffix === ".mp3" || suffix === ".wav";
-							break;
-						default:
-							console.log("WTF IS GOING ON?");
-							return;
-					}
-					if (found) {
-						result.push(name);
-					}
-				}
-				var length = result.length,
-					resourceDir = "/drive/root:/Apps/Journal/resource",
-					contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
-					finished = 0;
-				animation.log(length + " found");
-				// Moving to the data folder
-				for (var i = 0; i !== length; ++i) {
-					var newName = dateStr + (new Date().getTime() + i) + result[i].substring(result[i].length - 4),
-						requestJson = {
-							// New name of the file
-							name: newName,
-							parentReference: {
-								path: resourceDir
-							}
-						},
-						// Still use the old name to find the file
-						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + result[i] + "?select=name,size&access_token=" + token;
-					$.ajax({
-						type: "PATCH",
-						url: url,
-						contentType: "application/json",
-						data: JSON.stringify(requestJson)
-					})
-						.done(function(data, status, xhr) {
-							var url = data["@content.downloadUrl"],
-								size = data["size"];
-							name = data["name"];
-							switch (typeNum) {
-								case 1:
-									// Video
-									animation.log(++finished + " of " + length + " video transferred");
-									break;
-								case 3:
-									// Voice
-									animation.log(++finished + " of " + length + " voice transferred");
-									var index = $("#attach-area .voice").length;
-									edit.voice(index, url);
-									journal.archive.map[name] = {
-										url: data["@content.downloadUrl"],
-										size: data["size"]
-									}
-									break;
-							}
-						})
-						.fail(function(xhr, status, error) {
-							++finished;
-							animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
-							switch (typeNum) {
-								case 1:
-									// Video
-									animation.warning("add-video");
-									break;
-								case 3:
-									// Voice
-									animation.warning("#add-voice");
-									break;
-							}
-						})
-						.always(function(data, status, xhr) {
-							if (finished === length) {
-								// Finished all the processing
-								switch (typeNum) {
-									case 1:
-										// Video
-										animation.log("Finished video transfer");
-										break;
-									case 3:
-										// Voice
-										animation.log("Finished audio transfer");
-										break;
-								}
-							}
-						});
-				}
-			})
-			.fail(function(xhr, status, error) {
+					dataGroup;
+				// Set reference to the group
 				switch (typeNum) {
 					case 1:
 						// Video
-						animation.log("Cannot load videos: failed to find videos under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+						dataGroup = edit.videos;
 						break;
 					case 3:
 						// Voice
-						animation.log("Cannot load audios: failed to find audios under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+						dataGroup = edit.voices;
+						break;
+					default:
+						// Incorrect use of this method, abort
+						console.log("edit.playableSearch()\tInvalid call");
+						return;
+				}
+				// Iterate to find all the results on the server
+				for (var key = 0, len = itemList.length; key !== len; ++key) {
+					var size = itemList[key]["size"],
+						name = itemList[key]["name"],
+						contentUrl = itemList[key]["@content.downloadUrl"],
+						suffix = name.substring(name.length - 4),
+						elementData = {
+							name: name,
+							url: contentUrl,
+							size: size,
+							resource: false,
+							change: true
+						};
+					// Test supported file types, if file is not supported restart the loop
+					switch (typeNum) {
+						case 1:
+							// Video
+							if (suffix !== ".mp4") {
+								continue;
+							}
+							break;
+						case 3:
+							// Voice
+							if (suffix === ".mp3" || suffix === ".wav") {
+								continue;
+							}
+							break;
+					}
+					result.push(name);
+					// Test if this file already exists
+					var newContent = true;
+					for (var i = 0; i !== dataGroup.length; ++i) {
+						if (dataGroup[i]["size"] === size) {
+							// Same file
+							newContent = false;
+							break;
+						}
+					}
+					if (!newContent) {
+						// Not a new content, restart the loop
+						continue;
+					}
+					dataGroup.push(elementData);
+					// Add to the edit pane
+					var newIndex,
+						htmlContent;
+					switch (typeNum) {
+						case 1:
+							// Video
+							break;
+						case 3:
+							// Voice
+							// Helper call to edit.media
+							edit.addMedia(-3, {
+								url: contentUrl,
+								title: name.substring(0, name.length - 4)
+							});
+							break;
+					}
+				}
+			})
+			.fail(function(xhr, status, error) {
+				animation.log("Cannot load data from the server. The server returns error \"" + error + "\"", true);
+				switch (typeNum) {
+					case 1:
+						// Video
+						animation.warning("#add-video");
+						break;
+					case 3:
+						// Voice
+						animation.warning("#add-voice");
 						break;
 				}
 			});
 	});
+}
+/**
+ * Save the all the playable items.
+ * This function will contact OneDrive server and will upload the data as soon as saving is complete
+ * @param {Number} typeNum - The type number of the content to be saved. 1: video. 3: voice.
+ */
+edit.playableSave = function(typeNum) {
+	var length = result.length,
+		resourceDir = "/drive/root:/Apps/Journal/resource",
+		contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
+		finished = 0;
+	animation.log(length + " found");
+	// Moving to the data folder
+	for (var i = 0; i !== length; ++i) {
+		var newName = dateStr + (new Date().getTime() + i) + result[i].substring(result[i].length - 4),
+			requestJson = {
+				// New name of the file
+				name: newName,
+				parentReference: {
+					path: resourceDir
+				}
+			},
+			// Still use the old name to find the file
+			url = "https://api.onedrive.com/v1.0" + contentDir + "/" + result[i] + "?select=name,size&access_token=" + token;
+		$.ajax({
+			type: "PATCH",
+			url: url,
+			contentType: "application/json",
+			data: JSON.stringify(requestJson)
+		})
+			.done(function(data, status, xhr) {
+				var url = data["@content.downloadUrl"],
+				size = data["size"],
+				name = data["name"];
+				switch (typeNum) {
+					case 1:
+						// Video
+						animation.log(++finished + " of " + length + " video transferred");
+						break;
+					case 3:
+						// Voice
+						animation.log(++finished + " of " + length + " voice transferred");
+						var index = $("#attach-area .voice").length;
+						edit.voice(index, url);
+						journal.archive.map[name] = {
+							url: url,
+							size: size
+						}
+						break;
+				}
+			})
+		.fail(function(xhr, status, error) {
+			++finished;
+			animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+			switch (typeNum) {
+				case 1:
+					// Video
+					animation.warning("#add-video");
+					break;
+				case 3:
+					// Voice
+					animation.warning("#add-voice");
+					break;
+			}
+		})
+		.always(function(data, status, xhr) {
+			if (finished === length) {
+				// Finished all the processing
+				switch (typeNum) {
+					case 1:
+						// Video
+						animation.log("Finished video transfer");
+						break;
+					case 3:
+						// Voice
+						animation.log("Finished audio transfer");
+						break;
+				}
+			}
+		});
+	}
+})
+.fail(function(xhr, status, error) {
+	switch (typeNum) {
+		case 1:
+			// Video
+			animation.log("Cannot load videos: failed to find videos under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+			break;
+		case 3:
+			// Voice
+			animation.log("Cannot load audios: failed to find audios under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+			break;
+	}
+});
+
 }
 
 /******************************************************************

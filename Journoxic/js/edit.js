@@ -2009,7 +2009,12 @@ edit.playableSave = function(typeNum) {
 			}
 		}
 	}
-	total = dataGroup.length;
+	// Get pending total
+	for (var i = 0; i !== dataGroup.length; ++i) {
+		if (dataGroup[i]["change"]) {
+			++pending;
+		}
+	}
 	pending = total;
 	getTokenCallback(function() {
 		for (var i = 0; i !== dataGroup.length; ++i) {
@@ -2050,15 +2055,14 @@ edit.playableSave = function(typeNum) {
 				})
 					.done(function(data, status, xhr) {
 						--pending;
-						var url = data["@content.downloadUrl"],
-							size = data["size"],
-							name = data["name"],
+						var size = data["size"],
 							title = "";
 						// Search for this name
 						for (var j = 0; j !== dataGroup.length; ++j) {
 							if (dataGroup[j]["size"] == size) {
 								// Size matched
 								title = dataGroup[j]["title"] + " ";
+								dataGroup[j]["success"] = true;
 								break;
 							}
 						}
@@ -2072,17 +2076,46 @@ edit.playableSave = function(typeNum) {
 					.always(function(data, status, xhr) {
 						if (pending <= 0) {
 							// Finished all the processing
+							var cacheData = [];
+							for (var j = 0; j !== dataGroup.length; ++j) {
+								if (dataGroup[j]["change"]) {
+									dataGroup[j]["change"] = false;
+									if (dataGroup[j]["success"]) {
+										var url = data["@content.downloadUrl"],
+											size = data["size"],
+											name = data["name"];
+										dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+										// Update new member attached to this entry
+										if (dataGroup[j]["resource"]) {
+											// Update journal.archive.map
+											journal.archive.map["name"] = {
+												url: url,
+												size: size
+											};
+											// Update dataGroup
+											dataGroup[j]["name"] = name;
+											// Update local cache 
+											cacheData.push({
+												fileName: name,
+												title: dataGroup[j]["title"]
+											});
+										}
+									}
+									// Remove unnecessary data member
+									if (!dataGroup[j]["resource"]) {
+										dataGroup.splice(j, 1);
+										--j;
+									}
+								}
+							}
+							localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
 							animation.log("Finished " + edit.mediaName(typeNum) + "transfer");
 						}
 					});
-
-			} else {
-				// No need to change, decrement by one immediately
-				--pending;
 			}
 		}
 	});
-});
+};
 
 
 /******************************************************************

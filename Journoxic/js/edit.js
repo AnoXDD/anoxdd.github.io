@@ -245,22 +245,27 @@ edit.save = function(selector) {
 		id = animation.blink(selector);
 	}
 	edit.processRemovalList();
+	// Save photos, voices and videos
 	edit.photoSave(function() {
-		clearInterval(id);
-		var index = edit.find(localStorage["created"]);
-		edit.exportCache(index);
-		edit.sortArchive();
-		journal.archive.data = edit.minData();
-		edit.saveDataCache();
-		$(selector).html(html).removeClass("spin").attr({
-			onclick: "edit.save('" + selector + "')",
-			href: "#"
+		edit.playableSave(1, function() {
+			edit.playableSave(3, function() {
+				clearInterval(id);
+				var index = edit.find(localStorage["created"]);
+				edit.exportCache(index);
+				edit.sortArchive();
+				journal.archive.data = edit.minData();
+				edit.saveDataCache();
+				$(selector).html(html).removeClass("spin").attr({
+					onclick: "edit.save('" + selector + "')",
+					href: "#"
+				});
+				// Show finish animation
+				animation.finished(selector);
+				animation.log("Finished saving data");
+				// Upload the file to OneDrive
+				uploadFile();
+			});
 		});
-		// Show finish animation
-		animation.finished(selector);
-		animation.log("Finished saving data");
-		// Upload the file to OneDrive
-		uploadFile();
 	});
 };
 /**
@@ -1226,6 +1231,7 @@ edit.photoSave = function(callback) {
 		if (photoQueue.length != 0) {
 			// Process the photos
 			getTokenCallback(function(token) {
+				animation.log("Start transferring photos ...");
 				for (var i = 0; i != photoQueue.length; ++i) {
 					var requestJson,
 						url,
@@ -1698,6 +1704,7 @@ edit.voiceRemove = function() {
  * Search for all the voices from the data folder and add it to the edit.voice
  */
 edit.voiceSearch = function() {
+	edit.playableSearch(3);
 }
 /**
  * Use the microphone to record a new voice
@@ -1976,15 +1983,15 @@ edit.playableSearch = function(typeNum) {
  * Save all the playable items. Forward animation.log is required.
  * This function will contact OneDrive server and will upload the data as soon as saving is complete
  * @param {Number} typeNum - The type number of the content to be saved. 1: video. 3: voice.
+ * @param {Function} callback - The callback function to be called after all the processing is done
  */
-edit.playableSave = function(typeNum) {
+edit.playableSave = function(typeNum, callback) {
 	var dateStr = edit.getDate(),
 		resourceDir = "/drive/root:/Apps/Journal/resource",
 		contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
 		dataGroup,
 		localData,
-		pending = 0,
-		total = 0;
+		pending = 0;
 	// Transferring all the data
 	switch (typeNum) {
 		case 1:
@@ -2015,106 +2022,110 @@ edit.playableSave = function(typeNum) {
 			++pending;
 		}
 	}
-	pending = total;
-	getTokenCallback(function() {
-		for (var i = 0; i !== dataGroup.length; ++i) {
-			if (dataGroup[i]["change"]) {
-				// This element wants to change its location
-				var name = dataGroup[i]["name"],
-					newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
-					path,
-					requestJson,
-					url;
-				dataGroup[i]["success"] = false;
-				if (dataGroup[i]["resource"]) {
-					// Wants to be removed, search for the title in the cache
-					for (var j = 0; j !== localData.length; ++j) {
-						if (localData[j]["fileName"] === name) {
-							// Find the corresponding name
-							newName = title + name.substring(name.length - 4);
-							break;
-						}
-					}
-					path = contentDir;
-				} else {
-					// Wants to be added to the entry
-					path = resourceDir;
-				}
-				requestJson = {
-					name: newName,
-					parentReference: {
-						path: path
-					}
-				};
-				url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?select=name,size&access_token=" + token;
-				$.ajax({
-					type: "PATCH",
-					url: url,
-					contentType: "application/json",
-					data: JSON.stringify(requestJson)
-				})
-					.done(function(data, status, xhr) {
-						--pending;
-						var size = data["size"],
-							title = "";
-						// Search for this name
-						for (var j = 0; j !== dataGroup.length; ++j) {
-							if (dataGroup[j]["size"] == size) {
-								// Size matched
-								title = dataGroup[j]["title"] + " ";
-								dataGroup[j]["success"] = true;
+	if (pending === 0) {
+		// Nothing to be transferred
+		callback();
+	} else {
+		getTokenCallback(function() {
+			animation.log("Start transferring " + edit.mediaName(typeNum) + "s ...");
+			for (var i = 0; i !== dataGroup.length; ++i) {
+				if (dataGroup[i]["change"]) {
+					// This element wants to change its location
+					var name = dataGroup[i]["name"],
+						newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
+						path;
+					dataGroup[i]["success"] = false;
+					if (dataGroup[i]["resource"]) {
+						// Wants to be removed, search for the title in the cache
+						for (var j = 0; j !== localData.length; ++j) {
+							if (localData[j]["fileName"] === name) {
+								// Find the corresponding name
+								newName = title + name.substring(name.length - 4);
 								break;
 							}
 						}
-						animation.log(edit.mediaName(typeNum).capitalize() + " file " + title + "transferred");
+						path = contentDir;
+					} else {
+						// Wants to be added to the entry
+						path = resourceDir;
+					}
+					var requestJson = {
+						name: newName,
+						parentReference: {
+							path: path
+						}
+					},
+						url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?select=name,size&access_token=" + token;
+					$.ajax({
+						type: "PATCH",
+						url: url,
+						contentType: "application/json",
+						data: JSON.stringify(requestJson)
 					})
-					.fail(function(xhr, status, error) {
-						--pending;
-						animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
-						animation.warning("#add-" + edit.mediaName(typeNum));
-					})
-					.always(function(data, status, xhr) {
-						if (pending <= 0) {
-							// Finished all the processing
-							var cacheData = [];
+						.done(function(data, status, xhr) {
+							--pending;
+							var size = data["size"],
+								title = "";
+							// Search for this name
 							for (var j = 0; j !== dataGroup.length; ++j) {
-								if (dataGroup[j]["change"]) {
-									dataGroup[j]["change"] = false;
-									if (dataGroup[j]["success"]) {
-										var url = data["@content.downloadUrl"],
-											size = data["size"],
-											name = data["name"];
-										dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-										// Update new member attached to this entry
-										if (dataGroup[j]["resource"]) {
-											// Update journal.archive.map
-											journal.archive.map["name"] = {
-												url: url,
-												size: size
-											};
-											// Update dataGroup
-											dataGroup[j]["name"] = name;
-											// Update local cache 
-											cacheData.push({
-												fileName: name,
-												title: dataGroup[j]["title"]
-											});
-										}
-									}
-									// Remove unnecessary data member
-									if (!dataGroup[j]["resource"]) {
-										dataGroup.splice(j, 1);
-										--j;
-									}
+								if (dataGroup[j]["size"] == size) {
+									// Size matched
+									title = dataGroup[j]["title"] + " ";
+									dataGroup[j]["success"] = true;
+									break;
 								}
 							}
-							localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
-							animation.log("Finished " + edit.mediaName(typeNum) + "transfer");
-						}
-					});
+							animation.log(edit.mediaName(typeNum).capitalize() + " file " + title + "transferred");
+						})
+						.fail(function(xhr, status, error) {
+							--pending;
+							animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+							animation.warning("#add-" + edit.mediaName(typeNum));
+						})
+						.always(function(data, status, xhr) {
+							if (pending <= 0) {
+								// Finished all the processing
+								var cacheData = [];
+								for (var j = 0; j !== dataGroup.length; ++j) {
+									if (dataGroup[j]["change"]) {
+										dataGroup[j]["change"] = false;
+										if (dataGroup[j]["success"]) {
+											var url = data["@content.downloadUrl"],
+												size = data["size"],
+												name = data["name"];
+											dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+											// Update new member attached to this entry
+											if (dataGroup[j]["resource"]) {
+												// Update journal.archive.map
+												journal.archive.map["name"] = {
+													url: url,
+													size: size
+												};
+												// Update dataGroup
+												dataGroup[j]["name"] = name;
+												// Update local cache 
+												cacheData.push({
+													fileName: name,
+													title: dataGroup[j]["title"]
+												});
+											}
+										}
+										// Remove unnecessary data member
+										if (!dataGroup[j]["resource"]) {
+											dataGroup.splice(j, 1);
+											--j;
+										}
+									}
+								}
+								localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
+								animation.log("Finished " + edit.mediaName(typeNum) + "transfer");
+								callback();
+							}
+						});
+				}
 			}
-		}
-	});
+		});
+	}
 };
 
 

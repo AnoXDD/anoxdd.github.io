@@ -1507,6 +1507,7 @@ app.audioPlayer = function(selector, source) {
 		// Do not continue
 		return;
 	}
+	animation.log("Fetching audio data ...");
 	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +

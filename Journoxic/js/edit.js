@@ -95,10 +95,18 @@ edit.init = function(overwrite, index) {
 	edit.voices = [];
 	var processGroup = ["video", "voice"];
 	for (var h = 0; h !== processGroup.length; ++h) {
+		var dataGroup;
+		if (processGroup[h] === "video") {
+			dataGroup = edit.videos;
+		} else if (processGroup[h] === "voice") {
+			dataGroup = edit.voices;
+		} else {
+			break;
+		}
 		if (data[processGroup[h]]) {
 			for (var i = 0; i !== data[processGroup[h]].length; ++i) {
 				var name = data[processGroup[h]][i]["fileName"];
-				edit.videos.push({
+				dataGroup.push({
 					name: name,
 					title: data[processGroup[h]][i]["title"],
 					size: journal.archive.map[name]["size"],
@@ -745,6 +753,9 @@ edit.cleanupMediaEdit = function() {
 	switch (edit.isEditing) {
 		case 2:
 			edit.locationHide();
+			break;
+		case 3:
+			edit.voiceHide();
 			break;
 		case 4:
 			edit.musicHide();
@@ -1696,11 +1707,21 @@ edit.voiceSave = function(index) {
  * Removes the voice element from the data. Transfer the data in resource folder to data folder
  */
 edit.voiceRemove = function() {
-	var index = edit.mediaIndex["voice"],
-		file = JSON.parse(localStorage["voice"])[index]["fileName"],
-		title = JSON.parse(localStorage["voice"])[index]["title"],
-		dateStr = edit.getDate();
-
+	var index = edit.mediaIndex["voice"];
+	if (index >= 0) {
+		// Search to change this in edit.voices
+		var selectorHeader = edit.getSelectorHeader("voice", index),
+			title = $(selectorHeader + "a").attr("class");
+		for (var i = 0; i !== edit.voices.length; ++i) {
+			if (edit.voices[i]["name"] == title) {
+				// Found
+				if (edit.voices[i]["resource"]) {
+					// Apply changes to resource files only
+					edit.voices[i]["change"] = true;
+				}
+			}
+		}
+	}
 }
 /**
  * Search for all the voices from the data folder and add it to the edit.voice

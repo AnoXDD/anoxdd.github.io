@@ -1260,7 +1260,7 @@ edit.photoSave = function(callback) {
 							}
 						};
 						// Still use the old name to find the file
-						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?access_token=" + token;
 						// Add to cache
 					} else {
 						// Would like to be added to data, i.e. remove from resource folder
@@ -1270,7 +1270,7 @@ edit.photoSave = function(callback) {
 								path: contentDir
 							}
 						};
-						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?access_token=" + token;
 					}
 					// Update the new name
 					for (var j = 0; j != edit.photos.length; ++j) {
@@ -1719,6 +1719,9 @@ edit.voiceRemove = function() {
 					// Apply changes to resource files only
 					edit.voices[i]["change"] = true;
 				}
+				// Hide the content
+				$(selectorHeader).fadeOut();
+				break;
 			}
 		}
 	}
@@ -1948,12 +1951,11 @@ edit.playableSearch = function(typeNum) {
 							break;
 						case 3:
 							// Voice
-							if (suffix === ".mp3" || suffix === ".wav") {
+							if (suffix !== ".mp3" || suffix !== ".wav") {
 								continue;
 							}
 							break;
 					}
-					result.push(name);
 					// Test if this file already exists
 					var newContent = true;
 					for (var i = 0; i !== dataGroup.length; ++i) {
@@ -2049,12 +2051,13 @@ edit.playableSave = function(typeNum, callback) {
 		// Nothing to be transferred
 		callback();
 	} else {
-		getTokenCallback(function() {
+		getTokenCallback(function(token) {
 			animation.log("Start transferring " + edit.mediaName(typeNum) + "s ...");
 			for (var i = 0; i !== dataGroup.length; ++i) {
 				if (dataGroup[i]["change"]) {
 					// This element wants to change its location
 					var name = dataGroup[i]["name"],
+					title = dataGroup[i]["title"],
 						newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
 						path;
 					dataGroup[i]["success"] = false;
@@ -2078,7 +2081,7 @@ edit.playableSave = function(typeNum, callback) {
 							path: path
 						}
 					},
-						url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?select=name,size&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?access_token=" + token;
 					$.ajax({
 						type: "PATCH",
 						url: url,
@@ -2141,7 +2144,7 @@ edit.playableSave = function(typeNum, callback) {
 									}
 								}
 								localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
-								animation.log("Finished " + edit.mediaName(typeNum) + "transfer");
+								animation.log("Finished " + edit.mediaName(typeNum) + " transfer");
 								callback();
 							}
 						});

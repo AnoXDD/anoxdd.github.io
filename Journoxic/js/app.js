@@ -857,7 +857,7 @@ app.detail = function() { // [m]
 			for (var key = 0; key != data["images"].length; ++key) {
 				var file = data["images"][key].fileName;
 				if (journal.archive.map[file]) {
-					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"><span></span></a>");
+					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
 				} else {
 					animation.log("Cannot load file " + file + ". Please make sure you have downloaded it", true);
 				}

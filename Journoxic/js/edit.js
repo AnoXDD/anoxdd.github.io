@@ -1,5 +1,13 @@
 /* The script for editing anything */
 
+
+/**
+ * Todo: start working on adding a voice file
+ * 1. Why moving the entire folder instead of the file?
+ */
+
+
+
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
@@ -609,7 +617,7 @@ edit.addMedia = function(typeNum, arg) {
 			break;
 		case -3:
 			// Helper for voice
-			htmlContent = "<div class=\"voice\"><a onclick=\"edit.voice(" + length + ",\"" + arg["url"] + "\")\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
+			htmlContent = "<div class=\"voice\"><a onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
 			break;
 		case 4:
 			// Music
@@ -1260,7 +1268,7 @@ edit.photoSave = function(callback) {
 							}
 						};
 						// Still use the old name to find the file
-						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?name,size,@content.downloadUrl&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size,@content.downloadUrl&access_token=" + token;
 						// Add to cache
 					} else {
 						// Would like to be added to data, i.e. remove from resource folder
@@ -1270,7 +1278,7 @@ edit.photoSave = function(callback) {
 								path: contentDir
 							}
 						};
-						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?name,size,@content.downloadUrl&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size,@content.downloadUrl&access_token=" + token;
 					}
 					// Update the new name
 					for (var j = 0; j != edit.photos.length; ++j) {
@@ -1934,7 +1942,7 @@ edit.playableSearch = function(typeNum) {
 						contentUrl = itemList[key]["@content.downloadUrl"],
 						suffix = name.substring(name.length - 4),
 						elementData = {
-							name: "",
+							name: name,
 							title: name.substring(0, name.length - 4),
 							url: contentUrl,
 							size: size,
@@ -1951,7 +1959,7 @@ edit.playableSearch = function(typeNum) {
 							break;
 						case 3:
 							// Voice
-							if (suffix !== ".mp3" || suffix !== ".wav") {
+							if (suffix !== ".mp3" && suffix !== ".wav") {
 								continue;
 							}
 							break;
@@ -2082,7 +2090,7 @@ edit.playableSave = function(typeNum, callback) {
 						}
 					};
 					path = path == resourceDir? contentDir: resourceDir;
-						var url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?name,size,@content.downloadUrl&access_token=" + token;
+						var url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?select=name,size,@content.downloadUrl&access_token=" + token;
 					console.log(url);
 					$.ajax({
 						type: "PATCH",

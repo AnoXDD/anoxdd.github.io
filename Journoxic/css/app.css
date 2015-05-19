@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -69,8 +69,8 @@
 }
 
 .spin {
-	-webkit-animation: spin 2s infinite linear;
-	animation: spin 2s infinite linear;
+	-webkit-animation: spin 2s infinite ease;
+	animation: spin 2s infinite ease;
 }
 
 /*@font-face {

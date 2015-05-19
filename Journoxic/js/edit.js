@@ -1034,7 +1034,7 @@ edit.photo = function() {
 	}
 	animation.log("Start loading images under data/" + dateStr + " ...");
 	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
 			type: "GET",
 			url: url
@@ -1654,6 +1654,8 @@ edit.voice = function(index, link) {
 		source = journal.archive.map[fileName]["url"];
 		if (source == undefined) {
 			// Todo: print error info here
+			animation.log("Cannot find the file",true);
+			return;
 		}
 	}
 	app.audioPlayer(selectorHeader + "a", source);
@@ -1872,7 +1874,7 @@ edit.itunesSave = function(index, typeNum) {
 edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {
 		var dateStr = edit.getDate(),
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size&access_token=" + token;
+			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size,@content.downloadUrl&access_token=" + token;
 		animation.log("Fetching resource on the server ...");
 		$.ajax({
 			type: "GET",

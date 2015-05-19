@@ -360,7 +360,7 @@ edit.exportCache = function(index) {
 	data["iconTags"] = !isNaN(parseInt(localStorage["iconTags"])) ? parseInt(localStorage["iconTags"]) : 0;
 	data["textTags"] = localStorage["textTags"];
 	var media,
-		elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"],
+		elem = ["images", "video","music", "voice", "book", "movie",  "place", "weblink"],
 		attach = 0;
 	for (var i = 0; i < elem.length; ++i) {
 		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
@@ -1260,7 +1260,7 @@ edit.photoSave = function(callback) {
 							}
 						};
 						// Still use the old name to find the file
-						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?name,size,@content.downloadUrl&access_token=" + token;
 						// Add to cache
 					} else {
 						// Would like to be added to data, i.e. remove from resource folder
@@ -1270,7 +1270,7 @@ edit.photoSave = function(callback) {
 								path: contentDir
 							}
 						};
-						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?name,size,@content.downloadUrl&access_token=" + token;
 					}
 					// Update the new name
 					for (var j = 0; j != edit.photos.length; ++j) {
@@ -2080,8 +2080,10 @@ edit.playableSave = function(typeNum, callback) {
 						parentReference: {
 							path: path
 						}
-					},
-						url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?access_token=" + token;
+					};
+					path = path == resourceDir? contentDir: resourceDir;
+						var url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?name,size,@content.downloadUrl&access_token=" + token;
+					console.log(url);
 					$.ajax({
 						type: "PATCH",
 						url: url,
@@ -2115,13 +2117,18 @@ edit.playableSave = function(typeNum, callback) {
 								for (var j = 0; j !== dataGroup.length; ++j) {
 									if (dataGroup[j]["change"]) {
 										dataGroup[j]["change"] = false;
+										var name, url, size;
 										if (dataGroup[j]["success"]) {
-											var url = data["@content.downloadUrl"],
-												size = data["size"],
-												name = data["name"];
-											dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-											// Update new member attached to this entry
+																						// Update new member attached to this entry
+											name = data["name"];
+											url = data["@content.downloadUrl"];
+												size = data["size"];
+											dataGroup[j]["resource"] = !dataGroup[j]["resource"];}
 											if (dataGroup[j]["resource"]) {
+												// Update these properties if the transfer failed
+												name = name || dataGroup[j]["name"];
+												size = size || dataGroup[j]["size"];
+												url = url || journal.archive.map[name]["url"];
 												// Update journal.archive.map
 												journal.archive.map["name"] = {
 													url: url,
@@ -2135,9 +2142,9 @@ edit.playableSave = function(typeNum, callback) {
 													title: dataGroup[j]["title"]
 												});
 											}
-										}
+										
 										// Remove unnecessary data member
-										if (!dataGroup[j]["resource"]) {
+										else  {
 											dataGroup.splice(j, 1);
 											--j;
 										}

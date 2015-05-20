@@ -2,8 +2,7 @@
 
 
 /**
- * Todo: start working on adding a voice file
- * 1. Why moving the entire folder instead of the file?
+ * Todo: reset edit.voice(?) each time save is clicked
  */
 
 
@@ -984,9 +983,14 @@ edit.getDate = function() {
 	if (localStorage["title"]) {
 		// Sometimes for some reason the first character is an "empty" char
 		dateStr = parseInt(localStorage["title"]);
-		if (!isNaN(dateStr) && dateStr.toString().length == 6) {
+		if (!isNaN(dateStr)) {
+			if (dateStr.toString().length === 5) {
+				dateStr = "0" + dateStr;
+			}
+			if( dateStr.toString().length === 6) {
 			// Correct format
 			return dateStr;
+			}
 		}
 	}
 	var date;
@@ -1655,6 +1659,7 @@ edit.voice = function(index, link) {
 	edit.mediaIndex["voice"] = index;
 	var selectorHeader = edit.getSelectorHeader("voice");
 	animation.setConfirm(3);
+	edit.func = $(selectorHeader + "a").attr("onclick");
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
@@ -1692,7 +1697,13 @@ edit.voiceHide = function() {
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
 	// Recover onclick event
+	if (edit.func) {
+// Use edit.func
+	$(selectorHeader + "a").attr("onclick", edit.func);
+	edit.func = undefined;
+	} else {
 	$(selectorHeader + "a").attr("onclick", "edit.voice(" + edit.mediaIndex["voice"] + ")");
+	}
 	// Save data
 	edit.voiceSave(edit.mediaIndex["voice"]);
 	$("#edit-pane").off("keyup");
@@ -2041,10 +2052,8 @@ edit.playableSave = function(typeNum, callback) {
 				var match = (dataGroup[i]["resource"] && $(this).hasClass("resource")) || (!dataGroup[i]["resource"] && $(this).hasClass("data"));
 				// Avoid cross-folder confusion to the files with the same name
 				if (match) {
-					if ($(this).hasClass("change")) {
-						// Wants to change location
-						dataGroup[i]["change"] = true;
-					}
+					// Update location setup
+					dataGroup[i]["change"] = $(this).hasClass("change");
 					break;
 				}
 			}
@@ -2146,7 +2155,7 @@ edit.playableSave = function(typeNum, callback) {
 											var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
 											// Avoid cross-folder confusion to the files with the same name
 											if (match) {
-												if (dataGroup[j]("success")) {
+												if (dataGroup[j]["success"]) {
 													// Transfer succeeds, update the class
 													if ($(this).hasClass("resource")) {
 														$(this).removeClass("resource").addClass("data");

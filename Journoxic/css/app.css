@@ -2592,8 +2592,22 @@ body {
 #attach-area .voice input, #attach-area .place input { /* padding-top: 7px; */
 }
 
-#attach-area .voice .miniplayer-flip {
-	margin-right: 14px;
+#attach-area .voice.data {
+	/* content: "data"; */
+	/* position: absolute; */
+	/* left: -10px; */
+	/* height: 0px; */
+	opacity: .2;
+}
+
+#attach-area .voice.resource {
+	background: red;
+}
+
+#attach-area .voice.change {
+    opacity: 1;
+	
+    background: #dadada;
 }
 
 /************************************* MEDIA PLAYER **********************************/

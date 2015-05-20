@@ -368,7 +368,7 @@ edit.exportCache = function(index) {
 	data["iconTags"] = !isNaN(parseInt(localStorage["iconTags"])) ? parseInt(localStorage["iconTags"]) : 0;
 	data["textTags"] = localStorage["textTags"];
 	var media,
-		elem = ["images", "video","music", "voice", "book", "movie",  "place", "weblink"],
+		elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
 		attach = 0;
 	for (var i = 0; i < elem.length; ++i) {
 		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
@@ -1673,7 +1673,7 @@ edit.voice = function(index, link) {
 		source = journal.archive.map[fileName]["url"];
 		if (source == undefined) {
 			// Todo: print error info here
-			animation.log("Cannot find the file",true);
+			animation.log("Cannot find the file", true);
 			return;
 		}
 	}
@@ -1906,7 +1906,7 @@ edit.itunesSave = function(index, typeNum) {
 edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {
 		var dateStr = edit.getDate(),
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size,@content.downloadUrl&access_token=" + token;
+			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		animation.log("Fetching resource on the server ...");
 		$.ajax({
 			type: "GET",
@@ -1937,11 +1937,13 @@ edit.playableSearch = function(typeNum) {
 				}
 				// Iterate to find all the results on the server
 				for (var key = 0, len = itemList.length; key !== len; ++key) {
-					var size = itemList[key]["size"],
+					var id = itemList[key]["id"],
+						size = itemList[key]["size"],
 						name = itemList[key]["name"],
 						contentUrl = itemList[key]["@content.downloadUrl"],
 						suffix = name.substring(name.length - 4),
 						elementData = {
+							id: id,
 							name: name,
 							title: name.substring(0, name.length - 4),
 							url: contentUrl,
@@ -1978,6 +1980,7 @@ edit.playableSearch = function(typeNum) {
 						continue;
 					}
 					dataGroup.push(elementData);
+					animation.log(edit.mediaName(typeNum).capitalize() + " file \"" + name + "\" added");
 					// Add to the edit pane
 					var newIndex,
 						htmlContent;
@@ -2065,7 +2068,8 @@ edit.playableSave = function(typeNum, callback) {
 				if (dataGroup[i]["change"]) {
 					// This element wants to change its location
 					var name = dataGroup[i]["name"],
-					title = dataGroup[i]["title"],
+						title = dataGroup[i]["title"],
+						id = dataGroup[i]["id"],
 						newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
 						path;
 					dataGroup[i]["success"] = false;
@@ -2089,9 +2093,8 @@ edit.playableSave = function(typeNum, callback) {
 							path: path
 						}
 					};
-					path = path == resourceDir? contentDir: resourceDir;
-						var url = "https://api.onedrive.com/v1.0" + path + "/" + name + "?select=name,size,@content.downloadUrl&access_token=" + token;
-					console.log(url);
+					// Use id to navigate to the file to avoid coding problem for utf-8 characters
+					var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=name,size,@content.downloadUrl&access_token=" + token;
 					$.ajax({
 						type: "PATCH",
 						url: url,
@@ -2127,32 +2130,33 @@ edit.playableSave = function(typeNum, callback) {
 										dataGroup[j]["change"] = false;
 										var name, url, size;
 										if (dataGroup[j]["success"]) {
-																						// Update new member attached to this entry
+											// Update new member attached to this entry
 											name = data["name"];
 											url = data["@content.downloadUrl"];
-												size = data["size"];
-											dataGroup[j]["resource"] = !dataGroup[j]["resource"];}
-											if (dataGroup[j]["resource"]) {
-												// Update these properties if the transfer failed
-												name = name || dataGroup[j]["name"];
-												size = size || dataGroup[j]["size"];
-												url = url || journal.archive.map[name]["url"];
-												// Update journal.archive.map
-												journal.archive.map["name"] = {
-													url: url,
-													size: size
-												};
-												// Update dataGroup
-												dataGroup[j]["name"] = name;
-												// Update local cache 
-												cacheData.push({
-													fileName: name,
-													title: dataGroup[j]["title"]
-												});
-											}
-										
-										// Remove unnecessary data member
-										else  {
+											size = data["size"];
+											dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+										}
+										if (dataGroup[j]["resource"]) {
+											// Update these properties if the transfer failed
+											name = name || dataGroup[j]["name"];
+											size = size || dataGroup[j]["size"];
+											url = url || journal.archive.map[name]["url"];
+											// Update journal.archive.map
+											journal.archive.map["name"] = {
+												url: url,
+												size: size
+											};
+											// Update dataGroup
+											dataGroup[j]["name"] = name;
+											// Update local cache 
+											cacheData.push({
+												fileName: name,
+												title: dataGroup[j]["title"]
+											});
+										}
+
+											// Remove unnecessary data member
+										else {
 											dataGroup.splice(j, 1);
 											--j;
 										}

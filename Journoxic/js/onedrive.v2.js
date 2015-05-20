@@ -89,7 +89,7 @@ function downloadMedia(url) {
 		// Initial call
 		var token = getTokenFromCookie(); 
 		journal.archive.map = {};
-		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=name,size,@content.downloadUrl&top=500&access_token=" + token;
+		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
 	}
 	$("#refresh-media").addClass("spin");
 	$.ajax({
@@ -103,7 +103,7 @@ function downloadMedia(url) {
 			// Manually to ask server return downloadUrl
 			for (var i = 0; i !== groups.length; ++i) {
 				if (groups[i].startsWith("$select")){
-					groups[i] = "$select=name,size,@content.downloadUrl";
+					groups[i] = "$select=id,name,size,@content.downloadUrl";
 					break;
 				}
 			}
@@ -113,6 +113,7 @@ function downloadMedia(url) {
 		var itemList = data["value"];
 		for (var key = 0, len = itemList.length; key != len; ++key) {
 			var dataElement = {
+				id: itemList[key]["id"],
 				url: itemList[key]["@content.downloadUrl"],
 				size: itemList[key]["size"]
 			};

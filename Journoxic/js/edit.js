@@ -1053,7 +1053,7 @@ edit.photo = function() {
 	}
 	animation.log("Start loading images under data/" + dateStr + " ...");
 	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=name,size,@content.downloadUrl&access_token=" + token;
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
 			type: "GET",
 			url: url
@@ -1268,7 +1268,7 @@ edit.photoSave = function(callback) {
 							}
 						};
 						// Still use the old name to find the file
-						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=name,size,@content.downloadUrl&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
 						// Add to cache
 					} else {
 						// Would like to be added to data, i.e. remove from resource folder
@@ -1278,7 +1278,7 @@ edit.photoSave = function(callback) {
 								path: contentDir
 							}
 						};
-						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=name,size,@content.downloadUrl&access_token=" + token;
+						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
 					}
 					// Update the new name
 					for (var j = 0; j != edit.photos.length; ++j) {
@@ -1298,7 +1298,8 @@ edit.photoSave = function(callback) {
 							// Add the url of this new image to map
 							journal.archive.map[newName] = {
 								url: data["@content.downloadUrl"],
-								size: data["size"]
+								size: data["size"],
+								id: data["id"]
 							};
 							animation.log((++processingPhoto) + " of " + photoQueue.length + " photo transferred");
 							console.log("edit.photoSave()\tFinish update metadata");
@@ -2094,7 +2095,13 @@ edit.playableSave = function(typeNum, callback) {
 						}
 					};
 					// Use id to navigate to the file to avoid coding problem for utf-8 characters
-					var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=name,size,@content.downloadUrl&access_token=" + token;
+					var url;
+					if (id) {
+						url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
+					} else {
+						path = path === resourceDir ? contentDir : resourceDir;
+						url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
+					}
 					$.ajax({
 						type: "PATCH",
 						url: url,
@@ -2114,7 +2121,7 @@ edit.playableSave = function(typeNum, callback) {
 									break;
 								}
 							}
-							animation.log(edit.mediaName(typeNum).capitalize() + " file " + title + "transferred");
+							animation.log(edit.mediaName(typeNum).capitalize() + " file \"" + title + "\" transferred");
 						})
 						.fail(function(xhr, status, error) {
 							--pending;
@@ -2128,9 +2135,10 @@ edit.playableSave = function(typeNum, callback) {
 								for (var j = 0; j !== dataGroup.length; ++j) {
 									if (dataGroup[j]["change"]) {
 										dataGroup[j]["change"] = false;
-										var name, url, size;
+										var id, name, url, size;
 										if (dataGroup[j]["success"]) {
 											// Update new member attached to this entry
+											id = data["id"];
 											name = data["name"];
 											url = data["@content.downloadUrl"];
 											size = data["size"];
@@ -2138,16 +2146,17 @@ edit.playableSave = function(typeNum, callback) {
 										}
 										if (dataGroup[j]["resource"]) {
 											// Update these properties if the transfer failed
+											id = name || dataGroup[j]["id"];
 											name = name || dataGroup[j]["name"];
 											size = size || dataGroup[j]["size"];
 											url = url || journal.archive.map[name]["url"];
 											// Update journal.archive.map
-											journal.archive.map["name"] = {
+											journal.archive.map[name] = {
 												url: url,
 												size: size
 											};
 											// Update dataGroup
-											dataGroup[j]["name"] = name;
+											dataGroup[j][name] = name;
 											// Update local cache 
 											cacheData.push({
 												fileName: name,

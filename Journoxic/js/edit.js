@@ -118,6 +118,7 @@ edit.init = function(overwrite, index) {
 					name: name,
 					title: data[processGroup[h]][i]["title"],
 					size: journal.archive.map[name]["size"],
+					id: journal.archive.map[name]["id"],
 					resource: true,
 					change: false
 				});
@@ -371,7 +372,7 @@ edit.exportCache = function(index) {
 		elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
 		attach = 0;
 	for (var i = 0; i < elem.length; ++i) {
-		var media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
+		media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
 		for (var j = 0; j < media.length; ++j) {
 			if (!media[j] || media[j]["title"] == "") {
 				// null or undefined or empty title, remove this
@@ -595,7 +596,7 @@ edit.change = function(key, value) {
 /**
  * Add a medium to the edit pane, given the typeNum
  * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
- * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName" and "title" key
+ * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName", "id" and "title" key
  */
 edit.addMedia = function(typeNum, arg) {
 	var selectorHeader = "#attach-area ." + edit.mediaName(Math.abs(typeNum)),
@@ -617,7 +618,7 @@ edit.addMedia = function(typeNum, arg) {
 			break;
 		case -3:
 			// Helper for voice
-			htmlContent = "<div class=\"voice adding\"><a class='"+ arg["fileName"] +"' onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
+			htmlContent = "<div class=\"voice data change\"><a class='" + arg["fileName"] + "' onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
 			break;
 		case 4:
 			// Music
@@ -660,7 +661,7 @@ edit.removeMedia = function(typeNum) {
 			break;
 		case 3:
 			// Voice
-			edit.voiceRemove();
+			edit.voiceToggle();
 			break;
 		default:
 			// In other cases, this step will be taken care of in their individual functions because it is not sure that if the transfer will be successful from the server side
@@ -1713,26 +1714,15 @@ edit.voiceSave = function(index) {
 	localStorage["voice"] = JSON.stringify(data);
 }
 /**
- * Removes the voice element from the data. Transfer the data in resource folder to data folder
+ * Toggles the location of the voice element
  */
-edit.voiceRemove = function() {
+edit.voiceToggle = function() {
 	var index = edit.mediaIndex["voice"];
 	if (index >= 0) {
 		// Search to change this in edit.voices
-		var selectorHeader = edit.getSelectorHeader("voice", index),
-			title = $(selectorHeader + "a").attr("class");
-		for (var i = 0; i !== edit.voices.length; ++i) {
-			if (edit.voices[i]["name"] == title) {
-				// Found
-				if (edit.voices[i]["resource"]) {
-					// Apply changes to resource files only
-					edit.voices[i]["change"] = true;
-				}
-				// Hide the content
-				$(selectorHeader).fadeOut();
-				break;
-			}
-		}
+		var selectorHeader = edit.getSelectorHeader("voice", index);
+		// Toggle the status
+		$(selectorHeader).toggleClass("change");
 	}
 }
 /**
@@ -2044,10 +2034,26 @@ edit.playableSave = function(typeNum, callback) {
 		default:
 			return;
 	}
+	// Collect data from HTML element
+	$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+		for (var i = 0; i !== dataGroup.length; ++i) {
+			if ($(this).children("a").hasClass(dataGroup[i]["name"])) {
+				var match = (dataGroup[i]["resource"] && $(this).hasClass("resource")) || (!dataGroup[i]["resource"] && $(this).hasClass("data"));
+				// Avoid cross-folder confusion to the files with the same name
+				if (match) {
+					if ($(this).hasClass("change")) {
+						// Wants to change location
+						dataGroup[i]["change"] = true;
+					}
+					break;
+				}
+			}
+		}
+	});
 	// Sync from localStorage to dataGroup
 	for (var i = 0; i !== localData.length; ++i) {
 		for (var j = 0; j !== dataGroup.length; ++j) {
-			if (localData[i]["fileName"] === dataGroup[j]["name"]) {
+			if (localData[i] && localData[i]["fileName"] === dataGroup[j]["name"]) {
 				// Matched
 				dataGroup[j]["title"] = localData[i]["title"];
 				break;
@@ -2132,6 +2138,34 @@ edit.playableSave = function(typeNum, callback) {
 						.always(function(data, status, xhr) {
 							if (pending <= 0) {
 								// Finished all the processing
+								// Process HTML element
+								$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+									$(this).removeClass("change");
+									for (var j = 0; j !== dataGroup.length; ++j) {
+										if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
+											var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
+											// Avoid cross-folder confusion to the files with the same name
+											if (match) {
+												if (dataGroup[j]("success")) {
+													// Transfer succeeds, update the class
+													if ($(this).hasClass("resource")) {
+														$(this).removeClass("resource").addClass("data");
+													} else if ($(this).hasClass("data")) {
+														$(this).removeClass("data").addClass("resource");
+													}
+												}
+												break;
+											}
+										}
+									}
+									if ($(this).hasClass("data")) {
+										// Moved to data
+										$(this).fadeOut(function() {
+											$(this).remove();
+										});
+									}
+								});
+								// Process JS data
 								var cacheData = [];
 								for (var j = 0; j !== dataGroup.length; ++j) {
 									if (dataGroup[j]["change"]) {
@@ -2147,12 +2181,13 @@ edit.playableSave = function(typeNum, callback) {
 										}
 										if (dataGroup[j]["resource"]) {
 											// Update these properties if the transfer failed
-											id = name || dataGroup[j]["id"];
+											id = id || dataGroup[j]["id"];
 											name = name || dataGroup[j]["name"];
 											size = size || dataGroup[j]["size"];
 											url = url || journal.archive.map[name]["url"];
 											// Update journal.archive.map
 											journal.archive.map[name] = {
+												id: id,
 												url: url,
 												size: size
 											};
@@ -2163,10 +2198,8 @@ edit.playableSave = function(typeNum, callback) {
 												fileName: name,
 												title: dataGroup[j]["title"]
 											});
-										}
-
+										} else {
 											// Remove unnecessary data member
-										else {
 											dataGroup.splice(j, 1);
 											--j;
 										}

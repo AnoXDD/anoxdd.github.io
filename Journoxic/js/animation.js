@@ -54,6 +54,13 @@ animation.setConfirm = function(name) {
 					// Place
 					animation.showIcon("#pin-point");
 					break;
+				case 1:
+					// Video
+				case 3:
+					// Voice
+					$("#confirm").html("&#xf0ec");
+					title = "Toggle where to save";
+					break;
 			}
 		} else {
 			$("#confirm").html("&#xf00c");

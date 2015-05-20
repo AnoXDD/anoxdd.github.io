@@ -595,7 +595,7 @@ edit.change = function(key, value) {
 /**
  * Add a medium to the edit pane, given the typeNum
  * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
- * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url" and "title" key
+ * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName" and "title" key
  */
 edit.addMedia = function(typeNum, arg) {
 	var selectorHeader = "#attach-area ." + edit.mediaName(Math.abs(typeNum)),
@@ -617,7 +617,7 @@ edit.addMedia = function(typeNum, arg) {
 			break;
 		case -3:
 			// Helper for voice
-			htmlContent = "<div class=\"voice\"><a onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
+			htmlContent = "<div class=\"voice adding\"><a class='"+ arg["fileName"] +"' onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
 			break;
 		case 4:
 			// Music
@@ -1993,6 +1993,7 @@ edit.playableSearch = function(typeNum) {
 							// Voice
 							// Helper call to edit.media
 							edit.addMedia(-3, {
+								fileName: name,
 								url: contentUrl,
 								title: name.substring(0, name.length - 4)
 							});

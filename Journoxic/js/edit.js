@@ -115,14 +115,14 @@ edit.init = function(overwrite, index) {
 			for (var i = 0; i !== data[processGroup[h]].length; ++i) {
 				var name = data[processGroup[h]][i]["fileName"];
 				if (journal.archive.map[name]) {
-				dataGroup.push({
-					name: name,
-					title: data[processGroup[h]][i]["title"],
-					size: journal.archive.map[name]["size"],
-					id: journal.archive.map[name]["id"],
-					resource: true,
-					change: false
-				});
+					dataGroup.push({
+						name: name,
+						title: data[processGroup[h]][i]["title"],
+						size: journal.archive.map[name]["size"],
+						id: journal.archive.map[name]["id"],
+						resource: true,
+						change: false
+					});
 				}
 			}
 		}
@@ -489,11 +489,12 @@ edit.tryReadCache = function() {
 edit.find = function(created) {
 	for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
 		if (journal.archive.data[key]) {
-		if (journal.archive.data[key]["time"]) {
-			if (journal.archive.data[key]["time"]["created"] == created) {
-				return key;
+			if (journal.archive.data[key]["time"]) {
+				if (journal.archive.data[key]["time"]["created"] == created) {
+					return key;
+				}
 			}
-		}}
+		}
 	}
 	// Nothing found
 	return -1;
@@ -1683,13 +1684,13 @@ edit.voice = function(index, link) {
 		// Find it from this dataclip
 		var fileName = $(selectorHeader + "a").attr("class");
 		if (journal.archive.map[fileName]) {
-		source = journal.archive.map[fileName]["url"];
-		if (source == undefined) {
-			// Todo: print error info here
-			animation.log("Cannot find the file", true);
-			return;
-		}	app.audioPlayer(selectorHeader + "a", source);
-} else {
+			source = journal.archive.map[fileName]["url"];
+			if (source == undefined) {
+				// Todo: print error info here
+				animation.log("Cannot find the file", true);
+				return;
+			} app.audioPlayer(selectorHeader + "a", source);
+		} else {
 			animation.log("Cannot load the file. Please make sure it has been downloaded", true);
 		}
 	}
@@ -1919,7 +1920,7 @@ edit.playableSearch = function(typeNum) {
 			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		animation.log("Fetching resource on the server ...");
 		$.ajax({
-			type: "GET",
+			type: "GET",.f
 			url: url
 		})
 			.done(function(data, status, xhr) {
@@ -2145,7 +2146,8 @@ edit.playableSave = function(typeNum, callback) {
 									//// dataGroup[j]["resource"] = !dataGroup[j]["resource"];
 									// Update map
 									delete journal.archive.map[dataGroup[j]["name"]];
-									if (dataGroup[j]["resource"]) {
+									if (!dataGroup[j]["resource"]) {
+										// If the source is from data, new name must be added
 										var newName = data["name"];
 										dataGroup[j]["newName"] = newName;
 										journal.archive.map[newName] = {
@@ -2171,33 +2173,36 @@ edit.playableSave = function(typeNum, callback) {
 								$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
 									$(this).removeClass("change");
 									for (var j = 0; j !== dataGroup.length; ++j) {
-										if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
-											var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
-											// Avoid cross-folder confusion to the files with the same name
-											if (match) {
-												if (dataGroup[j]["success"]) {
-													dataGroup[j]["success"] = false;
-													dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-													// Transfer succeeds, update the class
-													if ($(this).hasClass("resource")) {
-														$(this).removeClass("resource").addClass("data");
-													} else if ($(this).hasClass("data")) {
-														$(this).removeClass("data").addClass("resource");
+										if (!$(this).hasClass("ignore")){
+											if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
+												var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
+												// Avoid cross-folder confusion to the files with the same name
+												if (match) {
+													if (dataGroup[j]["success"]) {
+														dataGroup[j]["success"] = false;
+														dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+														// Transfer succeeds, update the class
+														if ($(this).hasClass("resource")) {
+															$(this).removeClass("resource").addClass("data");
+														} else if ($(this).hasClass("data")) {
+															$(this).removeClass("data").addClass("resource");
+														}
+														// Also update <a> if a new name is available
+														if (dataGroup[j]["newName"]) {
+															dataGroup[j]["name"] = dataGroup[j]["newName"];
+															$(this).children("a").attr("class", dataGroup[j]["newName"]);
+															// Remove this
+															delete dataGroup[j]["newName"];
+														}
 													}
-													// Also update <a> if a new name is available
-													if (dataGroup[j]["newName"]) {
-														$(this).children("a").attr("class", dataGroup[j]["newName"]);
-													}
+													break;
 												}
-												break;
 											}
 										}
 									}
 									if ($(this).hasClass("data")) {
 										// Moved to data
-										$(this).fadeOut(function() {
-											$(this).remove();
-										});
+										$(this).addClass("ignore").empty().fadeOut();
 									}
 								});
 								// Process JS data
@@ -2216,8 +2221,6 @@ edit.playableSave = function(typeNum, callback) {
 										--j;
 									}
 								}
-								// Process new HTML data
-
 								localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
 								animation.log("Finished " + edit.mediaName(typeNum) + " transfer");
 								callback();
@@ -2228,7 +2231,6 @@ edit.playableSave = function(typeNum, callback) {
 		});
 	}
 };
-
 
 /******************************************************************
  ************************ OTHERS **********************************

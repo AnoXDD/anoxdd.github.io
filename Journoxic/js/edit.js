@@ -3,6 +3,7 @@
 
 /**
  * Todo: reset edit.voice(?) each time save is clicked
+ * Todo: filename is not preserved after each traverse
  */
 
 
@@ -987,9 +988,9 @@ edit.getDate = function() {
 			if (dateStr.toString().length === 5) {
 				dateStr = "0" + dateStr;
 			}
-			if( dateStr.toString().length === 6) {
-			// Correct format
-			return dateStr;
+			if (dateStr.toString().length === 6) {
+				// Correct format
+				return dateStr;
 			}
 		}
 	}
@@ -1698,11 +1699,11 @@ edit.voiceHide = function() {
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
 	// Recover onclick event
 	if (edit.func) {
-// Use edit.func
-	$(selectorHeader + "a").attr("onclick", edit.func);
-	edit.func = undefined;
+		// Use edit.func
+		$(selectorHeader + "a").attr("onclick", edit.func);
+		edit.func = undefined;
 	} else {
-	$(selectorHeader + "a").attr("onclick", "edit.voice(" + edit.mediaIndex["voice"] + ")");
+		$(selectorHeader + "a").attr("onclick", "edit.voice(" + edit.mediaIndex["voice"] + ")");
 	}
 	// Save data
 	edit.voiceSave(edit.mediaIndex["voice"]);
@@ -2126,18 +2127,28 @@ edit.playableSave = function(typeNum, callback) {
 					})
 						.done(function(data, status, xhr) {
 							--pending;
-							var size = data["size"],
-								title = "";
+							var title = "";
 							// Search for this name
 							for (var j = 0; j !== dataGroup.length; ++j) {
-								if (dataGroup[j]["size"] == size) {
+								if (dataGroup[j]["id"] === data["id"]) {
 									// Size matched
-									title = dataGroup[j]["title"] + " ";
+									title = "\"" + dataGroup[j]["title"] + "\" ";
 									dataGroup[j]["success"] = true;
+									dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+									// Update map
+									delete journal.archive.map[dataGroup[j]["name"]];
+									if (dataGroup[j]["resource"]) {
+										dataGroup[j]["name"] = data["name"];
+										journal.archive.map[dataGroup[j]["name"]] = {
+											id: data["id"],
+											name: data["name"],
+											url: data["@content.downloadUrl"]
+										};
+									}
 									break;
 								}
 							}
-							animation.log(edit.mediaName(typeNum).capitalize() + " file \"" + title + "\" transferred");
+							animation.log(edit.mediaName(typeNum).capitalize() + " file " + title + "transferred");
 						})
 						.fail(function(xhr, status, error) {
 							--pending;
@@ -2177,43 +2188,23 @@ edit.playableSave = function(typeNum, callback) {
 								// Process JS data
 								var cacheData = [];
 								for (var j = 0; j !== dataGroup.length; ++j) {
-									if (dataGroup[j]["change"]) {
-										dataGroup[j]["change"] = false;
-										var id, name, url, size;
-										if (dataGroup[j]["success"]) {
-											// Update new member attached to this entry
-											id = data["id"];
-											name = data["name"];
-											url = data["@content.downloadUrl"];
-											size = data["size"];
-											dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-										}
-										if (dataGroup[j]["resource"]) {
-											// Update these properties if the transfer failed
-											id = id || dataGroup[j]["id"];
-											name = name || dataGroup[j]["name"];
-											size = size || dataGroup[j]["size"];
-											url = url || journal.archive.map[name]["url"];
-											// Update journal.archive.map
-											journal.archive.map[name] = {
-												id: id,
-												url: url,
-												size: size
-											};
-											// Update dataGroup
-											dataGroup[j][name] = name;
-											// Update local cache 
-											cacheData.push({
-												fileName: name,
-												title: dataGroup[j]["title"]
-											});
-										} else {
-											// Remove unnecessary data member
-											dataGroup.splice(j, 1);
-											--j;
-										}
+									dataGroup[j]["change"] = false;
+									if (dataGroup[j]["resource"]) {
+										// Update these properties if the transfer failed
+										var name = dataGroup[j]["name"];
+										// Update local cache 
+										cacheData.push({
+											fileName: name,
+											title: dataGroup[j]["title"]
+										});
+									} else {
+										// Remove unnecessary data member
+										dataGroup.splice(j, 1);
+										--j;
 									}
 								}
+								// Process new HTML data
+
 								localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
 								animation.log("Finished " + edit.mediaName(typeNum) + " transfer");
 								callback();

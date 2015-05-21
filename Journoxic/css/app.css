@@ -2504,7 +2504,8 @@ body {
 
 #attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .weblink, #attach-area .texttags, #attach-area .icontags, #attach-area .types {
 	/* border-top: 1px solid #dadada; */
-	margin: 10px 10px 0 10px;
+	padding: 10px 10px 0 10px;
+	margin-bottom: 10px;
 }
 
 #attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .video {
@@ -2593,20 +2594,34 @@ body {
 #attach-area .voice input, #attach-area .place input { /* padding-top: 7px; */
 }
 
+#attach-area .voice span {
+	opacity: 0;
+		background-size: 25px;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	transition: opacity .4s ease;
+}
+
+#attach-area .voice.change {
+	opacity: 1 !important;
+}
+
 #attach-area .voice.data {
-	/* content: "data"; */
-	/* position: absolute; */
-	/* left: -10px; */
-	/* height: 0px; */
 	opacity: .2;
 }
 
-#attach-area .voice.resource {
+
+#attach-area .voice.change span {
+
+	opacity: 1;
 }
 
-#attach-area .voice.change::after {
-	
-    content: "222";
+#attach-area .voice.resource.change span {
+    background-image: url('../img/minus@2x.png');
+}
+
+#attach-area .voice.data.change span {
+	    background-image: url('../img/add@2x.png');
 }
 
 /************************************* MEDIA PLAYER **********************************/

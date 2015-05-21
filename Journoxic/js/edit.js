@@ -114,6 +114,7 @@ edit.init = function(overwrite, index) {
 		if (data[processGroup[h]]) {
 			for (var i = 0; i !== data[processGroup[h]].length; ++i) {
 				var name = data[processGroup[h]][i]["fileName"];
+				if (journal.archive.map[name]) {
 				dataGroup.push({
 					name: name,
 					title: data[processGroup[h]][i]["title"],
@@ -122,6 +123,7 @@ edit.init = function(overwrite, index) {
 					resource: true,
 					change: false
 				});
+				}
 			}
 		}
 	}
@@ -486,11 +488,12 @@ edit.tryReadCache = function() {
  */
 edit.find = function(created) {
 	for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
+		if (journal.archive.data[key]) {
 		if (journal.archive.data[key]["time"]) {
 			if (journal.archive.data[key]["time"]["created"] == created) {
 				return key;
 			}
-		}
+		}}
 	}
 	// Nothing found
 	return -1;
@@ -1675,17 +1678,21 @@ edit.voice = function(index, link) {
 	// Set the source address
 	if (link) {
 		source = link;
+		app.audioPlayer(selectorHeader + "a", source);
 	} else {
 		// Find it from this dataclip
 		var fileName = $(selectorHeader + "a").attr("class");
+		if (journal.archive.map[fileName]) {
 		source = journal.archive.map[fileName]["url"];
 		if (source == undefined) {
 			// Todo: print error info here
 			animation.log("Cannot find the file", true);
 			return;
+		}	app.audioPlayer(selectorHeader + "a", source);
+} else {
+			animation.log("Cannot load the file. Please make sure it has been downloaded", true);
 		}
 	}
-	app.audioPlayer(selectorHeader + "a", source);
 	animation.setConfirm(3);
 };
 edit.voiceHide = function() {
@@ -2134,14 +2141,16 @@ edit.playableSave = function(typeNum, callback) {
 									// Size matched
 									title = "\"" + dataGroup[j]["title"] + "\" ";
 									dataGroup[j]["success"] = true;
-									dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+									// "resource" is to be changed later
+									//// dataGroup[j]["resource"] = !dataGroup[j]["resource"];
 									// Update map
 									delete journal.archive.map[dataGroup[j]["name"]];
 									if (dataGroup[j]["resource"]) {
-										dataGroup[j]["name"] = data["name"];
-										journal.archive.map[dataGroup[j]["name"]] = {
+										var newName = data["name"];
+										dataGroup[j]["newName"] = newName;
+										journal.archive.map[newName] = {
 											id: data["id"],
-											name: data["name"],
+											size: data["size"],
 											url: data["@content.downloadUrl"]
 										};
 									}
@@ -2167,11 +2176,17 @@ edit.playableSave = function(typeNum, callback) {
 											// Avoid cross-folder confusion to the files with the same name
 											if (match) {
 												if (dataGroup[j]["success"]) {
+													dataGroup[j]["success"] = false;
+													dataGroup[j]["resource"] = !dataGroup[j]["resource"];
 													// Transfer succeeds, update the class
 													if ($(this).hasClass("resource")) {
 														$(this).removeClass("resource").addClass("data");
 													} else if ($(this).hasClass("data")) {
 														$(this).removeClass("data").addClass("resource");
+													}
+													// Also update <a> if a new name is available
+													if (dataGroup[j]["newName"]) {
+														$(this).children("a").attr("class", dataGroup[j]["newName"]);
 													}
 												}
 												break;
@@ -2190,11 +2205,9 @@ edit.playableSave = function(typeNum, callback) {
 								for (var j = 0; j !== dataGroup.length; ++j) {
 									dataGroup[j]["change"] = false;
 									if (dataGroup[j]["resource"]) {
-										// Update these properties if the transfer failed
-										var name = dataGroup[j]["name"];
 										// Update local cache 
 										cacheData.push({
-											fileName: name,
+											fileName: dataGroup[j]["newName"] || dataGroup[j]["name"],
 											title: dataGroup[j]["title"]
 										});
 									} else {

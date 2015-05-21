@@ -1920,7 +1920,7 @@ edit.playableSearch = function(typeNum) {
 			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		animation.log("Fetching resource on the server ...");
 		$.ajax({
-			type: "GET",.f
+			type: "GET",
 			url: url
 		})
 			.done(function(data, status, xhr) {

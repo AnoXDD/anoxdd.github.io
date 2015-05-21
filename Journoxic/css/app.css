@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2523,8 +2523,7 @@ body {
 			background-color: #dadada;
 			transition: background-color .5s ease;
 			color: #000;
-		
-}
+		}
 
 			#attach-area .movie a:hover input, #attach-area .movie a:focus input, #attach-area .movie a:active input, #attach-area .music a:hover input, #attach-area .music a:focus input, #attach-area .music a:active input, #attach-area .book a:hover input, #attach-area .book a:focus input, #attach-area .book a:active input, #attach-area .voice a:hover input, #attach-area .voice a:focus input, #attach-area .voice a:active input, #attach-area .place a:hover input, #attach-area .place a:focus input, #attach-area .place a:active input, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
 				overflow: initial;
@@ -2596,7 +2595,7 @@ body {
 
 #attach-area .voice span {
 	opacity: 0;
-		background-size: 25px;
+	background-size: 25px;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	transition: opacity .4s ease;
@@ -2612,16 +2611,15 @@ body {
 
 
 #attach-area .voice.change span {
-
 	opacity: 1;
 }
 
 #attach-area .voice.resource.change span {
-    background-image: url('../img/minus@2x.png');
+	background-image: url('../img/minus@2x.png');
 }
 
 #attach-area .voice.data.change span {
-	    background-image: url('../img/add@2x.png');
+	background-image: url('../img/add@2x.png');
 }
 
 /************************************* MEDIA PLAYER **********************************/

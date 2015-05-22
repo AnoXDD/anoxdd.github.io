@@ -1,12 +1,5 @@
 /* The script for editing anything */
 
-
-/**
- * Todo: reset edit.voice(?) each time save is clicked
- * Todo: filename is not preserved after each traverse
- */
-
-
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
@@ -224,7 +217,7 @@ edit.quit = function(selector, save) {
 		// Save to local contents
 		edit.save(selector);
 	} else {
-		animation.log("Data discarded");
+		animation.log(log.EDIT_PANE_QUIT);
 	}
 	edit.photos = [];
 	edit.removalList = {};
@@ -249,10 +242,10 @@ edit.quit = function(selector, save) {
  */
 edit.save = function(selector) {
 	var id, html;
-	animation.log("Saving data ...");
+	animation.log(log.EDIT_PANE_SAVE_START, 1);
 	if (animation.isShown("#confirm")) {
 		// Confirm button will be pressed automatically if shown
-		animation.log("Pending changes saved");
+		animation.log(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
 		edit.confirm();
 	}
 	if (selector) {
@@ -279,7 +272,7 @@ edit.save = function(selector) {
 				});
 				// Show finish animation
 				animation.finished(selector);
-				animation.log("Finished saving data");
+				animation.log(log.EDIT_PANE_SAVE_END, -1);
 				// Upload the file to OneDrive
 				uploadFile();
 			});
@@ -878,7 +871,7 @@ edit.saveTag = function() {
 	// Test for duplicate
 	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
 		// The entry is already added
-		animation.warning("Tag \"" + tagVal + "\" is already added");
+		animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ALREADY);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 	} else {
 		var found = false;
@@ -892,16 +885,16 @@ edit.saveTag = function() {
 					// Only one weather and emotion is allowed
 					if ($(this).css("height") == "0px") {
 						// Hidden div, means another weather/emotion has already been added
-						animation.warning("Tag \"" + tagVal + "\" cannot be added as an icon");
+						animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_FAILED);
 						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 						return;
 					}
 				}
 				if (!$(this).hasClass("highlight")) {
-					animation.log("Tag \"" + tagVal + "\" is added as an icon");
+					animation.log(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON);
 					$(this).trigger("click");
 				} else {
-					animation.warning("Tag \"" + tagVal + "\" is already added as an icon");
+					animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON_ALREADY);
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 					// Saved
 				}
@@ -1015,14 +1008,14 @@ edit.getDate = function() {
 edit.photo = function() {
 	if (edit.photos.length != 0) {
 		// Return if edit.photo is already displayed
-		animation.error("Images have already been loaded");
+		animation.error(log.EDIT_PANE_IMAGES_ALREADY_LOADED);
 		return;
 	}
 	var images = JSON.parse(localStorage["images"]);
 	if (images) {
 		// Test if this entry really doesn't have any images at all
 		if (!(Object.keys(journal.archive.map).length > 0)) {
-			animation.error("Cannot load images. Please download all the media on the main menu");
+			animation.error(log.EDIT_PANE_IMAGES_FAIL + log.DOWNLOAD_PROMPT);
 			animation.deny("#add-photo");
 			return;
 		}
@@ -1060,7 +1053,7 @@ edit.photo = function() {
 	} else {
 		dateStr = edit.getDate();
 	}
-	animation.log("Start loading images under data/" + dateStr + " ...");
+	animation.log(log.EDIT_PANE_SAVE_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
 	getTokenCallback(function(token) {
 		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
@@ -1068,9 +1061,7 @@ edit.photo = function() {
 			url: url
 		}).done(function(data, status, xhr) {
 			if (data["@odata.nextLink"]) {
-				// More content available!
-				// Do nothing right now
-				animation.warning("There seems to be so many items. Not all the items will be displayed");
+				animation.warning(log.EDIT_PANE_TOO_MANY_RESULTS);
 			}
 			var itemList = data["value"];
 			for (var key = 0, len = itemList.length; key != len; ++key) {
@@ -1160,7 +1151,7 @@ edit.photo = function() {
 				});
 			});
 			animation.setConfirm(0);
-			animation.log("Photos loaded");
+			animation.log(log.EDIT_PANE_IMAGES_END, -1);
 			animation.finished("#add-photo");
 		})
 			.fail(function(xhr, status, error) {
@@ -1168,7 +1159,7 @@ edit.photo = function() {
 					onclick: "edit.addMedia(0)",
 					href: "#"
 				});
-				animation.error("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"");
+				animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 				animation.deny("#add-photo");
 			});
 	});
@@ -1259,8 +1250,8 @@ edit.photoSave = function(callback) {
 		if (photoQueue.length != 0) {
 			// Process the photos
 			getTokenCallback(function(token) {
-				animation.log("Start transferring photos ...");
-				for (var i = 0; i != photoQueue.length; ++i) {
+				animation.log(log.EDIT_PANE_SAVE_START, 1);
+				for (var i = 0; i !== photoQueue.length; ++i) {
 					var requestJson,
 						url,
 						newName,
@@ -1310,12 +1301,13 @@ edit.photoSave = function(callback) {
 								size: data["size"],
 								id: data["id"]
 							};
-							animation.log((++processingPhoto) + " of " + photoQueue.length + " photo transferred");
+							animation.log((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
 							console.log("edit.photoSave()\tFinish update metadata");
 						})
 						.fail(function(xhr, status, error) {
 							++processingPhoto;
-							animation.error("One transfer failed. No transfer was made. The server returns error \"" + error + "\"");
+							animation.error(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS
+ + error + log.SERVER_RETURNS_END);
 							animation.warning("#add-photo");
 							// Revert the transfer process
 						})
@@ -1369,7 +1361,7 @@ edit.photoSave = function(callback) {
 							// Test if it is elligible for calling callback()
 							if (processingPhoto == photoQueue.length) {
 								localStorage["images"] = JSON.stringify(newImagesData);
-								animation.log("Finished photo transfer");
+								animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(0) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
 								callback();
 							}
 						});
@@ -1422,12 +1414,12 @@ edit.video = function(index, link) {
 		if (journal.archive.map[fileName]) {
 			source = journal.archive.map[fileName]["url"];
 			if (source == undefined) {
-				animation.error("Cannot find the file " + $(selectorHeader + ".title").val());
+				animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title").val());
 				return;
 			}
 			app.videoPlayer(selectorHeader + "a", source);
 		} else {
-			animation.error("Cannot find the file " + $(selectorHeader + ".title") + ". Please make sure it has been downloaded");
+			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
 	}
 	animation.setConfirm(1);
@@ -1503,14 +1495,13 @@ edit.location = function(index) {
 	animation.setConfirm(2);
 	// Update media index
 	edit.mediaIndex["place"] = index;
-	var selectorHeader = edit.getSelectorHeader("place");
 	// Spread map-selector
 	$("#map-holder").fadeIn();
-	var errorMsg = "Did you enable location sharing?";
+	var selectorHeader = edit.getSelectorHeader("place", index);
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
+				var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
 				longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
 			pos = new google.maps.LatLng(latitude, longitude);
 			mapOptions = {
@@ -1572,11 +1563,11 @@ edit.location = function(index) {
 				}
 			});
 		}, function() {
-			animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
+			animation.error(log.LOCATION_PIN_FAIL);
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
+		animation.error(log.LOCATION_PIN_FAIL);
 	}
 	edit.isEditing = 2;
 
@@ -1619,7 +1610,6 @@ edit.locationHide = function() {
  * @param {number} index - The index of the location element
  */
 edit.locationSave = function(index) {
-	// TODO change to fix each location
 	var data = localStorage["place"],
 		selectorHeader = edit.getSelectorHeader("place", index),
 		latitude = parseFloat($(selectorHeader + ".latitude").val()),
@@ -1655,11 +1645,11 @@ edit.locationPin = function() {
 			edit.locationGeocode(pos);
 			edit.locationWeather(pos);
 		}, function() {
-			animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
+			animation.error(log.LOCATION_PIN_FAIL);
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
+		animation.error(log.LOCATION_PIN_FAIL);
 	}
 };
 /**
@@ -1686,10 +1676,10 @@ edit.locationGeocode = function(pos) {
 			if (results[0]) {
 				$(selectorHeader + ".title").val(results[0].formatted_address);
 			} else {
-				animation.error("No results found", true);
+				animation.error(log.LOCATION_NO_RESULTS);
 			}
 		} else {
-			animation.error("Cannot read the address. The server returns \"" + status + "\"");
+			animation.error(log.LOCATION_NO_ADDRESS + log.SERVER_RETURNS + status + log.SERVER_RETURNS_END);
 		}
 	});
 };
@@ -1709,7 +1699,7 @@ edit.locationWeather = function(pos) {
 		// Weather info exists
 		return;
 	} else {
-		animation.log("Fetching weather info ...");
+		animation.log(log.EDIT_PANE_WEATHER_START, 1);
 	}
 
 	var apiKey = "6f1ee423e253fba5e40e3276ff3e6d33",
@@ -1721,7 +1711,7 @@ edit.locationWeather = function(pos) {
 	}).done(function(data, staus, xhr) {
 		var weather = data["currently"],
 			icon = weather["icon"];
-		animation.log("Weather data retrieved. It is " + weather["temperature"] + " degrees. Have a good one");
+		animation.log(log.EDIT_PANE_WEATHER_RESULT + weather["temperature"] + log.EDIT_PANE_WEATHER_RESULT_END);
 		// Test for different icon value
 		// clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night.
 		var selector;
@@ -1738,11 +1728,11 @@ edit.locationWeather = function(pos) {
 		}
 		if (selector) {
 			// Available
-			animation.log("Weather info is updated");
+			animation.log(log.EDIT_PANE_WEATHER_END, -1);
 			$("#attach-area .icontags ." + selector).trigger("click");
 		} else {
 			// Weather info not applicable
-			animation.log("Cannot find the matched icon info. Is it \"" + data["summary"] + "\" now?");
+			animation.log(log.EDIT_PANE_WEATHER_END_FAIL + data["summary"] + log.EDIT_PANE_WEATHER_END_FAIL_END, -1);
 		}
 	});
 }
@@ -1784,12 +1774,12 @@ edit.voice = function(index, link) {
 		if (journal.archive.map[fileName]) {
 			source = journal.archive.map[fileName]["url"];
 			if (source == undefined) {
-				animation.error("Cannot find the file " + $(selectorHeader + ".title").val());
+				animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title").val());
 				return;
 			}
 			app.audioPlayer(selectorHeader + "a", source);
 		} else {
-			animation.error("Cannot find the file " + $(selectorHeader + ".title") + ". Please make sure it has been downloaded");
+			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
 	}
 	animation.setConfirm(3);
@@ -2016,7 +2006,7 @@ edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {
 		var dateStr = edit.getDate(),
 			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-		animation.log("Fetching resource on the server ...");
+		animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_START, 1);
 		$.ajax({
 			type: "GET",
 			url: url
@@ -2025,7 +2015,7 @@ edit.playableSearch = function(typeNum) {
 				if (data["@odata.nextLink"]) {
 					// More content available!
 					// Do nothing right now
-					animation.warning("There seems to be so many items. Not all the items will be added");
+					animation.warning(log.EDIT_PANE_TOO_MANY_RESULTS);
 				}
 				var itemList = data["value"],
 					dataGroup;
@@ -2089,7 +2079,7 @@ edit.playableSearch = function(typeNum) {
 						continue;
 					}
 					dataGroup.push(elementData);
-					animation.log(edit.mediaName(typeNum).capitalize() + " file \"" + name + "\" added");
+					animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + name + log.EDIT_PANE_PLAYABLE_FILE_ADDED);
 					// Add to the edit pane
 					var newIndex,
 						htmlContent;
@@ -2108,10 +2098,10 @@ edit.playableSearch = function(typeNum) {
 							break;
 					}
 				}
-				animation.log("Done");
+				animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
 			})
 			.fail(function(xhr, status, error) {
-				animation.error("Cannot load data from the server. The server returns error \"" + error + "\"");
+				animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 				switch (typeNum) {
 					case 1:
 						// Video
@@ -2187,7 +2177,7 @@ edit.playableSave = function(typeNum, callback) {
 		callback();
 	} else {
 		getTokenCallback(function(token) {
-			animation.log("Start transferring " + edit.mediaName(typeNum) + "s ...");
+			animation.log(log.EDIT_PANE_PLAYABLE_SAVE_START + edit.mediaName(typeNum) + log.EDIT_PANE_PLAYABLE_SAVE_START_END, 1);
 			for (var i = 0; i !== dataGroup.length; ++i) {
 				if (dataGroup[i]["change"]) {
 					// This element wants to change its location
@@ -2257,11 +2247,11 @@ edit.playableSave = function(typeNum, callback) {
 									break;
 								}
 							}
-							animation.log(edit.mediaName(typeNum).capitalize() + " file " + title + "transferred");
+							animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + title + log.EDIT_PANE_PLAYABLE_FILE_SAVED);
 						})
 						.fail(function(xhr, status, error) {
 							--pending;
-							animation.warning("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", false);
+							animation.warning(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
 							animation.warning("#add-" + edit.mediaName(typeNum));
 						})
 						.always(function(data, status, xhr) {
@@ -2320,7 +2310,7 @@ edit.playableSave = function(typeNum, callback) {
 									}
 								}
 								localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
-								animation.log("Finished " + edit.mediaName(typeNum) + " transfer");
+								animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(typeNum) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
 								callback();
 							}
 						});

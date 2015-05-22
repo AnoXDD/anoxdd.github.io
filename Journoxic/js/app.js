@@ -113,7 +113,7 @@ app.init = function() {
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
 		if (app.currentDisplayed == -1) {
-			animation.error("No entry is selected");
+			animation.error(log.NO_ENTRY_SELECTED);
 			animation.deny(this);
 			return;
 		}
@@ -130,7 +130,7 @@ app.load = function(filter, forceReload, newContent) {
 	if (newContent == "") {
 		// Try to add nothing
 		////console.log("app.load()\tNo new content!");
-		animation.error("Cannot load data: no new content is specified");
+		animation.error(log.LOAD_DATA_FAIL + log.NO_CONTENT);
 		animation.deny("#refresh-media");
 		return;
 	} else if (newContent == undefined) {
@@ -140,7 +140,7 @@ app.load = function(filter, forceReload, newContent) {
 		});
 		if (journal.archive.data.length === 0) {
 			////console.log("app.load()\tNo archive data!");
-			animation.error("Cannot load data: no archive data is found");
+			animation.error(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
 			animation.deny("#refresh-media");
 			return;
 		}
@@ -161,7 +161,7 @@ app.load = function(filter, forceReload, newContent) {
 		// app.loadScript("data/data.js", loadFunction, true);
 		if (newContent) {
 			// New contents available! Refresh the new data
-			animation.log("Find new content with " + newContent.length + " chars");
+			animation.log(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
 			console.log("app.load(): data.length = " + newContent.length);
 			app.loadScript(newContent, loadFunction, false);
 			edit.saveDataCache();
@@ -170,7 +170,7 @@ app.load = function(filter, forceReload, newContent) {
 	if (forceReload) {
 		// Start to reload
 		// Remove all the child elements and always
-		animation.log("Data reloaded");
+		animation.log(log.CONTENTS_RELOADED);
 		console.log("==================Force loaded==================");
 		$("#list").empty();
 		app.lastLoaded = 0;
@@ -195,7 +195,7 @@ app.load = function(filter, forceReload, newContent) {
 	// Show the final result anyway
 	$("#search-result").fadeIn(500);
 	if (filter == undefined) {
-		filter == "";
+		filter = "";
 	}
 }; // Load a script and passed in a function
 app.loadScript = function(data, func, isScript) {
@@ -364,82 +364,87 @@ app.list.prototype = {
 				found = false;
 			console.log("\t\t> Testing " + element);
 			// The for-loop will break if any match is found
-			for (subkey in element) {
-				// Tag
-				if (element[subkey].charAt(0) == "#") {
-					if (data["textTags"]) {
-						var textTagArray = data["textTags"].split("|"),
+			for (var subkey in element) {
+				if (element.hasOwnProperty(subkey)) {
+					// Tag
+					var subfound;
+					if (element[subkey].charAt(0) === "#") {
+						if (data["textTags"]) {
 							subfound = false;
-						for (tag in textTagArray) {
-							if (textTagArray[tag] == element[subkey].substr(1)) {
+							var textTagArray = data["textTags"].split("|");
+							for (tag in textTagArray) {
+								if (textTagArray.hasOwnProperty(tag)) {
+									if (textTagArray[tag] == element[subkey].substr(1)) {
+										subfound = true;
+										break;
+									}
+								}
+							}
+							if (subfound) {
+								////console.log("\t- Tags Found!");
+								// Found
+								break;
+							}
+						}
+						var iconTags = data["iconTags"];
+						if (iconTags) {
+							if (app.bitwise().getNum(iconTags, element[subkey].substr(1))) {
+								////console.log("\t- Icon Found!");
+								// Found
+								found = true;
+								break;
+							}
+						}
+
+					} else if (element[subkey].charAt(0) == "%") {
+						////console.log("\t- Test type");
+						// Type
+						subfound = false;
+						var typeArray = app.bitwise().content(data["attachments"]),
+							type = element[subkey].substr(1);
+						for (var i = 0; i !== typeArray.length; ++i) {
+							if (type == typeArray[i]) {
 								subfound = true;
 								break;
 							}
 						}
 						if (subfound) {
-							////console.log("\t- Tags Found!");
+							////console.log("\t- Type match!");
 							// Found
+							found = true;
 							break;
 						}
-					}
-					var iconTags = data["iconTags"];
-					if (iconTags) {
-						if (app.bitwise().getNum(iconTags, element[subkey].substr(1))) {
-							////console.log("\t- Icon Found!");
+					} else if (element[subkey].charAt(0) === "@") {
+						////console.log("\t- Test time");
+						// Time
+						var timeStr = element[subkey].substr(1);
+						if (this.isInRange(timeStr, data["time"]["created"])) {
+							console.log("\t- Time match!");
+							// Found
+							found = true;
+							break;
+						}
+					} else if (element[subkey].charAt(0) === "+") {
+						////console.log("\t- Test body");
+						if (data["text"]["body"].match(new RegExp(element[subkey].substr(1), "i"))) {
+							////console.log("\t- Body match!");
+							// Found
+							found = true;
+							break;
+						}
+					} else {
+						////console.log("\t- Test title");
+						if (data["title"].match(new RegExp(element[subkey], "i"))) {
+							////console.log("\t- Title match!");
 							// Found
 							found = true;
 							break;
 						}
 					}
-
-				} else if (element[subkey].charAt(0) == "%") {
-					////console.log("\t- Test type");
-					// Type
-					var typeArray = app.bitwise().content(data["attachments"]),
-						type = element[subkey].substr(1),
-						subfound = false;
-					for (var key = 0; key != typeArray.length; ++key) {
-						if (type == typeArray[key]) {
-							subfound = true;
-							break;
-						}
-					}
-					if (subfound) {
-						////console.log("\t- Type match!");
-						// Found
-						found = true;
+					// Any one matches will break the inner loop
+					if (found) {
 						break;
 					}
-				} else if (element[subkey].charAt(0) == "@") {
-					////console.log("\t- Test time");
-					// Time
-					var timeStr = element[subkey].substr(1);
-					if (this.isInRange(timeStr, data["time"]["created"])) {
-						console.log("\t- Time match!");
-						// Found
-						found = true;
-						break;
-					}
-				} else if (element[subkey].charAt(0) == "+") {
-					////console.log("\t- Test body");
-					if (data["text"]["body"].match(new RegExp(element[subkey].substr(1), "i"))) {
-						////console.log("\t- Body match!");
-						// Found
-						found = true;
-						break;
-					}
-				} else {
-					////console.log("\t- Test title");
-					if (data["title"].match(new RegExp(element[subkey], "i"))) {
-						////console.log("\t- Title match!");
-						// Found
-						found = true;
-						break;
-					}
-				}
-				// Any one matches will break the inner loop
-				if (found) {
-					break;
 				}
 			}
 			// If any one matches in the inner loop, the outer loop will continue until any one doe not match or all the tests have been passed
@@ -794,19 +799,19 @@ app.detail = function() { // [m]
 		}
 		if (dataClip.book) {
 			this.thumb(dataClip, "book", 50, 70);
-			for (var i = 0; i != dataClip["book"].length; ++i) {
+			for (var i = 0; i !== dataClip["book"].length; ++i) {
 				getCoverPhoto("#detail .book:eq(" + i + ") ", dataClip.book[i].author + " " + dataClip.book[i].title, false, "book");
 			}
 		}
 		if (dataClip.music) {
 			this.thumb(dataClip, "music", 50, 50);
-			for (var i = 0; i != dataClip["music"].length; ++i) {
+			for (var i = 0; i !== dataClip["music"].length; ++i) {
 				getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music[i].author + " " + dataClip.music[i].title);
 			}
 		}
 		if (dataClip.movie) {
 			this.thumb(dataClip, "movie", 50, 70);
-			for (var i = 0; i != dataClip["movie"].length; ++i) {
+			for (var i = 0; i !== dataClip["movie"].length; ++i) {
 				getCoverPhoto("#detail .movie:eq(" + i + ") ", dataClip.movie[i].author + " " + dataClip.movie[i].title, false, "movie");
 			}
 		}
@@ -859,7 +864,7 @@ app.detail = function() { // [m]
 				if (journal.archive.map[file]) {
 					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
 				} else {
-					animation.error("Cannot load file " + file + ". Please make sure you have downloaded it");
+					animation.error(log.FILE_NOT_LOADED + file + log.DOWNLOAD_PROMPT);
 				}
 			}
 		}
@@ -909,7 +914,7 @@ app.detail = function() { // [m]
 			var funcName = "app.audioPlayer(\"#detail .content .voice:eq(" + n + ") a\",\"" + journal.archive.map[className]["url"] + "\")";
 			$(this).attr("onclick", funcName).removeAttr("class");
 		} else {
-			animation.error("Cannot load file " + className + ". Please make sure you have downloaded it");
+			animation.error(log.FILE_NOT_LOADED + className + log.DOWNLOAD_PROMPT);
 		}
 	});
 	return dataClip;
@@ -1507,7 +1512,7 @@ app.audioPlayer = function(selector, source) {
 		// Do not continue
 		return;
 	}
-	animation.log("Fetching audio data ...");
+	animation.log(log.AUDIO_FETCH_START, 1);
 	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
@@ -1577,7 +1582,7 @@ app.audioPlayer = function(selector, source) {
 		app.audioPlayer.onplayhead = false;
 	}
 	app.audioPlayer.loadedData = function() {
-		animation.log("Audio file loaded");
+		animation.log(AUDIO_FETCH_END, -1);
 		// Update the length
 		$("#music-length").html(app.audioPlayer.formatTime(music.duration));
 		// Show the play icon
@@ -1610,7 +1615,7 @@ app.audioPlayer.play = function() {
 	} else {
 		if (isNaN(music.duration)) {
 			// Address expires
-			animation.error("Audio file expires. Please re-download the media");
+			animation.error(log.AUDIO_EXPIRED);
 			return false;
 		}
 		// Is pausing

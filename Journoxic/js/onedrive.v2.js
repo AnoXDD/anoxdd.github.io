@@ -21,7 +21,7 @@ var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot";
  * @returns {} 
  */
 function downloadFile() {
-	animation.log("Start downloading data...");
+	animation.log(log.CONTENTS_DOWNLOAD_START, 1);
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
 	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
@@ -46,7 +46,7 @@ function downloadFile() {
 					window.app.dataLoaded = false;
 					window.app.load("", true, xhr.responseText);
 					////console.log("downloadFile()\tFinish core data");
-					animation.log("Text data fetched");
+					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Get metadata
 					$.ajax({
 						type: "GET",
@@ -54,14 +54,14 @@ function downloadFile() {
 					}).done(function(data, status, xhr) {
 						// Get the data number
 						journal.archive.media = data["folder"]["childCount"];
-						animation.log("Start downloading media data ...");
+						animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
 						downloadMedia();
 					}).fail(function(xhr, status, error) {
-						animation.error("Cannot find the media data. The server returns error \"" + error + "\"");
+						animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 					});
 				})
 				.fail(function(xhr, status, error) {
-					animation.error("Cannot find any text data. The server returns error \"" + error + "\"");
+					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 					////alert("Cannot download the file. Do you enable CORS?");
 				})
 				.always(function() {
@@ -71,6 +71,7 @@ function downloadFile() {
 							href: "#"
 						});
 					animation.finished("#download");
+					animation.log(log.CONTENTS_DOWNLOAD_END, -1);
 					////console.log("downloadFile()\tFinish downloading");
 				});
 		}
@@ -121,12 +122,12 @@ function downloadMedia(url) {
 		}
 		// Show progress
 		var finished = _.size(journal.archive.map);
-		animation.log("Fetched " + finished + " of " + journal.archive.media);
+		animation.log(log.CONTENTS_DOWNLOAD_MEDIA_FETCHED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status
 			$("#refresh-media").html("&#xf021").removeClass("spin").css("background", "").unbind("mouseenter mouseleave");
-			animation.log("Media data fetched");
+			animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
 			animation.finished("#refresh-media");
 		}
 		////console.log("downloadFile()\tFinish media data");
@@ -139,7 +140,7 @@ function downloadMedia(url) {
  */
 function uploadFile() {
 	////console.log("Starting uploadFile()");
-	animation.log("Start uploading ...");
+	animation.log(log.CONTENTS_UPLOAD_START, 1);
 	// Change loading icons and disable click
 	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
@@ -169,7 +170,7 @@ function uploadFile() {
 			.done(function() {
 				$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%, #3f3f3f 50%, #343434 0%, #343434 100%)");
 				////console.log("uploadFile():\t Done backup");
-				animation.log("Data backup finished");
+				animation.log(log.CONTENTS_UPLOAD_BACKUP);
 				// Clean the unnecessary data
 				var tmp = edit.minData();
 				$.ajax({
@@ -180,15 +181,15 @@ function uploadFile() {
 					})
 					.done(function(data, status, xhr) {
 						////console.log("uploadFile():\t Done!");
-						animation.log("Data uploaded");
+						animation.log(log.CONTENTS_UPLOAD_END, -1);
 					})
 					.fail(function(xhr, status, error) {
-						animation.error("Cannot upload data. Please try fixing the problem manually. The server returns error \"" + error + "\"");
+						animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 						////alert("Cannot upload files");
 					});
 			})
 			.fail(function(xhr, status, error) {
-				animation.error("Cannot backup data. Please see if there is any name conflict. The server returns error \"" + error + "\"");
+				animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 				////alert("Cannot backup the file");
 			})
 			.always(function() {
@@ -222,11 +223,11 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 			var result = response.results[0];
 			if (result == undefined) {
 				// Not found
-				animation.error("Cannot find matched result for cover photo");
+				animation.warning(log.COVER_PHOTO_FOUND);
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found
-				animation.log("Cover photo found");
+				animation.log(log.COVER_PHOTO_FAIL);
 				var artist = result["artistName"],
 					track = result["trackName"],
 					coverUrl = result["artworkUrl100"];

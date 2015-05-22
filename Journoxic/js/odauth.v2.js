@@ -82,7 +82,7 @@ function getTokenCallback(callback) {
 		callback(token);
 	} else if (getRefreshFromCookie()) {
 		// Previos session expired
-		animation.log("Previous session expired");
+		animation.log(log.AUTH_REFRESH_EXPIRED);
 		refreshToken(callback);
 	}
 }
@@ -163,7 +163,7 @@ function toggleAutoRefreshToken() {
 		$("#toggle-refresh-token").fadeOut(300, function() {
 			$(this).html("&#xf204");
 		}).fadeIn(300);
-		animation.log("The access token will now stop refreshing");
+		animation.log(log.AUTH_REFRESH_AUTO_OFF);
 		clearInterval(toggleAutoRefreshToken.id);
 		toggleAutoRefreshToken.id = undefined;
 	} else {
@@ -171,7 +171,7 @@ function toggleAutoRefreshToken() {
 		$("#toggle-refresh-token").fadeOut(300, function() {
 			$(this).html("&#xf205");
 		}).fadeIn(300);
-		animation.log("The access token will now be refreshed every 30 minute");
+		animation.log(log.AUTH_REFRESH_AUTO_ON);
 		//refreshToken();
 		toggleAutoRefreshToken.id = setInterval(func, 1800000);
 	}
@@ -182,7 +182,7 @@ function toggleAutoRefreshToken() {
  * @param {function} callback - A callback function that can have a parameter to handle the ACCESS TOKEN passed in. This function will only be called if the token is successfully refreshed
  */
 function refreshToken(callback) {
-	animation.log("Refreshing access token ...");
+	animation.log(log.AUTH_REFRESH_ACCESS_START, 1);
 	var refresh = getRefreshFromCookie(),
 		appinfo = getAppInfo();
 	if (refresh) {
@@ -200,11 +200,11 @@ function refreshToken(callback) {
 				refresh = data["refresh_token"],
 				expiry = parseInt(data["expires_in"]);
 			setCookie(token, expiry, refresh);
-			animation.log("Access token refreshed");
+			animation.log(log.AUTH_REFRESH_ACCESS_END);
 			if (typeof (callback) === "function")
 				callback(token);
 		}).fail(function(xhr, status, error) {
-			animation.error("Cannot refresh access token. Please make sure CORS is enabled. The server returns \"" + status + "\"");
+			animation.error(log.AUTH_REFRESH_ACCESS_FAILED + log.SERVER_RETURNS + status + log.SERVER_RETURNS_END, -1);
 		});
 	} else {
 		// No refresh token, then try to sign in
@@ -278,7 +278,7 @@ function removeLoginButton(debug) {
 		refreshToken();
 	}
 	// Show everything app needs
-	animation.log("Welcome back");
+	animation.log(log.WELCOME);
 	$("#sign-in-prompt").remove();
 	headerShowMenu();
 	$("#search-new").fadeIn();

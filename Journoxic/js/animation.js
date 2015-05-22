@@ -1,9 +1,93 @@
 /* A library for animations */
 
+window.log = {
+	WELCOME: "Welcome back",
+	FILE_NOT_FOUND: "Cannot find the file ",
+	FILE_NOT_LOADED: "Cannot load the file ",
+	DOWNLOAD_PROMPT: ". Please make sure it has been downloaded",
+	LOCATION_PIN_FAIL: "Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode",
+	LOCATION_NO_RESULTS: "No results found",
+	LOCATION_NO_ADDRESS: "Cannot read the address",
+	NO_ENTRY_SELECTED: "No entry is selected",
+	LOAD_DATA_FAIL: "Cannot load the data",
+	NO_CONTENT: ": no new content is specified",
+	NO_ARCHIVE: ": no archive data is found",
+
+	CONTENTS_NEW: "Found new content with ",
+	CONTENTS_NEW_END: " chars",
+	CONTENTS_RELOADED: "Data reloaded",
+	CONTENTS_DOWNLOAD_START: "Loading archive data ...",
+	CONTENTS_DOWNLOAD_TEXT: "Text data loaded",
+	CONTENTS_DOWNLOAD_TEXT_FAIL: "Cannot load the text data",
+	CONTENTS_DOWNLOAD_MEDIA_START: "Loading media data ...",
+	CONTENTS_DOWNLOAD_MEDIA_LOADED: "Loaded ",
+	CONTENTS_DOWNLOAD_MEDIA_OF: " of ",
+	CONTENTS_DOWNLOAD_MEDIA_FAIL: "Cannot load the media data",
+	CONTENTS_DOWNLOAD_MEDIA_END: "Media data loaded",
+	CONTENTS_DOWNLOAD_END: "Data upload finished",
+	CONTENTS_UPLOAD_START: "Start uploading archive data ...",
+	CONTENTS_UPLOAD_BACKUP: "Data backup finished",
+	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
+	CONTENTS_UPLOAD_END: "Data upload finished",
+	CONTENTS_UPLOAD_FAIL: "Cannot upload data",
+	COVER_PHOTO_FOUND: "Found cover photo ",
+	COVER_PHOTO_FAIL: "Cannot find matched result for cover photo",
+	AUDIO_DOWNLOAD_START: "Loading audio files ...",
+	AUDIO_DOWNLOAD_END: "Audio files loaded",
+	AUDIO_EXPIRED: "Audio file expires. Please re-download the media",
+	EDIT_PANE_QUIT: "Data discarded",
+	EDIT_PANE_SAVE_START: "Saving data ...",
+	EDIT_PANE_SAVE_PENDING_ATTACHMENTS: "Pending changes saved",
+	EDIT_PANE_SAVE_END: "Finished saving data",
+	TAG_ADD_HEADER: "Tag \"",
+	TAG_ADDED_ALREADY: "\" is already added",
+	TAG_ADDED_FAILED: "\" cannot be added as an icon",
+	TAG_ADDED_ICON: "\" is added as an icon",
+	TAG_ADDED_ICON_ALREADY: "\" is already added as an icon",
+	EDIT_PANE_IMAGES_ALREADY_LOADED: "Images have already been loaded",
+	EDIT_PANE_IMAGES_FAIL: "Cannot load images",
+	EDIT_PANE_IMAGES_START: "Start loading images under data/",
+	EDIT_PANE_IMAGES_START_END: " ...",
+	EDIT_PANE_IMAGES_END: "Photos loaded",
+	EDIT_PANE_IMAGES_FIND_FAIL: " under data/",
+	EDIT_PANE_IMAGES_SAVE_START: "Start transferring photos ...",
+	EDIT_PANE_IMAGES_OF: " of ",
+	EDIT_PANE_IMAGES_TRASNFERRED: " photo transferred",
+	EDIT_PANE_FINISHED_TRANSFER: "Finished ",
+	EDIT_PANE_FINISHED_TRANSFER_END: " transfer",
+	EDIT_PANE_TRANSFERRED_FAILED: "One transfer failed. No transfer was made",
+	EDIT_PANE_TOO_MANY_RESULTS: "There seems to be so many items. Not all the items will be displayed",
+	EDIT_PANE_WEATHER_START: "Loading weather info ...",
+	EDIT_PANE_WEATHER_RESULT: "Weather data loaded. It is ",
+	EDIT_PANE_WEATHER_RESULT_END: " degrees. Have a good one",
+	EDIT_PANE_WEATHER_END: "Weather data updated",
+	EDIT_PANE_WEATHER_END_FAIL: "Cannot find the matched icon info. Is it \"",
+	EDIT_PANE_WEATHER_END_FAIL_END: "\" now?",
+	EDIT_PANE_PLAYABLE_SEARCH_START: "Loading resource ...",
+	EDIT_PANE_PLAYABLE_FILE: " file \"",
+	EDIT_PANE_PLAYABLE_FILE_ADDED: "\" added",
+	EDIT_PANE_PLAYABLE_FILE_SAVED: "\" transferred",
+	EDIT_PANE_PLAYABLE_SEARCH_END: "Resource loaded",
+	EDIT_PANE_PLAYABLE_SEARCH_FAILED: "Cannot load the resource",
+	EDIT_PANE_PLAYABLE_SAVE_START: "Start transferring ",
+	EDIT_PANE_PLAYABLE_SAVE_START_END: "s ...",
+
+	SERVER_RETURNS: ". The server returns error\"",
+	SERVER_RETURNS_END: "\"",
+
+	AUTH_REFRESH_ACCESS_START: "Refreshing access token ...",
+	AUTH_REFRESH_ACCESS_END: "Access token refreshed",
+	AUTH_REFRESH_ACCESS_FAILED: "Cannot refresh access token. Please make sure CORS is enabled",
+	AUTH_REFRESH_AUTO_ON: "The access token will now be refreshed every 30 minute",
+	AUTH_REFRESH_AUTO_OFF: "The access token will now stop refreshing",
+	AUTH_REFRESH_EXPIRED: "Previous session expired"
+};
+
 window.animation = {};
 
 animation.degree = 0;
 animation.duration = 250;
+animation.indent = 0;
 
 animation.hideIcon = function(selector, callback) {
 	$(selector).fadeOut(animation.duration, callback);
@@ -167,8 +251,42 @@ animation.invalid = function(selector) {
  */
 animation.log = function(message, indent, type) {
 	var id = new Date().getTime(),
+		htmlIndent = "<span>",
 		htmlContent;
+	// Process indentation
+	if (indent === 1) {
+		++animation.indent;
+		for (var i = 1; i <= animation.indent; i++) {
+			if (i === 1) {
+				htmlIndent += "©´";
+			} else if (i === animation.indent) {
+				htmlIndent += "©È";
+			} else {
+				htmlIndent += "©¤";
+			}
+		}
+	} else if (indent === -1) {
+		for (var i = 1; i <= animation.indent; i++) {
+			if (i === 1) {
+				htmlIndent += "©¸";
+			} else if (i === animation.indent) {
+				htmlIndent += "©È";
+			} else {
+				htmlIndent += "©¤";
+			}
+		}
+	} else {
+		for (var i = 1; i <= animation.indent; ++i) {
+			if (i === 1 || i === animation.indent) {
+				htmlIndent += "|";
+			} else {
+				htmlIndent += " ";
+			}
+		}
+	}
+	// Present it to the website
 	type = type || 0;
+	message += htmlIndent + "</span>";
 	switch (type) {
 		case 0:
 			htmlContent = "<p id=" + id + ">" + message + "</p>";
@@ -256,85 +374,3 @@ function headerShowMenu(name) {
 	}, animation.duration + 50);
 };
 
-log = {
-	WELCOME: "Welcome back",
-	FILE_NOT_FOUND: "Cannot find the file ",
-	FILE_NOT_LOADED: "Cannot load the file ",
-	DOWNLOAD_PROMPT: ". Please make sure it has been downloaded",
-	LOCATION_PIN_FAIL: "Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode",
-	LOCATION_NO_RESULTS: "No results found",
-	LOCATION_NO_ADDRESS: "Cannot read the address",
-	NO_ENTRY_SELECTED: "No entry is selected",
-	LOAD_DATA_FAIL: "Cannot load the data",
-	NO_CONTENT: ": no new content is specified",
-	NO_ARCHIVE: ": no archive data is found",
-
-	CONTENTS_NEW: "Found new content with ",
-	CONTENTS_NEW_END: " chars",
-	CONTENTS_RELOADED: "Data reloaded",
-	CONTENTS_DOWNLOAD_START: "Loading archive data ...",
-	CONTENTS_DOWNLOAD_TEXT: "Text data loaded",
-	CONTENTS_DOWNLOAD_TEXT_FAIL: "Cannot load the text data",
-	CONTENTS_DOWNLOAD_MEDIA_START: "Loading media data ...",
-	CONTENTS_DOWNLOAD_MEDIA_LOADED: "Loaded ",
-	CONTENTS_DOWNLOAD_MEDIA_OF: " of ",
-	CONTENTS_DOWNLOAD_MEDIA_FAIL: "Cannot load the media data",
-	CONTENTS_DOWNLOAD_MEDIA_END: "Media data loaded",
-	CONTENTS_DOWNLOAD_END: "Data upload finished",
-	CONTENTS_UPLOAD_START: "Start uploading archive data ...",
-	CONTENTS_UPLOAD_BACKUP: "Data backup finished",
-	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
-	CONTENTS_UPLOAD_END: "Data upload finished",
-	CONTENTS_UPLOAD_FAIL: "Cannot upload data",
-	COVER_PHOTO_FOUND: "Found cover photo ",
-	COVER_PHOTO_FAIL: "Cannot find matched result for cover photo",
-	AUDIO_DOWNLOAD_START: "Loading audio files ...",
-	AUDIO_DOWNLOAD_END: "Audio files loaded",
-	AUDIO_EXPIRED: "Audio file expires. Please re-download the media",
-	EDIT_PANE_QUIT: "Data discarded",
-	EDIT_PANE_SAVE_START: "Saving data ...",
-	EDIT_PANE_SAVE_PENDING_ATTACHMENTS: "Pending changes saved",
-	EDIT_PANE_SAVE_END: "Finished saving data",
-	TAG_ADD_HEADER: "Tag \"",
-	TAG_ADDED_ALREADY: "\" is already added",
-	TAG_ADDED_FAILED: "\" cannot be added as an icon",
-	TAG_ADDED_ICON: "\" is added as an icon",
-	TAG_ADDED_ICON_ALREADY: "\" is already added as an icon",
-	EDIT_PANE_IMAGES_ALREADY_LOADED: "Images have already been loaded",
-	EDIT_PANE_IMAGES_FAIL: "Cannot load images",
-	EDIT_PANE_IMAGES_START: "Start loading images under data/",
-	EDIT_PANE_IMAGES_START_END: " ...",
-	EDIT_PANE_IMAGES_END: "Photos loaded",
-	EDIT_PANE_IMAGES_FIND_FAIL: " under data/",
-	EDIT_PANE_IMAGES_SAVE_START: "Start transferring photos ...",
-	EDIT_PANE_IMAGES_OF: " of ",
-	EDIT_PANE_IMAGES_TRASNFERRED: " photo transferred",
-	EDIT_PANE_FINISHED_TRANSFER: "Finished ",
-	EDIT_PANE_FINISHED_TRANSFER_END: " transfer",
-	EDIT_PANE_TRANSFERRED_FAILED: "One transfer failed. No transfer was made",
-	EDIT_PANE_TOO_MANY_RESULTS: "There seems to be so many items. Not all the items will be displayed",
-	EDIT_PANE_WEATHER_START: "Loading weather info ...",
-	EDIT_PANE_WEATHER_RESULT: "Weather data loaded. It is ",
-	EDIT_PANE_WEATHER_RESULT_END: " degrees. Have a good one",
-	EDIT_PANE_WEATHER_END: "Weather data updated",
-	EDIT_PANE_WEATHER_END_FAIL: "Cannot find the matched icon info. Is it \"",
-	EDIT_PANE_WEATHER_END_FAIL_END: "\" now?",
-	EDIT_PANE_PLAYABLE_SEARCH_START: "Loading resource ...",
-	EDIT_PANE_PLAYABLE_FILE: " file \"",
-	EDIT_PANE_PLAYABLE_FILE_ADDED: "\" added",
-	EDIT_PANE_PLAYABLE_FILE_SAVED: "\" transferred",
-	EDIT_PANE_PLAYABLE_SEARCH_END: "Resource loaded",
-	EDIT_PANE_PLAYABLE_SEARCH_FAILED: "Cannot load the resource",
-	EDIT_PANE_PLAYABLE_SAVE_START: "Start transferring ",
-	EDIT_PANE_PLAYABLE_SAVE_START_END: "s ...",
-
-	SERVER_RETURNS: ". The server returns error\"",
-	SERVER_RETURNS_END: "\"",
-
-	AUTH_REFRESH_ACCESS_START: "Refreshing access token ...",
-	AUTH_REFRESH_ACCESS_END: "Access token refreshed",
-	AUTH_REFRESH_ACCESS_FAILED: "Cannot refresh access token. Please make sure CORS is enabled",
-	AUTH_REFRESH_AUTO_ON: "The access token will now be refreshed every 30 minute",
-	AUTH_REFRESH_AUTO_OFF: "The access token will now stop refreshing",
-	AUTH_REFRESH_EXPIRED: "Previous session expired"
-};

@@ -159,14 +159,28 @@ animation.invalid = function(selector) {
 	});
 };
 
-/* Log something on the menu to let the user now */
-animation.log = function(message, error) {
+/**
+ * Logs something on the menu to let the user know
+ * @param {String} message - The message to be logged
+ * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
+ * @param {Number} type - The type of message. 0 for normal. 1 for error. 2 for warning.
+ */
+animation.log = function(message, indent, type) {
 	var id = new Date().getTime(),
 		htmlContent;
-	if (error) {
-		htmlContent = "<p class=\"error\" id=" + id + ">" + message + "</p>";
-	} else {
-		htmlContent = "<p id=" + id + ">" + message + "</p>";
+	type = type || 0;
+	switch (type) {
+		case 0:
+			htmlContent = "<p id=" + id + ">" + message + "</p>";
+			break;
+		case 1:
+			htmlContent = "<p class=\"error\" id=" + id + ">" + message + "</p>";
+			break;
+		case 2:
+			htmlContent = "<p class=\"warning\" id=" + id + ">" + message + "</p>";
+			break;
+		default:
+			htmlContent = "<p id=" + id + ">" + message + "</p>";
 	}
 	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).click(function() {
 		$(this).slideUp(200, function() {
@@ -175,23 +189,27 @@ animation.log = function(message, error) {
 	}).hover(function() {
 		$(this).fadeTo(400, 1);
 	});
-	if (error) {
-		// Add error message
-		message = "[ERR] " + message;
-	} else {
-		// Auto dim
-		setTimeout(function() {
-			$("p#" + id).fadeTo(400, .5);
-		}, 2000);
-		// Auto remove itself
-		var click = function() {
-			if ($("p#" + id).css("opacity") != 1) {
-				$("p#" + id).trigger("click");
-			} else {
-				setTimeout(click, 5000);
-			}
-		};
-		setTimeout(click, 5000);
+	switch (type) {
+		case 1:
+			message = "[ERR] " + message;
+			break;
+		case 2:
+			message = "[!!!] " + message;
+			// Deliberately miss the break token
+		default:
+			setTimeout(function() {
+				$("p#" + id).fadeTo(400, .5);
+			}, 2000);
+			// Auto remove itself
+			var click = function() {
+				if ($("p#" + id).css("opacity") != 1) {
+					$("p#" + id).trigger("click");
+				} else {
+					setTimeout(click, 5000);
+				}
+			};
+			setTimeout(click, 5000);
+			break;
 	}
 	console.log("From user log: \t" + new Date() + ": " + message);
 	////$("#feedback").html(message).css("opacity", "1");
@@ -199,6 +217,20 @@ animation.log = function(message, error) {
 	////	$("#feedback").css("opacity", ".01");
 	////}, 2000);
 };
+/**
+ * Calls an error message and display it on the screen
+ * @param {String} message - The message to be logged
+ */
+animation.error = function(message) {
+	animation.log(message, 0, 1);
+}
+/**
+ * Calls a warning message and display it on the screen
+ * @param {String} message - The message to be logged
+ */
+animation.warning = function(message) {
+	animation.log(message, 0, 2);
+}
 
 function headerShowMenu(name) {
 	animation.hideIcon(".actions a");

@@ -57,11 +57,11 @@ function downloadFile() {
 						animation.log("Start downloading media data ...");
 						downloadMedia();
 					}).fail(function(xhr, status, error) {
-						animation.log("Cannot find the media data. The server returns error \"" + error + "\"", true);
+						animation.error("Cannot find the media data. The server returns error \"" + error + "\"");
 					});
 				})
 				.fail(function(xhr, status, error) {
-					animation.log("Cannot find any text data. The server returns error \"" + error + "\"", true);
+					animation.error("Cannot find any text data. The server returns error \"" + error + "\"");
 					////alert("Cannot download the file. Do you enable CORS?");
 				})
 				.always(function() {
@@ -183,12 +183,12 @@ function uploadFile() {
 						animation.log("Data uploaded");
 					})
 					.fail(function(xhr, status, error) {
-						animation.log("Cannot upload data. Please try fixing the problem manually. The server returns error \"" + error + "\"", true);
+						animation.error("Cannot upload data. Please try fixing the problem manually. The server returns error \"" + error + "\"");
 						////alert("Cannot upload files");
 					});
 			})
 			.fail(function(xhr, status, error) {
-				animation.log("Cannot backup data. Please see if there is any name conflict. The server returns error \"" + error + "\"", true);
+				animation.error("Cannot backup data. Please see if there is any name conflict. The server returns error \"" + error + "\"");
 				////alert("Cannot backup the file");
 			})
 			.always(function() {
@@ -222,7 +222,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 			var result = response.results[0];
 			if (result == undefined) {
 				// Not found
-				animation.log("Cannot find matched result for cover photo", true);
+				animation.error("Cannot find matched result for cover photo");
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found

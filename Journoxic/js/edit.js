@@ -7,7 +7,6 @@
  */
 
 
-
 window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
@@ -879,7 +878,7 @@ edit.saveTag = function() {
 	// Test for duplicate
 	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
 		// The entry is already added
-		animation.log("Tag \"" + tagVal + "\" is already added", true);
+		animation.warning("Tag \"" + tagVal + "\" is already added");
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 	} else {
 		var found = false;
@@ -893,7 +892,7 @@ edit.saveTag = function() {
 					// Only one weather and emotion is allowed
 					if ($(this).css("height") == "0px") {
 						// Hidden div, means another weather/emotion has already been added
-						animation.log("Tag \"" + tagVal + "\" cannot be added as an icon", true);
+						animation.warning("Tag \"" + tagVal + "\" cannot be added as an icon");
 						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 						return;
 					}
@@ -902,7 +901,7 @@ edit.saveTag = function() {
 					animation.log("Tag \"" + tagVal + "\" is added as an icon");
 					$(this).trigger("click");
 				} else {
-					animation.log("Tag \"" + tagVal + "\" is already added as an icon", true);
+					animation.warning("Tag \"" + tagVal + "\" is already added as an icon");
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 					// Saved
 				}
@@ -1016,14 +1015,14 @@ edit.getDate = function() {
 edit.photo = function() {
 	if (edit.photos.length != 0) {
 		// Return if edit.photo is already displayed
-		animation.log("You have already displayed the images");
+		animation.error("Images have already been loaded");
 		return;
 	}
 	var images = JSON.parse(localStorage["images"]);
 	if (images) {
 		// Test if this entry really doesn't have any images at all
 		if (!(Object.keys(journal.archive.map).length > 0)) {
-			animation.log("Cannot load images: please download all the media on the main menu", true);
+			animation.error("Cannot load images. Please download all the media on the main menu");
 			animation.deny("#add-photo");
 			return;
 		}
@@ -1071,7 +1070,7 @@ edit.photo = function() {
 			if (data["@odata.nextLink"]) {
 				// More content available!
 				// Do nothing right now
-				animation.log("There seems to be so many items. Not all the items will be displayed", true);
+				animation.warning("There seems to be so many items. Not all the items will be displayed");
 			}
 			var itemList = data["value"];
 			for (var key = 0, len = itemList.length; key != len; ++key) {
@@ -1169,7 +1168,7 @@ edit.photo = function() {
 					onclick: "edit.addMedia(0)",
 					href: "#"
 				});
-				animation.log("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"", true);
+				animation.error("Cannot load image: failed to find images under data/" + dateStr + ". The server returns error \"" + error + "\"");
 				animation.deny("#add-photo");
 			});
 	});
@@ -1316,7 +1315,7 @@ edit.photoSave = function(callback) {
 						})
 						.fail(function(xhr, status, error) {
 							++processingPhoto;
-							animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+							animation.error("One transfer failed. No transfer was made. The server returns error \"" + error + "\"");
 							animation.warning("#add-photo");
 							// Revert the transfer process
 						})
@@ -1389,6 +1388,105 @@ edit.photoHide = function() {
 
 /************************** VIDEO 1 ************************/
 
+/**
+ * Edit a video element given the index and an optional parameter of the link of the resource
+ * @param {number} index (Optional) - The index of video in all the voices. If none specified, it will add to the end of the current video list
+ * @param {string} link (Optional) - The url to the address of the link, for newly created element
+ */
+edit.video = function(index, link) {
+	if (index == edit.mediaIndex["video"] || index == undefined) {
+		return;
+	}
+	edit.cleanupMediaEdit();
+	edit.mediaIndex["video"] = index;
+	var selectorHeader = edit.getSelectorHeader("video");
+	animation.setConfirm(1);
+	edit.func = $(selectorHeader + "a").attr("onclick");
+	$(selectorHeader + "a").removeAttr("onclick");
+	$(selectorHeader + "input").prop("disabled", false);
+	// Press esc to save
+	$("#edit-pane").keyup(function(n) {
+		if (n.keyCode === 27) {
+			edit.videoHide();
+		}
+	});
+	edit.isEditing = 1;
+	// Attach to the video element
+	var source;
+	if (link) {
+		source = link;
+		app.videoPlayer(selectorHeader + "a", source);
+	} else {
+		// Find it from this dataClip
+		var fileName = $(selectorHeader + "a").attr("class");
+		if (journal.archive.map[fileName]) {
+			source = journal.archive.map[fileName]["url"];
+			if (source == undefined) {
+				animation.error("Cannot find the file " + $(selectorHeader + ".title").val());
+				return;
+			}
+			app.videoPlayer(selectorHeader + "a", source);
+		} else {
+			animation.error("Cannot find the file " + $(selectorHeader + ".title") + ". Please make sure it has been downloaded");
+		}
+	}
+	animation.setConfirm(1);
+}
+edit.videoHide = function() {
+	if (edit.mediaIndex["video"] < 0) {
+		// Invalid call
+		return;
+	}
+	app.videoPlayer.quit();
+	var selectorHeader = edit.getSelectorHeader("voice");
+	// Disable input boxes
+	$(selectorHeader + "input").prop("disabled", true).off("keyup");
+	// Recover onclick event
+	if (edit.func) {
+		// Use edit.func
+		$(selectorHeader + "a").attr("onclick", edit.func);
+		edit.func = undefined;
+	} else {
+		$(selectorHeader + "a").attr("onclick", "edit.video(" + edit.mediaIndex["video"] + ")");
+	}
+	// Save data
+	edit.voiceSave(edit.mediaIndex["video"]);
+	$("#edit-pane").off("keyup");
+	// Hide all the option button
+	animation.hideIcon(".entry-option");
+	edit.mediaIndex["video"] = -1;
+	edit.isEditing = -1;
+}
+edit.videoSave = function(index) {
+	var data = localStorage["video"],
+		selectorHeader = edit.getSelectorHeader("video", index),
+		title = $(selectorHeader + ".title").val();
+	data = data ? JSON.parse(data) : [];
+	var newElem = {
+		title: title,
+		fileName: $(selectorHeader + "a").attr("class")
+	};
+	data[index] = newElem;
+	localStorage["video"] = JSON.stringify(data);
+}
+/**
+ * Toggles the location of the voice element
+ */
+edit.videoToggle = function() {
+	var index = edit.mediaIndex["video"];
+	if (index >= 0) {
+		// Search to change this in edit.voices
+		var selectorHeader = edit.getSelectorHeader("video", index);
+		// Toggle the status
+		$(selectorHeader).toggleClass("change");
+	}
+}
+/**
+ * Search for all the voices from the data folder and add it to the edit.voice
+ */
+edit.videoSearch = function() {
+	edit.playableSearch(1);
+}
 
 /************************** LOCATION 2 ************************/
 
@@ -1474,11 +1572,11 @@ edit.location = function(index) {
 				}
 			});
 		}, function() {
-			animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
+			animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
+		animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
 	}
 	edit.isEditing = 2;
 
@@ -1557,11 +1655,11 @@ edit.locationPin = function() {
 			edit.locationGeocode(pos);
 			edit.locationWeather(pos);
 		}, function() {
-			animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
+			animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		animation.log("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode", true);
+		animation.error("Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode");
 	}
 };
 /**
@@ -1588,10 +1686,10 @@ edit.locationGeocode = function(pos) {
 			if (results[0]) {
 				$(selectorHeader + ".title").val(results[0].formatted_address);
 			} else {
-				animation.log("No results found", true);
+				animation.error("No results found", true);
 			}
 		} else {
-			animation.log("Cannot read the address. The server returns \"" + status + "\"");
+			animation.error("Cannot read the address. The server returns \"" + status + "\"");
 		}
 	});
 };
@@ -1686,12 +1784,12 @@ edit.voice = function(index, link) {
 		if (journal.archive.map[fileName]) {
 			source = journal.archive.map[fileName]["url"];
 			if (source == undefined) {
-				// Todo: print error info here
-				animation.log("Cannot find the file", true);
+				animation.error("Cannot find the file " + $(selectorHeader + ".title").val());
 				return;
-			} app.audioPlayer(selectorHeader + "a", source);
+			}
+			app.audioPlayer(selectorHeader + "a", source);
 		} else {
-			animation.log("Cannot load the file. Please make sure it has been downloaded", true);
+			animation.error("Cannot find the file " + $(selectorHeader + ".title") + ". Please make sure it has been downloaded");
 		}
 	}
 	animation.setConfirm(3);
@@ -1910,7 +2008,7 @@ edit.itunesSave = function(index, typeNum) {
 /************* GENERIC FOR VOICE & VIDEO ***************/
 
 /**
- * Add a playable item from the data folder to the edit view (video and audio)
+ * Adds a playable item from the data folder to the edit view (video and audio)
  * This function will simply fetch the data and will not make any difference on OneDrive server
  * @param {Number} typeNum - The type number of the content to be added. 1: video. 3: voice.
  */
@@ -1927,7 +2025,7 @@ edit.playableSearch = function(typeNum) {
 				if (data["@odata.nextLink"]) {
 					// More content available!
 					// Do nothing right now
-					animation.log("There seems to be so many items. Not all the items will be added", true);
+					animation.warning("There seems to be so many items. Not all the items will be added");
 				}
 				var itemList = data["value"],
 					dataGroup;
@@ -2013,7 +2111,7 @@ edit.playableSearch = function(typeNum) {
 				animation.log("Done");
 			})
 			.fail(function(xhr, status, error) {
-				animation.log("Cannot load data from the server. The server returns error \"" + error + "\"", true);
+				animation.error("Cannot load data from the server. The server returns error \"" + error + "\"");
 				switch (typeNum) {
 					case 1:
 						// Video
@@ -2028,7 +2126,7 @@ edit.playableSearch = function(typeNum) {
 	});
 }
 /**
- * Save all the playable items. Forward animation.log is required.
+ * Saves all the playable items. Forward animation.log is required.
  * This function will contact OneDrive server and will upload the data as soon as saving is complete
  * @param {Number} typeNum - The type number of the content to be saved. 1: video. 3: voice.
  * @param {Function} callback - The callback function to be called after all the processing is done
@@ -2163,7 +2261,7 @@ edit.playableSave = function(typeNum, callback) {
 						})
 						.fail(function(xhr, status, error) {
 							--pending;
-							animation.log("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", true);
+							animation.warning("One transfer failed. No transfer was made. The server returns error \"" + error + "\"", false);
 							animation.warning("#add-" + edit.mediaName(typeNum));
 						})
 						.always(function(data, status, xhr) {
@@ -2173,7 +2271,7 @@ edit.playableSave = function(typeNum, callback) {
 								$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
 									$(this).removeClass("change");
 									for (var j = 0; j !== dataGroup.length; ++j) {
-										if (!$(this).hasClass("ignore")){
+										if (!$(this).hasClass("ignore")) {
 											if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
 												var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
 												// Avoid cross-folder confusion to the files with the same name
@@ -2237,7 +2335,7 @@ edit.playableSave = function(typeNum, callback) {
  ******************************************************************/
 
 /**
- * Capitalize the first chatacter of a string
+ * Capitalizes the first chatacter of a string
  * @returns {String} - The capitalized string
  */
 String.prototype.capitalize = function() {

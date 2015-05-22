@@ -113,7 +113,7 @@ app.init = function() {
 	// Show confirm button for delete
 	$("#delete").on("click", function() {
 		if (app.currentDisplayed == -1) {
-			animation.log("No entry is selected", true);
+			animation.error("No entry is selected");
 			animation.deny(this);
 			return;
 		}
@@ -130,7 +130,7 @@ app.load = function(filter, forceReload, newContent) {
 	if (newContent == "") {
 		// Try to add nothing
 		////console.log("app.load()\tNo new content!");
-		animation.log("Cannot load data: no new content is specified", true);
+		animation.error("Cannot load data: no new content is specified");
 		animation.deny("#refresh-media");
 		return;
 	} else if (newContent == undefined) {
@@ -138,9 +138,9 @@ app.load = function(filter, forceReload, newContent) {
 		journal.archive.data = journal.archive.data.filter(function(key) {
 			return key != undefined;
 		});
-		if (journal.archive.data.length == 0) {
+		if (journal.archive.data.length === 0) {
 			////console.log("app.load()\tNo archive data!");
-			animation.log("Cannot load data: no archive data is found", true);
+			animation.error("Cannot load data: no archive data is found");
 			animation.deny("#refresh-media");
 			return;
 		}
@@ -859,7 +859,7 @@ app.detail = function() { // [m]
 				if (journal.archive.map[file]) {
 					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
 				} else {
-					animation.log("Cannot load file " + file + ". Please make sure you have downloaded it", true);
+					animation.error("Cannot load file " + file + ". Please make sure you have downloaded it");
 				}
 			}
 		}
@@ -909,7 +909,7 @@ app.detail = function() { // [m]
 			var funcName = "app.audioPlayer(\"#detail .content .voice:eq(" + n + ") a\",\"" + journal.archive.map[className]["url"] + "\")";
 			$(this).attr("onclick", funcName).removeAttr("class");
 		} else {
-			animation.log("Cannot load file " + className + ". Please make sure you have downloaded it", true);
+			animation.error("Cannot load file " + className + ". Please make sure you have downloaded it");
 		}
 	});
 	return dataClip;
@@ -1610,7 +1610,7 @@ app.audioPlayer.play = function() {
 	} else {
 		if (isNaN(music.duration)) {
 			// Address expires
-			animation.log("Audio file expires. Please re-download the media", true);
+			animation.error("Audio file expires. Please re-download the media");
 			return false;
 		}
 		// Is pausing

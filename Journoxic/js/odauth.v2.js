@@ -204,7 +204,7 @@ function refreshToken(callback) {
 			if (typeof (callback) === "function")
 				callback(token);
 		}).fail(function(xhr, status, error) {
-			animation.log("Cannot refresh access token. Please make sure CORS is enabled. The server returns \"" + status + "\"", true);
+			animation.error("Cannot refresh access token. Please make sure CORS is enabled. The server returns \"" + status + "\"");
 		});
 	} else {
 		// No refresh token, then try to sign in

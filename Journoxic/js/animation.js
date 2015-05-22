@@ -252,28 +252,32 @@ animation.invalid = function(selector) {
 animation.log = function(message, indent, type) {
 	var id = new Date().getTime(),
 		htmlContent,
-		tabClass;
+		tabClass = "";
 	// Process indentation
 	if (indent === 1) {
 		++animation.indent;
+		tabClass = "start ";
+	} else if (indent === -1) {
+		tabClass = "end ";
 	}
 	if (animation.indent > 0) {
-		tabClass = "indent-" + animation.indent;
+		tabClass += "indent-" + animation.indent;
 	}
 	// Present it to the website
 	type = type || 0;
 	switch (type) {
 		case 0:
-			htmlContent = "<p id=" + id + ">" + message + "</p>";
+			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
 			break;
 		case 1:
-			htmlContent = "<p class=\"error\" id=" + id + ">" + message + "</p>";
+			htmlContent = "<p class=\"" + tabClass + " error\" id=" + id + ">" + message + "</p>";
 			break;
 		case 2:
-			htmlContent = "<p class=\"warning\" id=" + id + ">" + message + "</p>";
+			htmlContent = "<p class=\"" +
+				tabClass + " warning\" id=" + id + ">" + message + "</p>";
 			break;
 		default:
-			htmlContent = "<p id=" + id + ">" + message + "</p>";
+			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
 	}
 	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).click(function() {
 		$(this).slideUp(200, function() {
@@ -306,7 +310,9 @@ animation.log = function(message, indent, type) {
 	}
 	console.log("From user log: \t" + new Date() + ": " + message);
 	if (indent === -1) {
-		--animation.indent;
+		if (--animation.indent < 0) {
+			animation.indent = 0;
+		}
 	}
 	////$("#feedback").html(message).css("opacity", "1");
 	////setTimeout(function() {
@@ -316,16 +322,18 @@ animation.log = function(message, indent, type) {
 /**
  * Calls an error message and display it on the screen
  * @param {String} message - The message to be logged
+ * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.error = function(message) {
-	animation.log(message, 0, 1);
+animation.error = function(message, indent) {
+	animation.log(message, indent, 1);
 }
 /**
  * Calls a warning message and display it on the screen
  * @param {String} message - The message to be logged
+ * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.warning = function(message) {
-	animation.log(message, 0, 2);
+animation.warning = function(message, indent) {
+	animation.log(message, indent, 2);
 }
 
 function headerShowMenu(name) {

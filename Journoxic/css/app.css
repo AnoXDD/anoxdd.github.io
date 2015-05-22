@@ -1995,7 +1995,7 @@ body {
 }
 
 	#feedback p {
-		background: #555555;
+		background: #444;
 		clear: both;
 		color: #BABABA;
 		float: right;
@@ -2004,6 +2004,10 @@ body {
 		opacity: .3;
 		padding: 4px 15px;
 	}
+
+		#feedback p::after {
+			font-family: monospace;
+		}
 
 		#feedback p:hover {
 			box-shadow: 1px 1px 1px #2B2B2B;
@@ -2021,6 +2025,111 @@ body {
 		}
 
 
+		#feedback p.indent-1 {
+			background: #585858;
+		}
+
+			#feedback p.indent-1.start::after {
+				/*content: ' \2510';*/
+			}
+
+			#feedback p.indent-1::after {
+				content: ' \2502';
+			}
+
+			#feedback p.indent-1.end::after {
+				/*content: ' \2518';*/
+			}
+
+		#feedback p.indent-2 {
+			background: #777;
+		}
+
+
+			#feedback p.indent-2.start::after {
+				/*content: ' \252C\2524';*/
+			}
+
+			#feedback p.indent-2::after {
+				content: ' \2502\2502';
+			}
+
+			#feedback p.indent-2.end::after {
+				/*content: ' \2534\2518';*/
+			}
+
+		#feedback p.indent-3 {
+			background: #888888;
+			color: #ccc;
+		}
+
+
+			#feedback p.indent-3.start::after {
+				/*content: ' \252C\2534\2524';*/
+			}
+
+			#feedback p.indent-3::after {
+				/* Use \A0 for spaces */
+				content: ' \2502\2502\2502';
+			}
+
+			#feedback p.indent-3.end::after {
+				/*content: ' \2534\2500\2518';*/
+			}
+
+		#feedback p.indent-4 {
+			background: #aaa;
+			color: #eee;
+		}
+
+
+			#feedback p.indent-4.start::after {
+				/*content: ' \252C\2534\2500\2524';*/
+			}
+
+			#feedback p.indent-4::after {
+				content: ' \2502\2502\2502\2502';
+			}
+
+			#feedback p.indent-4.end::after {
+				/*content: ' \2534\2500\2500\2518';*/
+			}
+
+		#feedback p.indent-5 {
+			background: #b8b8b8;
+			color: #eee;
+		}
+
+
+			#feedback p.indent-5.start::after {
+				/*content: ' \252C\2534\2500\2500\2524';*/
+			}
+
+			#feedback p.indent-5::after {
+				content: ' \2502\2502\2502\2502\2502';
+			}
+
+			#feedback p.indent-5.end::after {
+				/*content: ' \2534\2500\2500\2500\2518';*/
+			}
+
+		#feedback p.indent-6 {
+			background: #ddd;
+			color: #222;
+		}
+
+
+			#feedback p.indent-6.start::after {
+				/*content: ' \252C\2534\2500\2500\2500\2524';*/
+			}
+
+			#feedback p.indent-6::after {
+				content: ' \2502\2502\2502\2502\2502\2502';
+			}
+
+			#feedback p.indent-6.end::after {
+				/*content: ' \2534\2500\2500\2500\2500\2518';*/
+			}
 
 
 .actions {

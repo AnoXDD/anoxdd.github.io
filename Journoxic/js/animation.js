@@ -251,42 +251,17 @@ animation.invalid = function(selector) {
  */
 animation.log = function(message, indent, type) {
 	var id = new Date().getTime(),
-		htmlIndent = "<span>",
-		htmlContent;
+		htmlContent,
+		tabClass;
 	// Process indentation
 	if (indent === 1) {
 		++animation.indent;
-		for (var i = 1; i <= animation.indent; i++) {
-			if (i === 1) {
-				htmlIndent += "©´";
-			} else if (i === animation.indent) {
-				htmlIndent += "©È";
-			} else {
-				htmlIndent += "©¤";
-			}
-		}
-	} else if (indent === -1) {
-		for (var i = 1; i <= animation.indent; i++) {
-			if (i === 1) {
-				htmlIndent += "©¸";
-			} else if (i === animation.indent) {
-				htmlIndent += "©È";
-			} else {
-				htmlIndent += "©¤";
-			}
-		}
-	} else {
-		for (var i = 1; i <= animation.indent; ++i) {
-			if (i === 1 || i === animation.indent) {
-				htmlIndent += "|";
-			} else {
-				htmlIndent += " ";
-			}
-		}
+	}
+	if (animation.indent > 0) {
+		tabClass = "indent-" + animation.indent;
 	}
 	// Present it to the website
 	type = type || 0;
-	message += htmlIndent + "</span>";
 	switch (type) {
 		case 0:
 			htmlContent = "<p id=" + id + ">" + message + "</p>";
@@ -330,6 +305,9 @@ animation.log = function(message, indent, type) {
 			break;
 	}
 	console.log("From user log: \t" + new Date() + ": " + message);
+	if (indent === -1) {
+		--animation.indent;
+	}
 	////$("#feedback").html(message).css("opacity", "1");
 	////setTimeout(function() {
 	////	$("#feedback").css("opacity", ".01");

@@ -1512,7 +1512,7 @@ app.audioPlayer = function(selector, source) {
 		// Do not continue
 		return;
 	}
-	animation.log(log.AUDIO_FETCH_START, 1);
+	animation.log(log.AUDIO_DOWNLOAD_START, 1);
 	$("#play-media").html("&#xf04b").removeClass("play");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
@@ -1582,7 +1582,7 @@ app.audioPlayer = function(selector, source) {
 		app.audioPlayer.onplayhead = false;
 	}
 	app.audioPlayer.loadedData = function() {
-		animation.log(AUDIO_FETCH_END, -1);
+		animation.log(AUDIO_DOWNLOAD_END, -1);
 		// Update the length
 		$("#music-length").html(app.audioPlayer.formatTime(music.duration));
 		// Show the play icon

@@ -122,7 +122,7 @@ function downloadMedia(url) {
 		}
 		// Show progress
 		var finished = _.size(journal.archive.map);
-		animation.log(log.CONTENTS_DOWNLOAD_MEDIA_FETCHED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
+		animation.log(log.CONTENTS_DOWNLOAD_MEDIA_LOADED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
 		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
 			// All the media have been loaded, so refresh button goes back to original status

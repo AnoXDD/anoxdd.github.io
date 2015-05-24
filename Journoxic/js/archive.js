@@ -140,21 +140,28 @@ archive.list.prototype = {
 		var item = $(archive.itemView(data));
 		// The event when clicking the list
 		item.find(" > a").on("click", function(j) {
-			j.preventDefault();
-			// De-hightlight the data that is displayed
-			////console.log(archive.currentDisplayed);
-			$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeAttr("style");
-			// Highlight the data that is now displayed
-			$(this).css("background", "#5d5d5d").css("color", "#fff");
-			// Update the index of the list to be displayed
-			var flag = (archive.currentDisplayed == $(this).parent().index());
-			if (!flag) {
-				archive.currentDisplayed = $(this).parent().index();
-				$("#detail").hide().fadeIn(500);
-				archive.view = new archive.detail();
-			}
-			return false;
-		});
+				j.preventDefault();
+				// De-hightlight the data that is displayed
+				////console.log(archive.currentDisplayed);
+				$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeAttr("style");
+				// Highlight the data that is now displayed
+				$(this).css("background", "#5d5d5d").css("color", "#fff");
+				// Update the index of the list to be displayed
+				var flag = (archive.currentDisplayed == $(this).parent().index());
+				if (!flag) {
+					archive.currentDisplayed = $(this).parent().index();
+					$("#detail").hide().fadeIn(500);
+					archive.view = new archive.detail();
+				}
+				return false;
+			}).
+			on("contextmenu", function() {
+				// Right click to select the archive list
+				$(this).toggleClass("change");
+				archive.list[$(this).parent().index()]["change"] = !archive.list[$(this).parent().index()]["change"];
+				// Return false to disable other functionalities
+				return false;
+			});
 		var $newClass = item.addClass(data.type).hide();
 		this.contents.append($newClass.fadeIn(500));
 	}
@@ -163,7 +170,6 @@ archive.list.prototype = {
 archive.detail = function() {
 	var dataClip = archive.list[archive.currentDisplayed];
 	if (!dataClip.processed) {
-		// TODO: get data from server
 		animation.log(log.CONTENTS_DOWNLOAD_START, 1);
 		$.ajax({
 			type: "GET",
@@ -240,6 +246,29 @@ archive.detail.prototype = {
 	}
 };
 
+/**
+ * Reverses selection of all archive lists
+ */
+archive.reverse = function() {
+	$("#list .archive").each(function() {
+		$(this).toggleClass("change");
+	});
+	for (var i = 0; i !== archive.list.length; ++i) {
+		archive.list[i]["change"] = !archive.list[i]["change"];
+	}
+}
+
+/**
+ * Clears the selection of all archive lists
+ */
+archive.clear = function() {
+	$("#list .archive").each(function() {
+		$(this).removeClass("change");
+	});
+	for (var i = 0; i !== archive.list.length; ++i) {
+		archive.list[i]["change"] = false;
+	}
+}
 
 archive.quit = function() {
 	$("#list").empty();

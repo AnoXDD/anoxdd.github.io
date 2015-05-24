@@ -1176,11 +1176,6 @@ edit.photo = function() {
 			});
 	});
 };
-edit.photoClick = function(index) {
-	$("#attach-area .images div:eq(" + index + ")").toggleClass("highlight");
-	// Tell the photos map that this photo would like to switch location
-	edit.photos[index]["change"] = !edit.photos[index]["change"];
-};
 /**
  * Saves the photo to OneDrive
  * IMPORATNT: This function is to be called only at edit.save() because this function will contact OneDrive server to move files, which will cause async between client and the server 

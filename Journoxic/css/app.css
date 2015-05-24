@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -278,7 +278,12 @@ body {
 			background: #939393;
 		}
 
-		#list a:active, #list a:hover, #list a:focus {
+		#list a:active{
+			background: #bbb !important;
+			color: white;
+		}
+
+		#list a:hover, #list a:focus {
 			background: #5d5d5d;
 			color: white;
 		}
@@ -2160,7 +2165,7 @@ body {
 	}
 
 		.actions a:active {
-			background: #676767;
+			background: #676767 !important;
 			color: #ffffff;
 		}
 

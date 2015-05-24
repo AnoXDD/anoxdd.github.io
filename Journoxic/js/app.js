@@ -1669,5 +1669,7 @@ $(document).ready(function() {
 	app.detailView = _.template($("#detail-view").html());
 	app.layout();
 	app.init();
+	archive.itemView = _.template($("#archive-view").html());
+	archive.detailView = _.template($("#archive-detail-view").html());
 });
 //})(window, jQuery);

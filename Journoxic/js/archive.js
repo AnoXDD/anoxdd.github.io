@@ -4,9 +4,6 @@ window.archive = {};
 
 archive.list = [];
 archive.displayId = "";
-archive.itemView = _.template($("#archive-view").html());
-archive.detailView = _.template($("#archive-detail-view").html());
-
 
 archive.init = function() {
 	// Get the data from the server

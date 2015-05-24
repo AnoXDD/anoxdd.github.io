@@ -252,7 +252,7 @@ animation.invalid = function(selector) {
 /**
  * Logs something on the menu to let the user know
  * @param {String} message - The message to be logged
- * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
+ * @param {Number} indent - The indent parameter. 1 for indenting by one (effective after). -1 for dedenting by one (effective immediately)
  * @param {Number} type - The type of message. 0 for normal. 1 for error. 2 for warning.
  */
 animation.log = function(message, indent, type) {
@@ -261,9 +261,11 @@ animation.log = function(message, indent, type) {
 		tabClass = "";
 	// Process indentation
 	if (indent === 1) {
-		++animation.indent;
 		tabClass = "start ";
 	} else if (indent === -1) {
+		if (--animation.indent < 0) {
+			animation.indent = 0;
+		}
 		tabClass = "end ";
 	}
 	if (animation.indent > 0) {
@@ -315,10 +317,8 @@ animation.log = function(message, indent, type) {
 			break;
 	}
 	console.log("From user log: \t" + new Date() + ": " + message);
-	if (indent === -1) {
-		if (--animation.indent < 0) {
-			animation.indent = 0;
-		}
+	if (indent === 1) {
+		++animation.indent;
 	}
 	////$("#feedback").html(message).css("opacity", "1");
 	////setTimeout(function() {

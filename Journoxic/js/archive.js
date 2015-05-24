@@ -115,8 +115,8 @@ archive.list.prototype = {
 		// Test if current entry satisfies the filter
 		while (true) {
 			var data = archive.data[currentLoaded];
-			data["created"] = this.date(data["created"]);
-			data["modified"] = this.date(data["modified"]);
+			archive.data[currentLoaded]["created"] = this.date(data["created"]);
+			archive.data[currentLoaded]["modified"] = this.date(data["modified"]);
 			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
@@ -203,11 +203,17 @@ archive.detail = function() {
 			url: dataClip["url"]
 		}).done(function(data, status, xhr) {
 			animation.log(log.CONTENTS_DOWNLOAD_END, -1);
-			dataClip.contents = JSON.parse(xhr.responseText).slice(0, 50);
-			//dataClip.contents = JSON.parse(t.text(dataClip.contents));
+			var contents = JSON.parse(xhr.responseText).slice(0, 50);
+			// Convert date
+			for (var i = 0; i !== contents.length; ++i) {
+				var date = new Date(contents[i]["time"]["created"]);
+				if (!isNaN(date.getTime())) {
+					contents[i]["time"]["created"] = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+				}
+			}
 			// Set the read status of the clip to read
 			dataClip.processed = true;
-			var l = $(archive.detailView(dataClip));
+			$(archive.detailView(dataClip));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
@@ -244,15 +250,6 @@ archive.detail = function() {
 	}
 };
 archive.detail.prototype = {
-	text: function(rawText) {
-		// Processes spacial characters
-		rawText = this.htmlSpacialChars(rawText);
-		// Replace all double lines to a new character
-		rawText = rawText.replace(/\n(|\r)\n(|\r)/ig, "</p></br><p>");
-		// Replace all other single lines to a new line
-		rawText = rawText.replace(/\n(|\r)/ig, "</p><p>");
-		return rawText;
-	},
 	// Processes all the spacial characters to html-style characters
 	htmlSpacialChars: function(rawText) {
 		return rawText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#039;").replace(/"/g, "&quot;");

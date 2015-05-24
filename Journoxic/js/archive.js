@@ -2,8 +2,11 @@
 
 window.archive = {};
 
-archive.list = [];
+archive.data = [];
 archive.displayId = "";
+
+archive.lastLoaded = 0;
+archive.currentDisplayed = -1;
 
 archive.init = function() {
 	// Get the data from the server
@@ -32,7 +35,7 @@ archive.init = function() {
 						selected: false,
 						processed: false
 					};
-					archive.list.push(dataElement);
+					archive.data.push(dataElement);
 				}
 			}
 			app.audioPlayer.quit();
@@ -45,9 +48,27 @@ archive.init = function() {
 		}).fail(function(xhr, status, error) {
 			animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 		});
-
 	});
+};
 
+/**
+ * Reloads the content view of the journal. 
+ */
+archive.load = function() {
+	// Hide anyway
+	$("#search-result").hide();
+	// Also hide the detail view
+	archive.detail.prototype.hideDetail();
+	// Remove all the child elements and always
+	$("#list").empty();
+	archive.lastLoaded = 0;
+	archive.currentDisplayed = -1;
+	// Refresh every stuff
+	for (var key = 0, len = journal.archive.data.length; key !== len; ++key) {
+		archive.data[key]["processed"] = false;
+	}
+	new archive.list();
+	archive.dataLoaded = true;
 };
 
 archive.list = function() {
@@ -80,18 +101,18 @@ archive.list.prototype = {
 	 */
 	load: function() {
 		////console.log("Call archive.list.load(" + filter + ")");
-		var contents = archive.list,
+		var contents = archive.data,
 			currentLoaded = archive.lastLoaded;
 		// Adjust if the number of contents needed to be loaded is more than all the available contents
-		if (archive.lastLoaded >= archive.list.length) {
-			currentLoaded = archive.lastLoaded = archive.list.length - 1;
+		if (archive.lastLoaded >= archive.data.length) {
+			currentLoaded = archive.lastLoaded = archive.data.length - 1;
 		}
 		// Load the contents
 		contents[currentLoaded].index = currentLoaded;
 		// Test if current entry satisfies the filter
 		while (true) {
 			// Go to load/change html of the content
-			this.html(archive.list[currentLoaded]);
+			this.html(archive.data[currentLoaded]);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
 			if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
@@ -137,21 +158,21 @@ archive.list.prototype = {
 		var item = $(archive.itemView(data));
 		// The event when clicking the list
 		item.find(" > a").on("click", function(j) {
-				j.preventDefault();
-				// De-hightlight the data that is displayed
-				////console.log(archive.currentDisplayed);
-				$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeAttr("style");
-				// Highlight the data that is now displayed
-				$(this).css("background", "#5d5d5d").css("color", "#fff");
-				// Update the index of the list to be displayed
-				var flag = (archive.currentDisplayed == $(this).parent().index());
-				if (!flag) {
-					archive.currentDisplayed = $(this).parent().index();
-					$("#detail").hide().fadeIn(500);
-					archive.view = new archive.detail();
-				}
-				return false;
-			}).
+			j.preventDefault();
+			// De-hightlight the data that is displayed
+			////console.log(archive.currentDisplayed);
+			$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeAttr("style");
+			// Highlight the data that is now displayed
+			$(this).css("background", "#5d5d5d").css("color", "#fff");
+			// Update the index of the list to be displayed
+			var flag = (archive.currentDisplayed == $(this).parent().index());
+			if (!flag) {
+				archive.currentDisplayed = $(this).parent().index();
+				$("#detail").hide().fadeIn(500);
+				archive.view = new archive.detail();
+			}
+			return false;
+		}).
 			on("contextmenu", function() {
 				// Right click to select the archive list
 				$(this).toggleClass("change");
@@ -165,7 +186,7 @@ archive.list.prototype = {
 };
 
 archive.detail = function() {
-	var dataClip = archive.list[archive.currentDisplayed];
+	var dataClip = archive.data[archive.currentDisplayed];
 	if (!dataClip.processed) {
 		animation.log(log.CONTENTS_DOWNLOAD_START, 1);
 		$.ajax({
@@ -250,8 +271,8 @@ archive.reverse = function() {
 	$("#list .archive").each(function() {
 		$(this).toggleClass("change");
 	});
-	for (var i = 0; i !== archive.list.length; ++i) {
-		archive.list[i]["change"] = !archive.list[i]["change"];
+	for (var i = 0; i !== archive.data.length; ++i) {
+		archive.data[i]["change"] = !archive.data[i]["change"];
 	}
 }
 
@@ -262,8 +283,8 @@ archive.clear = function() {
 	$("#list .archive").each(function() {
 		$(this).removeClass("change");
 	});
-	for (var i = 0; i !== archive.list.length; ++i) {
-		archive.list[i]["change"] = false;
+	for (var i = 0; i !== archive.data.length; ++i) {
+		archive.data[i]["change"] = false;
 	}
 }
 

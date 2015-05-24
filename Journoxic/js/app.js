@@ -159,8 +159,8 @@ app.load = function(filter, forceReload, newContent) {
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data.length);
-		console.log("Calling app.list(" + filter + ")");
-		console.log("\t> lastLoaded = " + app.lastLoaded);
+		////console.log("Calling app.list(" + filter + ")");
+		////console.log("\t> lastLoaded = " + app.lastLoaded);
 		new app.list(filter);
 		app.dataLoaded = true;
 	};

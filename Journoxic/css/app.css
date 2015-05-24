@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -76,7 +76,7 @@
 .spinr {
 	-webkit-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
-	-webkit-animation-direction: reverse;    
+	-webkit-animation-direction: reverse;
 	animation-direction: reverse;
 }
 
@@ -258,14 +258,24 @@ body {
 		width: 94%;
 	}
 
-	#list li.archive {
-    height: 60px;
-		
-	}
+		#list li.archive {
+			height: 60px;
+		}
 
-	#list li.archive a {
-		height: 23px;
-	}
+			#list li.archive a {
+				height: 23px;
+				color: #454545;
+			}
+
+				#list li.archive a.change::before {
+					content: "\f14a";
+					margin-right: 1em;
+				}
+
+				#list li.archive a:not(.change)::before {
+					content: "\f0c8";
+					padding-right: 1em;
+				}
 
 	#list a {
 		background: #fff;
@@ -278,6 +288,7 @@ body {
 		transition: background 0.3s ease;
 		width: 96%;
 	}
+
 		#list a:after {
 			background-position: -176px -445px;
 			bottom: -4px;
@@ -293,7 +304,7 @@ body {
 			background: #939393;
 		}
 
-		#list a:active{
+		#list a:active {
 			background: #bbb !important;
 			color: white;
 		}
@@ -339,17 +350,17 @@ body {
 			white-space: nowrap;
 		}
 
-#list p.size {
-    color: #eee;
-	
-    display: inline-block;
-    font-size: 11px;
-    float: inherit;
-    padding: 2px;
-    background-color: #808080;
-    border-radius: 25px;
-    opacity: 1;
-}
+		#list p.size {
+			color: #eee;
+			display: inline-block;
+			font-size: 11px;
+			float: inherit;
+			padding: 2px;
+			background-color: #808080;
+			border-radius: 25px;
+			opacity: 1;
+		}
+
 		#list p.datetime {
 			color: #aaa;
 			display: inline-block;
@@ -682,7 +693,7 @@ body {
 		#detail .head:hover p.title {
 			margin-left: -7%;
 			transition: 1s ease;
-			width: 60%;
+			width: 55%;
 		}
 
 		#detail .head .title {
@@ -2804,4 +2815,32 @@ body {
 
 	#audioplayer #music-position {
 		margin-right: 4px;
+	}
+
+#archive-preview {
+	font-size: 12px;
+}
+
+	#archive-preview tr:nth-child(odd) {
+		background-color: #E7E7E7;
+	}
+
+	#archive-preview td:nth-child(1), #archive-preview td:nth-child(2) {
+		width: 6em;
+		text-align: center;
+	}
+
+	#archive-preview td:nth-child(3) {
+		max-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	#archive-preview th {
+		font-size: 15px;
+	}
+
+	#archive-preview td {
+		text-overflow: clip;
 	}

@@ -1,4 +1,4 @@
-/* Defines the archive operation */
+﻿/* Defines the archive operation */
 
 window.archive = {};
 
@@ -122,8 +122,8 @@ archive.list.prototype = {
 		// Test if current entry satisfies the filter
 		while (true) {
 			var data = archive.data[currentLoaded];
-			archive.data[currentLoaded]["created"] = this.date(data["created"]);
-			archive.data[currentLoaded]["modified"] = this.date(data["modified"]);
+			archive.data[currentLoaded]["created"] = this.myDate(data["created"]);
+			archive.data[currentLoaded]["modified"] = this.myDate(data["modified"]);
 			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
@@ -164,6 +164,18 @@ archive.list.prototype = {
 		} else {
 			return hour + ":" + minute;
 		}
+	},
+	/**
+	 * Returns my format of time
+	 * @param {Number} time - The seconds from epoch
+	 * @returns {String} - The formatted string
+	 */
+	myDate: function(time) {
+		var date = new Date(time);
+		if (isNaN(date.getTime())) {
+			return time;
+		}
+		return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + ":" + edit.format(date.getMinutes());
 	},
 	/**
 	 * Converts the content to html and append to the list of contents
@@ -215,20 +227,16 @@ archive.detail = function() {
 			for (var i = 0; i !== contents.length; ++i) {
 				var date = new Date(contents[i]["time"]["created"]);
 				if (!isNaN(date.getTime())) {
-					contents[i]["time"]["created"] = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+					contents[i]["time"]["created"] = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + ":" + edit.format(date.getMinutes());
 				}
 			}
 			dataClip.contents = contents;
 			// Set the read status of the clip to read
 			dataClip.processed = true;
-			$(archive.detailView(dataClip));
+			var l = $(archive.detailView(dataClip));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
-			// Hide center if no images available
-			if (!dataClip["images"]) {
-				$(".center").hide();
-			}
 			// Back button
 			$(".btn-back", app.cDetail).on("click", function() {
 				t.hideDetail();

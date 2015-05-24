@@ -258,6 +258,17 @@ body {
 
 	#list li.archive a {
 		height: 23px;
+		color: #454545;
+	}
+
+	#list li.archive a.change::before {
+		content: "\f14a";
+		margin-right: 1em;
+	}
+
+	#list li.archive a:not(.change)::before {
+		content: "\f0c8";
+		padding-right:1em;
 	}
 
 	#list a {

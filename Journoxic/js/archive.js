@@ -1,4 +1,4 @@
-/* Defines the archive operation */
+﻿/* Defines the archive operation */
 
 window.archive = {};
 
@@ -16,7 +16,7 @@ archive.init = function() {
 		animation.log(log.ARCHIVE_START, 1);
 		$.ajax({
 			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&access_token=" + token
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
 		}).done(function(data, status, xhr) {
 			if (data["@odata.nextLink"]) {
 				animation.warning(log.ARCHIVE_TOO_MANY);
@@ -275,7 +275,7 @@ archive.detail.prototype = {
  */
 archive.reverse = function() {
 	$("#list .archive").each(function() {
-		$(this).toggleClass("change");
+		$(this).children("a").toggleClass("change");
 	});
 	for (var i = 0; i !== archive.data.length; ++i) {
 		archive.data[i]["change"] = !archive.data[i]["change"];
@@ -287,7 +287,7 @@ archive.reverse = function() {
  */
 archive.clear = function() {
 	$("#list .archive").each(function() {
-		$(this).removeClass("change");
+		$(this).children("a").removeClass("change");
 	});
 	for (var i = 0; i !== archive.data.length; ++i) {
 		archive.data[i]["change"] = false;

@@ -53,9 +53,9 @@
 		<a class="entry-archive" title="Clear selection" id="archive-clear" onclick="archive.clear()" href="#">&#xf096</a>
 		<a class="entry-archive" title="Restore" id="archive-restore">&#xf00c</a>
 		<a class="entry-archive" title="Delete this archive" id="archive-delete">&#xf00d</a>
-		<a class="entry-archive" title="Refresh" id="archive-refresh" onclick="archive.init()">&#xf021</a>
+		<a class="entry-archive" title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a>
 		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xf021</a>
-		<a class="entry-comm" title="Revert to archived data" id="undo-data" onclick="archive.init()" href="#">&#xf1da</a>
+		<a class="entry-comm" title="Revert to archived data" id="undo-data" onclick="archive.init('#undo-data')" href="#">&#xf1da</a>
 		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a>
 		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xf0ee</a>
 		<a class="entry-comm" title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a>
@@ -473,7 +473,7 @@
 							</tr>
 							<%
 							if (contents) {
-							for (var i = 0; i !== contents.length && i < 100; ++i) {
+							for (var i = 0; i !== contents.length && i < 50; ++i) {
 							%>
 							<tr>
 								<td><%- contents[i]["time"]["created"] %></td>

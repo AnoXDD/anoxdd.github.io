@@ -8,7 +8,12 @@ archive.displayId = "";
 archive.lastLoaded = 0;
 archive.currentDisplayed = -1;
 
-archive.init = function() {
+/**
+ * Initializes the archive view with a selector of the caller of this function
+ * @param {String} selector - The string of selector
+ */
+archive.init = function(selector) {
+	$(selector).addClass("spinr");
 	archive.contents = undefined;
 	archive.data = [];
 	// Get the data from the server
@@ -50,6 +55,8 @@ archive.init = function() {
 			archive.load();
 		}).fail(function(xhr, status, error) {
 			animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+		}).always(function() {
+			$(selector).removeClass("spinr");
 		});
 	});
 };

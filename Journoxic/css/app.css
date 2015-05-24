@@ -69,8 +69,15 @@
 }
 
 .spin {
-	-webkit-animation: spin 2s infinite ease;
-	animation: spin 2s infinite ease;
+	-webkit-animation: spin 2s infinite ;
+	animation: spin 2s infinite ;
+}
+
+.spinr {
+	-webkit-animation: spin 2s infinite ;
+	animation: spin 2s infinite ;
+	-webkit-animation-direction: reverse;    
+	animation-direction: reverse;
 }
 
 /*@font-face {
@@ -258,17 +265,6 @@ body {
 
 	#list li.archive a {
 		height: 23px;
-		color: #454545;
-	}
-
-	#list li.archive a.change::before {
-		content: "\f14a";
-		margin-right: 1em;
-	}
-
-	#list li.archive a:not(.change)::before {
-		content: "\f0c8";
-		padding-right:1em;
 	}
 
 	#list a {

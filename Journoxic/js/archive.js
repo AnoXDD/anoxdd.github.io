@@ -11,12 +11,12 @@ archive.init = function() {
 		animation.log(log.ARCHIVE_START, 1);
 		$.ajax({
 			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&access_token=" + token
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&access_token=" + token
 		}).done(function(data, status, xhr) {
 			if (data["@odata.nextLink"]) {
 				animation.warning(log.ARCHIVE_TOO_MANY);
 			}
-			animation.log(ARCHIVE_END, -1);
+			animation.log(log.ARCHIVE_END, -1);
 			var itemList = data["value"];
 			for (var key = 0, len = itemList.length; key !== len; ++key) {
 				var name = itemList[key]["name"];

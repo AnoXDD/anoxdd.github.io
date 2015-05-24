@@ -165,7 +165,7 @@ app.load = function(filter, forceReload, newContent) {
 		app.dataLoaded = true;
 	};
 	if (!app.dataLoaded) {
-		// app.loadScript("data/data.js", loadFunction, true);
+		// app.loadScript("core/data.js", loadFunction, true);
 		if (newContent) {
 			// New contents available! Refresh the new data
 			animation.log(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);

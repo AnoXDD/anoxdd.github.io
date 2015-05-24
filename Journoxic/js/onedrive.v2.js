@@ -40,7 +40,7 @@ function downloadFile() {
 			// Get text data
 			$.ajax({
 					type: "GET",
-					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
 				})
 				.done(function(data, status, xhr) {
 					window.app.dataLoaded = false;
@@ -162,7 +162,7 @@ function uploadFile() {
 		// Backup the original file
 		$.ajax({
 				type: "PATCH",
-				url: "https://api.onedrive.com/v1.0/drive/special/approot:/data/data.js?access_token=" + token,
+				url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/data.js?access_token=" + token,
 				contentType: "application/json",
 				data: JSON.stringify(data)
 			})
@@ -175,7 +175,7 @@ function uploadFile() {
 				var tmp = edit.minData();
 				$.ajax({
 						type: "PUT",
-						url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/data.js:/content?access_token=" + token,
+						url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
 						contentType: "text/plain",
 						data: JSON.stringify(tmp)
 					})

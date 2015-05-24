@@ -251,6 +251,15 @@ body {
 		width: 94%;
 	}
 
+	#list li.archive {
+    height: 60px;
+		
+	}
+
+	#list li.archive a {
+		height: 23px;
+	}
+
 	#list a {
 		background: #fff;
 		border: 1px solid #dadada;
@@ -262,7 +271,6 @@ body {
 		transition: background 0.3s ease;
 		width: 96%;
 	}
-
 		#list a:after {
 			background-position: -176px -445px;
 			bottom: -4px;
@@ -324,6 +332,17 @@ body {
 			white-space: nowrap;
 		}
 
+#list p.size {
+    color: #eee;
+	
+    display: inline-block;
+    font-size: 11px;
+    float: inherit;
+    padding: 2px;
+    background-color: #808080;
+    border-radius: 25px;
+    opacity: 1;
+}
 		#list p.datetime {
 			color: #aaa;
 			display: inline-block;

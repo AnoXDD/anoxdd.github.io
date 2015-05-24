@@ -9,6 +9,8 @@ archive.lastLoaded = 0;
 archive.currentDisplayed = -1;
 
 archive.init = function() {
+	archive.contents = undefined;
+	archive.data = [];
 	// Get the data from the server
 	getTokenCallback(function(token) {
 		animation.log(log.ARCHIVE_START, 1);
@@ -30,8 +32,8 @@ archive.init = function() {
 						id: itemList[key]["id"],
 						url: itemList[key]["@content.downloadUrl"],
 						size: itemList[key]["size"],
-						created: itemList[key]["createdDateTime"],
-						modified: itemList[key]["lastModifiedDateTime"],
+						created: Date.parse(itemList[key]["createdDateTime"]),
+						modified: Date.parse(itemList[key]["lastModifiedDateTime"]),
 						selected: false,
 						processed: false
 					};
@@ -44,7 +46,8 @@ archive.init = function() {
 			$("#detail").empty();
 			// Display the result
 			archive.lastLoaded = 0;
-			archive.list();
+			headerShowMenu("archive");
+			archive.load();
 		}).fail(function(xhr, status, error) {
 			animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 		});
@@ -64,7 +67,7 @@ archive.load = function() {
 	archive.lastLoaded = 0;
 	archive.currentDisplayed = -1;
 	// Refresh every stuff
-	for (var key = 0, len = journal.archive.data.length; key !== len; ++key) {
+	for (var key = 0, len = archive.data.length; key !== len; ++key) {
 		archive.data[key]["processed"] = false;
 	}
 	new archive.list();
@@ -111,8 +114,10 @@ archive.list.prototype = {
 		contents[currentLoaded].index = currentLoaded;
 		// Test if current entry satisfies the filter
 		while (true) {
-			// Go to load/change html of the content
-			this.html(archive.data[currentLoaded]);
+			var data = archive.data[currentLoaded];
+			data["created"] = this.date(data["created"]);
+			data["modified"] = this.date(data["modified"]);
+			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
 			if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
@@ -136,8 +141,11 @@ archive.list.prototype = {
 	 * @returns {String} - The formatted string
 	 */
 	date: function(time, timeOnly) {
-		var date = new Date(time),
-			year = date.getFullYear(),
+		var date = new Date(time);
+		if (isNaN(date.getTime())) {
+			return time;
+		}
+		var year = date.getFullYear(),
 			month = date.getMonth(),
 			day = date.getDate(),
 			hour = date.getHours(),
@@ -176,11 +184,11 @@ archive.list.prototype = {
 			on("contextmenu", function() {
 				// Right click to select the archive list
 				$(this).toggleClass("change");
-				archive.list[$(this).parent().index()]["change"] = !archive.list[$(this).parent().index()]["change"];
+				archive.data[$(this).parent().index()]["change"] = !archive.data[$(this).parent().index()]["change"];
 				// Return false to disable other functionalities
 				return false;
 			});
-		var $newClass = item.addClass(data.type).hide();
+		var $newClass = item.hide();
 		this.contents.append($newClass.fadeIn(500));
 	}
 };
@@ -189,16 +197,19 @@ archive.detail = function() {
 	var dataClip = archive.data[archive.currentDisplayed];
 	if (!dataClip.processed) {
 		animation.log(log.CONTENTS_DOWNLOAD_START, 1);
+		var t = this;
 		$.ajax({
 			type: "GET",
 			url: dataClip["url"]
 		}).done(function(data, status, xhr) {
 			animation.log(log.CONTENTS_DOWNLOAD_END, -1);
 			dataClip.contents = xhr.responseText;
-			dataClip.contents = this.text(dataClip.contents);
+			dataClip.contents = t.text(dataClip.contents);
 			// Set the read status of the clip to read
 			dataClip.processed = true;
-			var l = $(archive.detailView(dataClip));
+			console.log(dataClip.contents);
+			console.log(JSON.parse(dataClip.contents));
+			var l = $(archive.detailView(JSON.parse(dataClip.contents)));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
@@ -208,7 +219,7 @@ archive.detail = function() {
 			}
 			// Back button
 			$(".btn-back", app.cDetail).on("click", function() {
-				this.hideDetail();
+				t.hideDetail();
 			});
 			return dataClip;
 		}).fail(function(xhr, status, error) {
@@ -216,7 +227,7 @@ archive.detail = function() {
 		});
 	} else {
 		try {
-			var l = $(archive.detailView(JSON.parse(dataClip)));
+			var l = $(archive.detailView(JSON.parse(dataClip.contents)));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");

@@ -1,4 +1,4 @@
-﻿/* Defines the archive operation */
+/* Defines the archive operation */
 
 window.archive = {};
 
@@ -218,6 +218,7 @@ archive.detail = function() {
 					contents[i]["time"]["created"] = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 				}
 			}
+			dataClip.contents = contents;
 			// Set the read status of the clip to read
 			dataClip.processed = true;
 			$(archive.detailView(dataClip));

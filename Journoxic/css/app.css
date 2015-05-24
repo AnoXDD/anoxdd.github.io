@@ -69,13 +69,13 @@
 }
 
 .spin {
-	-webkit-animation: spin 2s infinite ;
-	animation: spin 2s infinite ;
+	-webkit-animation: spin 2s infinite linear;
+	animation: spin 2s infinite linear;
 }
 
 .spinr {
-	-webkit-animation: spin 2s infinite ;
-	animation: spin 2s infinite ;
+	-webkit-animation: spin 2s infinite linear;
+	animation: spin 2s infinite linear;
 	-webkit-animation-direction: reverse;    
 	animation-direction: reverse;
 }

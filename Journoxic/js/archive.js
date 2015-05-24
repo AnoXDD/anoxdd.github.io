@@ -1,4 +1,4 @@
-﻿/* Defines the archive operation */
+/* Defines the archive operation */
 
 window.archive = {};
 
@@ -203,13 +203,11 @@ archive.detail = function() {
 			url: dataClip["url"]
 		}).done(function(data, status, xhr) {
 			animation.log(log.CONTENTS_DOWNLOAD_END, -1);
-			dataClip.contents = xhr.responseText;
-			dataClip.contents = t.text(dataClip.contents);
+			dataClip.contents = JSON.parse(xhr.responseText).slice(0, 50);
+			//dataClip.contents = JSON.parse(t.text(dataClip.contents));
 			// Set the read status of the clip to read
 			dataClip.processed = true;
-			console.log(dataClip.contents);
-			console.log(JSON.parse(dataClip.contents));
-			var l = $(archive.detailView(JSON.parse(dataClip.contents)));
+			var l = $(archive.detailView(dataClip));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
@@ -227,7 +225,7 @@ archive.detail = function() {
 		});
 	} else {
 		try {
-			var l = $(archive.detailView(JSON.parse(dataClip.contents)));
+			var l = $(archive.detailView(JSON.parse(dataClip)));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
@@ -253,7 +251,7 @@ archive.detail.prototype = {
 		rawText = rawText.replace(/\n(|\r)\n(|\r)/ig, "</p></br><p>");
 		// Replace all other single lines to a new line
 		rawText = rawText.replace(/\n(|\r)/ig, "</p><p>");
-		return "<p>" + rawText + "</p>";
+		return rawText;
 	},
 	// Processes all the spacial characters to html-style characters
 	htmlSpacialChars: function(rawText) {

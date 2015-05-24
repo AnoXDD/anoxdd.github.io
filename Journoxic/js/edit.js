@@ -48,8 +48,8 @@ edit.init = function(overwrite, index) {
 		} else if (overwrite == false) {
 			// Read from available caches
 			if (localStorage["created"]) {
-				var index = edit.find(localStorage["created"]);
-				if (index != -1) {
+				index = edit.find(localStorage["created"]);
+				if (index !== -1) {
 					data = journal.archive.data[index];
 				}
 			} else {
@@ -292,7 +292,10 @@ edit.processRemovalList = function() {
 			localStorage[key] = JSON.stringify(data);
 		}
 	}
-}; /******************************************************************
+};
+
+
+/******************************************************************
  **************************** CACHE *******************************
  ******************************************************************/
 
@@ -586,6 +589,15 @@ edit.change = function(key, value) {
 	////	localStorage[key] = value;
 
 };
+
+/************************** ARCHIVE *******************************/
+
+/**
+ * Show the archive file selection panel
+ */
+edit.archive = function() {
+	
+}
 
 /************************** EDITING *******************************/
 

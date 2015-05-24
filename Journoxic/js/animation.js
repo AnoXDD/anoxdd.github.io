@@ -3,6 +3,7 @@
 window.log = {
 	WELCOME: "Welcome back",
 	FILE_NOT_FOUND: "Cannot find the file ",
+	FILES_NOT_FOUND: "Cannot find the list of files",
 	FILE_NOT_LOADED: "Cannot load the file ",
 	DOWNLOAD_PROMPT: ". Please make sure it has been downloaded",
 	LOCATION_PIN_FAIL: "Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode",
@@ -12,6 +13,11 @@ window.log = {
 	LOAD_DATA_FAIL: "Cannot load the data",
 	NO_CONTENT: ": no new content is specified",
 	NO_ARCHIVE: ": no archive data is found",
+
+	ARCHIVE_START: "Loading archive list ...",
+	ARCHIVE_TOO_MANY: "Too many archive files. Only the latest 500 files will be displayed",
+	ARCHIVE_END: "Archive list loaded",
+	ARCHIVE_INVALID_JSON: "This archive is corrupted",
 
 	CONTENTS_NEW: "Found new content with ",
 	CONTENTS_NEW_END: " chars",
@@ -24,7 +30,7 @@ window.log = {
 	CONTENTS_DOWNLOAD_MEDIA_OF: " of ",
 	CONTENTS_DOWNLOAD_MEDIA_FAIL: "Cannot load the media data",
 	CONTENTS_DOWNLOAD_MEDIA_END: "Media data loaded",
-	CONTENTS_DOWNLOAD_END: "Data upload finished",
+	CONTENTS_DOWNLOAD_END: "Data download finished",
 	CONTENTS_UPLOAD_START: "Start uploading archive data ...",
 	CONTENTS_UPLOAD_BACKUP: "Data backup finished",
 	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
@@ -345,6 +351,8 @@ function headerShowMenu(name) {
 			name = ".entry-add";
 		} else if (name === "comm") {
 			name = ".entry-comm";
+		} else if (name === "archive") {
+			name = ".entry-archive";
 		} else {
 			// name == undefined or other situations
 			name = ".entry-menu";

@@ -1,10 +1,13 @@
-﻿app.version = "v3.13.5 Build 052115_2330";
+﻿app.version = "v3.14.0 Build 052315_2019";
 
 // Version number show up
 $("#version").html(app.version);
 
 /**
  * Version update change log
+ * 
+ * v3.14
+ * [Add] Archive file data organization
  * 
  * v3.13
  * [Chg] Visualize the hierachy of game log

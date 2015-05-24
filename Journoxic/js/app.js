@@ -126,6 +126,13 @@ app.init = function() {
 		});
 	});
 };
+/**
+ * Reloads the content view of the journal. 
+ * To force reload, call app.load("", true)
+ * @param {String} filter - The string representing the filter of display
+ * @param {Boolean} forceReload - Whether this reload is force, i.e. variables will be reset
+ * @param {String} newContent - The string representing the new content of journal archive
+ */
 app.load = function(filter, forceReload, newContent) {
 	if (newContent == "") {
 		// Try to add nothing
@@ -243,7 +250,10 @@ app.user = function() {
 	}
 	$("#user").html(e);
 };
-/* filter - the request string to display certain filter */
+/**
+ * Displays a list on the #list
+ * @param {String} filter - The request string to display certain filter
+ */
 app.list = function(filter) {
 	////console.log("Called app.list(" + filter + ")");
 	var f = this,
@@ -259,7 +269,6 @@ app.list = function(filter) {
 		this.loadmore = d.children("div.loadmore");
 		this.loadmore.on("click", function() {
 			////console.log("> Loadmore clicked");
-			app.currentPage++;
 			f.load(filter);
 		});
 		this.load(filter);
@@ -281,7 +290,6 @@ app.list.prototype = {
 		////console.log("Call app.list.load(" + filter + ")");
 		var currentList = this, // [h]
 			contents = journal.archive.data, // original:[f]
-			e = app.currentPage,
 			currentLoaded = app.lastLoaded, // original [g]
 			lastQualifiedLoaded = app.lastQualified;
 		// Adjust if the number of contents needed to be loaded is more than all the available contents

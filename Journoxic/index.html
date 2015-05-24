@@ -55,7 +55,7 @@
 		<a class="entry-archive" title="Delete this archive" id="archive-delete">&#xf00d</a>
 		<a class="entry-archive" title="Refresh" id="archive-refresh" onclick="archive.init()">&#xf021</a>
 		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xf021</a>
-		<a class="entry-comm" title="Revert to archived data" id="undo-data" href="#">&#xf1da</a>
+		<a class="entry-comm" title="Revert to archived data" id="undo-data" onclick="archive.init()" href="#">&#xf1da</a>
 		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a>
 		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xf0ee</a>
 		<a class="entry-comm" title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a>
@@ -90,6 +90,7 @@
 	<script src="js/animation.js"></script>
 	<script src="js/edit.js"></script>
 	<script src="js/app.js"></script>
+	<script src="js/archive.js"></script>
 	<script src="js/onedrive.v2.js"></script>
 	<script src="js/version.js"></script>
 	<script type="text/x-template" id="list-view">
@@ -454,7 +455,7 @@
 			</a>
 		</li>
 	</script>
-<script type="text/x-template" id="archive-detail-view">
+	<script type="text/x-template" id="archive-detail-view">
 		<div class="head">
 			<p class="title"><%- title %></p>
 			<p class="datetime">Created <%- created %></p>

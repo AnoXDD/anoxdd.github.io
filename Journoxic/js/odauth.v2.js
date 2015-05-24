@@ -200,7 +200,7 @@ function refreshToken(callback) {
 				refresh = data["refresh_token"],
 				expiry = parseInt(data["expires_in"]);
 			setCookie(token, expiry, refresh);
-			animation.log(log.AUTH_REFRESH_ACCESS_END);
+			animation.log(log.AUTH_REFRESH_ACCESS_END, -1);
 			if (typeof (callback) === "function")
 				callback(token);
 		}).fail(function(xhr, status, error) {

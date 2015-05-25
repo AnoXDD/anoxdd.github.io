@@ -590,15 +590,6 @@ edit.change = function(key, value) {
 
 };
 
-/************************** ARCHIVE *******************************/
-
-/**
- * Show the archive file selection panel
- */
-edit.archive = function() {
-	
-}
-
 /************************** EDITING *******************************/
 
 /**
@@ -1014,6 +1005,18 @@ edit.getDate = function() {
 	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	return dateStr;
 };
+/**
+ * Returns my format of time
+ * @param {Number} timeNum - The seconds from epoch
+ * @returns {String} - The formatted string
+ */
+edit.getMyTime = function(timeNum) {
+	var date = new Date(timeNum);
+	if (isNaN(date.getTime())) {
+		return time;
+	}
+	return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
+}
 
 /************************** PHOTO 0 ************************/
 

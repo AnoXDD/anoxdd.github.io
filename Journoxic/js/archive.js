@@ -8,6 +8,8 @@ archive.displayId = "";
 archive.lastLoaded = 0;
 archive.currentDisplayed = -1;
 
+archive.confirmName = "";
+
 /**
  * Initializes the archive view with a selector of the caller of this function
  * @param {String} selector - The string of selector
@@ -16,6 +18,7 @@ archive.init = function(selector) {
 	$(selector).addClass("spinr");
 	archive.contents = undefined;
 	archive.data = [];
+	archive.confirmName = "";
 	// Get the data from the server
 	getTokenCallback(function(token) {
 		animation.log(log.ARCHIVE_START, 1);
@@ -52,6 +55,10 @@ archive.init = function(selector) {
 			// Display the result
 			archive.lastLoaded = 0;
 			headerShowMenu("archive");
+			// Bind click event
+			$("#entry-menu").each(function() {
+				$(this).click(archive.quit);
+			});
 			archive.load();
 		}).fail(function(xhr, status, error) {
 			animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
@@ -122,8 +129,8 @@ archive.list.prototype = {
 		// Test if current entry satisfies the filter
 		while (true) {
 			var data = archive.data[currentLoaded];
-			archive.data[currentLoaded]["created"] = this.myDate(data["created"]);
-			archive.data[currentLoaded]["modified"] = this.myDate(data["modified"]);
+			archive.data[currentLoaded]["created"] = this.date(data["created"]);
+			archive.data[currentLoaded]["modified"] = this.date(data["modified"]);
 			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
@@ -166,18 +173,6 @@ archive.list.prototype = {
 		}
 	},
 	/**
-	 * Returns my format of time
-	 * @param {Number} time - The seconds from epoch
-	 * @returns {String} - The formatted string
-	 */
-	myDate: function(time) {
-		var date = new Date(time);
-		if (isNaN(date.getTime())) {
-			return time;
-		}
-		return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + ":" + edit.format(date.getMinutes());
-	},
-	/**
 	 * Converts the content to html and append to the list of contents
 	 * @param {Object} data - The data to be appended
 	 */
@@ -195,7 +190,7 @@ archive.list.prototype = {
 			var flag = (archive.currentDisplayed == $(this).parent().index());
 			if (!flag) {
 				archive.currentDisplayed = $(this).parent().index();
-				$("#detail").hide().fadeIn(500);
+				$("#detail").hide();
 				archive.view = new archive.detail();
 			}
 			return false;
@@ -225,10 +220,8 @@ archive.detail = function() {
 			var contents = JSON.parse(xhr.responseText).slice(0, 50);
 			// Convert date
 			for (var i = 0; i !== contents.length; ++i) {
-				var date = new Date(contents[i]["time"]["created"]);
-				if (!isNaN(date.getTime())) {
-					contents[i]["time"]["created"] = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + ":" + edit.format(date.getMinutes());
-				}
+				contents[i]["time"]["created"] = edit.getMyTime(contents[i]["time"]["created"]);
+				contents[i]["time"]["modified"] = edit.getMyTime(contents[i]["time"]["modified"]);
 			}
 			dataClip.contents = contents;
 			// Set the read status of the clip to read
@@ -237,6 +230,7 @@ archive.detail = function() {
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
+			$("#detail").fadeIn(500);
 			// Back button
 			$(".btn-back", app.cDetail).on("click", function() {
 				t.hideDetail();
@@ -247,7 +241,7 @@ archive.detail = function() {
 		});
 	} else {
 		try {
-			var l = $(archive.detailView(JSON.parse(dataClip)));
+			var l = $(archive.detailView(dataClip));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
@@ -255,6 +249,7 @@ archive.detail = function() {
 			if (!dataClip["images"]) {
 				$(".center").hide();
 			}
+			$("#detail").fadeIn(500);
 			// Back button
 			$(".btn-back", app.cDetail).on("click", function() {
 				this.hideDetail();
@@ -286,6 +281,89 @@ archive.detail.prototype = {
 	}
 };
 
+archive.confirm = function() {
+	if (archive.confirmName === "delete") {
+		archive.remove();
+	}
+}
+
+/**
+ * Restores this archive
+ */
+archive.restore = function() {
+	if (archive.currentDisplayed < 0) {
+		// Invalid call: no item selected
+		animation.error(log.ARCHIVE_NO_SELECTED);
+		return false;
+	}
+	downloadFile(archive.data[archive.currentDisplayed]["url"]);
+}
+
+/**
+ * Removes the archive to trashcan on OneDrive so that removed files are still recoverable
+ * Priority:
+ * 1) Selected items (currently displayed not included, if not selected)
+ * 2) Currently selected item
+ */
+archive.remove = function() {
+	var found = false;
+	animation.log(log.ARCHIVE_REMOVE_START, 1);
+	getTokenCallback(function(token) {
+		var total = 0,
+			fail = false,
+			processed = 0;
+		for (var i = 0; i !== archive.data.length; ++i) {
+			if (archive.data[i]["change"]) {
+				++total;
+			}
+		}
+		for (var i = 0; i !== archive.data.length; ++i) {
+			if (archive.data[i]["change"]) {
+				$.ajax({
+						type: "DELETE",
+						url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/trash:/?access_token=" + token
+					})
+					.done(function() {
+						++processed;
+					})
+					.fail(function() {
+						fail = true;
+					})
+					.always(function() {
+						if (++processed >= total) {
+							// All the files are removed
+							if (fail) {
+								// One operation failed 
+								animation.error(log.ARCHIVE_REMOVE_FAIL);
+							}
+							animation.log(total + log.ARCHIVE_REMOVE_END);
+						}
+					});
+			}
+		}
+	});
+}
+
+/**
+ * Selects the archives since archive.currentDisplayed
+ */
+archive.selectBelow = function() {
+	var since = archive.currentDisplayed;
+	if (since === -1) {
+		// Select all
+		animation.log(log.ARCHIVE_SELECT_ALL);
+	}
+	++since;
+	$("#list .archive").each(function(index) {
+		if (index >= since) {
+			$(this).children("a").addClass("change");
+		}
+	});
+	for (; since !== archive.data.length; ++since) {
+		archive.data[since]["change"] = true;
+	}
+}
+
 /**
  * Reverses selection of all archive lists
  */
@@ -313,4 +391,8 @@ archive.clear = function() {
 archive.quit = function() {
 	$("#list").empty();
 	$("#detail").empty();
+	// Unbind events
+	$("#entry-menu").each(function() {
+		$(this).off("click");
+	});
 }

@@ -75,8 +75,8 @@
 
 .spinr {
 	-webkit-animation: spin 2s infinite linear;
-	animation: spin 2s infinite linear;
 	-webkit-animation-direction: reverse;
+	animation: spin 2s infinite linear;
 	animation-direction: reverse;
 }
 
@@ -173,13 +173,13 @@ body {
 }
 
 #version {
-	position: absolute;
-	bottom: 0px;
-	right: 0px;
-	font-size: 12px;
-	color: #dadada;
 	background-color: #2B2B2B;
+	bottom: 0px;
+	color: #dadada;
+	font-size: 12px;
 	opacity: 0;
+	position: absolute;
+	right: 0px;
 	transition: opacity .4s ease;
 }
 
@@ -263,8 +263,8 @@ body {
 		}
 
 			#list li.archive a {
-				height: 23px;
 				color: #454545;
+				height: 23px;
 			}
 
 				#list li.archive a.change::before {
@@ -351,14 +351,16 @@ body {
 		}
 
 		#list p.size {
-			color: #eee;
-			display: inline-block;
-			font-size: 11px;
-			float: inherit;
-			padding: 2px;
 			background-color: #808080;
 			border-radius: 25px;
+			color: #eee;
+			display: inline-block;
+			float: right;
+			font-size: 11px;
+			margin-right: 10px;
+			margin-top: 2px;
 			opacity: 1;
+			padding: 2px 7px;
 		}
 
 		#list p.datetime {
@@ -1071,16 +1073,16 @@ body {
 	}
 
 		#detail .icontags span {
-			float: left;
-			height: 25px;
-			margin-bottom: 5px;
-			margin-right: 5px;
-			width: 25px;
 			-webkit-transition: opacity .4s ease, height .4s ease;
 			color: white;
 			display: inline-block;
+			float: left;
 			font-size: 12px;
+			height: 25px;
+			margin-bottom: 5px;
+			margin-right: 5px;
 			top: 0 !important;
+			width: 25px;
 		}
 
 			#detail .icontags span.w01, #edit-pane #attach-area .icontags p.w01 {
@@ -1989,10 +1991,10 @@ body {
 		border-radius: 20px 20px;
 		color: #666;
 		display: inline-block;
+		font-size: 10px;
 		margin: 0 10%;
 		padding: 5px 15px;
 		width: 16%;
-		font-size: 10px;
 	}
 
 		.header .search-text:focus {
@@ -2654,9 +2656,9 @@ body {
 	}
 
 #attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .weblink, #attach-area .texttags, #attach-area .icontags, #attach-area .types {
+	margin-bottom: 10px;
 	/* border-top: 1px solid #dadada; */
 	padding: 10px 10px 0 10px;
-	margin-bottom: 10px;
 }
 
 #attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .video {
@@ -2672,8 +2674,8 @@ body {
 
 		#attach-area .movie a:hover, #attach-area .movie a:focus, #attach-area .movie a:active, #attach-area .music a:hover, #attach-area .music a:focus, #attach-area .music a:active, #attach-area .book a:hover, #attach-area .book a:focus, #attach-area .book a:active, #attach-area .voice a:hover, #attach-area .voice a:focus, #attach-area .voice a:active, #attach-area .place a:hover, #attach-area .place a:focus, #attach-area .place a:active, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
 			background-color: #dadada;
-			transition: background-color .5s ease;
 			color: #000;
+			transition: background-color .5s ease;
 		}
 
 			#attach-area .movie a:hover input, #attach-area .movie a:focus input, #attach-area .movie a:active input, #attach-area .music a:hover input, #attach-area .music a:focus input, #attach-area .music a:active input, #attach-area .book a:hover input, #attach-area .book a:focus input, #attach-area .book a:active input, #attach-area .voice a:hover input, #attach-area .voice a:focus input, #attach-area .voice a:active input, #attach-area .place a:hover input, #attach-area .place a:focus input, #attach-area .place a:active input, #attach-area .video a:hover, #attach-area .video a:focus, #attach-area .video a:active {
@@ -2745,10 +2747,10 @@ body {
 }
 
 #attach-area .voice span {
-	opacity: 0;
-	background-size: 25px;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
+	background-size: 25px;
+	opacity: 0;
 	transition: opacity .4s ease;
 }
 
@@ -2778,17 +2780,17 @@ body {
 
 #audioplayer {
 	display: inline-block;
-	margin-top: 2px;
 	font-size: 12px;
+	margin-top: 2px;
 	width: 75%;
 }
 
 	#audioplayer #timeline {
-		display: inline-block;
 		background: #BFBFBF;
 		border-radius: 15px;
-		margin-top: 5px;
+		display: inline-block;
 		height: 10px;
+		margin-top: 5px;
 		width: -webkit-calc(100% - 6em - 10px);
 	}
 
@@ -2796,17 +2798,17 @@ body {
 		background: #454545;
 		border-radius: 50%;
 		height: 14px;
-		width: 14px;
 		margin-top: -2px;
+		width: 14px;
 	}
 
 	#audioplayer #music-position, #audioplayer #music-length {
-		display: inline-block;
-		font-size: 12px;
-		width: 3em;
-		text-align: center;
 		background: #E3E3E3;
 		border-radius: 10px;
+		display: inline-block;
+		font-size: 12px;
+		text-align: center;
+		width: 3em;
 	}
 
 	#audioplayer #music-length {
@@ -2819,18 +2821,27 @@ body {
 
 #archive-preview {
 	font-size: 12px;
+	width: 100%;
 }
 
 	#archive-preview tr:nth-child(odd) {
 		background-color: #E7E7E7;
 	}
 
-	#archive-preview td:nth-child(1), #archive-preview td:nth-child(2) {
-		width: 6em;
+	#archive-preview td.time, #archive-preview td.title {
 		text-align: center;
+		width: 10%;
 	}
 
-	#archive-preview td:nth-child(3) {
+	#archive-preview td.title {
+		width: 20%;
+	}
+
+	#archive-preview td.body {
+		width: 40%;
+	}
+
+	#archive-preview td.title, #archive-preview td.body {
 		max-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;

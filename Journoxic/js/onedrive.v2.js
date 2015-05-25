@@ -17,10 +17,9 @@ var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot";
 
 /**
  * Downloads the file (including the text file and the media file) from OneDrive
- * This function will refresh the token
- * @returns {} 
+ * @param {String} url - The direct url of the file. Default is from core/data.js
  */
-function downloadFile() {
+function downloadFile(url) {
 	animation.log(log.CONTENTS_DOWNLOAD_START, 1);
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
@@ -38,9 +37,10 @@ function downloadFile() {
 	getTokenCallback(function(token) {
 		if (token != "") {
 			// Get text data
+			url = url || "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token;
 			$.ajax({
 					type: "GET",
-					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
+					url: url
 				})
 				.done(function(data, status, xhr) {
 					window.app.dataLoaded = false;

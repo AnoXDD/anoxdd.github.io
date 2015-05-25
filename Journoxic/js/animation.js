@@ -18,6 +18,11 @@ window.log = {
 	ARCHIVE_TOO_MANY: "Too many archive files. Only the latest 500 files will be displayed",
 	ARCHIVE_END: "Archive list loaded",
 	ARCHIVE_INVALID_JSON: "This archive is corrupted",
+	ARCHIVE_SELECT_ALL: "No archive is selected. All archives will be selected",
+	ARCHIVE_NO_SELECTED: "No archive is selected",
+	ARCHIVE_REMOVE_START: "Removing selected archive file(s) ...",
+	ARCHIVE_REMOVE_END: " archive file(s) removed. To recover the files, visit OneDrive immediately and find them in the trash",
+	ARCHIVE_REMOVE_FAIL: "Cannot remove some files. Please try again",
 
 	CONTENTS_NEW: "Found new content with ",
 	CONTENTS_NEW_END: " chars",
@@ -115,7 +120,12 @@ animation.toggleIcon = function(selector, callback) {
 		animation.showIcon(selector, callback);
 	}
 }; /* Set the name of confirm */
-animation.setConfirm = function(name) {
+/**
+ * Shows the confirm button given the argument for the event on clicking the button
+ * @param {String/Number} name - The name of confirm opeartion
+ * @param {String} type - The type of confirm (edit, archive, etc.). Default value is "edit"
+ */
+animation.setConfirm = function(name, type) {
 	if (name === edit.confirmName) {
 		if (typeof (name) == "number") {
 			// Always show
@@ -135,6 +145,8 @@ animation.setConfirm = function(name) {
 	// Start a new one
 	animation.hideIcon(".entry-option", function() {
 		var title;
+		// Assign the default value
+		type = type || "edit";
 		// Change how it looks
 		if (typeof (name) == "number") {
 			$("#confirm").html("&#xf00d");
@@ -171,8 +183,14 @@ animation.setConfirm = function(name) {
 			// Not a valid call
 			return;
 		}
-		$("#confirm").css("title", title);
-		edit.confirmName = name;
+		var onclick = "edit.confirm()";
+		if (type === "edit") {
+			edit.confirmName = name;
+		} else if (type === "archive") {
+			onclick = "archive.confirm()";
+			archive.confirmName = name;
+		}
+		$("#confirm").css("title", title).attr("onclick", onclick);
 	});
 };
 

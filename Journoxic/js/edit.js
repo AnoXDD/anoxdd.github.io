@@ -1013,7 +1013,7 @@ edit.getDate = function() {
 edit.getMyTime = function(timeNum) {
 	var date = new Date(timeNum);
 	if (isNaN(date.getTime())) {
-		return time;
+		return timeNum;
 	}
 	return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
 }

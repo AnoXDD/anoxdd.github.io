@@ -4,6 +4,7 @@ window.archive = {};
 
 archive.data = [];
 archive.displayId = "";
+archive.isDisplayed = false;
 
 archive.lastLoaded = 0;
 archive.currentDisplayed = -1;
@@ -53,12 +54,12 @@ archive.init = function(selector) {
 			$("#list").empty();
 			$("#detail").empty();
 			// Display the result
+			archive.isDisplayed = true;
 			archive.lastLoaded = 0;
 			headerShowMenu("archive");
 			// Bind click event
-			$("#entry-menu").each(function() {
-				$(this).click(archive.quit);
-			});
+			$("#comm").click(archive.quit);
+			$("#show-menu").click(archive.quit);
 			archive.load();
 		}).fail(function(xhr, status, error) {
 			animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
@@ -296,6 +297,8 @@ archive.restore = function() {
 		animation.error(log.ARCHIVE_NO_SELECTED);
 		return false;
 	}
+	// Quit current view
+	archive.quit();
 	downloadFile(archive.data[archive.currentDisplayed]["url"]);
 }
 
@@ -306,11 +309,10 @@ archive.restore = function() {
  * 2) Currently selected item
  */
 archive.remove = function() {
-	var found = false;
 	animation.log(log.ARCHIVE_REMOVE_START, 1);
 	getTokenCallback(function(token) {
 		var total = 0,
-			fail = false,
+			fail = 0,
 			processed = 0;
 		for (var i = 0; i !== archive.data.length; ++i) {
 			if (archive.data[i]["change"]) {
@@ -320,23 +322,23 @@ archive.remove = function() {
 		for (var i = 0; i !== archive.data.length; ++i) {
 			if (archive.data[i]["change"]) {
 				$.ajax({
-						type: "DELETE",
-						url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/trash:/?access_token=" + token
-					})
+					type: "DELETE",
+					url: "https://api.onedrive.com/v1.0/drive/items/" + archive.data[i]["id"] + "?access_token=" + token
+				})
 					.done(function() {
-						++processed;
+						// Do nothing now
 					})
 					.fail(function() {
-						fail = true;
+						++fail;
 					})
 					.always(function() {
 						if (++processed >= total) {
 							// All the files are removed
-							if (fail) {
+							if (fail > 0) {
 								// One operation failed 
 								animation.error(log.ARCHIVE_REMOVE_FAIL);
 							}
-							animation.log(total + log.ARCHIVE_REMOVE_END);
+							animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END);
 						}
 					});
 			}
@@ -389,10 +391,12 @@ archive.clear = function() {
 }
 
 archive.quit = function() {
-	$("#list").empty();
-	$("#detail").empty();
-	// Unbind events
-	$("#entry-menu").each(function() {
-		$(this).off("click");
-	});
+	if (archive.isDisplayed) {
+		archive.isDisplayed = false;
+		$("#list").empty();
+		$("#detail").empty();
+		// Unbind events
+		$("#comm").off("click");
+		$("#show-menu").off("click");
+	}
 }

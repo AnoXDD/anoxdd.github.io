@@ -450,7 +450,7 @@
 	<script type="text/x-template" id="archive-view">
 		<li class="archive">
 			<a href="#">
-				<p class="title"><%= name %></p>
+				<p class="title"><%= name.replace("_data","data") %></p>
 				<p class="datetime"><%= created %></p>
 				<p class="size"><%= size %> Bytes</p>
 			</a>

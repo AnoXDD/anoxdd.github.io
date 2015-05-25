@@ -1,4 +1,4 @@
-﻿/* Defines the archive operation */
+/* Defines the archive operation */
 
 window.archive = {};
 
@@ -35,7 +35,7 @@ archive.init = function(selector) {
 			for (var key = 0, len = itemList.length; key !== len; ++key) {
 				var name = itemList[key]["name"];
 				// Filter the js.file only
-				if (name.substring(0, 4) === "data" && name.substring(name.length - 3) === ".js") {
+				if ((name.substring(0, 4) === "data" || name.substring(0, 5) === "_data" ) && name.substring(name.length - 3) === ".js") {
 					var dataElement = {
 						name: name,
 						id: itemList[key]["id"],
@@ -135,7 +135,7 @@ archive.list.prototype = {
 			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
-			if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
+			if ($("#list").get(0).scrollHeight == $("#list").height() && currentLoaded < archive.data.length) {
 				continue;
 			}
 			break;
@@ -338,7 +338,9 @@ archive.remove = function() {
 								// One operation failed 
 								animation.error(log.ARCHIVE_REMOVE_FAIL);
 							}
-							animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END);
+							animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END, -1);
+							// Refresh the data
+							archive.init();
 						}
 					});
 			}

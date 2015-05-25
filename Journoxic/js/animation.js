@@ -101,7 +101,16 @@ animation.duration = 250;
 animation.indent = 0;
 
 animation.hideIcon = function(selector, callback) {
-	$(selector).fadeOut(animation.duration, callback);
+	var length = $(selector).length - 1;
+	$(selector).each(function(index) {
+		// Test for the index of executed fadeout to avoid calling callback multiple time
+		if (index !== length) {
+			// Just fadeout, don't call callback
+			$(this).fadeOut(animation.duration);
+		} else {
+			$(this).fadeOut(animation.duration, callback);
+		}
+	});
 };
 
 animation.showIcon = function(selector, callback) {
@@ -126,7 +135,13 @@ animation.toggleIcon = function(selector, callback) {
  * @param {String} type - The type of confirm (edit, archive, etc.). Default value is "edit"
  */
 animation.setConfirm = function(name, type) {
-	if (name === edit.confirmName) {
+	var confirmName;
+	if (type === "edit") {
+		confirmName = edit.confirmName;
+	} else if (type === "archive") {
+		confirmName = archive.confirmName;
+	}
+	if (name === confirmName) {
 		if (typeof (name) == "number") {
 			// Always show
 			animation.showIcon("#confirm");

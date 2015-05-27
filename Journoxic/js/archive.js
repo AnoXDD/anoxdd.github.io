@@ -305,24 +305,38 @@ archive.restore = function() {
 }
 
 /**
+ * Applies the changes on removal and protection
+ */
+archive.apply = function() {
+	archive.protect(function() {
+		archive.remove(function() {
+			archive.init();
+		});
+	});
+}
+
+/**
  * Renames the selected files so that the files are protected (cannot be removed unless unlocked) 
  * This function will contact OneDrive server
+ * @param {Function} callback - The callback function after the server finishes all the tasks
  */
-archive.protect = function() {
+archive.protect = function(callback) {
 	getTokenCallback(function(token) {
 		var list = {},
 			processed = 0;
 		for (var i = 0; i !== archive.data.length; ++i) {
 			var dataClip = archive.data[i];
-			if (dataClip["protect"]) {
-				if (dataClip["name"].substring(0, 1) !== "_") {
-					// Wanna be protected
-					list[dataClip["id"]] = "_" + dataClip["name"];
-				}
-			} else {
-				if (dataClip["name"].substring(0, 1) === "") {
-					// Wanna be unprotected
-					list[dataClip["id"]] = dataClip["name"].substring(1);
+			if (dataClip) {
+				if (dataClip["protect"]) {
+					if (dataClip["name"].substring(0, 1) !== "_") {
+						// Wanna be protected
+						list[dataClip["id"]] = "_" + dataClip["name"];
+					}
+				} else {
+					if (dataClip["name"].substring(0, 1) === "") {
+						// Wanna be unprotected
+						list[dataClip["id"]] = dataClip["name"].substring(1);
+					}
 				}
 			}
 		}
@@ -364,7 +378,8 @@ archive.protect = function() {
 								}
 							}
 						}
-						animation.log(log.ARCHIVE_PROTECT_END);
+						animation.log(log.ARCHIVE_PROTECT_END,-1);
+						callback();
 					}
 				});
 		}
@@ -373,8 +388,9 @@ archive.protect = function() {
 /**
  * Removes selected archive files to trashcan on OneDrive so that removed files are still recoverable
  * This funciton will contact OneDrive server
+ * @param {Function} callback - The callback function after the server finishes all the tasks
  */
-archive.remove = function() {
+archive.remove = function(callback) {
 	getTokenCallback(function(token) {
 		var total = 0,
 			fail = 0,
@@ -416,6 +432,7 @@ archive.remove = function() {
 								animation.error(log.ARCHIVE_REMOVE_FAIL);
 							}
 							animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END, -1);
+							callback();
 						}
 					});
 			}
@@ -424,11 +441,11 @@ archive.remove = function() {
 }
 
 /**
- * Marks selected archive files to type and then deselect them
+ * Toggles selected archive files to type and then deselect them
  * This function simply toggles the class of each list on entry, whose name is given by the parameter
  * @param {String} type - The type to be marked
  */
-archive.mark = function(type) {
+archive.toggle = function(type) {
 	var changed = false;
 	$("#list .archive").each(function(index) {
 		if ($(this).children("a").hasClass("change")) {

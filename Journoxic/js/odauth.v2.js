@@ -142,8 +142,9 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 	}
 	document.cookie = cookie;
 	// Refresh token
-	// Expire when the browser closes
-	cookie = "refresh=" + refreshToken + "; path=/";//; expires=" + expiration.getTime();
+	// Expire after a year
+	expiration.setTime(expiration.getTime() + 31536000000);
+	cookie = "refresh=" + refreshToken + "; path=/; expires=" + expiration.getTime() ;
 	console.log("setCookie(): cookie = " + cookie);
 	if (document.location.protocol.toLowerCase() == "https") {
 		cookie = cookie + ";secure";

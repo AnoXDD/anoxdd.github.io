@@ -138,8 +138,8 @@ archive.list.prototype = {
 		// Test if current entry satisfies the filter
 		while (true) {
 			var data = archive.data[currentLoaded];
-			archive.data[currentLoaded]["created"] = this.date(data["created"]);
-			archive.data[currentLoaded]["modified"] = this.date(data["modified"]);
+			archive.data[currentLoaded]["created"] = edit.getMyTime(data["created"]);
+			archive.data[currentLoaded]["modified"] = edit.getMyTime(data["modified"]);
 			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
@@ -149,7 +149,7 @@ archive.list.prototype = {
 			break;
 		}
 		// Update loaded contents
-		if (++currentLoaded >= journal.total) {
+		if (++currentLoaded >= archive.data.length) {
 			// Remove load more
 			$(".loadmore").remove();
 			// Append a sign to indicate all of the entries have been loaded
@@ -192,9 +192,9 @@ archive.list.prototype = {
 			j.preventDefault();
 			// De-hightlight the data that is displayed
 			////console.log(archive.currentDisplayed);
-			$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeAttr("style");
+			$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeClass("display");
 			// Highlight the data that is now displayed
-			$(this).css("background", "#5d5d5d").css("color", "#fff");
+			$(this).addClass("display");
 			// Update the index of the list to be displayed
 			var flag = (archive.currentDisplayed == $(this).parent().index());
 			if (!flag) {
@@ -344,44 +344,45 @@ archive.protect = function(callback) {
 		if (keys.length === 0) {
 			// Nothing to be applied
 			animation.log(log.ARCHIVE_NO_PROTECT_CHANGE);
-			return false;
-		}
-		animation.log(log.archive_PROTECT_START, 1);
-		for (var i = 0, len = keys.length; i !== len; ++i) {
-			var id = keys[i],
-				url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id&access_token=" + token,
-				requestJson = {
-					name: list[id]
-				};
-			$.ajax({
-				type: "PATCH",
-				url: url,
-				contentType: "application/json",
-				data: JSON.stringify(requestJson)
-			})
-				.done(function(data) {
-					// Processed, remove it from the list
-					delete list[data["id"]];
+			callback();
+		} else {
+			animation.log(log.ARCHIVE_PROTECT_START, 1);
+			for (var i = 0, len = keys.length; i !== len; ++i) {
+				var id = keys[i],
+					url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id&access_token=" + token,
+					requestJson = {
+						name: list[id]
+					};
+				$.ajax({
+					type: "PATCH",
+					url: url,
+					contentType: "application/json",
+					data: JSON.stringify(requestJson)
 				})
-				.fail(function(xhr, status, error) {
-					list[data["id"]] = error;
-				})
-				.always(function() {
-					if (++processed >= len) {
-						// Processed all
-						if (Object.keys(list).length !== 0) {
-							// Error info 
-							for (var j = 0; j !== archive.data.length; ++j) {
-								if (list[archive.data[j]["id"]]) {
-									// Matched
-									animation.error(log.ARCHIVE_PROTECT_FAIL + archive.data[j]["name"] + log.SERVER_RETURNS_END + log.SERVER_RETURNS + list[data["id"]] + log.SERVER_RETURNS_END);
+					.done(function(data) {
+						// Processed, remove it from the list
+						delete list[data["id"]];
+					})
+					.fail(function(xhr, status, error) {
+						list[data["id"]] = error;
+					})
+					.always(function() {
+						if (++processed >= len) {
+							// Processed all
+							if (Object.keys(list).length !== 0) {
+								// Error info 
+								for (var j = 0; j !== archive.data.length; ++j) {
+									if (list[archive.data[j]["id"]]) {
+										// Matched
+										animation.error(log.ARCHIVE_PROTECT_FAIL + archive.data[j]["name"] + log.SERVER_RETURNS_END + log.SERVER_RETURNS + list[data["id"]] + log.SERVER_RETURNS_END);
+									}
 								}
 							}
+							animation.log(log.ARCHIVE_PROTECT_END, -1);
+							callback();
 						}
-						animation.log(log.ARCHIVE_PROTECT_END,-1);
-						callback();
-					}
-				});
+					});
+			}
 		}
 	});
 }
@@ -409,32 +410,33 @@ archive.remove = function(callback) {
 		if (total === 0) {
 			// Nothing displayed, return error
 			animation.log(log.ARCHIVE_NO_SELECTED_REMOVE);
-			return false;
-		}
-		animation.log(log.ARCHIVE_REMOVE_START, 1);
-		for (var i = 0; i !== archive.data.length; ++i) {
-			if (archive.data[i]["delete"]) {
-				$.ajax({
-					type: "DELETE",
-					url: "https://api.onedrive.com/v1.0/drive/items/" + archive.data[i]["id"] + "?access_token=" + token
-				})
-					.done(function() {
-						// Do nothing now
+			callback();
+		} else {
+			animation.log(log.ARCHIVE_REMOVE_START, 1);
+			for (var i = 0; i !== archive.data.length; ++i) {
+				if (archive.data[i]["delete"]) {
+					$.ajax({
+						type: "DELETE",
+						url: "https://api.onedrive.com/v1.0/drive/items/" + archive.data[i]["id"] + "?access_token=" + token
 					})
-					.fail(function() {
-						++fail;
-					})
-					.always(function() {
-						if (++processed >= total) {
-							// All the files are removed
-							if (fail > 0) {
-								// One operation failed 
-								animation.error(log.ARCHIVE_REMOVE_FAIL);
+						.done(function() {
+							// Do nothing now
+						})
+						.fail(function() {
+							++fail;
+						})
+						.always(function() {
+							if (++processed >= total) {
+								// All the files are removed
+								if (fail > 0) {
+									// One operation failed 
+									animation.error(log.ARCHIVE_REMOVE_FAIL);
+								}
+								animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END, -1);
+								callback();
 							}
-							animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END, -1);
-							callback();
-						}
-					});
+						});
+				}
 			}
 		}
 	});
@@ -451,9 +453,9 @@ archive.toggle = function(type) {
 		if ($(this).children("a").hasClass("change")) {
 			changed = true;
 			if ($(this).children("a").toggleClass(type).hasClass(type)) {
-				archive.list[index][type] = true;
+				archive.data[index][type] = true;
 			} else {
-				archive.list[index][type] = false;
+				archive.data[index][type] = false;
 			}
 			$(this).children("a").removeClass("change");
 		}

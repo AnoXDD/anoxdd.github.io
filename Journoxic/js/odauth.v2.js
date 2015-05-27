@@ -144,7 +144,7 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 	// Refresh token
 	// Expire after a year
 	expiration.setTime(expiration.getTime() + 31536000000);
-	cookie = "refresh=" + refreshToken + "; path=/; expires=" + expiration.getTime() ;
+	cookie = "refresh=" + refreshToken + "; path=/; expires=" + expiration.toUTCString() ;
 	console.log("setCookie(): cookie = " + cookie);
 	if (document.location.protocol.toLowerCase() == "https") {
 		cookie = cookie + ";secure";

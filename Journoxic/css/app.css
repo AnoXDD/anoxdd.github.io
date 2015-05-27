@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -265,27 +265,51 @@ body {
 			#list li.archive a {
 				color: #454545;
 				height: 23px;
+				border-width: 0px;
 			}
 
-				#list li.archive a.change::before {
-					content: "\f14a";
-					margin-right: 1em;
+				#list li.archive a::before {
+					min-width: 2.5em;
+					display: inline-block;
+				}
+
+				#list li.archive a.change {
+					background-color: #ddd;
+				}
+
+
+					#list li.archive a.change::before {
+						content: "\f14a";
+					}
+
+					#list li.archive a.change.delete::before {
+						content: "\f14a\A0\f1f8";
+					}
+
+				#list li.archive a.protect::before {
+					content: "\f14a\A0\f023" !important;
 				}
 
 				#list li.archive a:not(.change)::before {
 					content: "\f0c8";
-					padding-right: 1em;
+				}
+
+				#list li.archive a.delete:not(.change)::before {
+					content: "\f0c8\A0\f1f8";
+				}
+
+				#list li.archive a.protect:not(.change)::before {
+					content: "\f0c8\A0\f023" !important;
 				}
 
 	#list a {
 		background: #fff;
-		border: 1px solid #dadada;
 		display: block;
 		height: 60px;
 		padding: 10px;
 		position: relative;
 		text-decoration: none;
-		transition: background 0.3s ease;
+		transition: background-color .4s ease, box-shadow .2s ease;
 		width: 96%;
 	}
 
@@ -301,21 +325,18 @@ body {
 		}
 
 		#list a:hover {
-			background: #939393;
+			background-color: #eee;
+			box-shadow: 2px 2px #aaa;
 		}
 
 		#list a:active {
-			background: #bbb !important;
-			color: white;
 		}
 
 		#list a:hover, #list a:focus {
-			background: #5d5d5d;
-			color: white;
 		}
 
 			#list a:hover p, #list a:focus p, #list a:active p, #list a:hover div, #list a:focus div, #list a:active div {
-				color: ghostwhite;
+				/*color: ghostwhite;*/
 			}
 
 				#list a:hover div.cover {
@@ -350,75 +371,81 @@ body {
 			white-space: nowrap;
 		}
 
-		#list p.size {
-			background-color: #808080;
-			border-radius: 25px;
-			color: #eee;
-			display: inline-block;
-			float: right;
-			font-size: 11px;
-			margin-right: 10px;
-			margin-top: 2px;
-			opacity: 1;
-			padding: 2px 7px;
-		}
+	#list .archive p.title {
+		max-width: 43%;
+	}
 
-		#list p.datetime {
-			color: #aaa;
+	#list p.size {
+		background-color: #808080;
+		border-radius: 25px;
+		color: #eee;
+		display: inline-block;
+		float: right;
+		font-size: 9px;
+		margin-right: 10px;
+		margin-top: 2px;
+		top: 2px;
+		opacity: 1;
+		padding: 2px 7px;
+		position: relative;
+	}
+
+	#list p.datetime {
+		color: #808080;
+		display: inline-block;
+		float: right;
+		font-size: 12px;
+		font-weight: lighter;
+		margin-top: 3px;
+		text-align: right;
+	}
+
+	#list p.summary {
+		color: #5d5d5d;
+		font-size: 11px;
+		font-weight: lighter;
+		overflow: hidden;
+		position: relative;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width: 95%;
+	}
+
+	#list p.separator {
+		display: block;
+		overflow: hidden;
+		text-align: center;
+		white-space: nowrap;
+	}
+
+		#list p.separator > span {
+			color: #898989;
 			display: inline-block;
-			float: right;
 			font-size: 12px;
 			font-weight: lighter;
-			margin-top: 3px;
-			text-align: right;
-		}
-
-		#list p.summary {
-			color: #5d5d5d;
-			font-size: 11px;
-			font-weight: lighter;
-			overflow: hidden;
+			padding: 10px;
 			position: relative;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			width: 95%;
 		}
 
-		#list p.separator {
-			display: block;
-			overflow: hidden;
-			text-align: center;
-			white-space: nowrap;
-		}
-
-			#list p.separator > span {
-				color: #898989;
-				display: inline-block;
-				font-size: 12px;
-				font-weight: lighter;
-				padding: 10px;
-				position: relative;
+			#list p.separator > span:before,
+			#list p.separator > span:after {
+				background: #dadada;
+				content: "";
+				height: 1px;
+				position: absolute;
+				top: 50%;
+				width: 9999px;
 			}
 
-				#list p.separator > span:before,
-				#list p.separator > span:after {
-					background: #dadada;
-					content: "";
-					height: 1px;
-					position: absolute;
-					top: 50%;
-					width: 9999px;
-				}
+			#list p.separator > span:before {
+				margin-right: 15px;
+				right: 100%;
+			}
 
-				#list p.separator > span:before {
-					margin-right: 15px;
-					right: 100%;
-				}
-
-				#list p.separator > span:after {
-					left: 100%;
-					margin-left: 15px;
-				}
+			#list p.separator > span:after {
+				left: 100%;
+				margin-left: 15px;
+			}
 
 	#list div.cover {
 		float: left;
@@ -2066,9 +2093,8 @@ body {
 		#feedback p.error {
 			background: #fff !important;
 			color: #000;
-		
 			font-weight: bold;
-}
+		}
 
 
 		#feedback p.indent-1 {

@@ -553,7 +553,7 @@ app.list.prototype = {
 			////console.log(app.currentDisplayed);
 			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeAttr("style");
 			// Highlight the data that is now displayed
-			$(this).css("background", "#5d5d5d").css("color", "#fff");
+			$(this).css("background", "#aaa").css("color", "#fff");
 			// Update the index of the list to be displayed
 			var flag = (app.currentDisplayed == $(this).parent().index());
 			if (!flag) {

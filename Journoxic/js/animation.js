@@ -93,7 +93,7 @@ window.log = {
 	EDIT_PANE_PLAYABLE_SAVE_START: "Start transferring ",
 	EDIT_PANE_PLAYABLE_SAVE_START_END: "s ...",
 
-	SERVER_RETURNS: ". The server returns error\"",
+	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",
 
 	AUTH_REFRESH_ACCESS_START: "Refreshing access token ...",

@@ -49,11 +49,13 @@
 		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xf0c7</a>
 		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a>
 		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xf065</a>
+		<a class="entry-archive" title="Apply the changes" id="archive-apply" onclick="archive.apply()" href="#">&#xf058</a>
 		<a class="entry-archive" title="Select archives below" id="archive-below" onclick="archive.selectBelow()" href="#">&#xf13a</a>
 		<a class="entry-archive" title="Reverse selection" id="archive-reverse"onclick="archive.reverse()" href="#">&#xf056</a>
 		<a class="entry-archive" title="Clear selection" id="archive-clear" onclick="archive.clear()" href="#">&#xf111</a>
 		<a class="entry-archive" title="Restore" id="archive-restore" onclick="archive.restore()" href="#">&#xf019</a>
-		<a class="entry-archive" title="Delete this archive" id="archive-delete" onclick="animation.setConfirm('delete','archive')" href="#">&#xf1f8</a>
+		<a class="entry-archive" title="Toggle protection on this archive file" id="archive-protect" onclick="archive.toggle('protect')" href="#">&#xf023</a>
+		<a class="entry-archive" title="Delete this archive" id="archive-delete" onclick="archive.toggle('delete')" href="#">&#xf1f8</a>
 		<a class="entry-archive" title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a>
 		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.load('', true)" href="#">&#xf021</a>
 		<a class="entry-comm" title="Revert to archived data" id="undo-data" onclick="archive.init('#undo-data')" href="#">&#xf1da</a>
@@ -449,7 +451,7 @@
 	</script>
 	<script type="text/x-template" id="archive-view">
 		<li class="archive">
-			<a href="#">
+			<a href="#" class="<% if (protect) { print('protect'); } %>">
 				<p class="title"><%= name.replace("_data","data") %></p>
 				<p class="datetime"><%= created %></p>
 				<p class="size"><%= size %> Bytes</p>

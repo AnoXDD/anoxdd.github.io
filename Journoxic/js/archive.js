@@ -1,4 +1,4 @@
-/* Defines the archive operation */
+﻿/* Defines the archive operation */
 
 window.archive = {};
 
@@ -26,46 +26,54 @@ archive.init = function(selector) {
 		$.ajax({
 			type: "GET",
 			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
-		}).done(function(data, status, xhr) {
-			if (data["@odata.nextLink"]) {
-				animation.warning(log.ARCHIVE_TOO_MANY);
-			}
-			animation.log(log.ARCHIVE_END, -1);
-			var itemList = data["value"];
-			for (var key = 0, len = itemList.length; key !== len; ++key) {
-				var name = itemList[key]["name"];
-				// Filter the js.file only
-				if ((name.substring(0, 4) === "data" || name.substring(0, 5) === "_data" ) && name.substring(name.length - 3) === ".js") {
-					var dataElement = {
-						name: name,
-						id: itemList[key]["id"],
-						url: itemList[key]["@content.downloadUrl"],
-						size: itemList[key]["size"],
-						created: Date.parse(itemList[key]["createdDateTime"]),
-						modified: Date.parse(itemList[key]["lastModifiedDateTime"]),
-						selected: false,
-						processed: false
-					};
-					archive.data.push(dataElement);
+		})
+			.done(function(data, status, xhr) {
+				if (data["@odata.nextLink"]) {
+					animation.warning(log.ARCHIVE_TOO_MANY);
 				}
-			}
-			app.audioPlayer.quit();
-			// Clean both list and detail
-			$("#list").empty();
-			$("#detail").empty();
-			// Display the result
-			archive.isDisplayed = true;
-			archive.lastLoaded = 0;
-			headerShowMenu("archive");
-			// Bind click event
-			$("#comm").click(archive.quit);
-			$("#show-menu").click(archive.quit);
-			archive.load();
-		}).fail(function(xhr, status, error) {
-			animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-		}).always(function() {
-			$(selector).removeClass("spinr");
-		});
+				animation.log(log.ARCHIVE_END, -1);
+				var itemList = data["value"];
+				for (var key = 0, len = itemList.length; key !== len; ++key) {
+					var name = itemList[key]["name"];
+					// Filter the js.file only
+					if ((name.substring(0, 4) === "data" || name.substring(0, 5) === "_data") && name.substring(name.length - 3) === ".js") {
+						var dataElement = {
+							name: name,
+							id: itemList[key]["id"],
+							url: itemList[key]["@content.downloadUrl"],
+							size: itemList[key]["size"],
+							created: Date.parse(itemList[key]["createdDateTime"]),
+							modified: Date.parse(itemList[key]["lastModifiedDateTime"]),
+							selected: false,
+							processed: false,
+							protect: false
+						};
+						if (name.substring(0, 1) === "_") {
+							// Protected data
+							dataElement["protect"] = true;
+						}
+						archive.data.push(dataElement);
+					}
+				}
+				app.audioPlayer.quit();
+				// Clean both list and detail
+				$("#list").empty();
+				$("#detail").empty();
+				// Display the result
+				archive.isDisplayed = true;
+				archive.lastLoaded = 0;
+				headerShowMenu("archive");
+				// Bind click event
+				$("#comm").click(archive.quit);
+				$("#show-menu").click(archive.quit);
+				archive.load();
+			})
+			.fail(function(xhr, status, error) {
+				animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+			})
+			.always(function() {
+				$(selector).removeClass("spinr");
+			});
 	});
 };
 
@@ -199,7 +207,6 @@ archive.list.prototype = {
 			on("contextmenu", function() {
 				// Right click to select the archive list
 				$(this).toggleClass("change");
-				archive.data[$(this).parent().index()]["change"] = !archive.data[$(this).parent().index()]["change"];
 				// Return false to disable other functionalities
 				return false;
 			});
@@ -282,14 +289,9 @@ archive.detail.prototype = {
 	}
 };
 
-archive.confirm = function() {
-	if (archive.confirmName === "delete") {
-		archive.remove();
-	}
-}
-
 /**
  * Restores this archive
+ * This fcuntion will contact OneDrive server
  */
 archive.restore = function() {
 	if (archive.currentDisplayed < 0) {
@@ -303,24 +305,99 @@ archive.restore = function() {
 }
 
 /**
- * Removes the archive to trashcan on OneDrive so that removed files are still recoverable
- * Priority:
- * 1) Selected items (currently displayed not included, if not selected)
- * 2) Currently selected item
+ * Renames the selected files so that the files are protected (cannot be removed unless unlocked) 
+ * This function will contact OneDrive server
+ */
+archive.protect = function() {
+	getTokenCallback(function(token) {
+		var list = {},
+			processed = 0;
+		for (var i = 0; i !== archive.data.length; ++i) {
+			var dataClip = archive.data[i];
+			if (dataClip["protect"]) {
+				if (dataClip["name"].substring(0, 1) !== "_") {
+					// Wanna be protected
+					list[dataClip["id"]] = "_" + dataClip["name"];
+				}
+			} else {
+				if (dataClip["name"].substring(0, 1) === "") {
+					// Wanna be unprotected
+					list[dataClip["id"]] = dataClip["name"].substring(1);
+				}
+			}
+		}
+		var keys = Object.keys(list);
+		if (keys.length === 0) {
+			// Nothing to be applied
+			animation.log(log.ARCHIVE_NO_PROTECT_CHANGE);
+			return false;
+		}
+		animation.log(log.archive_PROTECT_START, 1);
+		for (var i = 0, len = keys.length; i !== len; ++i) {
+			var id = keys[i],
+				url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id&access_token=" + token,
+				requestJson = {
+					name: list[id]
+				};
+			$.ajax({
+				type: "PATCH",
+				url: url,
+				contentType: "application/json",
+				data: JSON.stringify(requestJson)
+			})
+				.done(function(data) {
+					// Processed, remove it from the list
+					delete list[data["id"]];
+				})
+				.fail(function(xhr, status, error) {
+					list[data["id"]] = error;
+				})
+				.always(function() {
+					if (++processed >= len) {
+						// Processed all
+						if (Object.keys(list).length !== 0) {
+							// Error info 
+							for (var j = 0; j !== archive.data.length; ++j) {
+								if (list[archive.data[j]["id"]]) {
+									// Matched
+									animation.error(log.ARCHIVE_PROTECT_FAIL + archive.data[j]["name"] + log.SERVER_RETURNS_END + log.SERVER_RETURNS + list[data["id"]] + log.SERVER_RETURNS_END);
+								}
+							}
+						}
+						animation.log(log.ARCHIVE_PROTECT_END);
+					}
+				});
+		}
+	});
+}
+/**
+ * Removes selected archive files to trashcan on OneDrive so that removed files are still recoverable
+ * This funciton will contact OneDrive server
  */
 archive.remove = function() {
-	animation.log(log.ARCHIVE_REMOVE_START, 1);
 	getTokenCallback(function(token) {
 		var total = 0,
 			fail = 0,
 			processed = 0;
 		for (var i = 0; i !== archive.data.length; ++i) {
-			if (archive.data[i]["change"]) {
-				++total;
+			if (archive.data[i]["delete"]) {
+				if (archive.data[i]["protect"]) {
+					// This file is protected, cannot be removed unless de-protect it
+					animation.log(log.ARCHIVE_PROTECT_REMOVE + archive.data[i]["name"] + log.ARCHIVE_PROTECT_REMOVE_END);
+					archive.data[i]["delete"] = false;
+				} else {
+					++total;
+				}
 			}
 		}
+		if (total === 0) {
+			// Nothing displayed, return error
+			animation.log(log.ARCHIVE_NO_SELECTED_REMOVE);
+			return false;
+		}
+		animation.log(log.ARCHIVE_REMOVE_START, 1);
 		for (var i = 0; i !== archive.data.length; ++i) {
-			if (archive.data[i]["change"]) {
+			if (archive.data[i]["delete"]) {
 				$.ajax({
 					type: "DELETE",
 					url: "https://api.onedrive.com/v1.0/drive/items/" + archive.data[i]["id"] + "?access_token=" + token
@@ -339,13 +416,34 @@ archive.remove = function() {
 								animation.error(log.ARCHIVE_REMOVE_FAIL);
 							}
 							animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END, -1);
-							// Refresh the data
-							archive.init();
 						}
 					});
 			}
 		}
 	});
+}
+
+/**
+ * Marks selected archive files to type and then deselect them
+ * This function simply toggles the class of each list on entry, whose name is given by the parameter
+ * @param {String} type - The type to be marked
+ */
+archive.mark = function(type) {
+	var changed = false;
+	$("#list .archive").each(function(index) {
+		if ($(this).children("a").hasClass("change")) {
+			changed = true;
+			if ($(this).children("a").toggleClass(type).hasClass(type)) {
+				archive.list[index][type] = true;
+			} else {
+				archive.list[index][type] = false;
+			}
+			$(this).children("a").removeClass("change");
+		}
+	});
+	if (!changed) {
+		animation.warning(log.ARCHIVE_NO_SELECTED);
+	}
 }
 
 /**
@@ -363,9 +461,6 @@ archive.selectBelow = function() {
 			$(this).children("a").addClass("change");
 		}
 	});
-	for (; since !== archive.data.length; ++since) {
-		archive.data[since]["change"] = true;
-	}
 }
 
 /**
@@ -375,22 +470,17 @@ archive.reverse = function() {
 	$("#list .archive").each(function() {
 		$(this).children("a").toggleClass("change");
 	});
-	for (var i = 0; i !== archive.data.length; ++i) {
-		archive.data[i]["change"] = !archive.data[i]["change"];
-	}
 }
 
 /**
- * Clears the selection of all archive lists
+ * Clears the selection of all archive lists and removes all their changes
  */
 archive.clear = function() {
 	$("#list .archive").each(function() {
-		$(this).children("a").removeClass("change");
+		$(this).children("a").removeAttr("class");
 	});
-	for (var i = 0; i !== archive.data.length; ++i) {
-		archive.data[i]["change"] = false;
-	}
 }
+
 
 archive.quit = function() {
 	if (archive.isDisplayed) {

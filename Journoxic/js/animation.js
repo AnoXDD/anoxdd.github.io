@@ -32,7 +32,7 @@ window.log = {
 	ARCHIVE_PROTECT_CHANGE_PROTECTED: "\" protected",
 	ARCHIVE_PROTECT_CHANGE_UNPROTECTED: "\" unprotected",
 	ARCHIVE_PROTECT_FAIL: "Cannot toggle archive protection of file \"",
-	ARCHIVE_PROTECT_END:"Archive protection toggle finished",
+	ARCHIVE_PROTECT_END: "Archive protection toggle finished",
 
 	CONTENTS_NEW: "Found new content with ",
 	CONTENTS_NEW_END: " chars",

@@ -1,10 +1,13 @@
-﻿app.version = "v3.14.18 Build 052615_2138";
+﻿app.version = "v3.14.19 Build 052815_2302";
 
 // Version number show up
 $("#version").html(app.version);
 
 /**
- * Version update change log
+ * Version update change log and planned update
+ * 
+ * v3.15
+ * [Add] Support for video display, add and removal
  * 
  * v3.14
  * [Add] Archive file data organization

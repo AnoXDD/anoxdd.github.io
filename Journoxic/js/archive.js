@@ -35,8 +35,8 @@ archive.init = function(selector) {
 				var itemList = data["value"];
 				for (var key = 0, len = itemList.length; key !== len; ++key) {
 					var name = itemList[key]["name"];
-					// Filter the js.file only
-					if ((name.substring(0, 4) === "data" || name.substring(0, 5) === "_data") && name.substring(name.length - 3) === ".js") {
+					// Filter the .js files only, and data.js shouldn't be included
+					if ((name.substring(0, 4) === "data" || name.substring(0, 5) === "_data") && name.substring(name.length - 3) === ".js" && name !== "data.js") {
 						var dataElement = {
 							name: name,
 							id: itemList[key]["id"],
@@ -63,6 +63,8 @@ archive.init = function(selector) {
 				archive.isDisplayed = true;
 				archive.lastLoaded = 0;
 				headerShowMenu("archive");
+				// Hide searchbox
+				$("#search-new").fadeOut();
 				// Bind click event
 				$("#comm").click(archive.quit);
 				$("#show-menu").click(archive.quit);
@@ -333,7 +335,7 @@ archive.protect = function(callback) {
 						list[dataClip["id"]] = "_" + dataClip["name"];
 					}
 				} else {
-					if (dataClip["name"].substring(0, 1) === "") {
+					if (dataClip["name"].substring(0, 1) === "_") {
 						// Wanna be unprotected
 						list[dataClip["id"]] = dataClip["name"].substring(1);
 					}
@@ -507,7 +509,9 @@ archive.quit = function() {
 		$("#list").empty();
 		$("#detail").empty();
 		// Unbind events
-		$("#comm").off("click");
 		$("#show-menu").off("click");
+		// Reshow the menu
+		$("#refresh-media").trigger("click");
+		$("#search-new").fadeIn();
 	}
 }

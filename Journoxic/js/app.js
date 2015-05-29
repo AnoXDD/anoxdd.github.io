@@ -1510,8 +1510,8 @@ app.PhotoViewer.prototype = {
 
 /**
  * Initializes an audio player within the selector provided
- * @param {string} selector - The selector of the element to embed audio player, in jQuery style
- * @param {string} source - The url of the source of music file
+ * @param {String} selector - The selector of the element to embed audio player, in jQuery style
+ * @param {String} source - The url of the source of music file
  */
 app.audioPlayer = function(selector, source) {
 	if (app.isFunction) {
@@ -1521,7 +1521,8 @@ app.audioPlayer = function(selector, source) {
 		return;
 	}
 	animation.log(log.AUDIO_DOWNLOAD_START, 1);
-	$("#play-media").html("&#xf04b").removeClass("play");
+	$("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.audioPlayer.play()");
+	$("#stop-media").attr("onclick", "app.audioPlayer.quit()");
 	var element = "<div id=\"audioplayer\">" +
 		"<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
 		"<div id=\"music-position\">00:00</div><div id=\"timeline\"><div id=\"playhead\"></div></div><div id=\"music-length\">--:--</div></div>";
@@ -1633,7 +1634,8 @@ app.audioPlayer.play = function() {
 }
 /**
  * Quits and gracefully removes all the traces of audio player
- * @returns {} 
+ * @param {String} selector - The selector of the element to embed audio player, in jQuery style
+ * @param {String} source - The url of the source of music file
  */
 app.audioPlayer.quit = function() {
 	$("#play-media").html("&#xf04b").removeClass("play");
@@ -1647,18 +1649,174 @@ app.audioPlayer.quit = function() {
 	app.isFunction = true;
 	// Unbine all the action listener
 	if (app.audioPlayer.music) {
-	app.audioPlayer.music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate);
-	app.audioPlayer.music.removeEventListener("loadedmetadata", app.audioPlayer.loadedData);
+		app.audioPlayer.music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate);
+		app.audioPlayer.music.removeEventListener("loadedmetadata", app.audioPlayer.loadedData);
 	}
 	if (app.audioPlayer.timeline) {
-	app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click);
+		app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click);
 	}
 	if (app.audioPlayer.playhead) {
-	app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);}
+		app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);
+	}
 	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
 }
+
+/**
+ * Initializes a video player within the selector provided
+ * @param {String} selector - The selector of the element to embed video player, in jQuery style
+ * @param {String} source - The url of the source of video file
+ */
+app.videoPlayer = function(selector, source) {
+	if (app.isFunction) {
+		app.isFunction = false;
+	} else {
+		// Do not continue
+		return;
+	}
+	animation.log(log.VIDEO_DOWNLOAD_START, 1);
+	$("#play-media").html("&#xf04b").removeClass("play");
+	var element = "<div id=\"videoplayer\">" +
+		"<video id=\"video\" preload=\"true\"><source src=\"" + source + "\"></video>" +
+		"<div id=\"video-position\">00:00</div><div id=\"timeline\"><div id=\"playhead\"></div></div><div id=\"video-length\">--:--</div></div>";
+	// Add to the document
+	$(element).appendTo(selector);
+	// Give places to the bar
+	$(selector + " p").css("padding-top", "3px");
+	app.videoPlayer.video = document.getElementById("video");
+	app.videoPlayer.playhead = document.getElementById("playhead");
+	app.videoPlayer.timeline = document.getElementById("timeline");
+	var duration,
+		/* Timeline width adjusted for playhead */
+		timelineWidth = timeline.offsetWidth - playhead.offsetWidth,
+		/* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
+		onplayhead = false;
+	app.videoPlayer.formatTime = function(timeNum) {
+		var minute = parseInt(timeNum / 60),
+			second = parseInt(timeNum % 60);
+		minute = minute < 10 ? "0" + minute : minute;
+		second = second < 10 ? "0" + second : second;
+		return minute + ":" + second;
+	}
+	// Synchronizes playhsead position with current point in audio 
+	app.videoPlayer.timeUpdate = function() {
+		var playPercent = timelineWidth * (video.currentTime / duration);
+		playhead.style.marginLeft = playPercent + "px";
+		if (video.currentTime === duration) {
+			// Replay back
+			$("#play-media").html("&#xf04b").removeClass("play");
+		} else {
+			$("#video-position").html(app.videoPlayer.formatTime(video.currentTime));
+		}
+	};
+	app.videoPlayer.moveplayHead = function(e) {
+		var newMargLeft = e.pageX - timeline.getBoundingClientRect().left;
+		if (newMargLeft >= 0 && newMargLeft <= timelineWidth) {
+			playhead.style.marginLeft = newMargLeft + "px";
+		}
+		if (newMargLeft < 0) {
+			playhead.style.marginLeft = "0px";
+		}
+		if (newMargLeft > timelineWidth) {
+			playhead.style.marginLeft = timelineWidth + "px";
+		}
+	};
+	app.videoPlayer.click = function(e) {
+		app.videoPlayer.moveplayHead(e);
+		// returns click as decimal (.77) of the total timelineWidth
+		var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
+		video.currentTime = duration * clickPercent;
+	};
+	app.videoPlayer.mouseDown = function() {
+		app.videoPlayer.onplayhead = true;
+		window.addEventListener("mousemove", app.videoPlayer.moveplayHead, true);
+		video.removeEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
+	};
+	app.videoPlayer.mouseUp = function(e) {
+		if (app.videoPlayer.onplayhead) {
+			app.videoPlayer.moveplayHead(e);
+			window.removeEventListener("mousemove", app.videoPlayer.moveplayHead, true);
+			// returns click as decimal (.77) of the total timelineWidth
+			var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
+			video.currentTime = duration * clickPercent;
+			video.addEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
+		}
+		app.videoPlayer.onplayhead = false;
+	}
+	app.videoPlayer.loadedData = function() {
+		animation.log(log.VIDEO_DOWNLOAD_END, -1);
+		// Update the length
+		$("#video-length").html(app.videoPlayer.formatTime(video.duration));
+		// Show the play icon
+		animation.showIcon("#play-media");
+		animation.showIcon("#stop-media");
+	}
+	// Gets audio file duration
+	app.videoPlayer.video.addEventListener("canplaythrough", function() {
+		duration = app.videoPlayer.video.duration;
+	}, false);
+	// timeupdate event listener
+	app.videoPlayer.video.addEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
+	app.videoPlayer.video.addEventListener("loadedmetadata", app.videoPlayer.loadedData);
+
+	//Makes timeline clickable
+	app.videoPlayer.timeline.addEventListener("click", app.videoPlayer.click, false);
+	// Makes playhead draggable 
+	app.videoPlayer.playhead.addEventListener("mousedown", app.videoPlayer.mouseDown, false);
+	window.addEventListener("mouseup", app.videoPlayer.mouseUp, false);
+}
+/**
+ * Handles the play and pause of the vedio player after loading
+ */
+app.videoPlayer.play = function() {
+	// Test if the media is playing
+	if ($("#play-media").hasClass("play")) {
+		// Is playing
+		video.pause();
+		$("#play-media").html("&#xf04b").removeClass("play");
+	} else {
+		if (isNaN(video.duration)) {
+			// Address expires
+			animation.error(log.VIDEO_EXPIRED);
+			return false;
+		}
+		// Is pausing
+		video.play();
+		$("#play-media").html("&#xf04c").addClass("play");
+	}
+}
+/**
+ * Quits and gracefully removes all the traces of video player
+ * @param {String} selector - The selector of the element to embed video player, in jQuery style
+ * @param {String} source - The url of the source of video file
+ */
+app.videoPlayer.quit = function() {
+	$("#play-media").html("&#xf04b").removeClass("play");
+	// Remove videoplayer
+	$("#videoplayer").fadeOut(400, function() {
+		$(this).remove();
+	});
+	// Reset the css
+	$("#detail .content .voice p").css("padding-top", "");
+	// Reset this variable
+	app.isFunction = true;
+	// Unbine all the action listener
+	if (app.videoPlayer.video) {
+		app.videoPlayer.video.removeEventListener("timeupdate", app.videoPlayer.timeUpdate);
+		app.videoPlayer.video.removeEventListener("loadedmetadata", app.videoPlayer.loadedData);
+	}
+	if (app.videoPlayer.timeline) {
+		app.videoPlayer.timeline.removeEventListener("click", app.videoPlayer.click);
+	}
+	if (app.videoPlayer.playhead) {
+		app.videoPlayer.playhead.removeEventListener("mousedown", app.videoPlayer.mouseDown);
+	}
+	window.removeEventListener("mouseup", app.videoPlayer.mouseUp);
+	animation.hideIcon("#play-media");
+	animation.hideIcon("#stop-media");
+}
+
 
 $(document).ready(function() {
 	app.app = $("div#app");

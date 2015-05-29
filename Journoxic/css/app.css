@@ -22,7 +22,7 @@
 }
 
 @font-face {
-	font-family: 'Font Awesome';
+	font-family: 'FontAwesome';
 	src: url('../fonts/fontawesome-webfont.ttf');
 }
 
@@ -105,7 +105,7 @@ html, body {
 
 body, input, select, textarea {
 	-webkit-appearance: none;
-	font-family: 'Segoe UI', 'Font Awesome', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-family: 'Segoe UI', 'FontAwesome', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -307,6 +307,7 @@ body {
 		display: block;
 		height: 60px;
 		padding: 10px;
+		margin-bottom: 5px;
 		position: relative;
 		text-decoration: none;
 		transition: background-color .4s ease, box-shadow .2s ease;
@@ -2844,6 +2845,47 @@ body {
 	}
 
 	#audioplayer #music-position {
+		margin-right: 4px;
+	}
+
+#videoplayer {
+	display: inline-block;
+	font-size: 12px;
+	margin-top: 2px;
+	width: 75%;
+}
+
+	#videoplayer #timeline {
+		background: #BFBFBF;
+		border-radius: 15px;
+		display: inline-block;
+		height: 10px;
+		margin-top: 5px;
+		width: -webkit-calc(100% - 6em - 10px);
+	}
+
+	#videoplayer #playhead {
+		background: #454545;
+		border-radius: 50%;
+		height: 14px;
+		margin-top: -2px;
+		width: 14px;
+	}
+
+	#videoplayer #video-position, #videolayer #video-length {
+		background: #E3E3E3;
+		border-radius: 10px;
+		display: inline-block;
+		font-size: 12px;
+		text-align: center;
+		width: 3em;
+	}
+
+	#videoplayer #video-length {
+		margin-left: 5px;
+	}
+
+	#videoplayer #video-position {
 		margin-right: 4px;
 	}
 

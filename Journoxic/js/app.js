@@ -913,7 +913,17 @@ app.detail = function() { // [m]
 			$(this).attr("href", journal.archive.map[className]["url"]).removeAttr("class");
 		}
 	};
-	$(".lower .video a").each(eachOp);
+	$(".lower .video a").each(function(n) {
+		// Make sure previous audio player is cleared
+		app.videoPlayer.quit();
+		var className = $(this).attr("class");
+		if (journal.archive.map[className]) {
+			var funcName = "app.videolayer(\"#detail .content .video:eq(" + n + ") a\",\"" + journal.archive.map[className]["url"] + "\")";
+			$(this).attr("onclick", funcName).removeAttr("class");
+		} else {
+			animation.error(log.FILE_NOT_LOADED + className + log.DOWNLOAD_PROMPT);
+		}
+	});
 	$(".lower .voice a").each(function(n) {
 		// Make sure previous audio player is cleared
 		app.audioPlayer.quit();

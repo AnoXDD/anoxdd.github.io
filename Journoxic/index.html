@@ -283,7 +283,7 @@
 		</div>
 		<button type="button" class="btn-back"><span></span>Back</button>
 	</script>
-	<script type="text/x-template" id="edit-view">
+<script type="text/x-template" id="edit-view">
 		<div id="text-area">
 			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
@@ -303,6 +303,7 @@
 			<div id="photo-preview">
 				<span></span><img />
 			</div>
+			<div id="video-preview"></div>
 		</div>
 		<div id="attach-area">
 			<div class="icontags">
@@ -342,8 +343,8 @@
 			for( i in video ) {
 			%>
 			<div class="video">
-				<a class="<%- video[i].fileName %>">
-					<div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
+				<a class="<%- video[i].fileName %>" onclick="edit.video(<%- i %>)" title="Listen to it">
+					<div class="thumb"><span></span></div>
 					<input disabled class="title" value="<%- video[i].title %>" />
 				</a>
 			</div>

@@ -339,7 +339,7 @@ edit.importCache = function(data) {
 	}
 	// photos, video, place, music, book, movie
 	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
-	for (var i = 0; i != elem.length; ++i) {
+	for (var i = 0; i !== elem.length; ++i) {
 		var medium = elem[i];
 		if (localStorage[medium]) {
 			data[medium] = JSON.parse(localStorage[medium]);
@@ -1417,7 +1417,8 @@ edit.video = function(index, link) {
 	var source;
 	if (link) {
 		source = link;
-		app.videoPlayer(selectorHeader + "a", source);
+		$("#video-preview").fadeIn();
+		app.videoPlayer("#video-preview", source);
 	} else {
 		// Find it from this dataClip
 		var fileName = $(selectorHeader + "a").attr("class");
@@ -1427,7 +1428,8 @@ edit.video = function(index, link) {
 				animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title").val());
 				return;
 			}
-			app.videoPlayer(selectorHeader + "a", source);
+			$("#video-preview").fadeIn();
+			app.videoPlayer("#video-preview", source);
 		} else {
 			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
@@ -1439,6 +1441,7 @@ edit.videoHide = function() {
 		// Invalid call
 		return;
 	}
+	$("#video-preview").fadeOut();
 	app.videoPlayer.quit();
 	var selectorHeader = edit.getSelectorHeader("voice");
 	// Disable input boxes

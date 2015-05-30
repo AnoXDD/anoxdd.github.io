@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -263,14 +263,14 @@ body {
 		}
 
 			#list li.archive a {
+				border-width: 0px;
 				color: #454545;
 				height: 23px;
-				border-width: 0px;
 			}
 
 				#list li.archive a::before {
-					min-width: 2.5em;
 					display: inline-block;
+					min-width: 2.5em;
 				}
 
 				#list li.archive a.change {
@@ -306,8 +306,8 @@ body {
 		background: #fff;
 		display: block;
 		height: 60px;
-		padding: 10px;
 		margin-bottom: 5px;
+		padding: 10px;
 		position: relative;
 		text-decoration: none;
 		transition: background-color .4s ease, box-shadow .2s ease;
@@ -336,8 +336,7 @@ body {
 		#list a:hover, #list a:focus {
 		}
 
-			#list a:hover p, #list a:focus p, #list a:active p, #list a:hover div, #list a:focus div, #list a:active div {
-				/*color: ghostwhite;*/
+			#list a:hover p, #list a:focus p, #list a:active p, #list a:hover div, #list a:focus div, #list a:active div { /*color: ghostwhite;*/
 			}
 
 				#list a:hover div.cover {
@@ -385,10 +384,10 @@ body {
 		font-size: 9px;
 		margin-right: 10px;
 		margin-top: 2px;
-		top: 2px;
 		opacity: 1;
 		padding: 2px 7px;
 		position: relative;
+		top: 2px;
 	}
 
 	#list p.datetime {
@@ -2102,16 +2101,14 @@ body {
 			background: #585858;
 		}
 
-			#feedback p.indent-1.start::after {
-				/*content: ' \2510';*/
+			#feedback p.indent-1.start::after { /*content: ' \2510';*/
 			}
 
 			#feedback p.indent-1::after {
 				content: ' \2502';
 			}
 
-			#feedback p.indent-1.end::after {
-				/*content: ' \2518';*/
+			#feedback p.indent-1.end::after { /*content: ' \2518';*/
 			}
 
 		#feedback p.indent-2 {
@@ -2119,16 +2116,14 @@ body {
 		}
 
 
-			#feedback p.indent-2.start::after {
-				/*content: ' \252C\2524';*/
+			#feedback p.indent-2.start::after { /*content: ' \252C\2524';*/
 			}
 
 			#feedback p.indent-2::after {
 				content: ' \2502\2502';
 			}
 
-			#feedback p.indent-2.end::after {
-				/*content: ' \2534\2518';*/
+			#feedback p.indent-2.end::after { /*content: ' \2534\2518';*/
 			}
 
 		#feedback p.indent-3 {
@@ -2137,8 +2132,7 @@ body {
 		}
 
 
-			#feedback p.indent-3.start::after {
-				/*content: ' \252C\2534\2524';*/
+			#feedback p.indent-3.start::after { /*content: ' \252C\2534\2524';*/
 			}
 
 			#feedback p.indent-3::after {
@@ -2146,8 +2140,7 @@ body {
 				content: ' \2502\2502\2502';
 			}
 
-			#feedback p.indent-3.end::after {
-				/*content: ' \2534\2500\2518';*/
+			#feedback p.indent-3.end::after { /*content: ' \2534\2500\2518';*/
 			}
 
 		#feedback p.indent-4 {
@@ -2156,16 +2149,14 @@ body {
 		}
 
 
-			#feedback p.indent-4.start::after {
-				/*content: ' \252C\2534\2500\2524';*/
+			#feedback p.indent-4.start::after { /*content: ' \252C\2534\2500\2524';*/
 			}
 
 			#feedback p.indent-4::after {
 				content: ' \2502\2502\2502\2502';
 			}
 
-			#feedback p.indent-4.end::after {
-				/*content: ' \2534\2500\2500\2518';*/
+			#feedback p.indent-4.end::after { /*content: ' \2534\2500\2500\2518';*/
 			}
 
 		#feedback p.indent-5 {
@@ -2174,16 +2165,14 @@ body {
 		}
 
 
-			#feedback p.indent-5.start::after {
-				/*content: ' \252C\2534\2500\2500\2524';*/
+			#feedback p.indent-5.start::after { /*content: ' \252C\2534\2500\2500\2524';*/
 			}
 
 			#feedback p.indent-5::after {
 				content: ' \2502\2502\2502\2502\2502';
 			}
 
-			#feedback p.indent-5.end::after {
-				/*content: ' \2534\2500\2500\2500\2518';*/
+			#feedback p.indent-5.end::after { /*content: ' \2534\2500\2500\2500\2518';*/
 			}
 
 		#feedback p.indent-6 {
@@ -2192,16 +2181,14 @@ body {
 		}
 
 
-			#feedback p.indent-6.start::after {
-				/*content: ' \252C\2534\2500\2500\2500\2524';*/
+			#feedback p.indent-6.start::after { /*content: ' \252C\2534\2500\2500\2500\2524';*/
 			}
 
 			#feedback p.indent-6::after {
 				content: ' \2502\2502\2502\2502\2502\2502';
 			}
 
-			#feedback p.indent-6.end::after {
-				/*content: ' \2534\2500\2500\2500\2500\2518';*/
+			#feedback p.indent-6.end::after { /*content: ' \2534\2500\2500\2500\2500\2518';*/
 			}
 
 

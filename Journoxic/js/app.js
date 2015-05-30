@@ -918,7 +918,7 @@ app.detail = function() { // [m]
 		app.videoPlayer.quit();
 		var className = $(this).attr("class");
 		if (journal.archive.map[className]) {
-			var funcName = "app.videolayer(\"#detail .content .video:eq(" + n + ") a\",\"" + journal.archive.map[className]["url"] + "\")";
+			var funcName = "app.videoPlayer(\"#video-preview\",\"" + journal.archive.map[className]["url"] + "\")";
 			$(this).attr("onclick", funcName).removeAttr("class");
 		} else {
 			animation.error(log.FILE_NOT_LOADED + className + log.DOWNLOAD_PROMPT);
@@ -1686,14 +1686,14 @@ app.videoPlayer = function(selector, source) {
 		return;
 	}
 	animation.log(log.VIDEO_DOWNLOAD_START, 1);
-	$("#play-media").html("&#xf04b").removeClass("play");
+		$("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.videoPlayer.play()");
+	$("#stop-media").attr("onclick", "app.videoPlayer.quit()");
 	var element = "<div id=\"videoplayer\">" +
 		"<video id=\"video\" preload=\"true\"><source src=\"" + source + "\"></video>" +
 		"<div id=\"video-position\">00:00</div><div id=\"timeline\"><div id=\"playhead\"></div></div><div id=\"video-length\">--:--</div></div>";
 	// Add to the document
 	$(element).appendTo(selector);
 	// Give places to the bar
-	$(selector + " p").css("padding-top", "3px");
 	app.videoPlayer.video = document.getElementById("video");
 	app.videoPlayer.playhead = document.getElementById("playhead");
 	app.videoPlayer.timeline = document.getElementById("timeline");
@@ -1807,8 +1807,6 @@ app.videoPlayer.quit = function() {
 	$("#videoplayer").fadeOut(400, function() {
 		$(this).remove();
 	});
-	// Reset the css
-	$("#detail .content .voice p").css("padding-top", "");
 	// Reset this variable
 	app.isFunction = true;
 	// Unbine all the action listener

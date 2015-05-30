@@ -6,7 +6,6 @@
 	<title>Anoxic's Journal Viewer</title>
 	<link rel="stylesheet" href="css/app.css" type="text/css" />
 	<link rel="stylesheet" href="css/jquery-ui.css"/>
-	<link rel="stylesheet" href="css/video-js.css" />
 </head>
 <body>
 	<div id="noscript">
@@ -132,7 +131,7 @@
 			</a>
 		</li>
 	</script>
-	<script type="text/x-template" id="detail-view">
+<script type="text/x-template" id="detail-view">
 		<div class="head">
 			<p class="title"><%- title %></p>
 			<p class="charline"><%- chars %></p>
@@ -147,6 +146,9 @@
 
 				<%
 				if( video ) {
+				%>
+				<div id="video-preview"></div>
+				<%
 				for( i in video ) {
 				%>
 				<div class="video">

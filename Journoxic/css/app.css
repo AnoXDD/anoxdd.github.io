@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2836,10 +2836,15 @@ body {
 	}
 
 #videoplayer {
-	display: inline-block;
+	display: block;
 	font-size: 12px;
 	margin-top: 2px;
-	width: 75%;
+	width: 90%;
+}
+
+	#videoplayer video {
+		width: 100%;
+	
 }
 
 	#videoplayer #timeline {

@@ -607,6 +607,14 @@ edit.addMedia = function(typeNum, arg) {
 			edit.photo();
 			// Do not execute the codes after switch block
 			return;
+		case 1:
+			// Video
+			edit.videoSearch();
+			break;
+		case -1:
+			// Helper for video
+			htmlContent = "<div class=\"video data change\"><a class='" + arg["fileName"] + "' onclick=\"edit.video(" + length + ",'" + arg["url"] + "')\" title=\"View\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
+			break;
 		case 2:
 			// Place
 			htmlContent = "<div class=\"place\"><a title=\"Edit\" onclick=\"edit.location(" + length + ")\" href=\"#\"><div class=\"thumb\"></div><input disabled title=\"Place\" class=\"title place-search\" autocomplete=\"off\"/><input disabled title=\"Latitude\" class=\"desc latitude\" autocomplete=\"off\" /><p>,</p><input disabled title=\"Longitude\" class=\"desc longitude\" autocomplete=\"off\" /></a></div>";
@@ -617,7 +625,7 @@ edit.addMedia = function(typeNum, arg) {
 			break;
 		case -3:
 			// Helper for voice
-			htmlContent = "<div class=\"voice data change\"><a class='" + arg["fileName"] + "' onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"Listen to it\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
+			htmlContent = "<div class=\"voice data change\"><a class='" + arg["fileName"] + "' onclick=\"edit.voice(" + length + ",'" + arg["url"] + "')\" title=\"View\"><div class=\"thumb\"><span></span></div><input disabled class=\"title\" value=\"" + arg["title"] + "\" /></a></div>";
 			break;
 		case 4:
 			// Music
@@ -1417,8 +1425,8 @@ edit.video = function(index, link) {
 	var source;
 	if (link) {
 		source = link;
-		$("#video-preview").fadeIn();
-		app.videoPlayer("#video-preview", source);
+		$("#text-area #video-preview").fadeIn();
+		app.videoPlayer("#text-area #video-preview", source);
 	} else {
 		// Find it from this dataClip
 		var fileName = $(selectorHeader + "a").attr("class");
@@ -1428,8 +1436,8 @@ edit.video = function(index, link) {
 				animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title").val());
 				return;
 			}
-			$("#video-preview").fadeIn();
-			app.videoPlayer("#video-preview", source);
+			$("#text-area #video-preview").fadeIn();
+			app.videoPlayer("#text-area #video-preview", source);
 		} else {
 			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
@@ -1514,8 +1522,8 @@ edit.location = function(index) {
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-				var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
-				longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
+			var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
+			longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
 			pos = new google.maps.LatLng(latitude, longitude);
 			mapOptions = {
 				zoom: 15,
@@ -2099,6 +2107,12 @@ edit.playableSearch = function(typeNum) {
 					switch (typeNum) {
 						case 1:
 							// Video
+							// Helper call to edit.media
+							edit.addMedia(-1, {
+								fileName: name,
+								url: contentUrl,
+								title: name.substring(0, name.length - 4)
+							});
 							break;
 						case 3:
 							// Voice

@@ -918,7 +918,7 @@ app.detail = function() { // [m]
 		app.videoPlayer.quit();
 		var className = $(this).attr("class");
 		if (journal.archive.map[className]) {
-			var funcName = "app.videoPlayer(\"#video-preview\",\"" + journal.archive.map[className]["url"] + "\")";
+			var funcName = "app.videoPlayer(\"#app #video-preview\",\"" + journal.archive.map[className]["url"] + "\")";
 			$(this).attr("onclick", funcName).removeAttr("class");
 		} else {
 			animation.error(log.FILE_NOT_LOADED + className + log.DOWNLOAD_PROMPT);
@@ -1528,6 +1528,7 @@ app.audioPlayer = function(selector, source) {
 		app.isFunction = false;
 	} else {
 		// Do not continue
+		animation.warning(log.MEDIA_ALREADY_DISPLAYED);
 		return;
 	}
 	animation.log(log.AUDIO_DOWNLOAD_START, 1);
@@ -1683,10 +1684,11 @@ app.videoPlayer = function(selector, source) {
 		app.isFunction = false;
 	} else {
 		// Do not continue
+		animation.warning(log.MEDIA_ALREADY_DISPLAYED);
 		return;
 	}
 	animation.log(log.VIDEO_DOWNLOAD_START, 1);
-		$("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.videoPlayer.play()");
+	$("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.videoPlayer.play()");
 	$("#stop-media").attr("onclick", "app.videoPlayer.quit()");
 	var element = "<div id=\"videoplayer\">" +
 		"<video id=\"video\" preload=\"true\"><source src=\"" + source + "\"></video>" +
@@ -1756,11 +1758,17 @@ app.videoPlayer = function(selector, source) {
 	}
 	app.videoPlayer.loadedData = function() {
 		animation.log(log.VIDEO_DOWNLOAD_END, -1);
+		// Change the height
+		$("#videoplayer").css("height", "450px");
 		// Update the length
 		$("#video-length").html(app.videoPlayer.formatTime(video.duration));
 		// Show the play icon
 		animation.showIcon("#play-media");
 		animation.showIcon("#stop-media");
+		animation.showIcon("#toggle-media");
+		this.toggle.isFullScreen = false;
+		this.toggle.windowSelector = undefined;
+		$("#toggle-media").html("&#xf065");
 	}
 	// Gets audio file duration
 	app.videoPlayer.video.addEventListener("canplaythrough", function() {
@@ -1775,6 +1783,30 @@ app.videoPlayer = function(selector, source) {
 	// Makes playhead draggable 
 	app.videoPlayer.playhead.addEventListener("mousedown", app.videoPlayer.mouseDown, false);
 	window.addEventListener("mouseup", app.videoPlayer.mouseUp, false);
+}
+/**
+ * Toggles the fullscreen of the videoplayer.
+ * This function will determine if the video is fullscreen by a static variable inside function
+ */
+app.videoPlayer.toggle = function() {
+	if (this.toggle.isFullScreen) {
+		// Switch to window mode
+		if (this.toggle.windowSelector) {
+			// Change the icon
+			$("#toggle-media").html("&#xf065");
+		} else {
+			// Invalid call
+			animation.error("Program error: no app.videoPlayer.toggle.windowSelector");
+		}
+		this.toggle.isFullScreen = false;
+	} else {
+		this.toggle.windowSelector = ("#videoplayer").parent();
+		// Move child
+		$("#videoplayer").append($("#video-fullscreen"));
+		// Go fullscreen
+		$("#toggle-media").html("&#xf066");
+		this.toggle.isFullScreen = true;
+	}
 }
 /**
  * Handles the play and pause of the vedio player after loading
@@ -1823,6 +1855,10 @@ app.videoPlayer.quit = function() {
 	window.removeEventListener("mouseup", app.videoPlayer.mouseUp);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
+	animation.hideIcon("#toggle-media");
+	$("#toggle-media").html("&#xf065");
+	this.toggle.isFullScreen = false;
+	this.toggle.windowSelector = undefined;
 }
 
 

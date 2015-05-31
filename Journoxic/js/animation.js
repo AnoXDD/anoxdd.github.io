@@ -59,6 +59,7 @@ window.log = {
 	VIDEO_DOWNLOAD_START: "Loading video files ...",
 	VIDEO_DOWNLOAD_END: "Video files loaded",
 	VIDEO_EXPIRED: "Video file expired. Please re-download the media",
+	MEDIA_ALREADY_DISPLAYED:"Another media is playing. Close that to continue", 
 	EDIT_PANE_QUIT: "Data discarded",
 	EDIT_PANE_SAVE_START: "Saving data ...",
 	EDIT_PANE_SAVE_PENDING_ATTACHMENTS: "Pending changes saved",

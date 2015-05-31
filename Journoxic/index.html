@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<title>Anoxic's Journal Viewer</title>
 	<link rel="stylesheet" href="css/app.css" type="text/css" />
-	<link rel="stylesheet" href="css/jquery-ui.css"/>
+	<link rel="stylesheet" href="css/jquery-ui.css" />
 </head>
 <body>
 	<div id="noscript">
@@ -35,6 +35,7 @@
 		<a class="entry-option" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a>
 		<a class="entry-option" title="Play" id="play-media" onclick="app.audioPlayer.play()" href="#">&#xf04b</a>
 		<a class="entry-option" title="Stop" id="stop-media" onclick="app.audioPlayer.quit()" href="#">&#xf04d</a>
+		<a class="entry-option" title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#"></a>
 		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
 		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a>
 		<!--	<a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
@@ -72,6 +73,7 @@
 		<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xf0c9</a>
 		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xf090</a>
 	</div>
+	<div id="video-fullscreen"></div>
 	<!-- Main frame of the viewer -->
 	<div id="app">
 		<div id="contents">
@@ -131,7 +133,7 @@
 			</a>
 		</li>
 	</script>
-<script type="text/x-template" id="detail-view">
+	<script type="text/x-template" id="detail-view">
 		<div class="head">
 			<p class="title"><%- title %></p>
 			<p class="charline"><%- chars %></p>
@@ -285,7 +287,7 @@
 		</div>
 		<button type="button" class="btn-back"><span></span>Back</button>
 	</script>
-<script type="text/x-template" id="edit-view">
+	<script type="text/x-template" id="edit-view">
 		<div id="text-area">
 			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
@@ -345,7 +347,7 @@
 			for( i in video ) {
 			%>
 			<div class="video">
-				<a class="<%- video[i].fileName %>" onclick="edit.video(<%- i %>)" title="Listen to it">
+				<a class="<%- video[i].fileName %>" onclick="edit.video(<%- i %>)" title="View">
 					<div class="thumb"><span></span></div>
 					<input disabled class="title" value="<%- video[i].title %>" />
 				</a>
@@ -358,7 +360,7 @@
 			for( i in voice ) {
 			%>
 			<div class="voice resource">
-				<a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" title="Listen to it">
+				<a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" title="View">
 					<div class="thumb"><span></span></div>
 					<input disabled class="title" value="<%- voice[i].title %>" />
 				</a>

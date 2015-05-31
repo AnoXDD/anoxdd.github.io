@@ -1766,8 +1766,10 @@ app.videoPlayer = function(selector, source) {
 		animation.showIcon("#play-media");
 		animation.showIcon("#stop-media");
 		animation.showIcon("#toggle-media");
-		this.toggle.isFullScreen = false;
+		if (this.toggle) {
+			this.toggle.isFullScreen = false;
 		this.toggle.windowSelector = undefined;
+		}
 		$("#toggle-media").html("&#xf065");
 	}
 	// Gets audio file duration
@@ -1792,6 +1794,9 @@ app.videoPlayer.toggle = function() {
 	if (this.toggle.isFullScreen) {
 		// Switch to window mode
 		if (this.toggle.windowSelector) {
+					$("#video-fullscreen").fadeOut();
+			// Move child
+					$(this.toggle.windowSelector).append($("#videoplayer").css("height", "450px"));
 			// Change the icon
 			$("#toggle-media").html("&#xf065");
 		} else {
@@ -1800,9 +1805,10 @@ app.videoPlayer.toggle = function() {
 		}
 		this.toggle.isFullScreen = false;
 	} else {
-		this.toggle.windowSelector = ("#videoplayer").parent();
+		// Go fullscreen
+		this.toggle.windowSelector = $("#videoplayer").parent();
 		// Move child
-		$("#videoplayer").append($("#video-fullscreen"));
+		$("#video-fullscreen").fadeIn().append($("#videoplayer").css("height", "-webkit-calc(100% - 25px)"));
 		// Go fullscreen
 		$("#toggle-media").html("&#xf066");
 		this.toggle.isFullScreen = true;
@@ -1857,6 +1863,7 @@ app.videoPlayer.quit = function() {
 	animation.hideIcon("#stop-media");
 	animation.hideIcon("#toggle-media");
 	$("#toggle-media").html("&#xf065");
+						$("#video-fullscreen").fadeOut();
 	this.toggle.isFullScreen = false;
 	this.toggle.windowSelector = undefined;
 }

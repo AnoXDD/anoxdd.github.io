@@ -2130,7 +2130,7 @@ edit.playableSetToggle = function() {
 	$("#edit-pane .video, #edit-pane .voice").each(function() {
 		$(this).on("contextmenu", function() {
 			// Right click to select the media
-			$(this).toggleClass("highlight");
+			$(this).toggleClass("change");
 			// Return false to disable other functionalities
 			return false;
 		});

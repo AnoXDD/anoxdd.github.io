@@ -1702,7 +1702,7 @@ app.videoPlayer = function(selector, source) {
 	app.videoPlayer.timeline = document.getElementById("timeline");
 	var duration,
 		/* Timeline width adjusted for playhead */
-		timelineWidth = timeline.offsetWidth - playhead.offsetWidth,
+		timelineWidth,
 		/* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
 		onplayhead = false;
 	app.videoPlayer.formatTime = function(timeNum) {
@@ -1760,13 +1760,21 @@ app.videoPlayer = function(selector, source) {
 	app.videoPlayer.loadedData = function() {
 		animation.log(log.VIDEO_DOWNLOAD_END, -1);
 		// Change the height
+		if (app.videoPlayer.height != undefined) {
+					$("#videoplayer").css("height", app.videoPlayer.height);
+		} else {
 		$("#videoplayer").css("height", "450px");
+		}
 		// Update the length
 		$("#video-length").html(app.videoPlayer.formatTime(video.duration));
 		// Show the play icon
 		animation.showIcon("#play-media");
 		animation.showIcon("#stop-media");
 		animation.showIcon("#toggle-media");
+		// Show the control
+		$("#video-position, #video-length, #timeline").fadeIn().css("display","inline-block");
+		// Recalculate the width
+				timelineWidth = timeline.offsetWidth - playhead.offsetWidth;
 		if (this.toggle) {
 			this.toggle.isFullScreen = false;
 		this.toggle.windowSelector = undefined;

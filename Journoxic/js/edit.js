@@ -31,6 +31,9 @@ edit.localChange = [];
 edit.init = function(overwrite, index) {
 	// Sometimes the user just presses the edit button without quitting the audioPlayer elsewhere
 	app.audioPlayer.quit();
+	app.videoPlayer.quit();
+	// Disable fixed height
+	app.videoPlayer.height = "-webkit-calc(100% - 32px)";
 	////console.log("edit.init(" + overwrite + ", " + index + ")");
 	edit.editView = _.template($("#edit-view").html());
 	var data;
@@ -236,6 +239,8 @@ edit.quit = function(selector, save) {
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
+	// Reset videoplayer's heiht
+	app.videoPlayer.height = undefined;
 };
 /**
  * Saves cache for edit-pane to journal.archive.data
@@ -1452,7 +1457,7 @@ edit.videoHide = function() {
 		// Invalid call
 		return;
 	}
-	$("#video-preview").fadeOut();
+	$("#text-area #video-preview").fadeOut();
 	app.videoPlayer.quit();
 	var selectorHeader = edit.getSelectorHeader("video");
 	// Disable input boxes
@@ -2128,6 +2133,8 @@ edit.playableSearch = function(typeNum) {
  */
 edit.playableSetToggle = function() {
 	$("#edit-pane .video, #edit-pane .voice").each(function() {
+		// Reset the right click bindings
+		$(this).off("contextmenu");
 		$(this).on("contextmenu", function() {
 			// Right click to select the media
 			$(this).toggleClass("change");

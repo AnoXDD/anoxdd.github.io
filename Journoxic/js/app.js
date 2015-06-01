@@ -1688,6 +1688,7 @@ app.videoPlayer = function(selector, source) {
 		return;
 	}
 	animation.log(log.VIDEO_DOWNLOAD_START, 1);
+	$(selector).fadeIn();
 	$("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.videoPlayer.play()");
 	$("#stop-media").attr("onclick", "app.videoPlayer.quit()");
 	var element = "<div id=\"videoplayer\">" +

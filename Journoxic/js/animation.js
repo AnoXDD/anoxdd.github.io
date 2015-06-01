@@ -189,9 +189,8 @@ animation.setConfirm = function(name, type) {
 					// Video
 				case 3:
 					// Voice
-					$("#confirm").html("&#xf0ec");
-					title = "Toggle where to save";
-					break;
+					// Do not need to show confirm button
+					return true;
 			}
 		} else {
 			$("#confirm").html("&#xf00c");

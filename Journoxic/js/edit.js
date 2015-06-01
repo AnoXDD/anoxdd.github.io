@@ -202,7 +202,8 @@ edit.init = function(overwrite, index) {
 			this.scrollLeft -= (delta * 50);
 			event.preventDefault();
 		});
-
+		// Right click to select videos and voices
+		edit.playableSetToggle();
 		edit.refreshSummary();
 	});
 	headerShowMenu("add");
@@ -665,10 +666,9 @@ edit.removeMedia = function(typeNum) {
 		case 1:
 			// Video
 			// Placeholder, do nothing now 
-			break;
 		case 3:
 			// Voice
-			edit.voiceToggle();
+			// Placeholder, do nothing now 
 			break;
 		default:
 			// In other cases, this step will be taken care of in their individual functions because it is not sure that if the transfer will be successful from the server side
@@ -767,6 +767,9 @@ edit.confirm = function() {
 edit.cleanupMediaEdit = function() {
 	$("#edit-pane").off("keyup");
 	switch (edit.isEditing) {
+		case 1:
+			edit.videoHide();
+			break;
 		case 2:
 			edit.locationHide();
 			break;
@@ -1451,7 +1454,7 @@ edit.videoHide = function() {
 	}
 	$("#video-preview").fadeOut();
 	app.videoPlayer.quit();
-	var selectorHeader = edit.getSelectorHeader("voice");
+	var selectorHeader = edit.getSelectorHeader("video");
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
 	// Recover onclick event
@@ -1481,18 +1484,6 @@ edit.videoSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage["video"] = JSON.stringify(data);
-}
-/**
- * Toggles the location of the voice element
- */
-edit.videoToggle = function() {
-	var index = edit.mediaIndex["video"];
-	if (index >= 0) {
-		// Search to change this in edit.voices
-		var selectorHeader = edit.getSelectorHeader("video", index);
-		// Toggle the status
-		$(selectorHeader).toggleClass("change");
-	}
 }
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
@@ -1810,7 +1801,7 @@ edit.voiceHide = function() {
 		// Invalid call
 		return;
 	}
-	app.audioPlayer.quit();
+	app.videoPlayer.quit();
 	var selectorHeader = edit.getSelectorHeader("voice");
 	// Disable input boxes
 	$(selectorHeader + "input").prop("disabled", true).off("keyup");
@@ -1841,18 +1832,6 @@ edit.voiceSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage["voice"] = JSON.stringify(data);
-}
-/**
- * Toggles the location of the voice element
- */
-edit.voiceToggle = function() {
-	var index = edit.mediaIndex["voice"];
-	if (index >= 0) {
-		// Search to change this in edit.voices
-		var selectorHeader = edit.getSelectorHeader("voice", index);
-		// Toggle the status
-		$(selectorHeader).toggleClass("change");
-	}
 }
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
@@ -2075,13 +2054,13 @@ edit.playableSearch = function(typeNum) {
 					switch (typeNum) {
 						case 1:
 							// Video
-							if (suffix !== ".mp4") {
+							if (suffix !== ".mp4" && suffix !== ".MP4") {
 								continue;
 							}
 							break;
 						case 3:
 							// Voice
-							if (suffix !== ".mp3" && suffix !== ".wav") {
+							if (suffix !== ".mp3" && suffix !== ".wav" && suffix !== ".MP3" && suffix !== ".WAV") {
 								continue;
 							}
 							break;
@@ -2125,6 +2104,8 @@ edit.playableSearch = function(typeNum) {
 							break;
 					}
 				}
+				// Right click to select
+				edit.playableSetToggle();
 				animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
 			})
 			.fail(function(xhr, status, error) {
@@ -2140,6 +2121,19 @@ edit.playableSearch = function(typeNum) {
 						break;
 				}
 			});
+	});
+}
+/**
+ * Sets all video and voice attachments so that their classes will be toggled "change" upon right clicking
+ */
+edit.playableSetToggle = function() {
+	$("#edit-pane .video, #edit-pane .voice").each(function() {
+		$(this).on("contextmenu", function() {
+			// Right click to select the media
+			$(this).toggleClass("highlight");
+			// Return false to disable other functionalities
+			return false;
+		});
 	});
 }
 /**

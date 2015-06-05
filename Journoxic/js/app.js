@@ -176,6 +176,8 @@ app.load = function(filter, forceReload, newContent) {
 	}
 	if (forceReload) {
 		// Start to reload
+		// Reset animation indentation
+		animation.indent = 0;
 		// Remove all the child elements and always
 		animation.log(log.CONTENTS_RELOADED);
 		console.log("==================Force loaded==================");

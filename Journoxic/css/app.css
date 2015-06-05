@@ -336,22 +336,18 @@ body {
 		#list a:hover, #list a:focus {
 		}
 
+		#list a div.cover, #list a p.summary {
+			transition: width .3s;
+		}
+
 			#list a:hover p, #list a:focus p, #list a:active p, #list a:hover div, #list a:focus div, #list a:active div { /*color: ghostwhite;*/
 			}
 
 				#list a:hover div.cover {
-					-moz-transition: width .3s;
-					-o-transition: width .3s;
-					-webkit-transition: width .3s;
-					transition: width .3s;
 					width: 60px;
 				}
 
 				#list a:hover p.summary {
-					-moz-transition: width .3s;
-					-o-transition: width .3s;
-					-webkit-transition: width .3s;
-					transition: width .3s;
 					width: -webkit-calc(95% - 60px);
 				}
 
@@ -584,14 +580,16 @@ body {
 		#list div.thumb img, #list div.thumb canvas {
 			height: 60px;
 			width: 60px;
-		}
+		
+			border: 0;
+			outline: 0;
+}
 
 		#list div.thumb:after {
 			-moz-transition: background-color .2s;
 			-ms-transition: background-color .2s;
 			-o-transition: background-color .2s;
 			-webkit-transition: background-color .2s;
-			border: 1px solid rgba(0, 0, 0, .1);
 			bottom: 0;
 			content: '';
 			display: block;
@@ -2095,7 +2093,14 @@ body {
 			color: #000;
 			font-weight: bold;
 		}
-
+		
+		#feedback p.warning {
+			background-color: #fff !important;
+			color: #000 !important;
+			
+		
+			font-style: italic;
+}
 
 		#feedback p.indent-1 {
 			background: #585858;

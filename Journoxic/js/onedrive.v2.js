@@ -223,11 +223,11 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 			var result = response.results[0];
 			if (result == undefined) {
 				// Not found
-				animation.warning(log.COVER_PHOTO_FOUND);
+				animation.warning(log.COVER_PHOTO_FAIL);
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found
-				animation.log(log.COVER_PHOTO_FAIL);
+				animation.log(log.COVER_PHOTO_FOUND);
 				var artist = result["artistName"],
 					track = result["trackName"],
 					coverUrl = result["artworkUrl100"];

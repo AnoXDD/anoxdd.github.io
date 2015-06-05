@@ -1471,7 +1471,7 @@ edit.videoHide = function() {
 		$(selectorHeader + "a").attr("onclick", "edit.video(" + edit.mediaIndex["video"] + ")");
 	}
 	// Save data
-	edit.voiceSave(edit.mediaIndex["video"]);
+	edit.videoSave(edit.mediaIndex["video"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
 	animation.hideIcon(".entry-option");

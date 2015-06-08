@@ -96,6 +96,7 @@ window.log = {
 	EDIT_PANE_PLAYABLE_SEARCH_FAILED: "Cannot load the resource",
 	EDIT_PANE_PLAYABLE_SAVE_START: "Start transferring ",
 	EDIT_PANE_PLAYABLE_SAVE_START_END: "s ...",
+	COVERTYPE_AUTO_CHOSEN: "Cover for this entry automatically chosen",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",

@@ -41,8 +41,8 @@
 		<!--	<a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
 		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
 		<a class="entry-add" title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xf03d</a>
-		<a class="entry-add" title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xf041</a>
 		<a class="entry-add" title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xf130</a>
+		<a class="entry-add" title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xf041</a>
 		<a class="entry-add" title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="#">&#xf001</a>
 		<a class="entry-add" title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#xf008</a>
 		<a class="entry-add" title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xf02d</a>
@@ -287,7 +287,7 @@
 		</div>
 		<button type="button" class="btn-back"><span></span>Back</button>
 	</script>
-	<script type="text/x-template" id="edit-view">
+<script type="text/x-template" id="edit-view">
 		<div id="text-area">
 			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
@@ -315,6 +315,7 @@
 				<div class="emotion"></div>
 				<div class="other"></div>
 			</div>
+			<hr />
 			<div class="texttags">
 				<span>#</span>
 				<input type="text" id="entry-tag" placeholder="Tags" autocomplete="off" onclick="this.select()" />
@@ -331,16 +332,19 @@
 					%>
 				</div>
 			</div>
+			<hr />
 			<div class="types">
-				<p id="photo-cover">&#xf03e</p>
-				<p id="video-cover">&#xf03d</p>
-				<p id="place-cover">&#xf041</p>
-				<p id="voice-cover">&#xf130</p>
-				<p id="music-cover">&#xf001</p>
-				<p id="movie-cover">&#xf008</p>
-				<p id="book-cover">&#xf02d</p>
-				<p id="weblink-cover">&#xf0c1</p>
+				<p id="no-cover" onclick="edit.coverSet(-1, true)" class="selected">&#xf016</p>
+				<p id="photo-cover" onclick="edit.coverSet(0, true)">&#xf1c5</p>
+				<p id="video-cover" onclick="edit.coverSet(1, true)">&#xf1c8</p>
+				<p id="voice-cover" onclick="edit.coverSet(3, true)">&#xf1c7</p>
+				<p id="place-cover" onclick="edit.coverSet(2, true)">&#xf041</p>
+				<p id="music-cover" onclick="edit.coverSet(4, true)">&#xf001</p>
+				<p id="movie-cover" onclick="edit.coverSet(5, true)">&#xf008</p>
+				<p id="book-cover" onclick="edit.coverSet(6, true)">&#xf02d</p>
+				<p id="weblink-cover" onclick="edit.coverSet(7, true)">&#xf0c1</p>
 			</div>
+			<hr />
 			<div class="images"></div>
 			<%
 			if( video ) {

@@ -1,10 +1,20 @@
-﻿app.version = "v3.15.8 Build 060515_0012";
+﻿app.version = "v3.16.0 Build 060815_1644";
 
 // Version number show up
 $("#version").html(app.version);
 
 /**
  * Version update change log and planned update
+ * 
+ * v3.17
+ * [Add] Clean up resource folder so that media that no entry is related will be moved to corresponding folders
+ * 
+ * v3.16
+ * [Add] Funtionality update - add more utility tools
+ *	- Cover types of the entry
+ *	- Some functions will be mutually excluded at a time to avoid data scramble when multiple requests are sent
+ *	- More optimization on log (one button to dismiss all)
+ *  - Change the type in list-view
  * 
  * v3.15
  * [Add] Support for video display, add and removal

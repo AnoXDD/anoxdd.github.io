@@ -256,9 +256,7 @@ edit.save = function(selector) {
 	}
 	if (selector) {
 		html = $(selector).html();
-		$(selector).html("&#" +
-			"" +
-			"xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+		$(selector).html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 		id = animation.blink(selector);
 	}
 	edit.processRemovalList();
@@ -299,7 +297,6 @@ edit.processRemovalList = function() {
 		}
 	}
 };
-
 
 /******************************************************************
  **************************** CACHE *******************************
@@ -353,6 +350,8 @@ edit.importCache = function(data) {
 			localStorage[medium] = data[medium] ? JSON.stringify(data[medium]) : "[]";
 		}
 	}
+	// Cover
+	localStorage["coverType"] = data["coverType"] || 0;
 	// Return value
 	return data;
 };
@@ -363,9 +362,7 @@ edit.exportCache = function(index) {
 	// Title
 	data["title"] = localStorage["title"] || "Untitled";
 	data["processed"] = 0;
-	if (!data["coverType"]) {
-		data["coverType"] = 0;
-	}
+	data["coverType"] = parseInt(localStorage["coverType"]) || edit.coverAuto();
 	if (!data["attachments"]) {
 		data["attachments"] = 0;
 	}
@@ -702,7 +699,6 @@ edit.addToRemovalList = function(name, index) {
 		edit.removalList[name].push(index);
 	}
 };
-/* Get the name of media by value */
 /**
  * Gets the name of media by num value
  * @param {number} typeNum - The value of this media
@@ -730,6 +726,31 @@ edit.mediaName = function(typeNum) {
 			return "";
 	}
 };
+/**
+ * Gets the num value of media by name
+ * @param {string} type - The name of this media
+ * @returns {number} - The num value of the media. -1 if not applicable
+ */
+edit.mediaValue = function(type) {
+	if (type === "photo")
+		return 0;
+	if (type === "video")
+		return 1;
+	if (type === "place")
+		return 2;
+	if (type === "voice")
+		return 3;
+	if (type === "music")
+		return 4;
+	if (type === "movie")
+		return 5;
+	if (type === "book")
+		return 6;
+	if (type === "weblink")
+		return 7;
+	// Not applicable
+	return -1;
+}
 /**
  * A function to be called by confirm 
  */
@@ -1032,7 +1053,117 @@ edit.getMyTime = function(timeNum) {
 		return timeNum;
 	}
 	return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
-}
+};
+
+/************************** COVER **************************/
+
+/**
+ * Sets the cover type of current entry and animates on the edit pane.
+ * This function will not test if this type is attached in this entry. 
+ * Only if the cover is set to be photo, it will appear on the entry. Otherwise a dummy image will be shown
+ * @param {Number|String} type - My value of type classification. -1 for no cover
+ * @param {boolean} isToggle - Whether covertype will toggle to 0 if `type` is the same as current type
+ * @return {number} the number of cover type
+ */
+edit.coverSet = function(type, isToggle) {
+	var coverType,
+		typeNum = type;
+	if (typeof (type) == "string") {
+		typeNum = edit.mediaValue(type);
+	}
+	switch (typeNum) {
+		case 0:
+			coverType = 1;
+			break;
+		case 1:
+			coverType = 2;
+			break;
+		case 2:
+			coverType = 64;
+			break;
+		case 3:
+			coverType = 8;
+			break;
+		case 4:
+			coverType = 4;
+			break;
+		case 5:
+			coverType = 32;
+			break;
+		case 6:
+			coverType = 16;
+			break;
+		case 7:
+			coverType = 128;
+			break;
+		default:
+			coverType = 0;
+	}
+	// Animation and assignment
+	// Show all the type selectors
+	$(".types p").removeClass("hidden selected");
+	if (isToggle && localStorage["coverType"] == coverType) {
+		localStorage["coverType"] = coverType = 0;
+	} else {
+		localStorage["coverType"] = coverType;
+		var name = edit.mediaName(typeNum);
+		$(".types p:not(#" + edit.mediaName(typeNum) + "-cover)").addClass("hidden");
+		if (name) {
+			$(".types #" + edit.mediaName(typeNum) + "-cover").addClass("selected");
+		} else {
+			// Do not display cover
+			$(".types #no-cover").addClass("selected");
+		}
+	}
+	return coverType;
+};
+
+/**
+ * Automatically selects a type from given typeList. If no typeList is specified, this function will assign coverType based on all the valid attachments in this entry. 
+ * See the first line of the code for the priority of all the attachments
+ * @param {Object} typeList - A list of attachments to be selected from
+ * @return {Number} the chosen cover
+ */
+edit.coverAuto = function(typeList) {
+	var priority = ["images", "music", "book", "movie", "video", "voice", "weblink", "place"];
+	typeList = typeList || edit.coverRefresh();
+	for (var i = 0; i !== priority.length; ++i) {
+		if (priority[i] in typeList) {
+			// Return to stop this function
+			return edit.coverSet(priority[i]);
+		}
+	}
+	// No cover at all
+	edit.coverSet(-1);
+	animation.log(log.COVERTYPE_AUTO_CHOSEN);
+};
+
+/**
+ * Refreshes the covertype area to returns the avaiable cover type of current entry
+ * @returns {Object} - A list of all the available attachments
+ */
+edit.coverRefresh = function() {
+	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"],
+		ret = [];
+	for (var i = 0; i !== elem.length; ++i) {
+		// Test if this element is in cache
+		if (elem[i] in localStorage) {
+			// Test if the element in cache is valid
+			if (localStorage[elem[i]].length !== 0) {
+				// Test if it is not empty
+				try {
+					if (Object.keys(JSON.parse(localStorage[elem[i]])).length !== 0) {
+						// Alright, this is a solid attachment
+						ret.push(elem[i]);
+					}
+				} catch (e) {
+					// Do nothing
+				}
+			}
+		}
+	}
+	return ret;
+};
 
 /************************** PHOTO 0 ************************/
 
@@ -1333,7 +1464,7 @@ edit.photoSave = function(callback) {
 						.fail(function(xhr, status, error) {
 							++processingPhoto;
 							animation.error(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS
- + error + log.SERVER_RETURNS_END);
+								+ error + log.SERVER_RETURNS_END);
 							animation.warning("#add-photo");
 							// Revert the transfer process
 						})
@@ -1451,7 +1582,7 @@ edit.video = function(index, link) {
 		}
 	}
 	animation.setConfirm(1);
-}
+};
 edit.videoHide = function() {
 	if (edit.mediaIndex["video"] < 0) {
 		// Invalid call
@@ -1477,7 +1608,7 @@ edit.videoHide = function() {
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["video"] = -1;
 	edit.isEditing = -1;
-}
+};
 edit.videoSave = function(index) {
 	var data = localStorage["video"],
 		selectorHeader = edit.getSelectorHeader("video", index),
@@ -1489,13 +1620,12 @@ edit.videoSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage["video"] = JSON.stringify(data);
-}
-/**
+}; /**
  * Search for all the voices from the data folder and add it to the edit.voice
  */
 edit.videoSearch = function() {
 	edit.playableSearch(1);
-}
+};
 
 /************************** LOCATION 2 ************************/
 
@@ -1519,7 +1649,7 @@ edit.location = function(index) {
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
-			longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
+				longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
 			pos = new google.maps.LatLng(latitude, longitude);
 			mapOptions = {
 				zoom: 15,
@@ -1752,7 +1882,7 @@ edit.locationWeather = function(pos) {
 			animation.log(log.EDIT_PANE_WEATHER_END_FAIL + data["summary"] + log.EDIT_PANE_WEATHER_END_FAIL_END, -1);
 		}
 	});
-}
+};
 
 /************************** VOICE 3 ************************/
 
@@ -1825,7 +1955,7 @@ edit.voiceHide = function() {
 	animation.hideIcon(".entry-option");
 	edit.mediaIndex["voice"] = -1;
 	edit.isEditing = -1;
-}
+};
 edit.voiceSave = function(index) {
 	var data = localStorage["voice"],
 		selectorHeader = edit.getSelectorHeader("voice", index),
@@ -1837,19 +1967,21 @@ edit.voiceSave = function(index) {
 	};
 	data[index] = newElem;
 	localStorage["voice"] = JSON.stringify(data);
-}
+};
+
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
  */
+
 edit.voiceSearch = function() {
 	edit.playableSearch(3);
-}
+};
 /**
  * Use the microphone to record a new voice
  */
 edit.voiceNew = function() {
 
-}
+};
 
 /************************** MUSIC 4 **************************/
 
@@ -2127,8 +2259,7 @@ edit.playableSearch = function(typeNum) {
 				}
 			});
 	});
-}
-/**
+}; /**
  * Sets all video and voice attachments so that their classes will be toggled "change" upon right clicking
  */
 edit.playableSetToggle = function() {
@@ -2142,8 +2273,7 @@ edit.playableSetToggle = function() {
 			return false;
 		});
 	});
-}
-/**
+}; /**
  * Saves all the playable items. Forward animation.log is required.
  * This function will contact OneDrive server and will upload the data as soon as saving is complete
  * @param {Number} typeNum - The type number of the content to be saved. 1: video. 3: voice.

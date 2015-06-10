@@ -18,6 +18,8 @@ edit.removalList = {};
 
 edit.localChange = [];
 
+edit.isProcessing = false;
+
 /******************************************************************
  ********************** INIT & QUIT *******************************
  ******************************************************************/
@@ -171,6 +173,31 @@ edit.init = function(overwrite, index) {
 		}
 		if (localStorage["body"]) {
 			$("#entry-body").text(localStorage["body"]);
+		}
+		// Covertype processing
+		if (localStorage["coverType"]) {
+			var cover = -1;
+			switch (parseInt(localStorage["coverType"])) {
+				case 128:
+					++cover;
+				case 16:
+					++cover;
+				case 32:
+					++cover;
+				case 4:
+					++cover;
+				case 8:
+					++cover;
+				case 64:
+					++cover;
+				case 2:
+					++cover;
+				case 1:
+					++cover;
+				default:
+					// Invalid cover type, just do nothing
+			}
+			edit.coverSet(cover);
 		}
 		// Tag processing
 		var tagsHtml = app.bitwise().getTagsHTML(),
@@ -2259,7 +2286,8 @@ edit.playableSearch = function(typeNum) {
 				}
 			});
 	});
-}; /**
+};
+/**
  * Sets all video and voice attachments so that their classes will be toggled "change" upon right clicking
  */
 edit.playableSetToggle = function() {
@@ -2273,7 +2301,8 @@ edit.playableSetToggle = function() {
 			return false;
 		});
 	});
-}; /**
+};
+/**
  * Saves all the playable items. Forward animation.log is required.
  * This function will contact OneDrive server and will upload the data as soon as saving is complete
  * @param {Number} typeNum - The type number of the content to be saved. 1: video. 3: voice.

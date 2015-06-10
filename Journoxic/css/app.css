@@ -1184,6 +1184,7 @@ body {
 			}
 
 			#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c01,
+						#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c02,
 			#detail .icontags span.c05, #edit-pane #attach-area .icontags p.c05,
 			#detail .icontags span.c06, #edit-pane #attach-area .icontags p.c06,
 			#detail .icontags span.c07, #edit-pane #attach-area .icontags p.c07,
@@ -1214,8 +1215,8 @@ body {
 				top: -8px;
 			}
 
-			#detail .icontags span.c02, #edit-pane #attach-area .icontags p.c02 {
-				background-position: -240px -395px;
+			#detail .icontags span.c02::before, #edit-pane #attach-area .icontags p.c02::before {
+				content: "\f0e5";
 			}
 
 			#detail .icontags span.c03, #edit-pane #attach-area .icontags p.c03 {
@@ -2773,7 +2774,7 @@ body {
 		font-weight: normal;
 		margin: 1px;
 		padding: 3px 10px;
-		width: 75%;
+		width: -webkit-calc(80% - 50px);
 	}
 
 	#attach-area .movie .desc, #attach-area .music .desc, #attach-area .book .desc, #attach-area .place .desc {

@@ -68,6 +68,7 @@ window.log = {
 	TAG_ADDED_ALREADY: "\" is already added",
 	TAG_ADDED_FAILED: "\" cannot be added as an icon",
 	TAG_ADDED_ICON: "\" is added as an icon",
+	TAG_ADDED_ICON_FROM: "\" is toggled as an icon from ",
 	TAG_ADDED_ICON_ALREADY: "\" is already added as an icon",
 	EDIT_PANE_IMAGES_ALREADY_LOADED: "Images have already been loaded",
 	EDIT_PANE_IMAGES_FAIL: "Cannot load images",

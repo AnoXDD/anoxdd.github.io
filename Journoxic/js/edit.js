@@ -227,6 +227,26 @@ edit.init = function(overwrite, index) {
 				$("#edit-pane #attach-area .icontags p." + tagsHtml[i]).trigger("click");
 			}
 		}
+		// Bind hotkeys to add tags
+		$("#entry-body").bind("keyup", "ctrl+shift+f", function() {
+			edit.toggleIcon("c10", "hotkey");
+		})
+			.bind("keyup", "ctrl+shift+r", function() {
+				edit.toggleIcon("s01", "hotkey");
+			})
+			.bind("keyup", "ctrl+shift+i", function() {
+				edit.toggleIcon("c03", "hotkey");
+			})
+			.bind("keyup", "ctrl+shift+t", function() {
+				edit.toggleIcon("c02", "hotkey");
+			})
+			.bind("keyup", "ctrl+shift+j", function() {
+				edit.toggleIcon("c01", "hotkey");
+			})
+			.bind("keyup", "ctrl+shift+m", function() {
+				edit.toggleIcon("c04", "hotkey");
+			});
+		// Let the tags to scroll horizontally
 		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
 			// Only scroll horizontally
 			this.scrollLeft -= (delta * 50);
@@ -858,22 +878,35 @@ edit.getSelectorHeader = function(type, index) {
 
 /************************** ANIMATION *****************************/
 
-edit.toggleIcon = function(htmlName) {
+/**
+ * Toggles the icon tag with a htmlname
+ * @param {string} htmlName - The html class tag of the icon to be toggled
+ * @param {string} source (Optional) - The source that the function will show to the user
+ * @returns {} 
+ */
+edit.toggleIcon = function(htmlName, source) {
 	var selector = "#attach-area .icontags p." + htmlName,
 		parent = $(selector).parent().attr("class"),
-		iconVal = app.bitwise().getIconval($(selector).attr("title").toLowerCase());
+		iconName =$(selector).attr("title"),	
+		iconVal = app.bitwise().getIconval(iconName.toLowerCase());
 	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
 		if (parent == "weather" || parent == "emotion") {
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
 		}
 		// Now highlighted
 		localStorage["iconTags"] = app.bitwise().or(parseInt(localStorage["iconTags"]), iconVal);
+		if (source) {
+			animation.log(log.TAG_ADD_HEADER + iconName + log.TAG_ADDED_ICON_FROM + source);
+		}
 	} else {
 		if (parent == "weather" || parent == "emotion") {
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
 		}
 		// Dimmed
 		localStorage["iconTags"] = app.bitwise().andnot(parseInt(localStorage["iconTags"]), iconVal);
+		if (source) {
+			animation.log(log.TAG_ADD_HEADER + iconName + log.TAG_ADDED_ICON_FROM + source);
+		}
 	}
 };
 edit.toggleLight = function() {
@@ -1194,7 +1227,7 @@ edit.coverRefresh = function() {
  * Test if current entry has any attachments of the type specifed by cover type. If not, deselect the covertype in edit pane
  * @param {string} type - The name of the type
  */
-edit.coverTest=  function(type) {
+edit.coverTest = function(type) {
 	var has = false;
 	// Test if all the attachments is displayed
 	$("#attach-area ." + type).each(function() {

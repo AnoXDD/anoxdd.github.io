@@ -690,6 +690,7 @@ edit.addMedia = function(typeNum, arg) {
 };
 edit.removeMedia = function(typeNum) {
 	var type = edit.mediaName(typeNum);
+	edit.coverTest(type);
 	// Move voice and video data to data folder
 	switch (typeNum) {
 		case 1:
@@ -1144,7 +1145,6 @@ edit.coverSet = function(type, isToggle) {
 	}
 	return coverType;
 };
-
 /**
  * Automatically selects a type from given typeList. If no typeList is specified, this function will assign coverType based on all the valid attachments in this entry. 
  * See the first line of the code for the priority of all the attachments
@@ -1164,7 +1164,6 @@ edit.coverAuto = function(typeList) {
 	edit.coverSet(-1);
 	animation.log(log.COVERTYPE_AUTO_CHOSEN);
 };
-
 /**
  * Refreshes the covertype area to returns the avaiable cover type of current entry
  * @returns {Object} - A list of all the available attachments
@@ -1191,6 +1190,24 @@ edit.coverRefresh = function() {
 	}
 	return ret;
 };
+/**
+ * Test if current entry has any attachments of the type specifed by cover type. If not, deselect the covertype in edit pane
+ * @param {string} type - The name of the type
+ */
+edit.coverTest=  function(type) {
+	var has = false;
+	// Test if all the attachments is displayed
+	$("#attach-area ." + type).each(function() {
+		if ($(this).css("display") !== "none") {
+			// The entry still has this attachment
+			has = true;
+		}
+	});
+	if (!has) {
+		// Imitate a click on that icon
+		$("#attach-area .types #" + type + "-cover").trigger("click");
+	}
+}
 
 /************************** PHOTO 0 ************************/
 

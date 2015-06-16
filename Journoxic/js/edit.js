@@ -200,8 +200,8 @@ edit.init = function(overwrite, index) {
 			edit.coverSet(cover);
 		}
 		// Tag processing
-		var tagsHtml = app.bitwise().getTagsHTML(),
-			tagsName = app.bitwise().getTagsArray(),
+		var tagsHtml = app.bitwise().getIconsInHtml(),
+			tagsName = app.bitwise().getIconsInName(),
 			/* The array of html names for highlighted icons */
 			iconTags = app.bitwise().iconTags(parseInt(localStorage["iconTags"]));
 		console.log("edit.init()\ticonTags = " + iconTags);
@@ -878,37 +878,6 @@ edit.getSelectorHeader = function(type, index) {
 
 /************************** ANIMATION *****************************/
 
-/**
- * Toggles the icon tag with a htmlname
- * @param {string} htmlName - The html class tag of the icon to be toggled
- * @param {string} source (Optional) - The source that the function will show to the user
- * @returns {} 
- */
-edit.toggleIcon = function(htmlName, source) {
-	var selector = "#attach-area .icontags p." + htmlName,
-		parent = $(selector).parent().attr("class"),
-		iconName =$(selector).attr("title"),	
-		iconVal = app.bitwise().getIconval(iconName.toLowerCase());
-	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
-		if (parent == "weather" || parent == "emotion") {
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
-		}
-		// Now highlighted
-		localStorage["iconTags"] = app.bitwise().or(parseInt(localStorage["iconTags"]), iconVal);
-		if (source) {
-			animation.log(log.TAG_ADD_HEADER + iconName + log.TAG_ADDED_ICON_FROM + source);
-		}
-	} else {
-		if (parent == "weather" || parent == "emotion") {
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
-		}
-		// Dimmed
-		localStorage["iconTags"] = app.bitwise().andnot(parseInt(localStorage["iconTags"]), iconVal);
-		if (source) {
-			animation.log(log.TAG_ADD_HEADER + iconName + log.TAG_ADDED_ICON_FROM + source);
-		}
-	}
-};
 edit.toggleLight = function() {
 	$("#text-area").toggleClass("dark").children().toggleClass("dark");
 };
@@ -967,8 +936,13 @@ edit.saveTitle = function() {
 
 /************************** TITLE HEADER **************************/
 
-edit.saveTag = function() {
-	var tagVal = $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
+/**
+ * Saves a tag given a tag value or fetch it from entry tag, providing optional tag value, toggle or force to set true, and the source of this operation
+ * @param {string} tagVal (Optional) - The value of the tag to be added
+ * @param {boolean} toggle (Optional) - Whether to toggle this icon or log warning
+ */
+edit.saveTag = function(tagVal, toggle) {
+	tagVal = tagVal || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
 	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
 		// The entry is already added
@@ -991,13 +965,19 @@ edit.saveTag = function() {
 						return;
 					}
 				}
-				if (!$(this).hasClass("highlight")) {
-					animation.log(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON);
+				if (toggle) {
+					// Simply toggle this icon
+					animation.log(log.TAG_ADD_HEADER + tagVal + log.TAG_TOGGLED);
 					$(this).trigger("click");
 				} else {
-					animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON_ALREADY);
-					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
-					// Saved
+					if (!$(this).hasClass("highlight")) {
+						animation.log(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON);
+						$(this).trigger("click");
+					} else {
+						animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON_ALREADY);
+						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+						// Saved
+					}
 				}
 				return;
 			}
@@ -1030,6 +1010,30 @@ edit.removeTag = function(tagName) {
 			});
 		}
 	});
+};
+/**
+ * Toggles the icon tag with a htmlname
+ * @param {string} htmlName - The html class tag of the icon to be toggled
+ * @returns {} 
+ */
+edit.toggleIcon = function(htmlName) {
+	var selector = "#attach-area .icontags p." + htmlName,
+		parent = $(selector).parent().attr("class"),
+		iconName = $(selector).attr("title"),
+		iconVal = app.bitwise().getIconval(iconName.toLowerCase());
+	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
+		if (parent == "weather" || parent == "emotion") {
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
+		}
+		// Now highlighted
+		localStorage["iconTags"] = app.bitwise().or(parseInt(localStorage["iconTags"]), iconVal);
+	} else {
+		if (parent == "weather" || parent == "emotion") {
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
+		}
+		// Dimmed
+		localStorage["iconTags"] = app.bitwise().andnot(parseInt(localStorage["iconTags"]), iconVal);
+	}
 };
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),

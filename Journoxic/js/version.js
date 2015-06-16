@@ -1,20 +1,22 @@
-﻿app.version = "v3.16.4 Build 060915_2238";
+﻿app.version.main = "v3.17.0 Build 061615_2129";
 
 // Version number show up
-$("#version").html(app.version);
+$("#version").html(app.version.main);
 
 /**
  * Version update change log and planned update
  * 
- * v3.17
+ * Future:
  * [Add] Clean up resource folder so that media that no entry is related will be moved to corresponding folders
  * 
+ * v3.17
+ * [Chg] The structure of the game
+ *	- Will recognize the version of the data and automatically update to the latest version
+ * [Chg] The function structure of the tag
+ *	- To exploit shortcut to add icon and for future tag update
+ * 
  * v3.16
- * [Add] Funtionality update - add more utility tools
- *	- Cover types of the entry
- *	- Some functions will be mutually excluded at a time to avoid data scramble when multiple requests are sent
- *	- More optimization on log (one button to dismiss all)
- *  - Change the type in list-view
+ * [Chg] The UI of the app
  * 
  * v3.15
  * [Add] Support for video display, add and removal

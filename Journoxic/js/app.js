@@ -38,6 +38,11 @@ app.command = "";
 /* The boolean indicates if some mutually exclusive functions should be running if any others are */
 app.isFunction = true;
 
+/* The data decoding version of this app, integer decimal only */
+app.version = {
+	data: 2
+};
+
 app.init = function() {
 	// Enter to search
 	var thisApp = this;
@@ -45,18 +50,18 @@ app.init = function() {
 	showLoginButton();
 	// Initialize preloaded tags
 	app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
-	var tagsArray = app.bitwise().getTagsArray();
+	var tagsArray = app.bitwise().getIconsInName();
 	for (var key = 0; key != tagsArray.length; ++key) {
 		app.preloadedTags.push("#" + tagsArray[key]);
 	}
 	// Clear the field of search input every time on focus
 	$("#query").keyup(function(n) {
-		if (n.keyCode == 13) {
-			app.command = $("#query").val();
-			$("#query").effect("highlight", { color: "#dddddd" });
-			thisApp.load(app.command, true);
-		}
-	})
+			if (n.keyCode == 13) {
+				app.command = $("#query").val();
+				$("#query").effect("highlight", { color: "#dddddd" });
+				thisApp.load(app.command, true);
+			}
+		})
 		// Autocomplete for preloaded tags
 		.bind("keydown", function(event) {
 			// Don't navigate away from the field on tab when selecting an item
@@ -226,33 +231,21 @@ app.loadScript = function(data, func, isScript) {
 	} else {
 		// Raw data
 		console.log("app.loadScript(): data.length = " + data.length);
-		journal.archive.data = JSON.parse(data);
+		journal.archive.data = app.updateData(JSON.parse(data));
 		func();
 	}
 };
-// Do not need to understand because no user is provided
-app.user = function() {
-	var e = "",
-		c = journal.archive.user;
-	if (c.ProfileHash) {
-		e += "<img src=\"" + app.resource + "profile.jpg\">";
+app.updateData = function(data, toVersion) {
+	if (!data["version"]) {
+		data["version"] = 1;
 	}
-	e += "<p>" + c.Name + "</p>";
-	var d = [];
-	if (!!c.bg && c.bg.length > 0) {
-		d = c.bg;
-	} else {
-		d = app.background;
+	switch (toVersion) {
+	case 1:
+		// Up to v2
+
 	}
-	if (d.length > 0) {
-		var f = Math.floor(Math.random() * d.length),
-			g = d[f];
-		$("<div id=\"bg-dimmed\">").prependTo("body");
-		$("<div id=\"bg-image\">").css("background-image", "url('" + g + "')").prependTo("body");
-	}
-	$("#user").html(e);
-};
-/**
+	return data;
+}; /**
  * Displays a list on the #list
  * @param {String} filter - The request string to display certain filter
  */
@@ -398,7 +391,8 @@ app.list.prototype = {
 						}
 						var iconTags = data["iconTags"];
 						if (iconTags) {
-							if (app.bitwise().getNum(iconTags, element[subkey].substr(1))) {
+							// TODO change to accommodate the latest version
+							if (element[subkey].substr(1) in app.bitwise().getIconsInNameByVal(iconTags))
 								////console.log("\t- Icon Found!");
 								// Found
 								found = true;
@@ -490,43 +484,43 @@ app.list.prototype = {
 		data.summary = data.text.ext;
 		// Find the cover type
 		switch (data.coverType) {
-			default:
-				data.type = "text";
-				data.ext = "";
-				// data.ext = "<p>" + data.contentsExt + "</p>";
-				break;
-			case 1:
-				data.type = "photo";
-				data.ext = this.thumb(data, "images");
-				break;
-			case 2:
-				data.type = "video";
-				data.ext = this.thumb(data, "video");
-				break;
-			case 3:
-				data.type = "music";
-				data.ext = this.thumb(data, "music");
-				break;
-			case 4:
-				data.type = "voice";
-				data.ext = this.thumb("dummy");
-				break;
-			case 5:
-				data.type = "book";
-				data.ext = this.thumb(data, "book");
-				break;
-			case 6:
-				data.type = "movie";
-				data.ext = this.thumb(data, "movie");
-				break;
-			case 7:
-				data.type = "place";
-				data.ext = this.thumb("dummy");
-				break;
-			case 8:
-				data.type = "weblink";
-				data.ext = this.thumb(data, "weblink");
-				break;
+		default:
+			data.type = "text";
+			data.ext = "";
+			// data.ext = "<p>" + data.contentsExt + "</p>";
+			break;
+		case 1:
+			data.type = "photo";
+			data.ext = this.thumb(data, "images");
+			break;
+		case 2:
+			data.type = "video";
+			data.ext = this.thumb(data, "video");
+			break;
+		case 3:
+			data.type = "music";
+			data.ext = this.thumb(data, "music");
+			break;
+		case 4:
+			data.type = "voice";
+			data.ext = this.thumb("dummy");
+			break;
+		case 5:
+			data.type = "book";
+			data.ext = this.thumb(data, "book");
+			break;
+		case 6:
+			data.type = "movie";
+			data.ext = this.thumb(data, "movie");
+			break;
+		case 7:
+			data.type = "place";
+			data.ext = this.thumb("dummy");
+			break;
+		case 8:
+			data.type = "weblink";
+			data.ext = this.thumb(data, "weblink");
+			break;
 		}
 		// Get the created time
 		var createTime = data.time.start || data.time.created;
@@ -838,7 +832,7 @@ app.detail = function() { // [m]
 		////			// Convert the time to human-readable time
 		////			dataClip.voice[element].humanTime = app.util.runTime(dataClip.voice[element].runTime);
 		if (dataClip.iconTags) {
-			var j = app.bitwise().iconTags(dataClip.iconTags);
+			var j = app.bitwise().getIconsInHtmlByVal(dataClip.iconTags);
 			if (j.length > 0) {
 				dataClip.iconTags2 = j;
 			}
@@ -898,7 +892,7 @@ app.detail = function() { // [m]
 	});
 	// Click the icons to search
 	$(".icontags > span").on("click", function() {
-		var tag = app.bitwise().getTypeByClass(this.className);
+		var tag = app.bitwise().getValueByHtml(this.className);
 		if (tag != "") {
 			app.load("#" + tag, true);
 		}
@@ -1108,44 +1102,161 @@ app.bitwise = function() {
 	 * When adding a new element here, please make sure that	*
 	 * iconVal is also updated.									*
 	 ************************************************************/
-	var clear = 1,
-		overcast = 2,
-		raining = 4,
-		snowing = 8,
-		thundering = 16,
-		windy = 32,
-		happy = 1024,
-		notBad = 2048,
-		surprised = 4096,
-		sad = 8192,
-		angry = 16384,
-		journal = 32768,
-		thoughts = 65536,
-		ingress = 131072,
-		minecraft = 262144,
-		dream = 524288,
-		code = 1048576,
-		letter = 2097152,
-		handwriting = 4194304,
-		friendship = 16777216,
-		relationship = 33554432,
-		star = 67108864,
-		food = 134217728,
-		leisure = 268435456,
-		info = 536870912,
-		baby = 1073741824,
-		fun = 2147483648,
-		travel = 4294967296,
-		health = 8589934592,
-		outfit = 17179869184,
-		shopping = 34359738368,
-		pets = 68719476736,
-		work = 137438953472,
-		sports = 274877906944,
-		cook = 549755813888,
-		makeup = 1099511627776,
-		home = 2199023255552,
-		car = 4398046511104,
+	var icons = [
+			{
+				name: "clear",
+				value: 1,
+				html: "w01"
+			}, {
+				name: "overcast",
+				value: 2,
+				html: "w02"
+			}, {
+				name: "raining",
+				value: 4,
+				html: "w03"
+			}, {
+				name: "snowing",
+				value: 8,
+				html: "w04"
+			}, {
+				name: "thundering",
+				value: 16,
+				html: "w05"
+			}, {
+				name: "windy",
+				value: 32,
+				html: "w06"
+			}, {
+				name: "happy",
+				value: 1024,
+				html: "e01"
+			}, {
+				name: "notBad",
+				value: 2048,
+				html: "e02"
+			}, {
+				name: "surprised",
+				value: 4096,
+				html: "e03"
+			}, {
+				name: "sad",
+				value: 8192,
+				html: "e04"
+			}, {
+				name: "angry",
+				value: 16384,
+				html: "e05"
+			}, {
+				name: "journal",
+				value: 32768,
+				html: "c01"
+			}, {
+				name: "thoughts",
+				value: 65536,
+				html: "c02"
+			}, {
+				name: "ingress",
+				value: 131072,
+				html: "c03"
+			}, {
+				name: "minecraft",
+				value: 262144,
+				html: "c04"
+			}, {
+				name: "dream",
+				value: 524288,
+				html: "c05"
+			}, {
+				name: "code",
+				value: 1048576,
+				html: "c06"
+			}, {
+				name: "letter",
+				value: 2097152,
+				html: "c07"
+			}, {
+				name: "handwriting",
+				value: 4194304,
+				html: "c08"
+			}, {
+				name: "friendship",
+				value: 16777216,
+				html: "c10"
+			}, {
+				name: "relationship",
+				value: 33554432,
+				html: "s01"
+			}, {
+				name: "star",
+				value: 67108864,
+				html: "s02"
+			}, {
+				name: "food",
+				value: 134217728,
+				html: "s03"
+			}, {
+				name: "leisure",
+				value: 268435456,
+				html: "s04"
+			}, {
+				name: "info",
+				value: 536870912,
+				html: "s05"
+			}, {
+				name: "baby",
+				value: 1073741824,
+				html: "s06"
+			}, {
+				name: "fun",
+				value: 2147483648,
+				html: "s07"
+			}, {
+				name: "travel",
+				value: 4294967296,
+				html: "s08"
+			}, {
+				name: "health",
+				value: 8589934592,
+				html: "s09"
+			}, {
+				name: "outfit",
+				value: 17179869184,
+				html: "s10"
+			}, {
+				name: "shopping",
+				value: 34359738368,
+				html: "s11"
+			}, {
+				name: "pets",
+				value: 68719476736,
+				html: "s12"
+			}, {
+				name: "work",
+				value: 137438953472,
+				html: "s13"
+			}, {
+				name: "sports",
+				value: 274877906944,
+				html: "s14"
+			}, {
+				name: "cook",
+				value: 549755813888,
+				html: "s15"
+			}, {
+				name: "makeup",
+				value: 1099511627776,
+				html: "s16"
+			}, {
+				name: "home",
+				value: 2199023255552,
+				html: "s17"
+			}, {
+				name: "car",
+				value: 4398046511104,
+				html: "s18"
+			}
+		],
 		photoVal = 1, // [k]
 		videoVal = 2, // [j]
 		musicVal = 4, // [w]
@@ -1155,85 +1266,6 @@ app.bitwise = function() {
 		placeVal = 64, // [h]
 		weblinkVal = 128, // [P]
 		binaryString = "000000000000000000000000000000000000000000000000000000000000000"; // [c]
-	var iconName = {};
-	iconName[clear] = "w01";
-	iconName[overcast] = "w02";
-	iconName[raining] = "w03";
-	iconName[snowing] = "w04";
-	iconName[thundering] = "w05";
-	iconName[windy] = "w06";
-	iconName[happy] = "e01";
-	iconName[notBad] = "e02";
-	iconName[surprised] = "e03";
-	iconName[sad] = "e04";
-	iconName[angry] = "e05";
-	iconName[journal] = "c01";
-	iconName[thoughts] = "c02";
-	iconName[ingress] = "c03";
-	iconName[minecraft] = "c04";
-	iconName[dream] = "c05";
-	iconName[code] = "c06";
-	iconName[letter] = "c07";
-	iconName[handwriting] = "c08";
-	iconName[friendship] = "c10";
-	iconName[relationship] = "s01";
-	iconName[star] = "s02";
-	iconName[food] = "s03";
-	iconName[leisure] = "s04";
-	iconName[info] = "s05";
-	iconName[baby] = "s06";
-	iconName[fun] = "s07";
-	iconName[travel] = "s08";
-	iconName[health] = "s09";
-	iconName[outfit] = "s10";
-	iconName[shopping] = "s11";
-	iconName[pets] = "s12";
-	iconName[work] = "s13";
-	iconName[sports] = "s14";
-	iconName[cook] = "s15";
-	iconName[makeup] = "s16";
-	iconName[home] = "s17";
-	iconName[car] = "s18";
-	/* Translate the string tag to the numerical value of icon tag */
-	var iconVal = {};
-	iconVal["clear"] = 1;
-	iconVal["overcast"] = 2;
-	iconVal["raining"] = 4;
-	iconVal["snowing"] = 8;
-	iconVal["thundering"] = 16;
-	iconVal["windy"] = 32;
-	iconVal["happy"] = 1024;
-	iconVal["notbad"] = 2048;
-	iconVal["surprised"] = 4096;
-	iconVal["sad"] = 8192;
-	iconVal["angry"] = 16384;
-	iconVal["journal"] = 32768;
-	iconVal["thoughts"] = 65536;
-	iconVal["ingress"] = 131072;
-	iconVal["minecraft"] = 262144;
-	iconVal["dream"] = 524288;
-	iconVal["code"] = 1048576;
-	iconVal["letter"] = 2097152;
-	iconVal["handwriting"] = 4194304;
-	iconVal["friendship"] = 16777216;
-	iconVal["relationship"] = 33554432;
-	iconVal["star"] = 67108864;
-	iconVal["food"] = 134217728;
-	iconVal["leisure"] = 268435456;
-	iconVal["info"] = 536870912;
-	iconVal["baby"] = 1073741824;
-	iconVal["fun"] = 2147483648;
-	iconVal["travel"] = 4294967296;
-	iconVal["health"] = 8589934592;
-	iconVal["outfit"] = 17179869184;
-	iconVal["shopping"] = 34359738368;
-	iconVal["pets"] = 68719476736;
-	iconVal["work"] = 137438953472;
-	iconVal["sports"] = 274877906944;
-	iconVal["cook"] = 549755813888;
-	iconVal["makeup"] = 1099511627776;
-	iconVal["home"] = 2199023255552;
-	iconVal["car"] = 4398046511104;
 	return {
 		content: function(contentFlag) { // [Q, S]
 			var retArray = []; // [R]
@@ -1263,21 +1295,89 @@ app.bitwise = function() {
 			}
 			return retArray;
 		},
-		/* Get the array of html names from a typeVal */
-		iconTags: function(typeVal) {
+		/**
+		 * Returns the list of all the icons in html
+		 * E.g. 9 = 8 + 1, which corresponds to two icons
+		 * @deprecated This function is only used to decode v1 data
+		 * @param {number} typeVal - The number of type value
+		 * @returns {object} The list of all the icons in this value
+		 */
+		getIconsInHtmlByVal: function(typeVal) {
 			var retArray = [];
-			for (i in iconName) {
-				if (iconName.hasOwnProperty(i)) {
-					if (this.is(typeVal, parseInt(i))) {
-						retArray.push(iconName[i]);
-					}
+			for (var i = 0; i !== icons.length; ++i) {
+				if (this.is(typeVal, icons[i]["value"])) {
+					retArray.push(icons[i]["html"]);
 				}
 			}
 			return retArray;
 		},
+		/**
+		 * Returns the list of all the icons in html
+		 * E.g. 9 = 8 + 1, which corresponds to two icons
+		 * This function is used to convert v1 data to v2 data
+		 * @param {number} typeVal - The number of type value
+		 * @returns {object} The list of all the icons in this value
+		 */
+		getIconsInNameByVal: function(typeVal) {
+			var retArray = [];
+			for (var i = 0; i !== icons.length; ++i) {
+				if (this.is(typeVal, icons[i]["value"])) {
+					retArray.push(icons[i]["name"]);
+				}
+			}
+			return retArray;
+		},
+		getValueByName: function(name) { 
+			return this.translate(name.toLowerCase(), "name", "value");
+		},
+		getNameByHtml: function(html) {
+			return this.translate(name.toLowerCase(), "html", "name");
+		},
+		getIconsInHtml: function() {
+			return this.getAll("html");
+		},
+		getIconsInName: function() {
+			return this.getAll("name");
+		},
+		/**
+		 * Gets the list of all the type specfied
+		 * @param {string} type - The specified type
+		 * @returns {object} The list of all the available tag icons. Empty if type is invalid
+		 */
+		getAll: function(type) {
+			var retArray = [];
+			for (var i = 0; i !== icons.length; ++i) {
+				if (icons[i][type]) {
+					retArray.push(icons[i][type]);
+				}
+			}
+			return retArray;
+		},
+		/**
+		 * Translates a name of an icon between value, html and human-readable
+		 * @param {string/number} data - The data to be translated
+		 * @param {string} source - The source language of the data ("value", "html", "name")
+		 * @param {string} target - The target language of the data ("value", "html", "name")
+		 * @returns {string} The result if and only if found, empty string otherwise
+		 */
+		translate: function(data, source, target) {
+			for (var i = 0; i !== icons.length; ++i) {
+				if (icons[i][source] && icons[i][target]) {
+					// Intentionally use == instead of ===
+					if (icons[i][source] == data) {
+						return icons[i][target];
+					}
+				}
+			}
+			return "";
+		},
+
+
+		/***************** DEPRECATED *********************/
 		/* 
 		 Get the bitwise number from the string then test if typeVal has this icon. 
 		 Return false if the string is either invalid or not found
+		 @deprecated
 		 */
 		getNum: function(typeVal, stringVal) {
 			if (iconVal.hasOwnProperty(stringVal.toLowerCase())) {
@@ -1285,56 +1385,6 @@ app.bitwise = function() {
 			} else {
 				return false;
 			}
-		},
-		/* Return the value in iconVal */
-		getIconval: function(tagName) {
-			return iconVal[tagName.toLowerCase()];
-		},
-		/* Get the tag names in HTML languages */
-		getTagsHTML: function() {
-			var retArray = [];
-			Object.keys(iconName).forEach(function(key) {
-				retArray.push(iconName[key]);
-			});
-			return retArray;
-		},
-		/* Get all the human-readable available tags */
-		getTagsArray: function() {
-			return Object.keys(iconVal);
-		},
-		/*
-		 Get the value given the class displayed in html 
-		 Return -1 if the value is not found
-		 */
-		getValueByClass: function(className) {
-			for (val in iconName) {
-				if (iconName.hasOwnProperty(val)) {
-					if (iconName[val] == className) {
-						// Found
-						return val;
-					}
-				}
-			}
-			return -1;
-		},
-		/*
-		 Get the name given the class displayed in html 
-		 Return an empty string if the string is either invalid or not found
-		 */
-		getTypeByClass: function(className) {
-			var classVal = this.getValueByClass(className);
-			if (classVal == -1) {
-				return "";
-			}
-			for (var str in iconVal) {
-				if (iconVal.hasOwnProperty(str)) {
-					if (iconVal[str] == classVal) {
-						// Found
-						return str;
-					}
-				}
-			}
-			return "";
 		},
 		/* Set typeVal on typesVal. Return typesVal | typeVal */
 		or: function(typesVal, typeVal) {
@@ -1557,8 +1607,7 @@ app.audioPlayer = function(selector, source) {
 		minute = minute < 10 ? "0" + minute : minute;
 		second = second < 10 ? "0" + second : second;
 		return minute + ":" + second;
-	}
-	// Synchronizes playhsead position with current point in audio 
+	}; // Synchronizes playhsead position with current point in audio 
 	app.audioPlayer.timeUpdate = function() {
 		var playPercent = timelineWidth * (music.currentTime / duration);
 		playhead.style.marginLeft = playPercent + "px";
@@ -1602,7 +1651,7 @@ app.audioPlayer = function(selector, source) {
 			music.addEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
 		}
 		app.audioPlayer.onplayhead = false;
-	}
+	};
 	app.audioPlayer.loadedData = function() {
 		animation.log(AUDIO_DOWNLOAD_END, -1);
 		// Update the length
@@ -1610,8 +1659,7 @@ app.audioPlayer = function(selector, source) {
 		// Show the play icon
 		animation.showIcon("#play-media");
 		animation.showIcon("#stop-media");
-	}
-	// Gets audio file duration
+	}; // Gets audio file duration
 	app.audioPlayer.music.addEventListener("canplaythrough", function() {
 		duration = app.audioPlayer.music.duration;
 	}, false);
@@ -1624,8 +1672,7 @@ app.audioPlayer = function(selector, source) {
 	// Makes playhead draggable 
 	app.audioPlayer.playhead.addEventListener("mousedown", app.audioPlayer.mouseDown, false);
 	window.addEventListener("mouseup", app.audioPlayer.mouseUp, false);
-}
-/**
+}; /**
  * Handles the play and pause of the audio player after loading
  */
 app.audioPlayer.play = function() {
@@ -1644,8 +1691,7 @@ app.audioPlayer.play = function() {
 		music.play();
 		$("#play-media").html("&#xf04c").addClass("play");
 	}
-}
-/**
+}; /**
  * Quits and gracefully removes all the traces of audio player
  * @param {String} selector - The selector of the element to embed audio player, in jQuery style
  * @param {String} source - The url of the source of music file
@@ -1674,9 +1720,7 @@ app.audioPlayer.quit = function() {
 	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
-}
-
-/**
+}; /**
  * Initializes a video player within the selector provided
  * @param {String} selector - The selector of the element to embed video player, in jQuery style
  * @param {String} source - The url of the source of video file
@@ -1713,8 +1757,7 @@ app.videoPlayer = function(selector, source) {
 		minute = minute < 10 ? "0" + minute : minute;
 		second = second < 10 ? "0" + second : second;
 		return minute + ":" + second;
-	}
-	// Synchronizes playhsead position with current point in audio 
+	}; // Synchronizes playhsead position with current point in audio 
 	app.videoPlayer.timeUpdate = function() {
 		var playPercent = timelineWidth * (video.currentTime / duration);
 		playhead.style.marginLeft = playPercent + "px";
@@ -1758,14 +1801,14 @@ app.videoPlayer = function(selector, source) {
 			video.addEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
 		}
 		app.videoPlayer.onplayhead = false;
-	}
+	};
 	app.videoPlayer.loadedData = function() {
 		animation.log(log.VIDEO_DOWNLOAD_END, -1);
 		// Change the height
 		if (app.videoPlayer.height != undefined) {
-					$("#videoplayer").css("height", app.videoPlayer.height);
+			$("#videoplayer").css("height", app.videoPlayer.height);
 		} else {
-		$("#videoplayer").css("height", "450px");
+			$("#videoplayer").css("height", "450px");
 		}
 		// Update the length
 		$("#video-length").html(app.videoPlayer.formatTime(video.duration));
@@ -1774,16 +1817,15 @@ app.videoPlayer = function(selector, source) {
 		animation.showIcon("#stop-media");
 		animation.showIcon("#toggle-media");
 		// Show the control
-		$("#video-position, #video-length, #timeline").fadeIn().css("display","inline-block");
+		$("#video-position, #video-length, #timeline").fadeIn().css("display", "inline-block");
 		// Recalculate the width
-				timelineWidth = timeline.offsetWidth - playhead.offsetWidth;
+		timelineWidth = timeline.offsetWidth - playhead.offsetWidth;
 		if (this.toggle) {
 			this.toggle.isFullScreen = false;
-		this.toggle.windowSelector = undefined;
+			this.toggle.windowSelector = undefined;
 		}
 		$("#toggle-media").html("&#xf065");
-	}
-	// Gets audio file duration
+	}; // Gets audio file duration
 	app.videoPlayer.video.addEventListener("canplaythrough", function() {
 		duration = app.videoPlayer.video.duration;
 	}, false);
@@ -1796,8 +1838,7 @@ app.videoPlayer = function(selector, source) {
 	// Makes playhead draggable 
 	app.videoPlayer.playhead.addEventListener("mousedown", app.videoPlayer.mouseDown, false);
 	window.addEventListener("mouseup", app.videoPlayer.mouseUp, false);
-}
-/**
+}; /**
  * Toggles the fullscreen of the videoplayer.
  * This function will determine if the video is fullscreen by a static variable inside function
  */
@@ -1805,9 +1846,9 @@ app.videoPlayer.toggle = function() {
 	if (this.toggle.isFullScreen) {
 		// Switch to window mode
 		if (this.toggle.windowSelector) {
-					$("#video-fullscreen").fadeOut();
+			$("#video-fullscreen").fadeOut();
 			// Move child
-					$(this.toggle.windowSelector).append($("#videoplayer").css("height", "450px"));
+			$(this.toggle.windowSelector).append($("#videoplayer").css("height", "450px"));
 			// Change the icon
 			$("#toggle-media").html("&#xf065");
 		} else {
@@ -1824,8 +1865,7 @@ app.videoPlayer.toggle = function() {
 		$("#toggle-media").html("&#xf066");
 		this.toggle.isFullScreen = true;
 	}
-}
-/**
+}; /**
  * Handles the play and pause of the vedio player after loading
  */
 app.videoPlayer.play = function() {
@@ -1844,8 +1884,7 @@ app.videoPlayer.play = function() {
 		video.play();
 		$("#play-media").html("&#xf04c").addClass("play");
 	}
-}
-/**
+}; /**
  * Quits and gracefully removes all the traces of video player
  * @param {String} selector - The selector of the element to embed video player, in jQuery style
  * @param {String} source - The url of the source of video file
@@ -1874,12 +1913,10 @@ app.videoPlayer.quit = function() {
 	animation.hideIcon("#stop-media");
 	animation.hideIcon("#toggle-media");
 	$("#toggle-media").html("&#xf065");
-						$("#video-fullscreen").fadeOut();
+	$("#video-fullscreen").fadeOut();
 	this.toggle.isFullScreen = false;
 	this.toggle.windowSelector = undefined;
-}
-
-
+};
 $(document).ready(function() {
 	app.app = $("div#app");
 	app.contents = app.app.find(" > #contents");

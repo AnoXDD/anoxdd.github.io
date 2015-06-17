@@ -230,9 +230,27 @@ edit.init = function(overwrite, index) {
 		}
 		// Bind hotkeys to add tags
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
-		$("#entry-body").bind("keyup", "ctrl+shift+f", function() {
-			edit.toggleTag("friendship");
+		$("#entry-body").bind("keyup", "return", function() {
+			// Command line work
+			var body = $("#entry-body").val(),
+				/* The start of the last line before return is hit*/
+				start = body.lastIndexOf("\n", body.length - 2) + 1,
+				/* The last line */
+				last = body.substring(start, body.length - 1),
+				truncate = false;
+			if (last.length > 2 && last.charAt(0) === "#") {
+				// Add a tag
+				edit.addTag(last.substring(1));
+				truncate = true;
+			}
+			if (truncate) {
+				// Truncate the "command" just input
+				$("#entry-body").val(body.substring(0, start));
+			}
 		})
+			.bind("keyup", "ctrl+shift+f", function() {
+				edit.toggleTag("friendship");
+			})
 			.bind("keyup", "alt+ctrl+r", function() {
 				edit.toggleTag("relationship");
 			})

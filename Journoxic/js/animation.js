@@ -51,6 +51,7 @@ window.log = {
 	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
 	CONTENTS_UPLOAD_END: "Data upload finished",
 	CONTENTS_UPLOAD_FAIL: "Cannot upload data",
+	CONTENTS_UPGRADING : "Upgrading content data to latest version ...",
 	COVER_PHOTO_FOUND: "Found cover photo ",
 	COVER_PHOTO_FAIL: "Cannot find matched result for cover photo",
 	AUDIO_DOWNLOAD_START: "Loading audio files ...",

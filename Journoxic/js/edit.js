@@ -151,7 +151,9 @@ edit.init = function(overwrite, index) {
 		// Enter to add tag
 		$("#entry-tag").keyup(function(n) {
 			if (n.keyCode == 13) {
-				edit.saveTag();
+				edit.addTag();
+				// Clean the entry
+				$("#entry-tag").val("");
 			}
 		});
 		// Click to remove tags
@@ -200,12 +202,12 @@ edit.init = function(overwrite, index) {
 			edit.coverSet(cover);
 		}
 		// Tag processing
-		var tagsHtml = app.bitwise().getIconsInHtml(),
-			tagsName = app.bitwise().getIconsInName(),
+		var tagsHtml = app.tag().getIconsInHtml(),
+			tagsName = app.tag().getIconsInName(),
 			/* The array of html names for highlighted icons */
-			iconTags = app.bitwise().iconTags(parseInt(localStorage["iconTags"]));
+			iconTags = app.tag().separate().iconTags;
 		console.log("edit.init()\ticonTags = " + iconTags);
-		for (var i = 0; i != tagsHtml.length; ++i) {
+		for (var i = 0; i !== tagsHtml.length; ++i) {
 			var parent = "#attach-area .icontags";
 			if (tagsHtml[i].charAt(0) == "w") {
 				parent += " .weather";
@@ -218,7 +220,7 @@ edit.init = function(overwrite, index) {
 			$(parent).append(
 				"<p class='icons " + tagsHtml[i] +
 				"' title=" + tagsName[i].capitalize() +
-				" onclick=edit.toggleIcon('" + tagsHtml[i] +
+				" onclick=edit.toggleTag('" + tagsHtml[i] +
 				"')></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
@@ -229,22 +231,22 @@ edit.init = function(overwrite, index) {
 		}
 		// Bind hotkeys to add tags
 		$("#entry-body").bind("keyup", "ctrl+shift+f", function() {
-			edit.toggleIcon("c10", "hotkey");
+			edit.toggleTag("friendship", "hotkey");
 		})
 			.bind("keyup", "ctrl+shift+r", function() {
-				edit.toggleIcon("s01", "hotkey");
+				edit.toggleTag("relationship", "hotkey");
 			})
 			.bind("keyup", "ctrl+shift+i", function() {
-				edit.toggleIcon("c03", "hotkey");
+				edit.toggleTag("ingress", "hotkey");
 			})
 			.bind("keyup", "ctrl+shift+t", function() {
-				edit.toggleIcon("c02", "hotkey");
+				edit.toggleTag("thoughts", "hotkey");
 			})
 			.bind("keyup", "ctrl+shift+j", function() {
-				edit.toggleIcon("c01", "hotkey");
+				edit.toggleTag("journal", "hotkey");
 			})
 			.bind("keyup", "ctrl+shift+m", function() {
-				edit.toggleIcon("c04", "hotkey");
+				edit.toggleTag("minecraft", "hotkey");
 			});
 		// Let the tags to scroll horizontally
 		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
@@ -375,17 +377,11 @@ edit.importCache = function(data) {
 	}
 	// created is not modifiable from user-side
 	localStorage["created"] = data["time"]["created"];
-	// iconTags
-	if (localStorage["iconTags"]) {
-		data["iconTags"] = localStorage["iconTags"];
+	// tags
+	if (localStorage["tags"]) {
+		data["tags"] = localStorage["tags"];
 	} else {
-		localStorage["iconTags"] = data["iconTags"] ? data["iconTags"] : 0;
-	}
-	// textTags
-	if (localStorage["textTags"]) {
-		data["textTags"] = localStorage["textTags"];
-	} else {
-		localStorage["textTags"] = data["textTags"] ? data["textTags"] : "";
+		localStorage["tags"] = data["tags"] ? data["tags"] : "";
 	}
 	// photos, video, place, music, book, movie
 	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
@@ -406,15 +402,15 @@ edit.exportCache = function(index) {
 	var data = journal.archive.data[index] || {};
 	// Process body from cache
 	data = edit.exportCacheBody(data);
+	// Force the program to reload it
+	data["processed"] = 0;
 	// Title
 	data["title"] = localStorage["title"] || "Untitled";
-	data["processed"] = 0;
 	data["coverType"] = parseInt(localStorage["coverType"]) || edit.coverAuto();
 	if (!data["attachments"]) {
 		data["attachments"] = 0;
 	}
-	data["iconTags"] = !isNaN(parseInt(localStorage["iconTags"])) ? parseInt(localStorage["iconTags"]) : 0;
-	data["textTags"] = localStorage["textTags"];
+	data["tags"] = localStorage["tags"] || "";
 	var media,
 		elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
 		attach = 0;
@@ -491,7 +487,7 @@ edit.exportCacheBody = function(data) {
 };
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
-	var deleteList = ["title", "body", "created", "currentEditing", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
+	var deleteList = ["title", "body", "created", "currentEditing", "tags", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
 	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
 	}
@@ -552,7 +548,7 @@ edit.newContent = function() {
 	// Set created time
 	dict["time"] = {};
 	dict["time"]["created"] = new Date().getTime();
-	dict["textTags"] = "";
+	dict["tags"] = "";
 	// photos, video, place, music, book, movie
 	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
 	for (var i = 0; i !== elem.length; ++i) {
@@ -936,105 +932,6 @@ edit.saveTitle = function() {
 
 /************************** TITLE HEADER **************************/
 
-/**
- * Saves a tag given a tag value or fetch it from entry tag, providing optional tag value, toggle or force to set true, and the source of this operation
- * @param {string} tagVal (Optional) - The value of the tag to be added
- * @param {boolean} toggle (Optional) - Whether to toggle this icon or log warning
- */
-edit.saveTag = function(tagVal, toggle) {
-	tagVal = tagVal || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
-	// Test for duplicate
-	if (localStorage["textTags"].split("|").indexOf(tagVal) != -1) {
-		// The entry is already added
-		animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ALREADY);
-		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
-	} else {
-		var found = false;
-		// Try to convert to iconTag
-		$("#attach-area .icontags p").each(function() {
-			if ($(this).attr("title").toLowerCase() == tagVal) {
-				// Found
-				found = true;
-				var parent = $(this).parent().attr("class");
-				if (parent == "weather" || parent == "emotion") {
-					// Only one weather and emotion is allowed
-					if ($(this).css("height") == "0px") {
-						// Hidden div, means another weather/emotion has already been added
-						animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_FAILED);
-						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
-						return;
-					}
-				}
-				if (toggle) {
-					// Simply toggle this icon
-					animation.log(log.TAG_ADD_HEADER + tagVal + log.TAG_TOGGLED);
-					$(this).trigger("click");
-				} else {
-					if (!$(this).hasClass("highlight")) {
-						animation.log(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON);
-						$(this).trigger("click");
-					} else {
-						animation.warning(log.TAG_ADD_HEADER + tagVal + log.TAG_ADDED_ICON_ALREADY);
-						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
-						// Saved
-					}
-				}
-				return;
-			}
-		});
-		if (!found) {
-			// Keep searching
-			$("#entry-tag").effect("highlight", { color: "#dadada" }, 400);
-			// Marked for a new entry
-			$("#attach-area .texttags .other").append("<p title='Click to remove' onclick=edit.removeTag('" + tagVal + "')>#" + tagVal + "</p>");
-			// Add to the cache
-			if (localStorage["textTags"] == "") {
-				localStorage["textTags"] = tagVal;
-			} else {
-				localStorage["textTags"] += "|" + tagVal;
-			}
-		}
-	}
-	// Clean the entry
-	$("#entry-tag").val("");
-};
-edit.removeTag = function(tagName) {
-	var tagArray = localStorage["textTags"].split("|");
-	delete tagArray[tagName];
-	tagArray.join("|");
-	// Remove from the panal
-	$("#attach-area .texttags p").each(function() {
-		if ($(this).text() == "#" + tagName) {
-			$(this).animate({ width: "0" }, function() {
-				$(this).remove();
-			});
-		}
-	});
-};
-/**
- * Toggles the icon tag with a htmlname
- * @param {string} htmlName - The html class tag of the icon to be toggled
- * @returns {} 
- */
-edit.toggleIcon = function(htmlName) {
-	var selector = "#attach-area .icontags p." + htmlName,
-		parent = $(selector).parent().attr("class"),
-		iconName = $(selector).attr("title"),
-		iconVal = app.bitwise().getIconval(iconName.toLowerCase());
-	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
-		if (parent == "weather" || parent == "emotion") {
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
-		}
-		// Now highlighted
-		localStorage["iconTags"] = app.bitwise().or(parseInt(localStorage["iconTags"]), iconVal);
-	} else {
-		if (parent == "weather" || parent == "emotion") {
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
-		}
-		// Dimmed
-		localStorage["iconTags"] = app.bitwise().andnot(parseInt(localStorage["iconTags"]), iconVal);
-	}
-};
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
 		char = text.length;
@@ -1119,6 +1016,106 @@ edit.getMyTime = function(timeNum) {
 	}
 	return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
 };
+
+/************************** TAG *********************************/
+
+/**
+ * Adds a tag given a tag value or fetch it from entry tag, providing optional tag value, toggle or force to set true, and the source of this operation
+ * @param {string} tag (Optional) - The value of the tag to be added
+ * @param {boolean} toggle (Optional) - Whether to toggle this icon or log warning
+ */
+edit.addTag = function(tag, toggle) {
+	// If a tag is not specified, it will get the value from the input box where user puts a new tag value
+	tag = tag || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
+	// Test for duplicate
+	if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
+		// The entry is already added
+		// This tag has already been added
+		animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
+		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+	} else {
+		// Add to the cache
+		if (localStorage["tags"]) {
+			// Concatenate to the previous tag
+			localStorage["tags"] += "|" + tag;
+		} else {
+			// Start a new tag
+			localStorage["tags"] = tag;
+		}
+		var found = false;
+		// Try to convert to iconTag
+		$("#attach-area .icontags p").each(function() {
+			if ($(this).attr("title").toLowerCase() === tag) {
+				// Found
+				found = true;
+				var parent = $(this).parent().attr("class");
+				if (parent === "weather" || parent === "emotion") {
+					// Only one weather and emotion is allowed
+					if ($(this).css("height") === "0px") {
+						// Hidden div, means another weather/emotion has already been added
+						animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
+						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+						return;
+					}
+				}
+				// Test if this icon has already been added
+				if (!$(this).hasClass("highlight")) {
+					animation.log(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON);
+					$(this).trigger("click");
+				} else {
+					animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON_ALREADY);
+					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+					// Saved
+				}
+			}
+		});
+		if (!found) {
+			// Keep searching for texttags
+			$("#entry-tag").effect("highlight", { color: "#dadada" }, 400);
+			// Marked for a new entry
+			$("#attach-area .texttags .other").append("<p title='Click to remove' onclick=edit.removeTag('" + tag + "')>#" + tag + "</p>");
+		}
+	}
+};
+/**
+ * Removes a tag from current tag and also gives visual feedback to the user
+ * If no tag is found, nothing will show up
+ * @param {string} tagName - The name of the tag to be removed
+ */
+edit.removeTag = function(tag) {
+	var tagArray = localStorage["textTags"].split("|");
+	delete tagArray[tag];
+	tagArray.join("|");
+	// Remove from the text tag panel
+	var removed = false;
+	$("#attach-area .texttags p").each(function() {
+		if ($(this).text() === "#" + tag) {
+			$(this).animate({ width: "0" }, function() {
+				$(this).remove();
+				removed = true;
+			});
+		}
+	});
+	if (!removed) {
+		// Keep searching for icontags
+		$("#attach-area .icontags p").each(function() {
+			if ($(this).attr("title").toLowerCase() === tag) {
+				// Click the icon to toggle
+				animation.log(log.TAG_ADD_HEADER + tag + log.TAG_TOGGLED);
+				$(this).trigger("click");
+			}
+		});
+	}
+};
+edit.toggleTag = function(tag) {
+	if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
+		// Already added
+		edit.removeTag(tag);
+	} else {
+		// Add this tag
+		edit.addTag(tag);
+	}
+}
 
 /************************** COVER **************************/
 

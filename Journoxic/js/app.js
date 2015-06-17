@@ -50,18 +50,18 @@ app.init = function() {
 	showLoginButton();
 	// Initialize preloaded tags
 	app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
-	var tagsArray = app.bitwise().getIconsInName();
+	var tagsArray = app.tag().getIconsInName();
 	for (var key = 0; key != tagsArray.length; ++key) {
 		app.preloadedTags.push("#" + tagsArray[key]);
 	}
 	// Clear the field of search input every time on focus
 	$("#query").keyup(function(n) {
-			if (n.keyCode == 13) {
-				app.command = $("#query").val();
-				$("#query").effect("highlight", { color: "#dddddd" });
-				thisApp.load(app.command, true);
-			}
-		})
+		if (n.keyCode == 13) {
+			app.command = $("#query").val();
+			$("#query").effect("highlight", { color: "#dddddd" });
+			thisApp.load(app.command, true);
+		}
+	})
 		// Autocomplete for preloaded tags
 		.bind("keydown", function(event) {
 			// Don't navigate away from the field on tab when selecting an item
@@ -211,7 +211,8 @@ app.load = function(filter, forceReload, newContent) {
 	if (filter == undefined) {
 		filter = "";
 	}
-}; // Load a script and passed in a function
+};
+// Load a script and passed in a function
 app.loadScript = function(data, func, isScript) {
 	if (isScript) {
 		var newScript = document.createElement("script"),
@@ -239,13 +240,34 @@ app.updateData = function(data, toVersion) {
 	if (!data["version"]) {
 		data["version"] = 1;
 	}
-	switch (toVersion) {
-	case 1:
-		// Up to v2
-
+	if (data["version"] !== app.version.data) {
+		// Let the user know the content is going to be upgraded
+		animation.log(log.CONTENTS_UPGRADING);
+		switch (toVersion) {
+			case 1:
+				// Up to v2
+				// Integrate textTags and iconTags
+				for (var i = 0; i !== data.length; ++i) {
+					var iconTags = data[i]["iconTags"],
+						textTags = data[i]["textTags"];
+					if (iconTags) {
+						// There are iconTags
+						iconTags = app.tag().getIconsInNameByVal(iconTags).join("|");
+						// Add icon tags to texttags
+						if (textTags) {
+							textTags += "|" + iconTags;
+						} else {
+							textTags += iconTags;
+						}
+					}
+					data[i]["tags"] = textTags;
+				}
+				// Intentionally omit "break;"
+		}
 	}
 	return data;
-}; /**
+};
+/**
  * Displays a list on the #list
  * @param {String} filter - The request string to display certain filter
  */
@@ -372,9 +394,9 @@ app.list.prototype = {
 					// Tag
 					var subfound;
 					if (element[subkey].charAt(0) === "#") {
-						if (data["textTags"]) {
+						if (data["tags"]) {
 							subfound = false;
-							var textTagArray = data["textTags"].split("|");
+							var textTagArray = data["tags"].split("|");
 							for (tag in textTagArray) {
 								if (textTagArray.hasOwnProperty(tag)) {
 									if (textTagArray[tag] == element[subkey].substr(1)) {
@@ -389,22 +411,12 @@ app.list.prototype = {
 								break;
 							}
 						}
-						var iconTags = data["iconTags"];
-						if (iconTags) {
-							// TODO change to accommodate the latest version
-							if (element[subkey].substr(1) in app.bitwise().getIconsInNameByVal(iconTags))
-								////console.log("\t- Icon Found!");
-								// Found
-								found = true;
-								break;
-							}
-						}
 
-					} else if (element[subkey].charAt(0) == "%") {
+					} else if (element[subkey].charAt(0) === "%") {
 						////console.log("\t- Test type");
 						// Type
 						subfound = false;
-						var typeArray = app.bitwise().content(data["attachments"]),
+						var typeArray = app.tag().content(data["attachments"]),
 							type = element[subkey].substr(1);
 						for (var i = 0; i !== typeArray.length; ++i) {
 							if (type == typeArray[i]) {
@@ -484,43 +496,43 @@ app.list.prototype = {
 		data.summary = data.text.ext;
 		// Find the cover type
 		switch (data.coverType) {
-		default:
-			data.type = "text";
-			data.ext = "";
-			// data.ext = "<p>" + data.contentsExt + "</p>";
-			break;
-		case 1:
-			data.type = "photo";
-			data.ext = this.thumb(data, "images");
-			break;
-		case 2:
-			data.type = "video";
-			data.ext = this.thumb(data, "video");
-			break;
-		case 3:
-			data.type = "music";
-			data.ext = this.thumb(data, "music");
-			break;
-		case 4:
-			data.type = "voice";
-			data.ext = this.thumb("dummy");
-			break;
-		case 5:
-			data.type = "book";
-			data.ext = this.thumb(data, "book");
-			break;
-		case 6:
-			data.type = "movie";
-			data.ext = this.thumb(data, "movie");
-			break;
-		case 7:
-			data.type = "place";
-			data.ext = this.thumb("dummy");
-			break;
-		case 8:
-			data.type = "weblink";
-			data.ext = this.thumb(data, "weblink");
-			break;
+			default:
+				data.type = "text";
+				data.ext = "";
+				// data.ext = "<p>" + data.contentsExt + "</p>";
+				break;
+			case 1:
+				data.type = "photo";
+				data.ext = this.thumb(data, "images");
+				break;
+			case 2:
+				data.type = "video";
+				data.ext = this.thumb(data, "video");
+				break;
+			case 3:
+				data.type = "music";
+				data.ext = this.thumb(data, "music");
+				break;
+			case 4:
+				data.type = "voice";
+				data.ext = this.thumb("dummy");
+				break;
+			case 5:
+				data.type = "book";
+				data.ext = this.thumb(data, "book");
+				break;
+			case 6:
+				data.type = "movie";
+				data.ext = this.thumb(data, "movie");
+				break;
+			case 7:
+				data.type = "place";
+				data.ext = this.thumb("dummy");
+				break;
+			case 8:
+				data.type = "weblink";
+				data.ext = this.thumb(data, "weblink");
+				break;
 		}
 		// Get the created time
 		var createTime = data.time.start || data.time.created;
@@ -662,7 +674,7 @@ app.list.prototype = {
 	/* Attach the attachments the contents have to the content */
 	attached: function(contentFlag) { // [d, h]
 		var retArray = [], // [g]
-			typeArray = app.bitwise().content(contentFlag); // [e]
+			typeArray = app.tag().content(contentFlag); // [e]
 		// Iterate to push all of the contents
 		for (var i = 0, len = typeArray.length; i < len; ++i) {
 			// Push all of the contents
@@ -792,8 +804,8 @@ app.list.prototype = {
 	}
 };
 /* Display the detail of the data at current index */
-app.detail = function() { // [m]
-	var dataClip = journal.archive.data[app.currentDisplayed]; // [d]
+app.detail = function() {
+	var dataClip = journal.archive.data[app.currentDisplayed];
 	if (!dataClip.processed) {
 		dataClip.chars = dataClip.text.chars + " Chars";
 		dataClip.lines = dataClip.text.lines + " Lines";
@@ -819,26 +831,14 @@ app.detail = function() { // [m]
 				getCoverPhoto("#detail .movie:eq(" + i + ") ", dataClip.movie[i].author + " " + dataClip.movie[i].title, false, "movie");
 			}
 		}
-		// Put missing extensions
-		////if (dataClip.contents.images)
-		////	for (element in dataClip.images)
-		////		if (!dataClip.images[element].name.match(/.(jpg|png)$/))
-		////			dataClip.images[element].name = dataClip.images[element].fileName + ".jpg";
-		// Audio runtime
-		////if (dataClip.voice)
-		////	for (element in dataClip.voice)
-		////		// If the voice clip has values
-		////		if (dataClip.voice[element].runTime)
-		////			// Convert the time to human-readable time
-		////			dataClip.voice[element].humanTime = app.util.runTime(dataClip.voice[element].runTime);
-		if (dataClip.iconTags) {
-			var j = app.bitwise().getIconsInHtmlByVal(dataClip.iconTags);
-			if (j.length > 0) {
-				dataClip.iconTags2 = j;
-			}
+		if (dataClip.tags) {
+			// Process icontags if applicable
+			var tags = app.tag().separate(dataClip.tags);
+			dataClip.iconTags = tags.iconTags;
+			dataClip.textTags = tags.textTags;
 		}
 		// To avoid undefined error in _.template
-		var elements = "video weblink book music movie images voice place iconTags2 textTags iconTags".split(" ");
+		var elements = "video weblink book music movie images voice place textTags iconTags".split(" ");
 		for (var i = 0, len = elements.length; i < len; ++i) {
 			if (dataClip[elements[i]] == undefined) {
 				dataClip[elements[i]] = undefined;
@@ -892,7 +892,7 @@ app.detail = function() { // [m]
 	});
 	// Click the icons to search
 	$(".icontags > span").on("click", function() {
-		var tag = app.bitwise().getValueByHtml(this.className);
+		var tag = app.tag().getValueByHtml(this.className);
 		if (tag != "") {
 			app.load("#" + tag, true);
 		}
@@ -1097,10 +1097,11 @@ app.util = {
 	}
 };
 // Use the power of 2 to store multiple data
-app.bitwise = function() {
+app.tag = function() {
 	/************************************************************
-	 * When adding a new element here, please make sure that	*
-	 * iconVal is also updated.									*
+	 * When adding a new element here, please make sure that
+	 * iconVal is also updated.				
+	 * The element added here will be presented as an icon
 	 ************************************************************/
 	var icons = [
 			{
@@ -1256,7 +1257,7 @@ app.bitwise = function() {
 				value: 4398046511104,
 				html: "s18"
 			}
-		],
+	],
 		photoVal = 1, // [k]
 		videoVal = 2, // [j]
 		musicVal = 4, // [w]
@@ -1327,7 +1328,7 @@ app.bitwise = function() {
 			}
 			return retArray;
 		},
-		getValueByName: function(name) { 
+		getValueByName: function(name) {
 			return this.translate(name.toLowerCase(), "name", "value");
 		},
 		getNameByHtml: function(html) {
@@ -1371,21 +1372,32 @@ app.bitwise = function() {
 			}
 			return "";
 		},
-
-
-		/***************** DEPRECATED *********************/
-		/* 
-		 Get the bitwise number from the string then test if typeVal has this icon. 
-		 Return false if the string is either invalid or not found
-		 @deprecated
+		/**
+		 * Separates a string representation of a list of tags into icontags and texttags
+		 * @param {string} tags - The tag string, separated by "|"
+		 * @returns {object} The object with keys of `icontags` and `texttags`
 		 */
-		getNum: function(typeVal, stringVal) {
-			if (iconVal.hasOwnProperty(stringVal.toLowerCase())) {
-				return this.is(typeVal, iconVal[stringVal.toLowerCase()]);
-			} else {
-				return false;
+		separate: function(tags) {
+			var icontags = [],
+				texttags = tags.split("|");
+			// Iterates from all the icons
+			for (var i = 0; i !== icons.length; ++i) {
+				// Test if `tags` has this icon
+				var index = texttags.indexOf(icons[i]["name"]);
+				if (index > -1) {
+					// If it does, push the html name to icontags
+					icontags.push(icons[i]["html"]);
+					// Then remove it from texttags
+					texttags.splice(index, 1);
+				}
 			}
+			return {
+				icontags: icontags,
+				texttags: texttags
+			};
 		},
+
+
 		/* Set typeVal on typesVal. Return typesVal | typeVal */
 		or: function(typesVal, typeVal) {
 			var newVal = this.get(typesVal).split("");

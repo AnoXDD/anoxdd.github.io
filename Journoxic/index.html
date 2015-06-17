@@ -253,12 +253,12 @@
 				}
 				}
 
-				if( iconTags2 ) {
+				if( iconTags ) {
 				%>
 				<div class="icontags">
 					<%
-					for( i in iconTags2 ) {
-					print('<span class="' + iconTags2[i] + '"></span>');
+					for( i in iconTags ) {
+					print('<span class="' + iconTags[i] + '"></span>');
 					}
 					%>
 				</div>
@@ -266,17 +266,16 @@
 				}
 
 				if( textTags ) {
-				var textTags2 = textTags.split('|');
 				%>
 				<div class="texttags">
 					<p>
 						<span>#</span>
 						<%
-						for( i in textTags2 ) {
+						for( i in textTags ) {
 						if( i != 0 )
 						print(', ');
 
-						print( textTags2[i] );
+						print( textTags[i] );
 						}
 						%>
 					</p>
@@ -323,10 +322,9 @@
 				<div class="other">
 					<%
 					if( textTags ) {
-					var textTags2 = textTags.split('|');
-					for( i in textTags2 ) {
+					for( i in textTags ) {
 					%>
-					<p title="Click to remove"><% print( "#" + textTags2[i] ); %></p>
+					<p title="Click to remove"><% print( "#" + textTags[i] ); %></p>
 					<%
 					}
 					}

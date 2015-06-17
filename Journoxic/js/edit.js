@@ -220,7 +220,7 @@ edit.init = function(overwrite, index) {
 				"<p class='icons " + tagsHtml[i] +
 				"' title=" + tagsName[i].capitalize() +
 				" onclick=edit.toggleTag('" + tagsName[i] +
-				"')></p>");
+				"', true)></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
 		for (var i = 0; i != tagsHtml.length; ++i) {
@@ -230,22 +230,22 @@ edit.init = function(overwrite, index) {
 		}
 		// Bind hotkeys to add tags
 		$("#entry-body").bind("keyup", "ctrl+shift+f", function() {
-			edit.toggleTag("friendship", "hotkey");
+			edit.toggleTag("friendship");
 		})
 			.bind("keyup", "ctrl+shift+r", function() {
-				edit.toggleTag("relationship", "hotkey");
+				edit.toggleTag("relationship");
 			})
 			.bind("keyup", "ctrl+shift+i", function() {
-				edit.toggleTag("ingress", "hotkey");
+				edit.toggleTag("ingress");
 			})
 			.bind("keyup", "ctrl+shift+t", function() {
-				edit.toggleTag("thoughts", "hotkey");
+				edit.toggleTag("thoughts");
 			})
 			.bind("keyup", "ctrl+shift+j", function() {
-				edit.toggleTag("journal", "hotkey");
+				edit.toggleTag("journal");
 			})
 			.bind("keyup", "ctrl+shift+m", function() {
-				edit.toggleTag("minecraft", "hotkey");
+				edit.toggleTag("minecraft");
 			});
 		// Let the tags to scroll horizontally
 		$("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
@@ -1021,9 +1021,9 @@ edit.getMyTime = function(timeNum) {
 /**
  * Adds a tag given a tag value or fetch it from entry tag, providing optional tag value, toggle or force to set true, and the source of this operation
  * @param {string} tag (Optional) - The value of the tag to be added
- * @param {boolean} toggle (Optional) - Whether to toggle this icon or log warning
+ * @param {boolean} mute - Whether log "xxx is added" or not
  */
-edit.addTag = function(tag) {
+edit.addTag = function(tag, mute) {
 	// If a tag is not specified, it will get the value from the input box where user puts a new tag value
 	tag = tag || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
@@ -1052,7 +1052,9 @@ edit.addTag = function(tag) {
 				}
 				// Test if this icon has already been added
 				if (!$(this).hasClass("highlight")) {
-					animation.log(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON);
+					if (!mute) {
+						animation.log(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON);
+					}
 					edit.toggleIcon(tag);
 					added = true;
 				} else {
@@ -1086,8 +1088,9 @@ edit.addTag = function(tag) {
  * Removes a tag from current tag and also gives visual feedback to the user
  * If no tag is found, nothing will show up
  * @param {string} tagName - The name of the tag to be removed
+ * @param {boolean} mute - Whether log "xxx is added" or not
  */
-edit.removeTag = function(tag) {
+edit.removeTag = function(tag, mute) {
 	var tagArray = localStorage["tags"].split("|");
 	for (var i = 0; i !== tagArray.length; ++i) {
 		if (tagArray[i] === tag) {
@@ -1106,7 +1109,9 @@ edit.removeTag = function(tag) {
 				// Keep searching in icontags
 				$("#attach-area .icontags p").each(function() {
 					if ($(this).attr("title").toLowerCase() === tag) {
-						animation.log(log.TAG_ADD_HEADER + tag + log.TAG_TOGGLED);
+						if (!mute) {
+							animation.log(log.TAG_ADD_HEADER + tag + log.TAG_TOGGLED);
+						}
 						edit.toggleIcon(tag);
 					}
 				});
@@ -1121,14 +1126,15 @@ edit.removeTag = function(tag) {
 /**
  * Toggles the tag by adding/removing it from cache
  * @param {string} tag - The name of the tag to be toggled
+ * @param {boolean} mute - Whether log "xxx is added" or not
  */
-edit.toggleTag = function(tag) {
+edit.toggleTag = function(tag, mute) {
 	if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
 		// Already added
-		edit.removeTag(tag);
+		edit.removeTag(tag, mute);
 	} else {
 		// Add this tag
-		edit.addTag(tag);
+		edit.addTag(tag, mute);
 	}
 }
 /**

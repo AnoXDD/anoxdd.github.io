@@ -205,8 +205,7 @@ edit.init = function(overwrite, index) {
 		var tagsHtml = app.tag().getIconsInHtml(),
 			tagsName = app.tag().getIconsInName(),
 			/* The array of html names for highlighted icons */
-			iconTags = app.tag().separate().iconTags;
-		console.log("edit.init()\ticonTags = " + iconTags);
+			iconTags = app.tag().separate(localStorage["tags"]).iconTags;
 		for (var i = 0; i !== tagsHtml.length; ++i) {
 			var parent = "#attach-area .icontags";
 			if (tagsHtml[i].charAt(0) == "w") {
@@ -220,7 +219,7 @@ edit.init = function(overwrite, index) {
 			$(parent).append(
 				"<p class='icons " + tagsHtml[i] +
 				"' title=" + tagsName[i].capitalize() +
-				" onclick=edit.toggleTag('" + tagsHtml[i] +
+				" onclick=edit.toggleTag('" + tagsName[i] +
 				"')></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
@@ -487,7 +486,7 @@ edit.exportCacheBody = function(data) {
 };
 edit.cleanEditCache = function() {
 	localStorage["_cache"] = 0;
-	var deleteList = ["title", "body", "created", "currentEditing", "tags", "iconTags", "textTags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
+	var deleteList = ["title", "body", "created", "currentEditing", "tags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
 	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
 	}
@@ -550,7 +549,7 @@ edit.newContent = function() {
 	dict["time"]["created"] = new Date().getTime();
 	dict["tags"] = "";
 	// photos, video, place, music, book, movie
-	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
+	var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink", "iconTags", "textTags"];
 	for (var i = 0; i !== elem.length; ++i) {
 		dict[elem[i]] = undefined;
 	}
@@ -1024,7 +1023,7 @@ edit.getMyTime = function(timeNum) {
  * @param {string} tag (Optional) - The value of the tag to be added
  * @param {boolean} toggle (Optional) - Whether to toggle this icon or log warning
  */
-edit.addTag = function(tag, toggle) {
+edit.addTag = function(tag) {
 	// If a tag is not specified, it will get the value from the input box where user puts a new tag value
 	tag = tag || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Test for duplicate
@@ -1034,15 +1033,8 @@ edit.addTag = function(tag, toggle) {
 		animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 	} else {
-		// Add to the cache
-		if (localStorage["tags"]) {
-			// Concatenate to the previous tag
-			localStorage["tags"] += "|" + tag;
-		} else {
-			// Start a new tag
-			localStorage["tags"] = tag;
-		}
-		var found = false;
+		var found = false,
+			added = false;
 		// Try to convert to iconTag
 		$("#attach-area .icontags p").each(function() {
 			if ($(this).attr("title").toLowerCase() === tag) {
@@ -1061,7 +1053,8 @@ edit.addTag = function(tag, toggle) {
 				// Test if this icon has already been added
 				if (!$(this).hasClass("highlight")) {
 					animation.log(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON);
-					$(this).trigger("click");
+					edit.toggleIcon(tag);
+					added = true;
 				} else {
 					animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON_ALREADY);
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
@@ -1074,6 +1067,18 @@ edit.addTag = function(tag, toggle) {
 			$("#entry-tag").effect("highlight", { color: "#dadada" }, 400);
 			// Marked for a new entry
 			$("#attach-area .texttags .other").append("<p title='Click to remove' onclick=edit.removeTag('" + tag + "')>#" + tag + "</p>");
+			added = true;
+		}
+		// Test if this tag has been successfully added
+		if (added) {
+			// Add to the cache
+			if (localStorage["tags"]) {
+				// Concatenate to the previous tag
+				localStorage["tags"] += "|" + tag;
+			} else {
+				// Start a new tagt
+				localStorage["tags"] = tag;
+			}
 		}
 	}
 };
@@ -1083,30 +1088,40 @@ edit.addTag = function(tag, toggle) {
  * @param {string} tagName - The name of the tag to be removed
  */
 edit.removeTag = function(tag) {
-	var tagArray = localStorage["textTags"].split("|");
-	delete tagArray[tag];
-	tagArray.join("|");
-	// Remove from the text tag panel
-	var removed = false;
-	$("#attach-area .texttags p").each(function() {
-		if ($(this).text() === "#" + tag) {
-			$(this).animate({ width: "0" }, function() {
-				$(this).remove();
-				removed = true;
+	var tagArray = localStorage["tags"].split("|");
+	for (var i = 0; i !== tagArray.length; ++i) {
+		if (tagArray[i] === tag) {
+			// Matched
+			// Try to remove from the text tag panel
+			var removed = false;
+			$("#attach-area .texttags p").each(function() {
+				if ($(this).text() === "#" + tag) {
+					$(this).animate({ width: "0" }, function() {
+						$(this).remove();
+						removed = true;
+					});
+				}
 			});
-		}
-	});
-	if (!removed) {
-		// Keep searching for icontags
-		$("#attach-area .icontags p").each(function() {
-			if ($(this).attr("title").toLowerCase() === tag) {
-				// Click the icon to toggle
-				animation.log(log.TAG_ADD_HEADER + tag + log.TAG_TOGGLED);
-				$(this).trigger("click");
+			if (!removed) {
+				// Keep searching in icontags
+				$("#attach-area .icontags p").each(function() {
+					if ($(this).attr("title").toLowerCase() === tag) {
+						animation.log(log.TAG_ADD_HEADER + tag + log.TAG_TOGGLED);
+						edit.toggleIcon(tag);
+					}
+				});
 			}
-		});
+			// Remove this tag from cache
+			tagArray.splice(i, 1);
+			localStorage["tags"] = tagArray.join("|");
+			return;
+		}
 	}
 };
+/**
+ * Toggles the tag by adding/removing it from cache
+ * @param {string} tag - The name of the tag to be toggled
+ */
 edit.toggleTag = function(tag) {
 	if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
 		// Already added
@@ -1114,6 +1129,27 @@ edit.toggleTag = function(tag) {
 	} else {
 		// Add this tag
 		edit.addTag(tag);
+	}
+}
+/**
+ * Toggles the icon on the website.
+ * This function will only give visual feedback
+ * @param {string} tag - The name of the tag to be toggled
+ */
+edit.toggleIcon = function(tag) {
+	var htmlName = app.tag().getHtmlByName(tag),
+		selector = "#attach-area .icontags p." + htmlName,
+		parent = $(selector).parent().attr("class");
+	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
+		if (parent == "weather" || parent == "emotion") {
+			// Now highlighted
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
+		}
+	} else {
+		if (parent == "weather" || parent == "emotion") {
+			// Dimmed
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
+		}
 	}
 }
 

@@ -1331,8 +1331,11 @@ app.tag = function() {
 		getValueByName: function(name) {
 			return this.translate(name.toLowerCase(), "name", "value");
 		},
+		getHtmlByName: function(name) {
+			return this.translate(name.toLowerCase(), "name", "html");
+		},
 		getNameByHtml: function(html) {
-			return this.translate(name.toLowerCase(), "html", "name");
+			return this.translate(html.toLowerCase(), "html", "name");
 		},
 		getIconsInHtml: function() {
 			return this.getAll("html");

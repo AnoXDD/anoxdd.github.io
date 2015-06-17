@@ -51,7 +51,7 @@ window.log = {
 	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
 	CONTENTS_UPLOAD_END: "Data upload finished",
 	CONTENTS_UPLOAD_FAIL: "Cannot upload data",
-	CONTENTS_UPGRADING : "Upgrading content data to latest version ...",
+	CONTENTS_UPGRADING: "Upgrading content data to latest version ...",
 	COVER_PHOTO_FOUND: "Found cover photo ",
 	COVER_PHOTO_FAIL: "Cannot find matched result for cover photo",
 	AUDIO_DOWNLOAD_START: "Loading audio files ...",
@@ -60,7 +60,7 @@ window.log = {
 	VIDEO_DOWNLOAD_START: "Loading video files ...",
 	VIDEO_DOWNLOAD_END: "Video files loaded",
 	VIDEO_EXPIRED: "Video file expired. Please re-download the media",
-	MEDIA_ALREADY_DISPLAYED:"Another media is playing. Close that to continue", 
+	MEDIA_ALREADY_DISPLAYED: "Another media is playing. Close that to continue",
 	EDIT_PANE_QUIT: "Data discarded",
 	EDIT_PANE_SAVE_START: "Saving data ...",
 	EDIT_PANE_SAVE_PENDING_ATTACHMENTS: "Pending changes saved",
@@ -402,6 +402,8 @@ function headerShowMenu(name) {
 			name = ".entry-comm";
 		} else if (name === "archive") {
 			name = ".entry-archive";
+		} else if (name === "settings") {
+			name = ".entry-settings";
 		} else {
 			// name == undefined or other situations
 			name = ".entry-menu";

@@ -1,4 +1,4 @@
-﻿app.version.main = "v3.17.6 Build 061715_2108";
+﻿app.version.main = "v3.18.0 Build 061715_2205";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -6,7 +6,7 @@ $("#version").html(app.version.main);
 /**
  * Version update change log and planned update
  * 
- * Future:
+ * v3.18
  * [Add] Clean up resource folder so that media that no entry is related will be moved to corresponding folders
  * 
  * v3.17

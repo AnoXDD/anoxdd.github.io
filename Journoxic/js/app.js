@@ -1932,6 +1932,12 @@ app.videoPlayer.quit = function() {
 	this.toggle.isFullScreen = false;
 	this.toggle.windowSelector = undefined;
 };
+/**
+ * Cleans the resource folder and moves those files that are not collected back to their date folder according to the file name
+ */
+app.cleanResource = function () {
+
+}
 $(document).ready(function() {
 	app.app = $("div#app");
 	app.contents = app.app.find(" > #contents");

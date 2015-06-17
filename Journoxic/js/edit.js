@@ -220,7 +220,7 @@ edit.init = function(overwrite, index) {
 				"<p class='icons " + tagsHtml[i] +
 				"' title=" + tagsName[i].capitalize() +
 				" onclick=edit.toggleTag('" + tagsName[i] +
-				"', true)></p>");
+				"',true)></p>");
 		}
 		// In this loop, imitate to click on each icon (so some icons can disappear)
 		for (var i = 0; i != tagsHtml.length; ++i) {

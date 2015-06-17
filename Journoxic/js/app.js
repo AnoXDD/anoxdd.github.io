@@ -1133,7 +1133,7 @@ app.tag = function() {
 				value: 1024,
 				html: "e01"
 			}, {
-				name: "notBad",
+				name: "notbad",
 				value: 2048,
 				html: "e02"
 			}, {
@@ -1395,8 +1395,8 @@ app.tag = function() {
 				}
 			}
 			return {
-				icontags: icontags,
-				texttags: texttags
+				iconTags: icontags,
+				textTags: texttags
 			};
 		},
 

@@ -222,29 +222,30 @@ edit.init = function(overwrite, index) {
 				" onclick=edit.toggleTag('" + tagsName[i] +
 				"',true)></p>");
 		}
-		// In this loop, imitate to click on each icon (so some icons can disappear)
-		for (var i = 0; i != tagsHtml.length; ++i) {
-			if ($.inArray(tagsHtml[i], iconTags) != -1) {
-				$("#edit-pane #attach-area .icontags p." + tagsHtml[i]).trigger("click");
+		// In this loop, show some icons (so some icons can disappear)
+		for (var i = 0; i !== tagsHtml.length; ++i) {
+			if (iconTags.indexOf(tagsHtml[i]) !== -1) {
+				edit.toggleIcon(tagsName[i]);
 			}
 		}
 		// Bind hotkeys to add tags
+		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "ctrl+shift+f", function() {
 			edit.toggleTag("friendship");
 		})
-			.bind("keyup", "ctrl+shift+r", function() {
+			.bind("keyup", "alt+ctrl+r", function() {
 				edit.toggleTag("relationship");
 			})
-			.bind("keyup", "ctrl+shift+i", function() {
+			.bind("keyup", "alt+ctrl+i", function() {
 				edit.toggleTag("ingress");
 			})
-			.bind("keyup", "ctrl+shift+t", function() {
+			.bind("keyup", "alt+ctrl+t", function() {
 				edit.toggleTag("thoughts");
 			})
-			.bind("keyup", "ctrl+shift+j", function() {
+			.bind("keyup", "alt+ctrl+j", function() {
 				edit.toggleTag("journal");
 			})
-			.bind("keyup", "ctrl+shift+m", function() {
+			.bind("keyup", "alt+ctrl+m", function() {
 				edit.toggleTag("minecraft");
 			});
 		// Let the tags to scroll horizontally
@@ -1045,7 +1046,7 @@ edit.addTag = function(tag, mute) {
 					// Only one weather and emotion is allowed
 					if ($(this).css("height") === "0px") {
 						// Hidden div, means another weather/emotion has already been added
-						animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
+						animation.warning(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
 						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 						return;
 					}
@@ -1053,12 +1054,12 @@ edit.addTag = function(tag, mute) {
 				// Test if this icon has already been added
 				if (!$(this).hasClass("highlight")) {
 					if (!mute) {
-						animation.log(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON);
+						animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED);
 					}
 					edit.toggleIcon(tag);
 					added = true;
 				} else {
-					animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ICON_ALREADY);
+					animation.warning(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 					// Saved
 				}
@@ -1110,7 +1111,7 @@ edit.removeTag = function(tag, mute) {
 				$("#attach-area .icontags p").each(function() {
 					if ($(this).attr("title").toLowerCase() === tag) {
 						if (!mute) {
-							animation.log(log.TAG_ADD_HEADER + tag + log.TAG_TOGGLED);
+							animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_REMOVED);
 						}
 						edit.toggleIcon(tag);
 					}

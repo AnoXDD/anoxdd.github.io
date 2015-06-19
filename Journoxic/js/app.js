@@ -1941,7 +1941,8 @@ app.videoPlayer.quit = function() {
 app.cleanResource = function() {
 	animation.log(log.MEDIA_CLEAN_START, 1);
 	var allMedia = Object.keys(journal.archive.map),
-		groups = ["images", "video", "voice"];
+		groups = ["images", "video", "voice"],
+		lostMedia = [];
 	// Iterate to find any media that is not contained in archive.data
 	for (var i = 0, length = journal.archive.data.length; i !== length; ++i) {
 		var dataClip = journal.archive.data[i];
@@ -1950,17 +1951,12 @@ app.cleanResource = function() {
 			if (dataClip[groups[j]]) {
 				// Iterate to process all the media within the same group
 				for (var k = 0; k !== dataClip[groups[j]].length; ++k) {
-					delete allMedia[dataClip[groups[j]][k]["fileName"]];
+					if (allMedia.indexOf(dataClip[groups[j]][k]["fileName"]) === -1) {
+						// Element not found! Considered as lost media
+						lostMedia.push(dataClip[groups[j]][k]["fileName"]);
+					}
 				}
 			}
-		}
-	}
-	// Process all the media not deleted (which means unconcerned)
-	var lostMedia = [];
-	for (var i = 0; i !== allMedia.length; ++i) {
-		if (allMedia[i]) {
-			// Not undefined
-			lostMedia.push(allMedia[i]);
 		}
 	}
 	// Should report how many unconcerned media found

@@ -15,6 +15,7 @@ window.log = {
 	NO_ARCHIVE: ": no archive data is found",
 
 	MEDIA_CLEAN_START: "Starting finding lost media ...",
+	MEDIA_CLEAN_NO_FILES: "No media found",
 	MEDIA_CLEAN_FOUND: " lost media found",
 	MEDIA_CLEAN_NOT_FOUND: "No lost media found",
 	MEDIA_CLEAN_FAIL: " media failed to be moved. Please try again",

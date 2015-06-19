@@ -1939,6 +1939,7 @@ app.videoPlayer.quit = function() {
 };
 /**
  * Checks if there are any lost media (i.e. the media not connected to any entry), and store that data in app.lostMedia
+ * There are two kinds of lost media. One can be the one in the /resource but not connected to any entry. The other can be the media that claimed to be existing in /resource but in fact it does not
  */
 app.checkResource = function() {
 	// Test if the necessary file is ready 
@@ -1946,9 +1947,9 @@ app.checkResource = function() {
 		animation.error(log.MEDIA_CLEAN_NOT_FOUND + log.DOWNLOAD_PROMPT);
 		return;
 	}
-	animation.log(log.MEDIA_CLEAN_START, 1);
 	var allMedia = Object.keys(journal.archive.map),
-		groups = ["images", "video", "voice"];
+		groups = ["images", "video", "voice"],
+		undefMedia = 0;
 	// Iterate to find any media that is not contained in archive.data
 	for (var i = 0, length = journal.archive.data.length; i !== length; ++i) {
 		var dataClip = journal.archive.data[i];
@@ -1956,21 +1957,37 @@ app.checkResource = function() {
 		for (var j = 0; j !== groups.length; ++j) {
 			if (dataClip[groups[j]]) {
 				// Iterate to process all the media within the same group
-				for (var k = 0; k !== dataClip[groups[j]].length; ++k) {
-					if (allMedia.indexOf(dataClip[groups[j]][k]["fileName"]) === -1) {
-						// Element not found! Considered as lost media
-						app.lostMedia.push(dataClip[groups[j]][k]["fileName"]);
+				for (var k = 0; k < dataClip[groups[j]].length; ++k) {
+					var index = allMedia.indexOf(dataClip[groups[j]][k]["fileName"]);
+					if (index === -1) {
+						// Element existed in the entry is not found in /resource
+						++undefMedia;
+						dataClip[groups[j]].splice(k, 1);
+						--k;
+					} else {
+						// Remove this element from allMedia because this file is matched
+						allMedia.splice(index, 1);
 					}
 				}
 			}
 		}
 	}
+	// Now the elements still in allMedia are also lost media
+	for (var i = 0; i !== allMedia.length; ++i) {
+		app.lostMedia.push(allMedia[i]);
+	}
 	// Report the result
+	// "Real" lost media
 	if (app.lostMedia.length === 0) {
-		// No lost media found
-		animation.log(log.MEDIA_CLEAN_NOT_FOUND, -1);
+		animation.log(log.MEDIA_CLEAN_NOT_FOUND);
 	} else {
 		animation.log(app.lostMedia.length + log.MEDIA_CLEAN_FOUND);
+	}
+	// Undefined media in the entry
+	if (undefMedia === 0) {
+		animation.log(log.MEDIA_CLEAN_UNDEFINED_NOT_FOUND);
+	} else {
+		animation.log(undefMedia + log.MEDIA_CLEAN_UNDEFINED_FOUND);
 	}
 	// Show the button for furthur actions
 	animation.showIcon("#return-lost-media");
@@ -1983,6 +2000,7 @@ app.cleanResource = function() {
 	if (app.lostMedia.length === 0) {
 		animation.error(log.MEDIA_CLEAN_NO_DATA);
 	} else {
+		animation.log(log.MEDIA_CLEAN_START, 1);
 		// Move to their folder according to their names
 		getTokenCallback(function(token) {
 			// Finds all the available folder names
@@ -2052,7 +2070,7 @@ app.cleanResource = function() {
 				}
 			})
 			.fail(function(xhr, status, error) {
-				animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+				animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 			});
 		});
 	}

@@ -1965,6 +1965,13 @@ app.checkResource = function() {
 			}
 		}
 	}
+	// Report the result
+	if (app.lostMedia.length === 0) {
+		// No lost media found
+		animation.log(log.MEDIA_CLEAN_NOT_FOUND, -1);
+	} else {
+		animation.log(app.lostMedia.length + log.MEDIA_CLEAN_FOUND);
+	}
 	// Show the button for furthur actions
 	animation.showIcon("#return-lost-media");
 }
@@ -1976,11 +1983,9 @@ app.cleanResource = function() {
 	if (app.lostMedia.length === 0) {
 		animation.error(log.MEDIA_CLEAN_NO_DATA);
 	} else {
-		// Report how many unconcerned media found
-		animation.log(app.lostMedia.length + log.MEDIA_CLEAN_FOUND);
 		// Move to their folder according to their names
 		getTokenCallback(function(token) {
-			// Find all the available folder names
+			// Finds all the available folder names
 			$.ajax({
 				type: "GET",
 				url: "https://api.onedrive.com/v1.0/drive/special/approot:/data:/children?select=name&top=500&access_token=" + token
@@ -2050,9 +2055,6 @@ app.cleanResource = function() {
 				animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
 			});
 		});
-	} else {
-		// No lost media found
-		animation.log(log.MEDIA_CLEAN_NOT_FOUND, -1);
 	}
 }
 $(document).ready(function() {

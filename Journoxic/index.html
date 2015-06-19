@@ -38,7 +38,8 @@
 		<a class="entry-option" title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#">&#xf065</a>
 		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
 		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a>
-		<!--	<a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
+		<!-- <a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
+		<a class="entry-add" title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a>
 		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
 		<a class="entry-add" title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xf03d</a>
 		<a class="entry-add" title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xf130</a>
@@ -273,7 +274,7 @@
 				%>
 				<div class="texttags">
 					<p>
-						<span>#</span>
+						<span>&#xf02c</span>
 						<%
 						for( i in textTags ) {
 						if( i != 0 )
@@ -321,7 +322,7 @@
 			</div>
 			<hr />
 			<div class="texttags">
-				<span>#</span>
+				<span>&#xf02b</span>
 				<input type="text" id="entry-tag" placeholder="Tags" autocomplete="off" onclick="this.select()" />
 				<div class="other">
 					<%

@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -720,7 +720,7 @@ body {
 			}
 
 				#list div.attached span.place::before {
-					content: "\f041";
+					content: "\f124";
 					left: 4px;
 				}
 
@@ -1377,8 +1377,13 @@ body {
 
 	#detail .photo img {
 		max-height: 100%;
+		background-image: url('../img/pic.png');
 		max-width: 100%;
-	}
+	
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-position: center;
+}
 
 	#detail .jplayer-wrap {
 		margin: 0 auto;

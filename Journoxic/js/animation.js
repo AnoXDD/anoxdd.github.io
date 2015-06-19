@@ -1,5 +1,7 @@
 /* A library for animations */
 
+animation.isDebug = true;
+
 window.log = {
 	WELCOME: "Welcome back",
 	FILE_NOT_FOUND: "Cannot find the file ",
@@ -13,6 +15,7 @@ window.log = {
 	LOAD_DATA_FAIL: "Cannot load the data",
 	NO_CONTENT: ": no new content is specified",
 	NO_ARCHIVE: ": no archive data is found",
+	FOLDER_CREATED: "Folder for this date created",
 
 	MEDIA_CLEAN_START: "Start returning lost media ...",
 	MEDIA_CLEAN_NO_DATA: "No media found. Please press the button on the right to check the resource before returning lost media",
@@ -224,7 +227,7 @@ animation.setConfirm = function(name, type) {
 		}
 		if (title == undefined) {
 			// Not a valid call
-			return;
+			return false;
 		}
 		var onclick = "edit.confirm()";
 		if (type === "edit") {
@@ -401,6 +404,16 @@ animation.error = function(message, indent) {
  */
 animation.warning = function(message, indent) {
 	animation.log(message, indent, 2);
+}
+/**
+ * Logs a debug message on the screen
+ * Toggles the debug option by setting the variable at the beginning of this file
+ * @param {String} message - The message to be logged
+ */
+animation.debug = function(message) {
+	if (animation.isDebug) {
+		animation.log("[DEBUG] " + message);
+	}
 }
 
 function headerShowMenu(name) {

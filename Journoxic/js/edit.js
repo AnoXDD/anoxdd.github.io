@@ -13,6 +13,10 @@ edit.videos = [];
 
 edit.mediaIndex = {};
 edit.isEditing = -1;
+/** If /data has this folder */
+edit.isFolder = false;
+/** The name of the folder mentioned above */
+edit.folderDate = "";
 
 edit.removalList = {};
 
@@ -93,6 +97,8 @@ edit.init = function(overwrite, index) {
 		voice: -1
 	};
 	edit.isEditing = -1;
+	edit.isFolder = false;
+	edit.folderDate = "";
 	// Add to cache, all the cache processing starts here
 	data = edit.importCache(data);
 	// Process edit.voices and edit.videos
@@ -657,7 +663,7 @@ edit.change = function(key, value) {
 /************************** EDITING *******************************/
 
 /**
- * Add a medium to the edit pane, given the typeNum
+ * Adds a medium to the edit pane, given the typeNum
  * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
  * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName", "id" and "title" key
  */
@@ -741,7 +747,13 @@ edit.removeMedia = function(typeNum) {
 	edit.cleanupMediaEdit();
 };
 /**
- * Add a media element to pending removal list and make this element fade out from the view. 
+ * Adds medium from /queue to help the user to accelerate to select the media
+ */
+edit.addMediaFromQueue = function() {
+
+}
+/**
+ * Adds a media element to pending removal list and make this element fade out from the view. 
  * The list will not be removed until edit.quit() is called
  * @param {string} name - The string of the type of media
  * @param {number} index (Optional) - The index of the type of media to be added to the list
@@ -992,6 +1004,7 @@ edit.convertTime = function(time) {
  * 1) Title content
  * 2) Created time
  * 3) Time of calling this function
+ * This function will also make sure that this folder is created under /data to avoid 404 error while attempting to move media to this folder
  * @returns {string} - My format of the time
  */
 edit.getDate = function() {
@@ -1020,6 +1033,35 @@ edit.getDate = function() {
 		date = new Date(date - 14400000);
 	}
 	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+	// Test server folder validity
+	if (dateStr !== edit.folderDate) {
+		// Try to create the folder
+		getTokenCallback(function(token) {
+			var requestJson = {
+				name: dateStr,
+				folder: {}
+			};
+			$.ajax({
+				type: "POST",
+				url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/children?access_token=" + token,
+				contentType: "application/json",
+				data: JSON.stringify(requestJson),
+				statusCode: {
+					// Conflict, considered this folder is created successfully
+					409: function() {
+						edit.isFolder = true;
+						edit.folderDate = dateStr;
+						animation.debug("Folder created conflict");
+					}
+				}
+			}).done(function() {
+				// Successfully created this directory
+				edit.isFolder = true;
+				edit.folderDate = dateStr;
+				animation.log(log.FOLDER_CREATED);
+			});
+		});
+	}
 	return dateStr;
 };
 /**

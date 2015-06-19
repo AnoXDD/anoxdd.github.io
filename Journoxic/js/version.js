@@ -1,10 +1,16 @@
-﻿app.version.main = "v3.18.0 Build 061715_2205";
+﻿app.version.main = "v3.18.1 Build 061915_1736";
 
 // Version number show up
 $("#version").html(app.version.main);
 
 /**
  * Version update change log and planned update
+ * 
+ * Future:
+ * [Add] Gets more media from "tmp" folder (search "folder" in fontawesome)
+ * [Add] Shortcut keys management
+ * [Add] Disable rightclick everywhere
+ * 
  * 
  * v3.18
  * [Add] Clean up resource folder so that media that no entry is related will be moved to corresponding folders

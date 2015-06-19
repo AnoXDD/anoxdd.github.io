@@ -4,41 +4,38 @@ window.app = {};
 //(function(window, $) {
 journal.archive = {};
 journal.archive.data = [];
-/* The number of the total media */
+/** The number of the total media */
 journal.archive.media = 0;
-/* The map to map the source name to the weblink */
+/** The map to map the source name to the weblink. Format: {name: {id: xxx, url: xxx, size: xxx}} */
 journal.archive.map = {};
 
 app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
-/* The resource folder of all the images/video/music covers, etc. */
+/** The resource folder of all the images/video/music covers, etc. */
 app.resource = "resource/";
-/* The number of the pages already loaded */
+/** The number of the pages already loaded */
 app.lastLoaded = 0;
-/* The index of the page that is currently being displayed */
+/** The index of the page that is currently being displayed */
 app.currentDisplayed = -1;
-/* The number of entry displayed */
+/** The number of entry displayed */
 app.displayedNum = 0;
-/* The number of lines displayed */
+/** The number of lines displayed */
 app.displayedLines = 0;
-/* The number of characters displayed */
+/** The number of characters displayed */
 app.displayedChars = 0;
-/* The total of time used on writing all the displayed entries (if appliable), in seconds */
+/** The total of time used on writing all the displayed entries (if appliable), in seconds */
 app.displayedTime = 0.0;
-/*
- The index of the page that last loaded.
- Set to -1 so that no entry is loaded at the beginning 
- */
+/** The index of the page that last loaded. Set to -1 so that no entry is loaded at the beginning */
 app.lastQualified = -1;
-/* The number of pages to be loaded each time */
+/** The number of pages to be loaded each time */
 app.pageLoaded = 1;
-/* Available tags to be searched */
+/** Available tags to be searched */
 app.preloadedTags = [];
-/* The keyword to be searched */
+/** The keyword to be searched */
 app.command = "";
-/* The boolean indicates if some mutually exclusive functions should be running if any others are */
+/** The boolean indicates if some mutually exclusive functions should be running if any others are */
 app.isFunction = true;
 
-/* The data decoding version of this app, integer decimal only */
+/** The data decoding version of this app, integer decimal only */
 app.version = {
 	data: 2
 };
@@ -1687,7 +1684,8 @@ app.audioPlayer = function(selector, source) {
 	// Makes playhead draggable 
 	app.audioPlayer.playhead.addEventListener("mousedown", app.audioPlayer.mouseDown, false);
 	window.addEventListener("mouseup", app.audioPlayer.mouseUp, false);
-}; /**
+};
+/**
  * Handles the play and pause of the audio player after loading
  */
 app.audioPlayer.play = function() {
@@ -1706,7 +1704,8 @@ app.audioPlayer.play = function() {
 		music.play();
 		$("#play-media").html("&#xf04c").addClass("play");
 	}
-}; /**
+};
+/**
  * Quits and gracefully removes all the traces of audio player
  * @param {String} selector - The selector of the element to embed audio player, in jQuery style
  * @param {String} source - The url of the source of music file
@@ -1735,7 +1734,8 @@ app.audioPlayer.quit = function() {
 	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
 	animation.hideIcon("#play-media");
 	animation.hideIcon("#stop-media");
-}; /**
+};
+/**
  * Initializes a video player within the selector provided
  * @param {String} selector - The selector of the element to embed video player, in jQuery style
  * @param {String} source - The url of the source of video file
@@ -1853,7 +1853,8 @@ app.videoPlayer = function(selector, source) {
 	// Makes playhead draggable 
 	app.videoPlayer.playhead.addEventListener("mousedown", app.videoPlayer.mouseDown, false);
 	window.addEventListener("mouseup", app.videoPlayer.mouseUp, false);
-}; /**
+};
+/**
  * Toggles the fullscreen of the videoplayer.
  * This function will determine if the video is fullscreen by a static variable inside function
  */
@@ -1880,7 +1881,8 @@ app.videoPlayer.toggle = function() {
 		$("#toggle-media").html("&#xf066");
 		this.toggle.isFullScreen = true;
 	}
-}; /**
+};
+/**
  * Handles the play and pause of the vedio player after loading
  */
 app.videoPlayer.play = function() {
@@ -1899,7 +1901,8 @@ app.videoPlayer.play = function() {
 		video.play();
 		$("#play-media").html("&#xf04c").addClass("play");
 	}
-}; /**
+};
+/**
  * Quits and gracefully removes all the traces of video player
  * @param {String} selector - The selector of the element to embed video player, in jQuery style
  * @param {String} source - The url of the source of video file
@@ -1935,8 +1938,105 @@ app.videoPlayer.quit = function() {
 /**
  * Cleans the resource folder and moves those files that are not collected back to their date folder according to the file name
  */
-app.cleanResource = function () {
-
+app.cleanResource = function() {
+	animation.log(log.MEDIA_CLEAN_START, 1);
+	var allMedia = Object.keys(journal.archive.map),
+		groups = ["images", "video", "voice"];
+	// Iterate to find any media that is not contained in archive.data
+	for (var i = 0, length = journal.archive.data.length; i !== length; ++i) {
+		var dataClip = journal.archive.data[i];
+		// Iterate to find all the media in different groups
+		for (var j = 0; j !== groups.length; ++j) {
+			if (dataClip[groups[j]]) {
+				// Iterate to process all the media within the same group
+				for (var k = 0; k !== dataClip[groups[j]].length; ++k) {
+					delete allMedia[dataClip[groups[j]][k]["fileName"]];
+				}
+			}
+		}
+	}
+	// Process all the media not deleted (which means unconcerned)
+	var lostMedia = [];
+	for (var i = 0; i !== allMedia.length; ++i) {
+		if (allMedia[i]) {
+			// Not undefined
+			lostMedia.push(allMedia[i]);
+		}
+	}
+	// Should report how many unconcerned media found
+	if (lostMedia.length > 0) {
+		animation.log(lostMedia.length + log.MEDIA_CLEAN_FOUND);
+		// Move to their folder according to their names
+		getTokenCallback(function(token) {
+			// Find all the available folder names
+			$.ajax({
+				type: "GET",
+				url: "https://api.onedrive.com/v1.0/drive/special/approot:/data:/children?select=name&top=500%20desc&access_token=" + token
+			}).done(function(data) {
+				var itemList = data["value"],
+					folders = [];
+				for (var i = 0, len = itemList.length; i !== len; ++i) {
+					folders.push(itemList[i]["name"]);
+				}
+				// Keep processing the lost media
+				var done = 0,
+					fail = 0;
+				for (var i = 0; i !== lostMedia.length; ++i) {
+					// Get the first six letters. Assume them to be the folder name
+					var path = lostMedia[i].substring(0, 6);
+					if (folders.indexOf(path) === -1) {
+						// An invalid folder path, redirect it to /queue
+						path = "queue";
+					} else {
+						path = "data/" + path;
+					}
+					path = "/drive/root:/Apps/Journal/" + path;
+					var requestJson = {
+							parentReference: {
+								path: path
+							}
+						},
+						id = journal.archive.map[lostMedia[i]]["id"],
+						/* The url to find the media to be moved */
+						url;
+					if (id) {
+						url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,@content.downloadUrl&access_token=" + token;
+					} else {
+						url = "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/" + encodeURI(lostMedia[i]) + "/" + "?select=id,@content.downloadUrl&access_token=" + token;
+					}
+					// Trying to send to the folder
+					$.ajax({
+							type: "PATCH",
+							url: url,
+							contentType: "application/json",
+							data: JSON.stringify(requestJson)
+						})
+						.done(function() {
+							// Placeholder, do nothing
+						})
+						.fail(function() {
+							// Add the counter for the failure
+							++fail;
+						})
+						.always(function() {
+							if (++done === allMedia.length) {
+								// All finished
+								// Print fail info
+								if (fail > 0) {
+									animation.log(fail + log.MEDIA_CLEAN_FAIL);
+								} else {
+									animation.log(log.MEDIA_CLEAN_SUCCESS);
+								}
+								animation.log(log.MEDIA_CLEAN_FINISHED, -1);
+							}
+						});
+				}
+			});
+		});
+	} else {
+		// No lost media found
+		animation.log(log.MEDIA_CLEAN_NOT_FOUND, -1);
+	}
 }
 $(document).ready(function() {
 	app.app = $("div#app");

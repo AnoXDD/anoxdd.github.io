@@ -14,6 +14,13 @@ window.log = {
 	NO_CONTENT: ": no new content is specified",
 	NO_ARCHIVE: ": no archive data is found",
 
+	MEDIA_CLEAN_START: "Starting finding lost media ...",
+	MEDIA_CLEAN_FOUND: " lost media found",
+	MEDIA_CLEAN_NOT_FOUND: "No lost media found",
+	MEDIA_CLEAN_FAIL: " media failed to be moved. Please try again",
+	MEDIA_CLEAN_SUCCESS: "All lost media moved to their original folder",
+	MEDIA_CLEAN_FINISHED :"Finding lost media finished",
+
 	ARCHIVE_START: "Loading archive list ...",
 	ARCHIVE_TOO_MANY: "Too many archive files. Only the latest 500 files will be displayed",
 	ARCHIVE_END: "Archive list loaded",

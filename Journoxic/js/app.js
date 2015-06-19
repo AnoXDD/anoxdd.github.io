@@ -1939,6 +1939,10 @@ app.videoPlayer.quit = function() {
  * Cleans the resource folder and moves those files that are not collected back to their date folder according to the file name
  */
 app.cleanResource = function() {
+	// Test if the necessary file is ready 
+	if (!journal.archive.map) {
+		animation.error(log.MEDIA_CLEAN_NOT_FOUND + log.DOWNLOAD_PROMPT);
+	}
 	animation.log(log.MEDIA_CLEAN_START, 1);
 	var allMedia = Object.keys(journal.archive.map),
 		groups = ["images", "video", "voice"],

@@ -34,6 +34,8 @@ app.preloadedTags = [];
 app.command = "";
 /** The boolean indicates if some mutually exclusive functions should be running if any others are */
 app.isFunction = true;
+/** The variable to track the media that do not belong to any entry */
+app.lostMedia = [];
 
 /** The data decoding version of this app, integer decimal only */
 app.version = {
@@ -1936,17 +1938,17 @@ app.videoPlayer.quit = function() {
 	this.toggle.windowSelector = undefined;
 };
 /**
- * Cleans the resource folder and moves those files that are not collected back to their date folder according to the file name
+ * Checks if there are any lost media (i.e. the media not connected to any entry), and store that data in app.lostMedia
  */
-app.cleanResource = function() {
+app.checkResource = function() {
 	// Test if the necessary file is ready 
 	if (Object.keys(journal.archive.map).length === 0) {
 		animation.error(log.MEDIA_CLEAN_NOT_FOUND + log.DOWNLOAD_PROMPT);
+		return;
 	}
 	animation.log(log.MEDIA_CLEAN_START, 1);
 	var allMedia = Object.keys(journal.archive.map),
-		groups = ["images", "video", "voice"],
-		lostMedia = [];
+		groups = ["images", "video", "voice"];
 	// Iterate to find any media that is not contained in archive.data
 	for (var i = 0, length = journal.archive.data.length; i !== length; ++i) {
 		var dataClip = journal.archive.data[i];
@@ -1957,21 +1959,31 @@ app.cleanResource = function() {
 				for (var k = 0; k !== dataClip[groups[j]].length; ++k) {
 					if (allMedia.indexOf(dataClip[groups[j]][k]["fileName"]) === -1) {
 						// Element not found! Considered as lost media
-						lostMedia.push(dataClip[groups[j]][k]["fileName"]);
+						app.lostMedia.push(dataClip[groups[j]][k]["fileName"]);
 					}
 				}
 			}
 		}
 	}
-	// Should report how many unconcerned media found
-	if (lostMedia.length > 0) {
-		animation.log(lostMedia.length + log.MEDIA_CLEAN_FOUND);
+	// Show the button for furthur actions
+	animation.showIcon("#return-lost-media");
+}
+/**
+ * Cleans the resource folder and moves those files that are not collected back to their date folder according to the file name, after app.checkResource() is run
+ */
+app.cleanResource = function() {
+	// Test if the required variable is needed
+	if (app.lostMedia.length === 0) {
+		animation.error(log.MEDIA_CLEAN_NO_DATA);
+	} else {
+		// Report how many unconcerned media found
+		animation.log(app.lostMedia.length + log.MEDIA_CLEAN_FOUND);
 		// Move to their folder according to their names
 		getTokenCallback(function(token) {
 			// Find all the available folder names
 			$.ajax({
 				type: "GET",
-				url: "https://api.onedrive.com/v1.0/drive/special/approot:/data:/children?select=name&top=500%20desc&access_token=" + token
+				url: "https://api.onedrive.com/v1.0/drive/special/approot:/data:/children?select=name&top=500&access_token=" + token
 			}).done(function(data) {
 				var itemList = data["value"],
 					folders = [];
@@ -1992,10 +2004,10 @@ app.cleanResource = function() {
 					}
 					path = "/drive/root:/Apps/Journal/" + path;
 					var requestJson = {
-							parentReference: {
-								path: path
-							}
-						},
+						parentReference: {
+							path: path
+						}
+					},
 						id = journal.archive.map[lostMedia[i]]["id"],
 						/* The url to find the media to be moved */
 						url;
@@ -2006,11 +2018,11 @@ app.cleanResource = function() {
 					}
 					// Trying to send to the folder
 					$.ajax({
-							type: "PATCH",
-							url: url,
-							contentType: "application/json",
-							data: JSON.stringify(requestJson)
-						})
+						type: "PATCH",
+						url: url,
+						contentType: "application/json",
+						data: JSON.stringify(requestJson)
+					})
 						.done(function() {
 							// Placeholder, do nothing
 						})
@@ -2019,7 +2031,7 @@ app.cleanResource = function() {
 							++fail;
 						})
 						.always(function() {
-							if (++done === allMedia.length) {
+							if (++done === app.lostMedia.length) {
 								// All finished
 								// Print fail info
 								if (fail > 0) {
@@ -2027,10 +2039,15 @@ app.cleanResource = function() {
 								} else {
 									animation.log(log.MEDIA_CLEAN_SUCCESS);
 								}
+								// Empty the list
+								app.lostMedia = [];
 								animation.log(log.MEDIA_CLEAN_FINISHED, -1);
 							}
 						});
 				}
+			})
+			.fail(function(xhr, status, error) {
+				animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
 			});
 		});
 	} else {

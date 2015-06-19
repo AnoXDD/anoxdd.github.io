@@ -1940,7 +1940,7 @@ app.videoPlayer.quit = function() {
  */
 app.cleanResource = function() {
 	// Test if the necessary file is ready 
-	if (!journal.archive.map) {
+	if (Object.keys(journal.archive.map).length === 0) {
 		animation.error(log.MEDIA_CLEAN_NOT_FOUND + log.DOWNLOAD_PROMPT);
 	}
 	animation.log(log.MEDIA_CLEAN_START, 1);

@@ -93,6 +93,7 @@ window.log = {
 	EDIT_PANE_IMAGES_START: "Start loading images under data/",
 	EDIT_PANE_IMAGES_START_END: " ...",
 	EDIT_PANE_IMAGES_END: "Photos loaded",
+	EDIT_PANE_IMAGES_END_NO_RESULT: "No photos found",
 	EDIT_PANE_IMAGES_FIND_FAIL: " under data/",
 	EDIT_PANE_IMAGES_SAVE_START: "Start transferring photos ...",
 	EDIT_PANE_IMAGES_OF: " of ",

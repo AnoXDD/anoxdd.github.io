@@ -748,21 +748,80 @@ edit.removeMedia = function(typeNum) {
 };
 /**
  * Adds media from /queue to help the user to accelerate to select the media
+ * @see edit.playableSearch() - This function is based on the algorithms in edit.playableSearch(). Should any bugs are found, check to see if that function has the same bugs
  */
 edit.addMediaFromQueue = function() {
+	// Add throttle
+	$("#return-lost-media").removeAttr("onclick");
+	// Todo remember to add it back
+	animation.log(log.QUEUE_START, 1);
+	edit.photo(true);
 	getTokenCallback(function(token) {
-		// First, get all the files under /queue
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue/:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
-			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
-		})
-			.done(function(data) {
-
+				type: "GET",
+				url: url
+			})
+			.done(function(data, status, xhr) {
+				var itemList = data["value"],
+					addedVoice = 0,
+					addedVideo = 0;
+				// Iterate to find all the results on the server
+				for (var key = 0, len = itemList.length; key !== len; ++key) {
+					var id = itemList[key]["id"],
+						size = itemList[key]["size"],
+						name = itemList[key]["name"],
+						contentUrl = itemList[key]["@content.downloadUrl"],
+						suffix = name.substring(name.length - 4).toLowerCase(),
+						elementData = {
+							id: id,
+							name: name,
+							title: name.substring(0, name.length - 4),
+							url: contentUrl,
+							size: size,
+							resource: false,
+							change: true
+						};
+					// Test supported file types, if file is not supported then restart the loop
+					if (suffix === ".mp4") {
+						// Video
+						++addedVideo;
+						edit.videos.push(elementData);
+						// Add to the edit pane
+						edit.addMedia(-1, {
+							fileName: name,
+							url: contentUrl,
+							title: name.substring(0, name.length - 4)
+						});
+					} else if (suffix !== ".mp3" && suffix !== ".wav") {
+						// Voice
+						++addedVoice;
+						edit.voices.push(elementData);
+						// Add to the edit pane
+						edit.addMedia(-3, {
+							fileName: name,
+							url: contentUrl,
+							title: name.substring(0, name.length - 4)
+						});
+					}
+				}
+				// Right click to select
+				edit.playableSetToggle();
+				if (addedVideo > 0) {
+					animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
+				}
+				if (addedVoice > 0) {
+					animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
+				}
 			})
 			.fail(function(xhr, status, error) {
-				animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + log.SERVER_RETURNS_END, -1);
+				animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
 			})
-	})
+			.always(function() {
+				// Add it back
+				$("#return-lost-media").attr("onclick", "app.cleanResource()");
+			});
+	});
 }
 /**
  * Adds media element to pending removal list and make this element fade out from the view. 
@@ -1360,8 +1419,12 @@ edit.coverTest = function(type) {
 
 /************************** PHOTO 0 ************************/
 
-edit.photo = function() {
-	if (edit.photos.length !== 0) {
+/**
+ * Adds the photo on the edit-pane and extend the photo area
+ * @param {boolean} isQueue (Optional) - whether the source of the photos is /queue
+ */
+edit.photo = function(isQueue) {
+	if (edit.photos.length !== 0 && !isQueue) {
 		// Return if edit.photo is already displayed
 		animation.error(log.EDIT_PANE_IMAGES_ALREADY_LOADED);
 		return;
@@ -1369,66 +1432,112 @@ edit.photo = function() {
 	var images = JSON.parse(localStorage["images"]);
 	if (images) {
 		// Test if this entry really doesn't have any images at all
-		if (!(Object.keys(journal.archive.map).length > 0)) {
+		if (Object.keys(journal.archive.map).length === 0) {
+			// No media in the map, ask for downloading the images
 			animation.error(log.EDIT_PANE_IMAGES_FAIL + log.DOWNLOAD_PROMPT);
 			animation.deny("#add-photo");
 			return;
 		}
 	}
-	$("#attach-area .images").css({ height: "100px" });
+	// Extend the image area and add sortable functionality and hover 
+	$("#attach-area .images").css({ height: "100px" }).hover(function() {
+		// Mouseover
+		// Clean up the data
+		edit.cleanupMediaEdit();
+		$("#photo-preview").css("opacity", "initial").show({
+			effect: "fade",
+			duration: 200
+		});
+	}, function() {
+		// Mouseout
+		$("#photo-preview").hide({
+			effect: "fade",
+			duration: 200
+		});
+	}).sortable({
+		containment: "#attach-area .images",
+		cursor: "crosshair",
+		revert: true
+	}).disableSelection();
 	// Add throttle
 	$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
-	edit.photos = [];
-	for (var i = 0; i < images.length; ++i) {
-		var name = images[i]["fileName"];
-		if (journal.archive.map[name]) {
-			var image = {
-				name: name,
-				size: journal.archive.map[name]["size"],
-				url: journal.archive.map[name]["url"],
-				resource: true,
-				/* Whether this image is moved to the other location, 
-				 * i.e. if it is deleted or added
-				 */
-				change: false
-			};
-			edit.photos.push(image);
-		} else {
-			// File not found, remove this file
-			images.splice(i--, 1);
-			localStorage["images"] = JSON.stringify(images);
+	// Prepartion before doing server work
+	if (!isQueue) {
+		// Empty edit.photos only if the photos are not added from queue
+		edit.photos = [];
+		// Iterate to add all photos of this dataclip to edit.photos
+		for (var i = 0; i < images.length; ++i) {
+			var name = images[i]["fileName"];
+			if (journal.archive.map[name]) {
+				var image = {
+					name: name,
+					size: journal.archive.map[name]["size"],
+					url: journal.archive.map[name]["url"],
+					resource: true,
+					/* Whether this image is moved to the other location, 
+					 * i.e. if it is deleted or added
+					 */
+					change: false
+				};
+				edit.photos.push(image);
+			} else {
+				// File not found, remove this file
+				images.splice(i--, 1);
+				localStorage["images"] = JSON.stringify(images);
+			}
 		}
-	}
-	// Get resource photos from user content folder
-	// Get correct date folder
-	var dateStr;
-	if (images.length != 0) {
-		// Get date from photos already existed
-		dateStr = images[0]["fileName"].substring(0, 6);
+		// Get resource photos from user content folder
+		// Get correct date folder
+		var dateStr;
+		if (images.length != 0) {
+			// Get date from photos already existed
+			dateStr = images[0]["fileName"].substring(0, 6);
+		} else {
+			dateStr = edit.getDate();
+		}
+		animation.log(log.EDIT_PANE_SAVE_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
 	} else {
-		dateStr = edit.getDate();
+		// Remove all the queue images
+		$("#attach-area .images .queue").each(function() {
+			// Remove this image from edit.photos
+			for (var i = 0; i !== edit.photos.length; ++i) {
+				var url = $(this).children("img").attr("src");
+				if (edit.photos[i]["url"] === url) {
+					// Matched
+					edit.photos.splice(i, 1);
+					break;
+				}
+			}
+			$(this).remove();
+		});
 	}
-	animation.log(log.EDIT_PANE_SAVE_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
 	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+		var url;
+		if (isQueue) {
+			url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue/:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+		} else {
+			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+		}
 		$.ajax({
 			type: "GET",
 			url: url
 		}).done(function(data, status, xhr) {
-			if (data["@odata.nextLink"]) {
+			if (data["@odata.nextLink"] && !isQueue) {
 				animation.warning(log.EDIT_PANE_TOO_MANY_RESULTS);
 			}
-			var itemList = data["value"];
+			var itemList = data["value"],
+				added = 0;
 			for (var key = 0, len = itemList.length; key !== len; ++key) {
 				var size = itemList[key]["size"],
+					id = itemList[key]["id"],
 					name = itemList[key]["name"],
-					suffix = name.substring(name.length - 4),
+					suffix = name.substring(name.length - 4).toLowerCase(),
 					found = false;
 				if (suffix !== ".jpg" && suffix !== ".png") {
 					// Only support these two types
 					continue;
 				}
-				// Use size to filter out duplicate pahotos
+				// Use size to filter out duplicate photos
 				for (var i = 0, tmp = edit.photos; i !== tmp.length; ++i) {
 					if (tmp[i]["size"] == size) {
 						found = true;
@@ -1441,23 +1550,29 @@ edit.photo = function() {
 				} else {
 					var photoData = {
 						name: name,
+						id: id,
 						url: itemList[key]["@content.downloadUrl"],
 						size: size,
 						resource: false,
 						change: false
 					};
+					++added;
 					edit.photos.push(photoData);
 				}
 			}
-			console.log("edit.photo()\tFinish media data");
 			// Add to images div
 			for (var i = 0; i !== edit.photos.length; ++i) {
 				var htmlContent;
-				if (edit.photos[i]["resource"]) {
-					// The image should be highlighted if it is already at resource folder
-					htmlContent = "<div class=\"highlight\">";
+				if (isQueue) {
+					// The images cannot be in the resource folder
+					htmlContent = "<div class=\"queue\">";
 				} else {
-					htmlContent = "<div>";
+					if (edit.photos[i]["resource"]) {
+						// The image should be highlighted if it is already at resource folder
+						htmlContent = "<div class=\"highlight\">";
+					} else {
+						htmlContent = "<div>";
+					}
 				}
 				htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
 				$("#attach-area .images").append(htmlContent);
@@ -1478,26 +1593,6 @@ edit.photo = function() {
 					return false;
 				});
 			});
-			// Set preview
-			$("#attach-area .images").unbind("mouseenter mouseleave").hover(function() {
-				// Mouseover
-				// Clean up the data
-				edit.cleanupMediaEdit();
-				$("#photo-preview").css("opacity", "initial").show({
-					effect: "fade",
-					duration: 200
-				});
-			}, function() {
-				// Mouseout
-				$("#photo-preview").hide({
-					effect: "fade",
-					duration: 200
-				});
-			}).sortable({
-				containment: "#attach-area .images",
-				cursor: "crosshair",
-				revert: true
-			}).disableSelection();
 			$("#attach-area .images img").each(function() {
 				$(this).unbind("mouseenter mouseleave").hover(function() {
 					// Mouseover
@@ -1507,17 +1602,28 @@ edit.photo = function() {
 					$("#photo-preview img").animate({ opacity: 0 }, 0);
 				});
 			});
-			animation.setConfirm(0);
-			animation.log(log.EDIT_PANE_IMAGES_END, -1);
-			animation.finished("#add-photo");
+			if (isQueue) {
+				animation.log(added + log.QUEUE_FOUND_IMAGES);
+			} else {
+				animation.setConfirm(0);
+				// Test if any result was found
+				if (edit.photos.length === 0) {
+					animation.log(log.EDIT_PANE_IMAGES_END_NO_RESULT, -1);
+				} else {
+					animation.log(log.EDIT_PANE_IMAGES_END, -1);
+				}
+				animation.finished("#add-photo");
+			}
 		})
 			.fail(function(xhr, status, error) {
-				$("#add-photo").html("&#xf03e").removeClass("spin").attr({
-					onclick: "edit.addMedia(0)",
-					href: "#"
-				});
-				animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-				animation.deny("#add-photo");
+				if (!isQueue) {
+					$("#add-photo").html("&#xf03e").removeClass("spin").attr({
+						onclick: "edit.addMedia(0)",
+						href: "#"
+					});
+					animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+					animation.deny("#add-photo");
+				}
 			});
 	});
 };
@@ -1541,7 +1647,7 @@ edit.photoSave = function(callback) {
 			newPhotos = [];
 		// Sort edit.photos based on the sequence
 		$("#attach-area .images div").each(function() {
-			for (var i = 0; i != edit.photos.length; ++i) {
+			for (var i = 0; i !== edit.photos.length; ++i) {
 				if ($(this).children("img").attr("src") == edit.photos[i]["url"]) {
 					// Matched
 					var data = edit.photos[i];
@@ -1562,14 +1668,16 @@ edit.photoSave = function(callback) {
 		});
 		edit.photos = $.extend({}, newPhotos);
 		// Get the correct header for the photo
-		for (var i = 0; i != Object.keys(edit.photos).length; ++i) {
+		for (var i = 0; i !== edit.photos.length; ++i) {
 			var name = edit.photos[i]["name"],
+				id = edit.photos[i]["id"],
 				resource = edit.photos[i]["resource"];
 			if (edit.photos[i]["change"]) {
 				// Reset properties in edit.photos first
 				edit.photos[i]["change"] = false;
 				photoQueue.push({
 					name: name,
+					id: id,
 					// New location
 					resource: !resource
 				});
@@ -1599,16 +1707,17 @@ edit.photoSave = function(callback) {
 		var resourceDir = "/drive/root:/Apps/Journal/resource",
 			contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
 			processingPhoto = 0;
-		if (photoQueue.length != 0) {
+		if (photoQueue.length !== 0) {
 			// Process the photos
 			getTokenCallback(function(token) {
 				animation.log(log.EDIT_PANE_SAVE_START, 1);
 				for (var i = 0; i !== photoQueue.length; ++i) {
 					var requestJson,
-						url,
 						newName,
 						name = photoQueue[i]["name"],
-						isToResource = photoQueue[i]["resource"];
+						id = photoQueue[i]["id"],
+						isToResource = photoQueue[i]["resource"],
+						url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
 					if (isToResource) {
 						// Would like to be added to entry, originally at data folder
 						newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
@@ -1619,9 +1728,6 @@ edit.photoSave = function(callback) {
 								path: resourceDir
 							}
 						};
-						// Still use the old name to find the file
-						url = "https://api.onedrive.com/v1.0" + contentDir + "/" + name + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
-						// Add to cache
 					} else {
 						// Would like to be added to data, i.e. remove from resource folder
 						newName = name;
@@ -1630,11 +1736,10 @@ edit.photoSave = function(callback) {
 								path: contentDir
 							}
 						};
-						url = "https://api.onedrive.com/v1.0" + resourceDir + "/" + name + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
 					}
 					// Update the new name
-					for (var j = 0; j != edit.photos.length; ++j) {
-						if (edit.photos[j]["name"] == name) {
+					for (var j = 0; j !== edit.photos.length; ++j) {
+						if (edit.photos[j]["name"] === name) {
 							edit.photos[j]["newName"] = newName;
 							break;
 						}
@@ -2370,7 +2475,7 @@ edit.playableSearch = function(typeNum) {
 						size = itemList[key]["size"],
 						name = itemList[key]["name"],
 						contentUrl = itemList[key]["@content.downloadUrl"],
-						suffix = name.substring(name.length - 4),
+						suffix = name.substring(name.length - 4).toLowerCase(),
 						elementData = {
 							id: id,
 							name: name,
@@ -2380,17 +2485,17 @@ edit.playableSearch = function(typeNum) {
 							resource: false,
 							change: true
 						};
-					// Test supported file types, if file is not supported restart the loop
+					// Test supported file types, if file is not supported then restart the loop
 					switch (typeNum) {
 						case 1:
 							// Video
-							if (suffix !== ".mp4" && suffix !== ".MP4") {
+							if (suffix !== ".mp4") {
 								continue;
 							}
 							break;
 						case 3:
 							// Voice
-							if (suffix !== ".mp3" && suffix !== ".wav" && suffix !== ".MP3" && suffix !== ".WAV") {
+							if (suffix !== ".mp3" && suffix !== ".wav") {
 								continue;
 							}
 							break;
@@ -2411,8 +2516,6 @@ edit.playableSearch = function(typeNum) {
 					dataGroup.push(elementData);
 					animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + name + log.EDIT_PANE_PLAYABLE_FILE_ADDED);
 					// Add to the edit pane
-					var newIndex,
-						htmlContent;
 					switch (typeNum) {
 						case 1:
 							// Video
@@ -2574,7 +2677,7 @@ edit.playableSave = function(typeNum, callback) {
 						contentType: "application/json",
 						data: JSON.stringify(requestJson)
 					})
-						.done(function(data, status, xhr) {
+						.done(function(data) {
 							--pending;
 							var title = "";
 							// Search for this name
@@ -2607,7 +2710,7 @@ edit.playableSave = function(typeNum, callback) {
 							animation.warning(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
 							animation.warning("#add-" + edit.mediaName(typeNum));
 						})
-						.always(function(data, status, xhr) {
+						.always(function() {
 							if (pending <= 0) {
 								// Finished all the processing
 								// Process HTML element

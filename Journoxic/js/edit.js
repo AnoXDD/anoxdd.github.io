@@ -792,7 +792,7 @@ edit.addMediaFromQueue = function() {
 							url: contentUrl,
 							title: name.substring(0, name.length - 4)
 						});
-					} else if (suffix !== ".mp3" && suffix !== ".wav") {
+					} else if (suffix === ".mp3" && suffix === ".wav") {
 						// Voice
 						++addedVoice;
 						edit.voices.push(elementData);

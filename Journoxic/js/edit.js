@@ -759,9 +759,9 @@ edit.addMediaFromQueue = function() {
 	getTokenCallback(function(token) {
 		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
-				type: "GET",
-				url: url
-			})
+			type: "GET",
+			url: url
+		})
 			.done(function(data, status, xhr) {
 				/* Iterator */
 				var i = 0;
@@ -1466,7 +1466,7 @@ edit.photo = function(isQueue) {
 	}
 	// If queue photos want to be displayed before this panel is initialized, initialize photo panel first
 	var addQueue = false;
-	if ($("#attach-area .images").css("height") !== "100px") {
+	if ($("#attach-area .images").css("height") !== "100px" && isQueue) {
 		// Change the parameter to pretend to add local images first
 		addQueue = true;
 		isQueue = false;
@@ -1592,8 +1592,15 @@ edit.photo = function(isQueue) {
 					edit.photos.push(photoData);
 				}
 			}
-			// Add to images div
-			for (var i = 0; i !== edit.photos.length; ++i) {
+			// Add to images div, for those newly added only
+			var i;
+			if (isQueue) {
+				// Those already added should not be counted toward
+				i = edit.photos.length - added;
+			} else {
+				i = 0;
+			}
+			for (; i !== edit.photos.length; ++i) {
 				var htmlContent;
 				if (isQueue) {
 					// The images cannot be in the resource folder
@@ -1645,10 +1652,6 @@ edit.photo = function(isQueue) {
 					animation.log(log.EDIT_PANE_IMAGES_END, -1);
 				}
 				animation.finished("#add-photo");
-				// Test if queue photo is to be added
-				if (addQueue) {
-					edit.photo(true);
-				}
 			}
 		})
 			.fail(function(xhr, status, error) {
@@ -1657,8 +1660,21 @@ edit.photo = function(isQueue) {
 						onclick: "edit.addMedia(0)",
 						href: "#"
 					});
-					animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-					animation.deny("#add-photo");
+					animation.debug("status: " + status);
+					// Test if error is not found
+					if (error === "Not Found" && !addQueue) {
+						// If the error is not found and the user just wants to add the photo from this folder, then report error
+						animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+						animation.deny("#add-photo");
+					}
+				}
+			})
+			.always(function() {
+				animation.debug("addQueue!");
+
+				// Test if queue photo is to be added
+				if (addQueue) {
+					edit.photo(true);
 				}
 			});
 	});
@@ -1726,7 +1742,8 @@ edit.photoSave = function(callback) {
 			// Get the correct header folder
 			if (timeHeader == undefined) {
 				var timeHeaderTmp = parseInt(name);
-				if (!isNaN(timeHeaderTmp) && timeHeaderTmp.toString().length >= 6) {
+				// Only the files in the resource folder can be referenced 
+				if (!isNaN(timeHeaderTmp) && timeHeaderTmp.toString().length >= 6 && resource) {
 					// Correct format
 					timeHeader = timeHeaderTmp.toString().substring(0, 6);
 				}
@@ -1823,8 +1840,8 @@ edit.photoSave = function(callback) {
 										edit.photos[k]["resource"] = !resource;
 										// Find the correct img to add or remove highlight class on it
 										$("#attach-area .images img").each(function(index) {
-											if (journal.archive.map[name]) {
-												if ($(this).attr("src") == journal.archive.map[name]["url"]) {
+											if (journal.archive.map[newName]) {
+												if ($(this).attr("src") == journal.archive.map[newName]["url"]) {
 													photoIndex = index;
 												}
 											}
@@ -2720,7 +2737,7 @@ edit.playableSave = function(typeNum, callback) {
 							for (var j = 0; j !== dataGroup.length; ++j) {
 								if (dataGroup[j]["id"] === data["id"]) {
 									// Size matched
-									title = "\"" + dataGroup[j]["title"] + "\" ";
+									title = dataGroup[j]["title"];
 									dataGroup[j]["success"] = true;
 									// "resource" is to be changed later
 									//// dataGroup[j]["resource"] = !dataGroup[j]["resource"];

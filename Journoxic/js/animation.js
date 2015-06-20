@@ -29,7 +29,7 @@ window.log = {
 	MEDIA_CLEAN_UNDEFINED_NOT_FOUND: "No undefined media found",
 	MEDIA_CLEAN_FAIL: " media failed to be moved. Please try again",
 	MEDIA_CLEAN_SUCCESS: "All lost media moved to their original folder",
-	MEDIA_CLEAN_FINISHED :"Finding lost media finished",
+	MEDIA_CLEAN_FINISHED: "Finding lost media finished",
 
 	ARCHIVE_START: "Loading archive list ...",
 	ARCHIVE_TOO_MANY: "Too many archive files. Only the latest 500 files will be displayed",
@@ -117,7 +117,7 @@ window.log = {
 	EDIT_PANE_PLAYABLE_SAVE_START: "Start transferring ",
 	EDIT_PANE_PLAYABLE_SAVE_START_END: "s ...",
 	COVERTYPE_AUTO_CHOSEN: "Cover for this entry automatically chosen",
-	QUEUE_START: "Start finding queue resources",
+	QUEUE_START: "Loading queue resources ...",
 	QUEUE_NO_RESULT: "No applicable queue resources found",
 	QUEUE_IMAGES_NOT_LOADED: "Queue images not loaded because local photos were not shown",
 	QUEUE_FOUND_TEXT: "Text data found",
@@ -378,9 +378,11 @@ animation.log = function(message, indent, type) {
 	}).on("contextmenu", function() {
 		// Right click to dismiss all
 		$("#feedback p").each(function() {
-			$(this).trigger("mousedown");
-			return false;
+			$(this).slideUp(200, function() {
+				$(this).remove();
+			});
 		});
+			return false;
 	});
 	switch (type) {
 		case 1:

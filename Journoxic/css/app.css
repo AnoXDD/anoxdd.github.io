@@ -2566,6 +2566,9 @@ body {
 	height: 100px;
 	object-fit: cover;
 	width: 100px;
+	background-image: url("../img/pic.png");
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 #edit-pane .images div, #edit-pane .images canvas {

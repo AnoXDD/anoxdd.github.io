@@ -1980,6 +1980,8 @@ app.checkResource = function() {
 			}
 		}
 	}
+	// Empty lostMedia
+	app.lostMedia = [];
 	// Now the elements still in allMedia are also lost media
 	for (var i = 0; i !== allMedia.length; ++i) {
 		app.lostMedia.push(allMedia[i]);

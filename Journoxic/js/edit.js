@@ -844,7 +844,6 @@ edit.addMediaFromQueue = function() {
 			$("#return-lost-media").attr("onclick", "app.cleanResource()");
 			animation.log(log.QUEUE_END, -1);
 		});
-});
 }
 /**
  * Adds media element to pending removal list and make this element fade out from the view. 

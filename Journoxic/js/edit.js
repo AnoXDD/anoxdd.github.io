@@ -762,6 +762,8 @@ edit.addMediaFromQueue = function() {
 				url: url
 			})
 			.done(function(data, status, xhr) {
+				/* Iterator */
+				var i = 0;
 				var itemList = data["value"],
 					addedVoice = 0,
 					addedVideo = 0;
@@ -780,10 +782,21 @@ edit.addMediaFromQueue = function() {
 							size: size,
 							resource: false,
 							change: true
-						};
+						},
+						newContent = true;
 					// Test supported file types, if file is not supported then restart the loop
 					if (suffix === ".mp4") {
 						// Video
+						// Test if this medium is duplicate
+						for (i = 0; i !== edit.videos.length; ++i) {
+							if (edit.videos[i]["size"] === size) {
+								newContent = false;
+								break;
+							}
+						}
+						if (!newContent) {
+							continue;
+						}
 						++addedVideo;
 						edit.videos.push(elementData);
 						// Add to the edit pane
@@ -792,8 +805,18 @@ edit.addMediaFromQueue = function() {
 							url: contentUrl,
 							title: name.substring(0, name.length - 4)
 						});
-					} else if (suffix === ".mp3" && suffix === ".wav") {
+					} else if (suffix === ".mp3" || suffix === ".wav") {
 						// Voice
+						// Test if this medium is duplicate
+						for (i = 0; i !== edit.voices.length; ++i) {
+							if (edit.voices[i]["size"] === size) {
+								newContent = false;
+								break;
+							}
+						}
+						if (!newContent) {
+							continue;
+						}
 						++addedVoice;
 						edit.voices.push(elementData);
 						// Add to the edit pane

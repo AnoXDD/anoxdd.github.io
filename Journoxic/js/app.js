@@ -125,14 +125,22 @@ app.init = function() {
 	});
 	// Add clickon event for all the menu buttons
 	$(".entry-menu").each(function() {
-		$(this).on("click", function() {
-			headerShowMenu($(this).attr("id"));
-		});
+		// Exclude the refresh-data button
+		if ($(this).attr("id") !== "refresh-data") {
+			$(this).on("click", function() {
+				headerShowMenu($(this).attr("id"));
+			});
+		}
 	});
 };
 /**
+ * Simply refreshes and force reload
+ */
+app.refresh = function() {
+	app.load("", true);
+}
+/**
  * Reloads the content view of the journal. 
- * To force reload, call app.load("", true)
  * @param {String} filter - The string representing the filter of display
  * @param {Boolean} forceReload - Whether this reload is force, i.e. variables will be reset
  * @param {String} newContent - The string representing the new content of journal archive
@@ -1988,6 +1996,7 @@ app.checkResource = function() {
 		animation.log(log.MEDIA_CLEAN_UNDEFINED_NOT_FOUND);
 	} else {
 		animation.log(undefMedia + log.MEDIA_CLEAN_UNDEFINED_FOUND);
+		app.refresh();
 	}
 	// Show the button for furthur actions
 	animation.showIcon("#return-lost-media");

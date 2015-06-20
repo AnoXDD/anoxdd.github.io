@@ -119,6 +119,7 @@ window.log = {
 	COVERTYPE_AUTO_CHOSEN: "Cover for this entry automatically chosen",
 	QUEUE_START: "Start finding queue resources",
 	QUEUE_NO_RESULT: "No applicable queue resources found",
+	QUEUE_IMAGES_NOT_LOADED: "Queue images not loaded because local photos were not shown",
 	QUEUE_FOUND_TEXT: "Text data found",
 	QUEUE_FOUND_IMAGES: " image(s) found",
 	QUEUE_FOUND_VIDEOS: " video(s) found",

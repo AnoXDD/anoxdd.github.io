@@ -308,7 +308,7 @@ edit.quit = function(selector, save) {
 		$("#edit-pane").html("");
 		$("#contents").fadeIn();
 		// Reload
-		app.load("", true);
+		app.refresh();
 		headerShowMenu("edit");
 	});
 	// Clean cache anyway
@@ -539,7 +539,7 @@ edit.tryReadCache = function() {
 	if (localStorage["archive"]) {
 		// Seems that there is available data
 		journal.archive.data = JSON.parse(localStorage["archive"]);
-		app.load("", true);
+		app.refresh();
 	}
 };
 
@@ -755,7 +755,12 @@ edit.addMediaFromQueue = function() {
 	// Add throttle
 	$("#return-lost-media").removeAttr("onclick");
 	animation.log(log.QUEUE_START, 1);
-	edit.photo(true);
+	if (edit.photos.length !== 0) {
+		edit.photo(true);
+	} else {
+		// Do not add photos if local photos are not presented
+		animation.warn(log.QUEUE_IMAGES_NOT_LOADED);
+	}
 	getTokenCallback(function(token) {
 		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({

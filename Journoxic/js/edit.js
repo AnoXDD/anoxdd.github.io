@@ -102,7 +102,7 @@ edit.init = function(overwrite, index) {
 	// Add to cache, all the cache processing starts here
 	data = edit.importCache(data);
 	// Process edit.voices and edit.videos
-	edit.photos= [];
+	edit.photos = [];
 	edit.videos = [];
 	edit.voices = [];
 	var processGroup = ["video", "voice"];
@@ -755,102 +755,96 @@ edit.addMediaFromQueue = function() {
 	// Add throttle
 	$("#return-lost-media").removeAttr("onclick");
 	animation.log(log.QUEUE_START, 1);
-	if (edit.photos.length !== 0) {
-		edit.photo(true);
-	} else {
-		// Do not add photos if local photos are not presented
-		animation.warn(log.QUEUE_IMAGES_NOT_LOADED);
-	}
-	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-		$.ajax({
-			type: "GET",
-			url: url
-		})
-			.done(function(data, status, xhr) {
-				/* Iterator */
-				var i = 0;
-				var itemList = data["value"],
-					addedVoice = 0,
-					addedVideo = 0;
-				// Iterate to find all the results on the server
-				for (var key = 0, len = itemList.length; key !== len; ++key) {
-					var id = itemList[key]["id"],
-						size = itemList[key]["size"],
-						name = itemList[key]["name"],
-						contentUrl = itemList[key]["@content.downloadUrl"],
-						suffix = name.substring(name.length - 4).toLowerCase(),
-						elementData = {
-							id: id,
-							name: name,
-							title: name.substring(0, name.length - 4),
-							url: contentUrl,
-							size: size,
-							resource: false,
-							change: true
-						},
-						newContent = true;
-					// Test supported file types, if file is not supported then restart the loop
-					if (suffix === ".mp4") {
-						// Video
-						// Test if this medium is duplicate
-						for (i = 0; i !== edit.videos.length; ++i) {
-							if (edit.videos[i]["size"] === size) {
-								newContent = false;
-								break;
-							}
+	edit.photo(true);
+	var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+	$.ajax({
+		type: "GET",
+		url: url
+	})
+		.done(function(data, status, xhr) {
+			/* Iterator */
+			var i = 0;
+			var itemList = data["value"],
+				addedVoice = 0,
+				addedVideo = 0;
+			// Iterate to find all the results on the server
+			for (var key = 0, len = itemList.length; key !== len; ++key) {
+				var id = itemList[key]["id"],
+					size = itemList[key]["size"],
+					name = itemList[key]["name"],
+					contentUrl = itemList[key]["@content.downloadUrl"],
+					suffix = name.substring(name.length - 4).toLowerCase(),
+					elementData = {
+						id: id,
+						name: name,
+						title: name.substring(0, name.length - 4),
+						url: contentUrl,
+						size: size,
+						resource: false,
+						change: true
+					},
+					newContent = true;
+				// Test supported file types, if file is not supported then restart the loop
+				if (suffix === ".mp4") {
+					// Video
+					// Test if this medium is duplicate
+					for (i = 0; i !== edit.videos.length; ++i) {
+						if (edit.videos[i]["size"] === size) {
+							newContent = false;
+							break;
 						}
-						if (!newContent) {
-							continue;
-						}
-						++addedVideo;
-						edit.videos.push(elementData);
-						// Add to the edit pane
-						edit.addMedia(-1, {
-							fileName: name,
-							url: contentUrl,
-							title: name.substring(0, name.length - 4)
-						});
-					} else if (suffix === ".mp3" || suffix === ".wav") {
-						// Voice
-						// Test if this medium is duplicate
-						for (i = 0; i !== edit.voices.length; ++i) {
-							if (edit.voices[i]["size"] === size) {
-								newContent = false;
-								break;
-							}
-						}
-						if (!newContent) {
-							continue;
-						}
-						++addedVoice;
-						edit.voices.push(elementData);
-						// Add to the edit pane
-						edit.addMedia(-3, {
-							fileName: name,
-							url: contentUrl,
-							title: name.substring(0, name.length - 4)
-						});
 					}
+					if (!newContent) {
+						continue;
+					}
+					++addedVideo;
+					edit.videos.push(elementData);
+					// Add to the edit pane
+					edit.addMedia(-1, {
+						fileName: name,
+						url: contentUrl,
+						title: name.substring(0, name.length - 4)
+					});
+				} else if (suffix === ".mp3" || suffix === ".wav") {
+					// Voice
+					// Test if this medium is duplicate
+					for (i = 0; i !== edit.voices.length; ++i) {
+						if (edit.voices[i]["size"] === size) {
+							newContent = false;
+							break;
+						}
+					}
+					if (!newContent) {
+						continue;
+					}
+					++addedVoice;
+					edit.voices.push(elementData);
+					// Add to the edit pane
+					edit.addMedia(-3, {
+						fileName: name,
+						url: contentUrl,
+						title: name.substring(0, name.length - 4)
+					});
 				}
-				// Right click to select
-				edit.playableSetToggle();
-				if (addedVideo > 0) {
-					animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
-				}
-				if (addedVoice > 0) {
-					animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
-				}
-			})
-			.fail(function(xhr, status, error) {
-				animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
-			})
-			.always(function() {
-				// Add it back
-				$("#return-lost-media").attr("onclick", "app.cleanResource()");
-				animation.log(log.QUEUE_END, -1);
-			});
-	});
+			}
+			// Right click to select
+			edit.playableSetToggle();
+			if (addedVideo > 0) {
+				animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
+			}
+			if (addedVoice > 0) {
+				animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
+			}
+		})
+		.fail(function(xhr, status, error) {
+			animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+		})
+		.always(function() {
+			// Add it back
+			$("#return-lost-media").attr("onclick", "app.cleanResource()");
+			animation.log(log.QUEUE_END, -1);
+		});
+});
 }
 /**
  * Adds media element to pending removal list and make this element fade out from the view. 
@@ -1459,15 +1453,22 @@ edit.photo = function(isQueue) {
 		animation.error(log.EDIT_PANE_IMAGES_ALREADY_LOADED);
 		return;
 	}
+	// Test if this entry really doesn't have any images at all
 	var images = JSON.parse(localStorage["images"]);
 	if (images) {
-		// Test if this entry really doesn't have any images at all
 		if (Object.keys(journal.archive.map).length === 0) {
 			// No media in the map, ask for downloading the images
 			animation.error(log.EDIT_PANE_IMAGES_FAIL + log.DOWNLOAD_PROMPT);
 			animation.deny("#add-photo");
 			return;
 		}
+	}
+	// If queue photos want to be displayed before this panel is initialized, initialize photo panel first
+	var addQueue = false;
+	if ($("#attach-area .images").css("height") !== "100px") {
+		// Change the parameter to pretend to add local images first
+		addQueue = true;
+		isQueue = false;
 	}
 	// Extend the image area and add sortable functionality and hover 
 	$("#attach-area .images").css({ height: "100px" }).hover(function() {
@@ -1643,6 +1644,10 @@ edit.photo = function(isQueue) {
 					animation.log(log.EDIT_PANE_IMAGES_END, -1);
 				}
 				animation.finished("#add-photo");
+				// Test if queue photo is to be added
+				if (addQueue) {
+					edit.photo(true);
+				}
 			}
 		})
 			.fail(function(xhr, status, error) {

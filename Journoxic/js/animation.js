@@ -121,11 +121,11 @@ window.log = {
 	QUEUE_NO_RESULT: "No applicable queue resources found",
 	QUEUE_IMAGES_NOT_LOADED: "Queue images not loaded because local photos were not shown",
 	QUEUE_FOUND_TEXT: "Text data found",
-	QUEUE_FOUND_IMAGES: " image(s) found",
-	QUEUE_FOUND_VIDEOS: " video(s) found",
-	QUEUE_FOUND_VOICES: " voice(s) found",
+	QUEUE_FOUND_IMAGES: " image(s) added",
+	QUEUE_FOUND_VIDEOS: " video(s) added",
+	QUEUE_FOUND_VOICES: " voice(s) added",
 	QUEUE_FAILED: "Cannot find queue resources",
-	QUEUE_END: "Finding Queue resources finished",
+	QUEUE_END: "Queue resources loaded",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",
@@ -369,12 +369,17 @@ animation.log = function(message, indent, type) {
 		default:
 			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
 	}
-	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).click(function() {
+	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).mousedown(function() {
 		$(this).slideUp(200, function() {
 			$(this).remove();
 		});
 	}).hover(function() {
 		$(this).fadeTo(400, 1);
+	}).on("contextmenu", function() {
+		// Right click to dismiss all
+		$("#feedback p").each(function() {
+			$(this).trigger("mousedown");
+		});
 	});
 	switch (type) {
 		case 1:
@@ -391,7 +396,7 @@ animation.log = function(message, indent, type) {
 			// Auto remove itself
 			setTimeout(function() {
 				if ($("p#" + id).css("opacity") != 1) {
-					$("p#" + id).trigger("click");
+					$("p#" + id).trigger("mousedown");
 				}
 			}, removeTime);
 			break;

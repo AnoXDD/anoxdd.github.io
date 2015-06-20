@@ -1,5 +1,7 @@
 /* A library for animations */
 
+window.animation = {};
+
 animation.isDebug = true;
 
 window.log = {
@@ -114,6 +116,13 @@ window.log = {
 	EDIT_PANE_PLAYABLE_SAVE_START: "Start transferring ",
 	EDIT_PANE_PLAYABLE_SAVE_START_END: "s ...",
 	COVERTYPE_AUTO_CHOSEN: "Cover for this entry automatically chosen",
+	QUEUE_START: "Start finding queue resources",
+	QUEUE_NO_RESULT: "No applicable queue resources found",
+	QUEUE_FOUND_TEXT: "Text data found",
+	QUEUE_FOUND_IMAGES: " image(s) found",
+	QUEUE_FOUND_VIDEOS: " video(s) found",
+	QUEUE_FOUND_VOICES: " voice(s) found",
+	QUEUE_FAILED: "Cannot find queue resources",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",
@@ -125,8 +134,6 @@ window.log = {
 	AUTH_REFRESH_AUTO_OFF: "The access token will now stop refreshing",
 	AUTH_REFRESH_EXPIRED: "Previous session expired"
 };
-
-window.animation = {};
 
 animation.degree = 0;
 animation.duration = 250;

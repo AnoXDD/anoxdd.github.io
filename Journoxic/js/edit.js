@@ -747,13 +747,25 @@ edit.removeMedia = function(typeNum) {
 	edit.cleanupMediaEdit();
 };
 /**
- * Adds medium from /queue to help the user to accelerate to select the media
+ * Adds media from /queue to help the user to accelerate to select the media
  */
 edit.addMediaFromQueue = function() {
+	getTokenCallback(function(token) {
+		// First, get all the files under /queue
+		$.ajax({
+			type: "GET",
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
+		})
+			.done(function(data) {
 
+			})
+			.fail(function(xhr, status, error) {
+				animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + log.SERVER_RETURNS_END, -1);
+			})
+	})
 }
 /**
- * Adds a media element to pending removal list and make this element fade out from the view. 
+ * Adds media element to pending removal list and make this element fade out from the view. 
  * The list will not be removed until edit.quit() is called
  * @param {string} name - The string of the type of media
  * @param {number} index (Optional) - The index of the type of media to be added to the list
@@ -1349,7 +1361,7 @@ edit.coverTest = function(type) {
 /************************** PHOTO 0 ************************/
 
 edit.photo = function() {
-	if (edit.photos.length != 0) {
+	if (edit.photos.length !== 0) {
 		// Return if edit.photo is already displayed
 		animation.error(log.EDIT_PANE_IMAGES_ALREADY_LOADED);
 		return;
@@ -1407,17 +1419,17 @@ edit.photo = function() {
 				animation.warning(log.EDIT_PANE_TOO_MANY_RESULTS);
 			}
 			var itemList = data["value"];
-			for (var key = 0, len = itemList.length; key != len; ++key) {
+			for (var key = 0, len = itemList.length; key !== len; ++key) {
 				var size = itemList[key]["size"],
 					name = itemList[key]["name"],
 					suffix = name.substring(name.length - 4),
 					found = false;
-				if (suffix != ".jpg" && suffix != ".png") {
+				if (suffix !== ".jpg" && suffix !== ".png") {
 					// Only support these two types
 					continue;
 				}
 				// Use size to filter out duplicate pahotos
-				for (var i = 0, tmp = edit.photos; i != tmp.length; ++i) {
+				for (var i = 0, tmp = edit.photos; i !== tmp.length; ++i) {
 					if (tmp[i]["size"] == size) {
 						found = true;
 						break;
@@ -1427,19 +1439,19 @@ edit.photo = function() {
 					// Abandon this image
 					continue;
 				} else {
-					var data = {
+					var photoData = {
 						name: name,
 						url: itemList[key]["@content.downloadUrl"],
 						size: size,
 						resource: false,
 						change: false
 					};
-					edit.photos.push(data);
+					edit.photos.push(photoData);
 				}
 			}
 			console.log("edit.photo()\tFinish media data");
 			// Add to images div
-			for (var i = 0; i != edit.photos.length; ++i) {
+			for (var i = 0; i !== edit.photos.length; ++i) {
 				var htmlContent;
 				if (edit.photos[i]["resource"]) {
 					// The image should be highlighted if it is already at resource folder
@@ -1457,6 +1469,8 @@ edit.photo = function() {
 			}).fadeIn();
 			// Clicking on img functionality
 			$("#attach-area .images div img").each(function() {
+				// Re-apply
+				$(this).off("contextmenu");
 				$(this).on("contextmenu", function() {
 					// Right click to select the images
 					$(this).parent().toggleClass("highlight");
@@ -1465,7 +1479,7 @@ edit.photo = function() {
 				});
 			});
 			// Set preview
-			$("#attach-area .images").hover(function() {
+			$("#attach-area .images").unbind("mouseenter mouseleave").hover(function() {
 				// Mouseover
 				// Clean up the data
 				edit.cleanupMediaEdit();
@@ -1485,7 +1499,7 @@ edit.photo = function() {
 				revert: true
 			}).disableSelection();
 			$("#attach-area .images img").each(function() {
-				$(this).hover(function() {
+				$(this).unbind("mouseenter mouseleave").hover(function() {
 					// Mouseover
 					$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
 				}, function() {
@@ -2079,7 +2093,6 @@ edit.voice = function(index, link) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex["voice"] = index;
 	var selectorHeader = edit.getSelectorHeader("voice");
-	animation.setConfirm(3);
 	edit.func = $(selectorHeader + "a").attr("onclick");
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false);
@@ -2149,11 +2162,9 @@ edit.voiceSave = function(index) {
 	data[index] = newElem;
 	localStorage["voice"] = JSON.stringify(data);
 };
-
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
  */
-
 edit.voiceSearch = function() {
 	edit.playableSearch(3);
 };
@@ -2319,6 +2330,7 @@ edit.itunesSave = function(index, typeNum) {
  * Adds a playable item from the data folder to the edit view (video and audio)
  * This function will simply fetch the data and will not make any difference on OneDrive server
  * @param {Number} typeNum - The type number of the content to be added. 1: video. 3: voice.
+ * @see edit.queue() - This function also uses part of this function. If any change is made, make sure that function is corresponding change is made as well
  */
 edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {

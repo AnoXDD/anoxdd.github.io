@@ -753,11 +753,10 @@ edit.removeMedia = function(typeNum) {
 edit.addMediaFromQueue = function() {
 	// Add throttle
 	$("#return-lost-media").removeAttr("onclick");
-	// Todo remember to add it back
 	animation.log(log.QUEUE_START, 1);
 	edit.photo(true);
 	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue/:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
 				type: "GET",
 				url: url
@@ -1162,7 +1161,7 @@ edit.addTag = function(tag, mute) {
 	if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
 		// The entry is already added
 		// This tag has already been added
-		animation.warning(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
+		animation.warn(log.TAG_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
 		$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 	} else {
 		var found = false,
@@ -1177,7 +1176,7 @@ edit.addTag = function(tag, mute) {
 					// Only one weather and emotion is allowed
 					if ($(this).css("height") === "0px") {
 						// Hidden div, means another weather/emotion has already been added
-						animation.warning(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
+						animation.warn(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
 						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 						return;
 					}
@@ -1190,7 +1189,7 @@ edit.addTag = function(tag, mute) {
 					edit.toggleIcon(tag);
 					added = true;
 				} else {
-					animation.warning(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
+					animation.warn(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
 					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
 					// Saved
 				}
@@ -1459,10 +1458,10 @@ edit.photo = function(isQueue) {
 		cursor: "crosshair",
 		revert: true
 	}).disableSelection();
-	// Add throttle
-	$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	// Prepartion before doing server work
 	if (!isQueue) {
+	// Add throttle
+	$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 		// Empty edit.photos only if the photos are not added from queue
 		edit.photos = [];
 		// Iterate to add all photos of this dataclip to edit.photos
@@ -1514,7 +1513,7 @@ edit.photo = function(isQueue) {
 	getTokenCallback(function(token) {
 		var url;
 		if (isQueue) {
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue/:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		} else {
 			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		}
@@ -1523,7 +1522,7 @@ edit.photo = function(isQueue) {
 			url: url
 		}).done(function(data, status, xhr) {
 			if (data["@odata.nextLink"] && !isQueue) {
-				animation.warning(log.EDIT_PANE_TOO_MANY_RESULTS);
+				animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
 			}
 			var itemList = data["value"],
 				added = 0;
@@ -1666,7 +1665,7 @@ edit.photoSave = function(callback) {
 				}
 			}
 		});
-		edit.photos = $.extend({}, newPhotos);
+		edit.photos = $.extend([], newPhotos);
 		// Get the correct header for the photo
 		for (var i = 0; i !== edit.photos.length; ++i) {
 			var name = edit.photos[i]["name"],
@@ -1795,8 +1794,8 @@ edit.photoSave = function(callback) {
 										});
 										// Get the result of transferring
 										if (!resource) {
-											// Originally not at the resource, to resource
-											$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight");
+											// Originally not at the resource, now at resource
+											$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight").removeClass("queue");
 											newImagesData.push({
 												fileName: newName
 											});
@@ -2450,7 +2449,7 @@ edit.playableSearch = function(typeNum) {
 				if (data["@odata.nextLink"]) {
 					// More content available!
 					// Do nothing right now
-					animation.warning(log.EDIT_PANE_TOO_MANY_RESULTS);
+					animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
 				}
 				var itemList = data["value"],
 					dataGroup;
@@ -2707,7 +2706,7 @@ edit.playableSave = function(typeNum, callback) {
 						})
 						.fail(function(xhr, status, error) {
 							--pending;
-							animation.warning(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
+							animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
 							animation.warning("#add-" + edit.mediaName(typeNum));
 						})
 						.always(function() {

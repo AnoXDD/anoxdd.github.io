@@ -410,7 +410,7 @@ animation.error = function(message, indent) {
  * @param {String} message - The message to be logged
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.warning = function(message, indent) {
+animation.warn = function(message, indent) {
 	animation.log(message, indent, 2);
 }
 /**

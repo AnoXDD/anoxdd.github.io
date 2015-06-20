@@ -223,7 +223,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 			var result = response.results[0];
 			if (result == undefined) {
 				// Not found
-				animation.warning(log.COVER_PHOTO_FAIL);
+				animation.warn(log.COVER_PHOTO_FAIL);
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found

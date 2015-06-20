@@ -1594,7 +1594,7 @@ app.audioPlayer = function(selector, source) {
 		app.isFunction = false;
 	} else {
 		// Do not continue
-		animation.warning(log.MEDIA_ALREADY_DISPLAYED);
+		animation.warn(log.MEDIA_ALREADY_DISPLAYED);
 		return;
 	}
 	animation.log(log.AUDIO_DOWNLOAD_START, 1);
@@ -1747,7 +1747,7 @@ app.videoPlayer = function(selector, source) {
 		app.isFunction = false;
 	} else {
 		// Do not continue
-		animation.warning(log.MEDIA_ALREADY_DISPLAYED);
+		animation.warn(log.MEDIA_ALREADY_DISPLAYED);
 		return;
 	}
 	animation.log(log.VIDEO_DOWNLOAD_START, 1);

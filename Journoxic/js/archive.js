@@ -29,7 +29,7 @@ archive.init = function(selector) {
 		})
 			.done(function(data, status, xhr) {
 				if (data["@odata.nextLink"]) {
-					animation.warning(log.ARCHIVE_TOO_MANY);
+					animation.warn(log.ARCHIVE_TOO_MANY);
 				}
 				animation.log(log.ARCHIVE_END, -1);
 				var itemList = data["value"];
@@ -463,7 +463,7 @@ archive.toggle = function(type) {
 		}
 	});
 	if (!changed) {
-		animation.warning(log.ARCHIVE_NO_SELECTED);
+		animation.warn(log.ARCHIVE_NO_SELECTED);
 	}
 }
 

@@ -330,8 +330,13 @@ animation.invalid = function(selector) {
  * @param {Number} type - The type of message. 0 for normal. 1 for error. 2 for warning.
  */
 animation.log = function(message, indent, type) {
+	/* The time of milliseconds since the emergence before the log square is dimmed */
 	var dimTime = 10000,
-		removeTime = 5000;
+	/** 
+	 * The time of milliseconds since the emergence before the log square is removed
+	 * To make sure the log square is removed, set the value larger than `dimTime` 
+	 */
+		removeTime = 15000;
 	var id = new Date().getTime(),
 		htmlContent,
 		tabClass = "";

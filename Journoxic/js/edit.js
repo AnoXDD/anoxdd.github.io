@@ -102,6 +102,7 @@ edit.init = function(overwrite, index) {
 	// Add to cache, all the cache processing starts here
 	data = edit.importCache(data);
 	// Process edit.voices and edit.videos
+	edit.photos= [];
 	edit.videos = [];
 	edit.voices = [];
 	var processGroup = ["video", "voice"];
@@ -1108,10 +1109,11 @@ edit.getDate = function() {
 		// Sometimes for some reason the first character is an "empty" char
 		dateStr = parseInt(localStorage["title"]);
 		if (!isNaN(dateStr)) {
-			if (dateStr.toString().length === 5) {
+			dateStr = dateStr.toString();
+			if (dateStr.length === 5) {
 				dateStr = "0" + dateStr;
 			}
-			if (dateStr.toString().length === 6) {
+			if (dateStr.length === 6) {
 				// Correct format
 				return dateStr;
 			}
@@ -1128,7 +1130,7 @@ edit.getDate = function() {
 	}
 	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	// Test server folder validity
-	if (dateStr !== edit.folderDate) {
+	if (dateStr != edit.folderDate) {
 		// Try to create the folder
 		getTokenCallback(function(token) {
 			var requestJson = {
@@ -1518,7 +1520,7 @@ edit.photo = function(isQueue) {
 		} else {
 			dateStr = edit.getDate();
 		}
-		animation.log(log.EDIT_PANE_IMAGES_SAVE_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
+		animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
 	} else {
 		// Remove all the queue images
 		$("#attach-area .images .queue").each(function() {

@@ -124,6 +124,7 @@ window.log = {
 	QUEUE_FOUND_VIDEOS: " video(s) found",
 	QUEUE_FOUND_VOICES: " voice(s) found",
 	QUEUE_FAILED: "Cannot find queue resources",
+	QUEUE_END: "Finding Queue resources finished",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",
@@ -323,11 +324,14 @@ animation.invalid = function(selector) {
 
 /**
  * Logs something on the menu to let the user know
+ * Set the dim and auto-removal time at the first two lines of the function
  * @param {String} message - The message to be logged
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective after). -1 for dedenting by one (effective immediately)
  * @param {Number} type - The type of message. 0 for normal. 1 for error. 2 for warning.
  */
 animation.log = function(message, indent, type) {
+	var dimTime = 10000,
+		removeTime = 5000;
 	var id = new Date().getTime(),
 		htmlContent,
 		tabClass = "";
@@ -374,18 +378,16 @@ animation.log = function(message, indent, type) {
 			message = "[!!!] " + message;
 			// Deliberately miss the break token
 		default:
+			// Auto dim itself
 			setTimeout(function() {
 				$("p#" + id).fadeTo(400, .5);
-			}, 2000);
+			}, dimTime);
 			// Auto remove itself
-			var click = function() {
+			setTimeout(function() {
 				if ($("p#" + id).css("opacity") != 1) {
 					$("p#" + id).trigger("click");
-				} else {
-					setTimeout(click, 5000);
 				}
-			};
-			setTimeout(click, 5000);
+			}, removeTime);
 			break;
 	}
 	console.log("From user log: \t" + new Date() + ": " + message);

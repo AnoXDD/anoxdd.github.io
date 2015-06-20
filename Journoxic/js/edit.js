@@ -758,9 +758,9 @@ edit.addMediaFromQueue = function() {
 	getTokenCallback(function(token) {
 		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 		$.ajax({
-				type: "GET",
-				url: url
-			})
+			type: "GET",
+			url: url
+		})
 			.done(function(data, status, xhr) {
 				/* Iterator */
 				var i = 0;
@@ -842,6 +842,7 @@ edit.addMediaFromQueue = function() {
 			.always(function() {
 				// Add it back
 				$("#return-lost-media").attr("onclick", "app.cleanResource()");
+				animation.log(log.QUEUE_END, -1);
 			});
 	});
 }
@@ -1483,8 +1484,8 @@ edit.photo = function(isQueue) {
 	}).disableSelection();
 	// Prepartion before doing server work
 	if (!isQueue) {
-	// Add throttle
-	$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+		// Add throttle
+		$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 		// Empty edit.photos only if the photos are not added from queue
 		edit.photos = [];
 		// Iterate to add all photos of this dataclip to edit.photos
@@ -1517,7 +1518,7 @@ edit.photo = function(isQueue) {
 		} else {
 			dateStr = edit.getDate();
 		}
-		animation.log(log.EDIT_PANE_SAVE_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
+		animation.log(log.EDIT_PANE_IMAGES_SAVE_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
 	} else {
 		// Remove all the queue images
 		$("#attach-area .images .queue").each(function() {
@@ -1732,7 +1733,7 @@ edit.photoSave = function(callback) {
 		if (photoQueue.length !== 0) {
 			// Process the photos
 			getTokenCallback(function(token) {
-				animation.log(log.EDIT_PANE_SAVE_START, 1);
+				animation.log(log.EDIT_PANE_IMAGES_SAVE_START, 1);
 				for (var i = 0; i !== photoQueue.length; ++i) {
 					var requestJson,
 						newName,

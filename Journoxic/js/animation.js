@@ -92,12 +92,12 @@ window.log = {
 	EDIT_PANE_IMAGES_FAIL: "Cannot load images",
 	EDIT_PANE_IMAGES_START: "Start loading images under data/",
 	EDIT_PANE_IMAGES_START_END: " ...",
-	EDIT_PANE_IMAGES_END: "Photos loaded",
-	EDIT_PANE_IMAGES_END_NO_RESULT: "No photos found",
+	EDIT_PANE_IMAGES_END: "Images loaded",
+	EDIT_PANE_IMAGES_END_NO_RESULT: "No images found",
 	EDIT_PANE_IMAGES_FIND_FAIL: " under data/",
-	EDIT_PANE_IMAGES_SAVE_START: "Start transferring photos ...",
+	EDIT_PANE_IMAGES_SAVE_START: "Start transferring images ...",
 	EDIT_PANE_IMAGES_OF: " of ",
-	EDIT_PANE_IMAGES_TRASNFERRED: " photo transferred",
+	EDIT_PANE_IMAGES_TRASNFERRED: " image transferred",
 	EDIT_PANE_FINISHED_TRANSFER: "Finished ",
 	EDIT_PANE_FINISHED_TRANSFER_END: " transfer",
 	EDIT_PANE_TRANSFERRED_FAILED: "One transfer failed. No transfer was made",
@@ -379,6 +379,7 @@ animation.log = function(message, indent, type) {
 		// Right click to dismiss all
 		$("#feedback p").each(function() {
 			$(this).trigger("mousedown");
+			return false;
 		});
 	});
 	switch (type) {

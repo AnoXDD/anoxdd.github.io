@@ -756,94 +756,96 @@ edit.addMediaFromQueue = function() {
 	$("#return-lost-media").removeAttr("onclick");
 	animation.log(log.QUEUE_START, 1);
 	edit.photo(true);
-	var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-	$.ajax({
-		type: "GET",
-		url: url
-	})
-		.done(function(data, status, xhr) {
-			/* Iterator */
-			var i = 0;
-			var itemList = data["value"],
-				addedVoice = 0,
-				addedVideo = 0;
-			// Iterate to find all the results on the server
-			for (var key = 0, len = itemList.length; key !== len; ++key) {
-				var id = itemList[key]["id"],
-					size = itemList[key]["size"],
-					name = itemList[key]["name"],
-					contentUrl = itemList[key]["@content.downloadUrl"],
-					suffix = name.substring(name.length - 4).toLowerCase(),
-					elementData = {
-						id: id,
-						name: name,
-						title: name.substring(0, name.length - 4),
-						url: contentUrl,
-						size: size,
-						resource: false,
-						change: true
-					},
-					newContent = true;
-				// Test supported file types, if file is not supported then restart the loop
-				if (suffix === ".mp4") {
-					// Video
-					// Test if this medium is duplicate
-					for (i = 0; i !== edit.videos.length; ++i) {
-						if (edit.videos[i]["size"] === size) {
-							newContent = false;
-							break;
+	getTokenCallback(function(token) {
+		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+		$.ajax({
+				type: "GET",
+				url: url
+			})
+			.done(function(data, status, xhr) {
+				/* Iterator */
+				var i = 0;
+				var itemList = data["value"],
+					addedVoice = 0,
+					addedVideo = 0;
+				// Iterate to find all the results on the server
+				for (var key = 0, len = itemList.length; key !== len; ++key) {
+					var id = itemList[key]["id"],
+						size = itemList[key]["size"],
+						name = itemList[key]["name"],
+						contentUrl = itemList[key]["@content.downloadUrl"],
+						suffix = name.substring(name.length - 4).toLowerCase(),
+						elementData = {
+							id: id,
+							name: name,
+							title: name.substring(0, name.length - 4),
+							url: contentUrl,
+							size: size,
+							resource: false,
+							change: true
+						},
+						newContent = true;
+					// Test supported file types, if file is not supported then restart the loop
+					if (suffix === ".mp4") {
+						// Video
+						// Test if this medium is duplicate
+						for (i = 0; i !== edit.videos.length; ++i) {
+							if (edit.videos[i]["size"] === size) {
+								newContent = false;
+								break;
+							}
 						}
-					}
-					if (!newContent) {
-						continue;
-					}
-					++addedVideo;
-					edit.videos.push(elementData);
-					// Add to the edit pane
-					edit.addMedia(-1, {
-						fileName: name,
-						url: contentUrl,
-						title: name.substring(0, name.length - 4)
-					});
-				} else if (suffix === ".mp3" || suffix === ".wav") {
-					// Voice
-					// Test if this medium is duplicate
-					for (i = 0; i !== edit.voices.length; ++i) {
-						if (edit.voices[i]["size"] === size) {
-							newContent = false;
-							break;
+						if (!newContent) {
+							continue;
 						}
+						++addedVideo;
+						edit.videos.push(elementData);
+						// Add to the edit pane
+						edit.addMedia(-1, {
+							fileName: name,
+							url: contentUrl,
+							title: name.substring(0, name.length - 4)
+						});
+					} else if (suffix === ".mp3" || suffix === ".wav") {
+						// Voice
+						// Test if this medium is duplicate
+						for (i = 0; i !== edit.voices.length; ++i) {
+							if (edit.voices[i]["size"] === size) {
+								newContent = false;
+								break;
+							}
+						}
+						if (!newContent) {
+							continue;
+						}
+						++addedVoice;
+						edit.voices.push(elementData);
+						// Add to the edit pane
+						edit.addMedia(-3, {
+							fileName: name,
+							url: contentUrl,
+							title: name.substring(0, name.length - 4)
+						});
 					}
-					if (!newContent) {
-						continue;
-					}
-					++addedVoice;
-					edit.voices.push(elementData);
-					// Add to the edit pane
-					edit.addMedia(-3, {
-						fileName: name,
-						url: contentUrl,
-						title: name.substring(0, name.length - 4)
-					});
 				}
-			}
-			// Right click to select
-			edit.playableSetToggle();
-			if (addedVideo > 0) {
-				animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
-			}
-			if (addedVoice > 0) {
-				animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
-			}
-		})
-		.fail(function(xhr, status, error) {
-			animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
-		})
-		.always(function() {
-			// Add it back
-			$("#return-lost-media").attr("onclick", "app.cleanResource()");
-			animation.log(log.QUEUE_END, -1);
-		});
+				// Right click to select
+				edit.playableSetToggle();
+				if (addedVideo > 0) {
+					animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
+				}
+				if (addedVoice > 0) {
+					animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
+				}
+			})
+			.fail(function(xhr, status, error) {
+				animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+			})
+			.always(function() {
+				// Add it back
+				$("#return-lost-media").attr("onclick", "app.cleanResource()");
+				animation.log(log.QUEUE_END, -1);
+			});
+	});
 }
 /**
  * Adds media element to pending removal list and make this element fade out from the view. 

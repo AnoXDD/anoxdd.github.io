@@ -1503,6 +1503,7 @@ edit.photo = function(isQueue) {
 			if (journal.archive.map[name]) {
 				var image = {
 					name: name,
+					id: journal.archive.map[name]["id"],
 					size: journal.archive.map[name]["size"],
 					url: journal.archive.map[name]["url"],
 					resource: true,
@@ -1553,7 +1554,7 @@ edit.photo = function(isQueue) {
 		$.ajax({
 			type: "GET",
 			url: url
-		}).done(function(data, status, xhr) {
+		}).done(function(data) {
 			if (data["@odata.nextLink"] && !isQueue) {
 				animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
 			}
@@ -1582,7 +1583,7 @@ edit.photo = function(isQueue) {
 				} else {
 					var photoData = {
 						name: name,
-						id: id,
+						/////////////////////////////////////////////////////////////////////////////////////////////////////////////id: id,
 						url: itemList[key]["@content.downloadUrl"],
 						size: size,
 						resource: false,
@@ -1608,7 +1609,7 @@ edit.photo = function(isQueue) {
 				} else {
 					if (edit.photos[i]["resource"]) {
 						// The image should be highlighted if it is already at resource folder
-						htmlContent = "<div class=\"highlight\">";
+						htmlContent = "<div class=\"resource\">";
 					} else {
 						htmlContent = "<div>";
 					}
@@ -1627,7 +1628,7 @@ edit.photo = function(isQueue) {
 				$(this).off("contextmenu");
 				$(this).on("contextmenu", function() {
 					// Right click to select the images
-					$(this).parent().toggleClass("highlight");
+					$(this).parent().toggleClass("change");
 					// Return false to disable other functionalities
 					return false;
 				});
@@ -1666,12 +1667,13 @@ edit.photo = function(isQueue) {
 						// If the error is not found and the user just wants to add the photo from this folder, then report error
 						animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 						animation.deny("#add-photo");
+					} else {
+						// Still have to care about indentation of log
+						--animation.indent;
 					}
 				}
 			})
 			.always(function() {
-				animation.debug("addQueue!");
-
 				// Test if queue photo is to be added
 				if (addQueue) {
 					edit.photo(true);
@@ -1694,31 +1696,22 @@ edit.photoSave = function(callback) {
 		var photoQueue = [],
 			timeHeader,
 			/* New images attached to this entry */
-			newImagesData = [],
-			/* New edit.photos */
-			newPhotos = [];
+			newImagesData = [];
+		// Empty edit.photos to start a new one
+		edit.photos = [];
 		// Sort edit.photos based on the sequence
 		$("#attach-area .images div").each(function() {
 			for (var i = 0; i !== edit.photos.length; ++i) {
-				if ($(this).children("img").attr("src") == edit.photos[i]["url"]) {
+				if ($(this).children("img").attr("src") === edit.photos[i]["url"]) {
 					// Matched
 					var data = edit.photos[i];
-					// Test if it switches location
-					if ($(this).hasClass("highlight")) {
-						if (!data["resource"]) {
-							data["change"] = !data["change"];
-						}
-					} else {
-						if (data["resource"]) {
-							data["change"] = !data["change"];
-						}
-					}
-					newPhotos.push(data);
+					// Update from the html elements
+					data["change"] = $(this).hasClass("change");
+					edit.photos.push(data);
 					break;
 				}
 			}
 		});
-		edit.photos = $.extend([], newPhotos);
 		// Get the correct header for the photo
 		for (var i = 0; i !== edit.photos.length; ++i) {
 			var name = edit.photos[i]["name"],
@@ -1732,11 +1725,6 @@ edit.photoSave = function(callback) {
 					id: id,
 					// New location
 					resource: !resource
-				});
-			} else if (resource) {
-				// Update the data for those photos that don't change locations
-				newImagesData.push({
-					fileName: name
 				});
 			}
 			// Get the correct header folder
@@ -1753,8 +1741,6 @@ edit.photoSave = function(callback) {
 			// Still cannot find the correct header
 			timeHeader = edit.getDate();
 		}
-		// Store all the files in the resource folder that don't change locations later in the cache
-		localStorage["images"] = JSON.stringify(newImagesData);
 
 		// Start to change location
 		var resourceDir = "/drive/root:/Apps/Journal/resource",
@@ -1790,13 +1776,6 @@ edit.photoSave = function(callback) {
 							}
 						};
 					}
-					// Update the new name
-					for (var j = 0; j !== edit.photos.length; ++j) {
-						if (edit.photos[j]["name"] === name) {
-							edit.photos[j]["newName"] = newName;
-							break;
-						}
-					}
 					$.ajax({
 						type: "PATCH",
 						url: url,
@@ -1804,15 +1783,21 @@ edit.photoSave = function(callback) {
 						data: JSON.stringify(requestJson)
 					})
 						.done(function(data, status, xhr) {
-							var newName = data["name"];
-							// Add the url of this new image to map
-							journal.archive.map[newName] = {
-								url: data["@content.downloadUrl"],
-								size: data["size"],
-								id: data["id"]
-							};
+							var id = data["id"],
+								name = data["name"];
+							for (var j = 0; j !== edit.photos.length; ++j) {
+								if (edit.photos[j]["id"] == id) {
+									edit.photos[j]["success"] = true;
+									edit.photos[j]["name"] = name;
+									// Add the url of this new image to map
+									journal.archive.map[data["name"]] = {
+										url: data["@content.downloadUrl"],
+										size: data["size"],
+										id: data["id"]
+									};
+								}
+							}
 							animation.log((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
-							console.log("edit.photoSave()\tFinish update metadata");
 						})
 						.fail(function(xhr, status, error) {
 							++processingPhoto;
@@ -1822,54 +1807,43 @@ edit.photoSave = function(callback) {
 							// Revert the transfer process
 						})
 						.always(function(data, status, xhr) {
-							// Update the final destination
-							var newName = data["name"];
-							// Test if newName is undefined.
-							// Being undefined means an error, so nothing will be changed
-							if (newName != undefined) {
-								for (var k = 0; k != edit.photos.length; ++k) {
-									// Still use the old name
-									if (edit.photos[k]["newName"] == newName) {
-										// Find the matched name
-										var name = edit.photos[k]["name"],
-											resource = edit.photos[k]["resource"],
-											photoIndex;
-										// Update the new name
-										edit.photos[k]["name"] = newName;
-										// Switch the location
-										edit.photos[k]["resource"] = !resource;
-										// Find the correct img to add or remove highlight class on it
-										$("#attach-area .images img").each(function(index) {
-											if (journal.archive.map[newName]) {
-												if ($(this).attr("src") == journal.archive.map[newName]["url"]) {
-													photoIndex = index;
+							/* Iterator */
+							var j;
+							// Test if it is elligible for calling callback()
+							if (processingPhoto === photoQueue.length) {
+								// Process all the html elements
+								// Find the correct img to add or remove highlight class on it
+								$("#attach-area .images div").each(function() {
+									$(this).removeClass("change");
+									// Try to match images with edit.photos
+									for (j = 0; j !== edit.photos.length; ++j) {
+										if ($(this).children("img").attr("src") === edit.photos[j]["url"]) {
+											if (edit.photos[j]["success"]) {
+												if (edit.photos[j]["resource"]) {
+													// Originally at /resource
+													$(this).removeClass("resource");
+													// Remove from the map
+													delete journal.archive.map[edit.photos[j]["name"]];
+												} else {
+													// Originally at /data
+													$(this).addClass("resource").removeClass("queue");
 												}
+												edit.photos[j]["resource"] = !edit.photos[j]["resource"];
 											}
-										});
-										// Get the result of transferring
-										if (!resource) {
-											// Originally not at the resource, now at resource
-											$("#attach-area .images div:eq(" + photoIndex + ")").addClass("highlight").removeClass("queue");
-											newImagesData.push({
-												fileName: newName
-											});
-										} else {
-											// To data, and remove from cache
-											$("#attach-area .images div:eq(" + photoIndex + ")").removeClass("highlight");
-											for (var j = 0; j != newImagesData.length; ++j) {
-												if (newImagesData[j]["fileName"] == name) {
-													delete newImagesData[name];
-													break;
-												}
-											}
-											delete journal.archive.map[name];
+											break;
 										}
-										break;
+									}
+								});
+								// Process edit.photos
+								for (j = 0; j !== edit.photos.length; ++j) {
+									edit.photos[j]["change"] = false;
+									edit.photos[j]["success"] = false;
+									if (edit.photos[j]["resource"]) {
+										newImagesData.push({
+											fileName: edit.photos[j]["name"]
+										});
 									}
 								}
-							}
-							// Test if it is elligible for calling callback()
-							if (processingPhoto == photoQueue.length) {
 								localStorage["images"] = JSON.stringify(newImagesData);
 								animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(0) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
 								callback();
@@ -2733,10 +2707,9 @@ edit.playableSave = function(typeNum, callback) {
 						.done(function(data) {
 							--pending;
 							var title = "";
-							// Search for this name
 							for (var j = 0; j !== dataGroup.length; ++j) {
 								if (dataGroup[j]["id"] === data["id"]) {
-									// Size matched
+									// ID matched
 									title = dataGroup[j]["title"];
 									dataGroup[j]["success"] = true;
 									// "resource" is to be changed later

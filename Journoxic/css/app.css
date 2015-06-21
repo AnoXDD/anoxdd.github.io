@@ -1361,14 +1361,13 @@ body {
 		line-height: 0;
 		margin: 10px 0 10px;
 		white-space: nowrap;
-	}
+	
+}
 
 		#detail .photo a span {
-			bottom: 0;
-			left: 0;
-			position: absolute;
-			right: 0;
-			top: 0;
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 		}
 
 		#detail .photo a:hover span, #detail .photo a:focus span, #detail .photo a:active span {
@@ -1380,9 +1379,11 @@ body {
 		background-image: url('../img/pic.png');
 		max-width: 100%;
 	
+		display: inline-block;
 		background-repeat: no-repeat;
 		background-attachment: fixed;
 		background-position: center;
+		vertical-align: middle;
 }
 
 	#detail .jplayer-wrap {

@@ -873,7 +873,7 @@ app.detail = function() {
 			for (var key = 0; key != data["images"].length; ++key) {
 				var file = data["images"][key].fileName;
 				if (journal.archive.map[file]) {
-					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
+					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><span></span><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
 				} else {
 					animation.error(log.FILE_NOT_LOADED + file + log.DOWNLOAD_PROMPT);
 				}

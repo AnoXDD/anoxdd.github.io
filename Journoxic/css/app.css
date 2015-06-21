@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2580,7 +2580,7 @@ body {
 	display: inline-block;
 	height: 100px;
 	width: 100px;
-	opacity: 1 !important;
+		
 	left: 0;
 	top: 0;
 	position: absolute;
@@ -2592,6 +2592,7 @@ body {
 
 	#edit-pane .images div.resource.change span {
 		background-image: url('../img/minus@2x.png');
+		opacity: 1;
 	}
 
 #edit-pane .images div.data.change, #edit-pane .images div.queue.change {
@@ -2600,6 +2601,7 @@ body {
 
 	#edit-pane .images div.data.change span, #edit-pane .images div.queue.change span {
 		background-image: url('../img/add@2x.png');
+		opacity: 1;
 	}
 
 #edit-pane .images img {

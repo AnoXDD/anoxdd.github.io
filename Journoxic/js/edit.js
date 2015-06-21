@@ -1623,12 +1623,12 @@ edit.photo = function(isQueue) {
 				href: "#"
 			}).fadeIn();
 			// Clicking on img functionality
-			$("#attach-area .images div img").each(function() {
+			$("#attach-area .images div").each(function() {
 				// Re-apply
 				$(this).off("contextmenu");
 				$(this).on("contextmenu", function() {
 					// Right click to select the images
-					$(this).parent().toggleClass("change");
+					$(this).toggleClass("change");
 					// Return false to disable other functionalities
 					return false;
 				});

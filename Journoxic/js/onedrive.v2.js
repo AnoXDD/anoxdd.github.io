@@ -240,3 +240,39 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 		}
 	});
 }
+
+/**
+ * Creates a folder under data/
+ * @param {string} dateStr - The name of the folder to be created
+ * @param {function} callback - The callback function after completion of creating
+ */
+function createFolder(dateStr, callback) {
+	getTokenCallback(function(token) {
+		var requestJson = {
+			name: dateStr,
+			folder: {}
+		};
+		$.ajax({
+			type: "POST",
+			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/children?access_token=" + token,
+			contentType: "application/json",
+			data: JSON.stringify(requestJson),
+			statusCode: {
+				// Conflict, considered this folder is created successfully
+				409: function() {
+					edit.isFolder = true;
+					edit.folderDate = dateStr;
+					animation.debug("Folder created conflict");
+				}
+			}
+		}).done(function() {
+			// Successfully created this directory
+			edit.isFolder = true;
+			edit.folderDate = dateStr;
+			animation.log(log.FOLDER_CREATED);
+		}).always(function() {
+			// Always try to run the callback function
+			callback(dateStr);
+		});
+	});
+}

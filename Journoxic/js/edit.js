@@ -1100,9 +1100,10 @@ edit.convertTime = function(time) {
  * 2) Created time
  * 3) Time of calling this function
  * This function will also make sure that this folder is created under /data to avoid 404 error while attempting to move media to this folder
+ * @param {function} callback - Callback function, with a parameter of the dateStr returned (e.g. function(dateStr))
  * @returns {string} - My format of the time
  */
-edit.getDate = function() {
+edit.getDate = function(callback) {
 	var dateStr;
 	// Get date from title, ignore what title looks like
 	if (localStorage["title"]) {
@@ -1113,50 +1114,30 @@ edit.getDate = function() {
 			if (dateStr.length === 5) {
 				dateStr = "0" + dateStr;
 			}
-			if (dateStr.length === 6) {
-				// Correct format
-				return dateStr;
+			if (dateStr.length !== 6) {
+				// Incorrect format
+				dateStr = "";
 			}
 		}
 	}
-	var date;
-	if (localStorage["created"]) {
-		// Date will be based on created
-		date = new Date(parseInt(localStorage["created"]));
-	} else {
-		// Date will be based on now
-		date = new Date().getTime();
-		date = new Date(date - 14400000);
+	if (dateStr) {
+		var date;
+		if (localStorage["created"]) {
+			// Date will be based on created
+			date = new Date(parseInt(localStorage["created"]));
+		} else {
+			// Date will be based on now
+			date = new Date().getTime();
+			date = new Date(date - 14400000);
+		}
+		dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	}
-	dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
 	// Test server folder validity
 	if (dateStr != edit.folderDate) {
 		// Try to create the folder
-		getTokenCallback(function(token) {
-			var requestJson = {
-				name: dateStr,
-				folder: {}
-			};
-			$.ajax({
-				type: "POST",
-				url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/children?access_token=" + token,
-				contentType: "application/json",
-				data: JSON.stringify(requestJson),
-				statusCode: {
-					// Conflict, considered this folder is created successfully
-					409: function() {
-						edit.isFolder = true;
-						edit.folderDate = dateStr;
-						animation.debug("Folder created conflict");
-					}
-				}
-			}).done(function() {
-				// Successfully created this directory
-				edit.isFolder = true;
-				edit.folderDate = dateStr;
-				animation.log(log.FOLDER_CREATED);
-			});
-		});
+		createFolder(dateStr, callback);
+	} else {
+		callback(dateStr);
 	}
 	return dateStr;
 };
@@ -1492,6 +1473,144 @@ edit.photo = function(isQueue) {
 		revert: true
 	}).disableSelection();
 	// Prepartion before doing server work
+	var processFunc = function(dateStr) {
+		getTokenCallback(function(token) {
+			var url;
+			if (isQueue) {
+				url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			} else {
+				url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			}
+			$.ajax({
+				type: "GET",
+				url: url
+			}).done(function(data) {
+				if (data["@odata.nextLink"] && !isQueue) {
+					animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
+				}
+				var itemList = data["value"],
+					added = 0;
+				for (var key = 0, len = itemList.length; key !== len; ++key) {
+					var size = itemList[key]["size"],
+						id = itemList[key]["id"],
+						name = itemList[key]["name"],
+						suffix = name.substring(name.length - 4).toLowerCase(),
+						found = false;
+					if (suffix !== ".jpg" && suffix !== ".png") {
+						// Only support these two types
+						continue;
+					}
+					// Use size to filter out duplicate photos
+					for (var i = 0, tmp = edit.photos; i !== tmp.length; ++i) {
+						if (tmp[i]["size"] == size) {
+							found = true;
+							break;
+						}
+					}
+					if (found) {
+						// Abandon this image
+						continue;
+					} else {
+						var photoData = {
+							name: name,
+							id: id,
+							url: itemList[key]["@content.downloadUrl"],
+							size: size,
+							resource: false,
+							change: false
+						};
+						++added;
+						edit.photos.push(photoData);
+					}
+				}
+				// Add to images div, for those newly added only
+				var i;
+				if (isQueue) {
+					// Those already added should not be counted toward
+					i = edit.photos.length - added;
+				} else {
+					i = 0;
+				}
+				for (; i !== edit.photos.length; ++i) {
+					var htmlContent;
+					if (isQueue) {
+						// The images cannot be in the resource folder
+						htmlContent = "<div class=\"queue\">";
+					} else {
+						if (edit.photos[i]["resource"]) {
+							// The image should be highlighted if it is already at resource folder
+							htmlContent = "<div class=\"resource\">";
+						} else {
+							htmlContent = "<div class=\"data\">";
+						}
+					}
+					htmlContent += "<span></span><img src=\"" + edit.photos[i]["url"] + "\"/></div>";
+					$("#attach-area .images").append(htmlContent);
+				}
+				// Stop throttle 
+				$("#add-photo").html("&#xf03e").removeClass("spin").attr({
+					onclick: "edit.addMedia(0)",
+					href: "#"
+				}).fadeIn();
+				// Clicking on img functionality
+				$("#attach-area .images div").each(function() {
+					// Re-apply
+					$(this).off("contextmenu");
+					$(this).on("contextmenu", function() {
+						// Right click to select the images
+						$(this).toggleClass("change");
+						// Return false to disable other functionalities
+						return false;
+					});
+				});
+				$("#attach-area .images img").each(function() {
+					$(this).unbind("mouseenter mouseleave").hover(function() {
+						// Mouseover
+						$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
+					}, function() {
+						// Mouseout
+						$("#photo-preview img").animate({ opacity: 0 }, 0);
+					});
+				});
+				if (isQueue) {
+					animation.log(added + log.QUEUE_FOUND_IMAGES);
+				} else {
+					animation.setConfirm(0);
+					// Test if any result was found
+					if (edit.photos.length === 0) {
+						animation.log(log.EDIT_PANE_IMAGES_END_NO_RESULT, -1);
+					} else {
+						animation.log(log.EDIT_PANE_IMAGES_END, -1);
+					}
+					animation.finished("#add-photo");
+				}
+			})
+				.fail(function(xhr, status, error) {
+					if (!isQueue) {
+						$("#add-photo").html("&#xf03e").removeClass("spin").attr({
+							onclick: "edit.addMedia(0)",
+							href: "#"
+						});
+						animation.debug("status: " + status);
+						// Test if error is not found
+						if (error === "Not Found" && !addQueue) {
+							// If the error is not found and the user just wants to add the photo from this folder, then report error
+							animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+							animation.deny("#add-photo");
+						} else {
+							// Still have to care about indentation of log
+							--animation.indent;
+						}
+					}
+				})
+				.always(function() {
+					// Test if queue photo is to be added
+					if (addQueue) {
+						edit.photo(true);
+					}
+				});
+		});
+	}
 	if (!isQueue) {
 		// Add throttle
 		$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
@@ -1520,15 +1639,11 @@ edit.photo = function(isQueue) {
 			}
 		}
 		// Get resource photos from user content folder
-		// Get correct date folder
-		var dateStr;
-		if (images.length != 0) {
-			// Get date from photos already existed
-			dateStr = images[0]["fileName"].substring(0, 6);
-		} else {
-			dateStr = edit.getDate();
-		}
 		animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
+		// Get correct date folder
+		edit.getDate(function(dateStr) {
+			processFunc(dateStr);
+		});
 	} else {
 		// Remove all the queue images
 		$("#attach-area .images .queue").each(function() {
@@ -1543,143 +1658,8 @@ edit.photo = function(isQueue) {
 			}
 			$(this).remove();
 		});
+		processFunc();
 	}
-	getTokenCallback(function(token) {
-		var url;
-		if (isQueue) {
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-		} else {
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-		}
-		$.ajax({
-			type: "GET",
-			url: url
-		}).done(function(data) {
-			if (data["@odata.nextLink"] && !isQueue) {
-				animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
-			}
-			var itemList = data["value"],
-				added = 0;
-			for (var key = 0, len = itemList.length; key !== len; ++key) {
-				var size = itemList[key]["size"],
-					id = itemList[key]["id"],
-					name = itemList[key]["name"],
-					suffix = name.substring(name.length - 4).toLowerCase(),
-					found = false;
-				if (suffix !== ".jpg" && suffix !== ".png") {
-					// Only support these two types
-					continue;
-				}
-				// Use size to filter out duplicate photos
-				for (var i = 0, tmp = edit.photos; i !== tmp.length; ++i) {
-					if (tmp[i]["size"] == size) {
-						found = true;
-						break;
-					}
-				}
-				if (found) {
-					// Abandon this image
-					continue;
-				} else {
-					var photoData = {
-						name: name,
-						/////////////////////////////////////////////////////////////////////////////////////////////////////////////id: id,
-						url: itemList[key]["@content.downloadUrl"],
-						size: size,
-						resource: false,
-						change: false
-					};
-					++added;
-					edit.photos.push(photoData);
-				}
-			}
-			// Add to images div, for those newly added only
-			var i;
-			if (isQueue) {
-				// Those already added should not be counted toward
-				i = edit.photos.length - added;
-			} else {
-				i = 0;
-			}
-			for (; i !== edit.photos.length; ++i) {
-				var htmlContent;
-				if (isQueue) {
-					// The images cannot be in the resource folder
-					htmlContent = "<div class=\"queue\">";
-				} else {
-					if (edit.photos[i]["resource"]) {
-						// The image should be highlighted if it is already at resource folder
-						htmlContent = "<div class=\"resource\">";
-					} else {
-						htmlContent = "<div class=\"data\">";
-					}
-				}
-				htmlContent += "<span></span><img src=\"" + edit.photos[i]["url"] + "\"/></div>";
-				$("#attach-area .images").append(htmlContent);
-			}
-			// Stop throttle 
-			$("#add-photo").html("&#xf03e").removeClass("spin").attr({
-				onclick: "edit.addMedia(0)",
-				href: "#"
-			}).fadeIn();
-			// Clicking on img functionality
-			$("#attach-area .images div").each(function() {
-				// Re-apply
-				$(this).off("contextmenu");
-				$(this).on("contextmenu", function() {
-					// Right click to select the images
-					$(this).toggleClass("change");
-					// Return false to disable other functionalities
-					return false;
-				});
-			});
-			$("#attach-area .images img").each(function() {
-				$(this).unbind("mouseenter mouseleave").hover(function() {
-					// Mouseover
-					$("#photo-preview img").animate({ opacity: 1 }, 200).attr("src", $(this).attr("src"));
-				}, function() {
-					// Mouseout
-					$("#photo-preview img").animate({ opacity: 0 }, 0);
-				});
-			});
-			if (isQueue) {
-				animation.log(added + log.QUEUE_FOUND_IMAGES);
-			} else {
-				animation.setConfirm(0);
-				// Test if any result was found
-				if (edit.photos.length === 0) {
-					animation.log(log.EDIT_PANE_IMAGES_END_NO_RESULT, -1);
-				} else {
-					animation.log(log.EDIT_PANE_IMAGES_END, -1);
-				}
-				animation.finished("#add-photo");
-			}
-		})
-			.fail(function(xhr, status, error) {
-				if (!isQueue) {
-					$("#add-photo").html("&#xf03e").removeClass("spin").attr({
-						onclick: "edit.addMedia(0)",
-						href: "#"
-					});
-					animation.debug("status: " + status);
-					// Test if error is not found
-					if (error === "Not Found" && !addQueue) {
-						// If the error is not found and the user just wants to add the photo from this folder, then report error
-						animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-						animation.deny("#add-photo");
-					} else {
-						// Still have to care about indentation of log
-						--animation.indent;
-					}
-				}
-			})
-			.always(function() {
-				// Test if queue photo is to be added
-				if (addQueue) {
-					edit.photo(true);
-				}
-			});
-	});
 };
 /**
  * Saves the photo to OneDrive
@@ -1694,167 +1674,150 @@ edit.photoSave = function(callback) {
 	} else {
 		// Get the photos whose locations to be changed
 		var photoQueue = [],
-			timeHeader,
 			/* New images attached to this entry */
 			newImagesData = [];
-		// Empty edit.photos to start a new one
-		edit.photos = [];
-		// Sort edit.photos based on the sequence
-		$("#attach-area .images div").each(function() {
-			for (var i = 0; i !== edit.photos.length; ++i) {
-				if ($(this).children("img").attr("src") === edit.photos[i]["url"]) {
-					// Matched
-					var data = edit.photos[i];
-					// Update from the html elements
-					data["change"] = $(this).hasClass("change");
-					edit.photos.push(data);
-					break;
-				}
-			}
-		});
-		// Get the correct header for the photo
-		for (var i = 0; i !== edit.photos.length; ++i) {
-			var name = edit.photos[i]["name"],
-				id = edit.photos[i]["id"],
-				resource = edit.photos[i]["resource"];
-			if (edit.photos[i]["change"]) {
-				// Reset properties in edit.photos first
-				edit.photos[i]["change"] = false;
-				photoQueue.push({
-					name: name,
-					id: id,
-					// New location
-					resource: !resource
-				});
-			}
-			// Get the correct header folder
-			if (timeHeader == undefined) {
-				var timeHeaderTmp = parseInt(name);
-				// Only the files in the resource folder can be referenced 
-				if (!isNaN(timeHeaderTmp) && timeHeaderTmp.toString().length >= 6 && resource) {
-					// Correct format
-					timeHeader = timeHeaderTmp.toString().substring(0, 6);
-				}
-			}
-		}
-		if (timeHeader == undefined) {
-			// Still cannot find the correct header
-			timeHeader = edit.getDate();
-		}
-
-		// Start to change location
-		var resourceDir = "/drive/root:/Apps/Journal/resource",
-			contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
-			processingPhoto = 0;
-		if (photoQueue.length !== 0) {
-			// Process the photos
-			getTokenCallback(function(token) {
-				animation.log(log.EDIT_PANE_IMAGES_SAVE_START, 1);
-				for (var i = 0; i !== photoQueue.length; ++i) {
-					var requestJson,
-						newName,
-						name = photoQueue[i]["name"],
-						id = photoQueue[i]["id"],
-						isToResource = photoQueue[i]["resource"],
-						url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
-					if (isToResource) {
-						// Would like to be added to entry, originally at data folder
-						newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
-						requestJson = {
-							// New name of the file
-							name: newName,
-							parentReference: {
-								path: resourceDir
-							}
-						};
-					} else {
-						// Would like to be added to data, i.e. remove from resource folder
-						newName = name;
-						requestJson = {
-							parentReference: {
-								path: contentDir
-							}
-						};
+		edit.getDate(function(timeHeader) {
+			// Change the `change` of edit.photos according to html contents
+			$("#attach-area .images div").each(function() {
+				for (var i = 0; i !== edit.photos.length; ++i) {
+					if ($(this).children("img").attr("src") === edit.photos[i]["url"]) {
+						// Matched, update from the html elements
+						edit.photos[i]["change"] = $(this).hasClass("change");
+						break;
 					}
-					$.ajax({
-						type: "PATCH",
-						url: url,
-						contentType: "application/json",
-						data: JSON.stringify(requestJson)
-					})
-						.done(function(data, status, xhr) {
-							var id = data["id"],
-								name = data["name"];
-							for (var j = 0; j !== edit.photos.length; ++j) {
-								if (edit.photos[j]["id"] == id) {
-									edit.photos[j]["success"] = true;
-									edit.photos[j]["name"] = name;
-									// Add the url of this new image to map
-									journal.archive.map[data["name"]] = {
-										url: data["@content.downloadUrl"],
-										size: data["size"],
-										id: data["id"]
-									};
-								}
-							}
-							animation.log((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
-						})
-						.fail(function(xhr, status, error) {
-							++processingPhoto;
-							animation.error(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS
-								+ error + log.SERVER_RETURNS_END);
-							animation.warning("#add-photo");
-							// Revert the transfer process
-						})
-						.always(function(data, status, xhr) {
-							/* Iterator */
-							var j;
-							// Test if it is elligible for calling callback()
-							if (processingPhoto === photoQueue.length) {
-								// Process all the html elements
-								// Find the correct img to add or remove highlight class on it
-								$("#attach-area .images div").each(function() {
-									$(this).removeClass("change");
-									// Try to match images with edit.photos
-									for (j = 0; j !== edit.photos.length; ++j) {
-										if ($(this).children("img").attr("src") === edit.photos[j]["url"]) {
-											if (edit.photos[j]["success"]) {
-												if (edit.photos[j]["resource"]) {
-													// Originally at /resource
-													$(this).addClass("data").removeClass("resource");
-													// Remove from the map
-													delete journal.archive.map[edit.photos[j]["name"]];
-												} else {
-													// Originally at /data
-													$(this).addClass("resource").removeClass("queue data");
-												}
-												edit.photos[j]["resource"] = !edit.photos[j]["resource"];
-											}
-											break;
-										}
-									}
-								});
-								// Process edit.photos
-								for (j = 0; j !== edit.photos.length; ++j) {
-									edit.photos[j]["change"] = false;
-									edit.photos[j]["success"] = false;
-									if (edit.photos[j]["resource"]) {
-										newImagesData.push({
-											fileName: edit.photos[j]["name"]
-										});
-									}
-								}
-								localStorage["images"] = JSON.stringify(newImagesData);
-								animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(0) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
-								callback();
-							}
-						});
 				}
 			});
-		} else {
-			// Call callback directly
-			callback();
-		}
+			// Get the correct header for the photo
+			for (var i = 0; i !== edit.photos.length; ++i) {
+				var name = edit.photos[i]["name"],
+					id = edit.photos[i]["id"],
+					resource = edit.photos[i]["resource"];
+				if (edit.photos[i]["change"]) {
+					// Reset properties in edit.photos first
+					edit.photos[i]["change"] = false;
+					photoQueue.push({
+						name: name,
+						id: id,
+						// New location
+						resource: !resource
+					});
+				}
+			}
+
+			// Start to change location
+			var resourceDir = "/drive/root:/Apps/Journal/resource",
+				contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
+				processingPhoto = 0;
+			if (photoQueue.length !== 0) {
+				// Process the photos
+				getTokenCallback(function(token) {
+					animation.log(log.EDIT_PANE_IMAGES_SAVE_START, 1);
+					for (var i = 0; i !== photoQueue.length; ++i) {
+						var requestJson,
+							newName,
+							name = photoQueue[i]["name"],
+							id = photoQueue[i]["id"],
+							isToResource = photoQueue[i]["resource"],
+							url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
+						if (isToResource) {
+							// Would like to be added to entry, originally at data folder
+							newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
+							requestJson = {
+								// New name of the file
+								name: newName,
+								parentReference: {
+									path: resourceDir
+								}
+							};
+						} else {
+							// Would like to be added to data, i.e. remove from resource folder
+							newName = name;
+							requestJson = {
+								parentReference: {
+									path: contentDir
+								}
+							};
+						}
+						$.ajax({
+							type: "PATCH",
+							url: url,
+							contentType: "application/json",
+							data: JSON.stringify(requestJson)
+						})
+							.done(function(data, status, xhr) {
+								var id = data["id"],
+									name = data["name"];
+								for (var j = 0; j !== edit.photos.length; ++j) {
+									if (edit.photos[j]["id"] == id) {
+										edit.photos[j]["success"] = true;
+										edit.photos[j]["name"] = name;
+										// Add the url of this new image to map
+										journal.archive.map[data["name"]] = {
+											url: data["@content.downloadUrl"],
+											size: data["size"],
+											id: data["id"]
+										};
+									}
+								}
+								animation.log((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
+							})
+							.fail(function(xhr, status, error) {
+								++processingPhoto;
+								animation.error(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS
+									+ error + log.SERVER_RETURNS_END);
+								animation.warning("#add-photo");
+								// Revert the transfer process
+							})
+							.always(function(data, status, xhr) {
+								/* Iterator */
+								var j;
+								// Test if it is elligible for calling callback()
+								if (processingPhoto === photoQueue.length) {
+									// Process all the html elements
+									// Find the correct img to add or remove highlight class on it
+									$("#attach-area .images div").each(function() {
+										$(this).removeClass("change");
+										// Try to match images with edit.photos
+										for (j = 0; j !== edit.photos.length; ++j) {
+											if ($(this).children("img").attr("src") === edit.photos[j]["url"]) {
+												if (edit.photos[j]["success"]) {
+													if (edit.photos[j]["resource"]) {
+														// Originally at /resource
+														$(this).addClass("data").removeClass("resource");
+														// Remove from the map
+														delete journal.archive.map[edit.photos[j]["name"]];
+													} else {
+														// Originally at /data
+														$(this).addClass("resource").removeClass("queue data");
+													}
+													edit.photos[j]["resource"] = !edit.photos[j]["resource"];
+												}
+												break;
+											}
+										}
+									});
+									// Process edit.photos
+									for (j = 0; j !== edit.photos.length; ++j) {
+										edit.photos[j]["change"] = false;
+										edit.photos[j]["success"] = false;
+										if (edit.photos[j]["resource"]) {
+											newImagesData.push({
+												fileName: edit.photos[j]["name"]
+											});
+										}
+									}
+									localStorage["images"] = JSON.stringify(newImagesData);
+									animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(0) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
+									callback();
+								}
+							});
+					}
+				});
+			} else {
+				// Call callback directly
+				callback();
+			}
+		});
 	}
 };
 edit.photoHide = function() {
@@ -2466,121 +2429,122 @@ edit.itunesSave = function(index, typeNum) {
  */
 edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {
-		var dateStr = edit.getDate(),
-			url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-		animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_START, 1);
-		$.ajax({
-			type: "GET",
-			url: url
-		})
-			.done(function(data, status, xhr) {
-				if (data["@odata.nextLink"]) {
-					// More content available!
-					// Do nothing right now
-					animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
-				}
-				var itemList = data["value"],
-					dataGroup;
-				// Set reference to the group
-				switch (typeNum) {
-					case 1:
-						// Video
-						dataGroup = edit.videos;
-						break;
-					case 3:
-						// Voice
-						dataGroup = edit.voices;
-						break;
-					default:
-						// Incorrect use of this method, abort
-						console.log("edit.playableSearch()\tInvalid call");
-						return;
-				}
-				// Iterate to find all the results on the server
-				for (var key = 0, len = itemList.length; key !== len; ++key) {
-					var id = itemList[key]["id"],
-						size = itemList[key]["size"],
-						name = itemList[key]["name"],
-						contentUrl = itemList[key]["@content.downloadUrl"],
-						suffix = name.substring(name.length - 4).toLowerCase(),
-						elementData = {
-							id: id,
-							name: name,
-							title: name.substring(0, name.length - 4),
-							url: contentUrl,
-							size: size,
-							resource: false,
-							change: true
-						};
-					// Test supported file types, if file is not supported then restart the loop
+		edit.getDate(function(dateStr) {
+			var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_START, 1);
+			$.ajax({
+				type: "GET",
+				url: url
+			})
+				.done(function(data, status, xhr) {
+					if (data["@odata.nextLink"]) {
+						// More content available!
+						// Do nothing right now
+						animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
+					}
+					var itemList = data["value"],
+						dataGroup;
+					// Set reference to the group
 					switch (typeNum) {
 						case 1:
 							// Video
-							if (suffix !== ".mp4") {
-								continue;
-							}
+							dataGroup = edit.videos;
 							break;
 						case 3:
 							// Voice
-							if (suffix !== ".mp3" && suffix !== ".wav") {
-								continue;
-							}
+							dataGroup = edit.voices;
 							break;
+						default:
+							// Incorrect use of this method, abort
+							console.log("edit.playableSearch()\tInvalid call");
+							return;
 					}
-					// Test if this file already exists
-					var newContent = true;
-					for (var i = 0; i !== dataGroup.length; ++i) {
-						if (dataGroup[i]["size"] === size) {
-							// Same file
-							newContent = false;
-							break;
+					// Iterate to find all the results on the server
+					for (var key = 0, len = itemList.length; key !== len; ++key) {
+						var id = itemList[key]["id"],
+							size = itemList[key]["size"],
+							name = itemList[key]["name"],
+							contentUrl = itemList[key]["@content.downloadUrl"],
+							suffix = name.substring(name.length - 4).toLowerCase(),
+							elementData = {
+								id: id,
+								name: name,
+								title: name.substring(0, name.length - 4),
+								url: contentUrl,
+								size: size,
+								resource: false,
+								change: true
+							};
+						// Test supported file types, if file is not supported then restart the loop
+						switch (typeNum) {
+							case 1:
+								// Video
+								if (suffix !== ".mp4") {
+									continue;
+								}
+								break;
+							case 3:
+								// Voice
+								if (suffix !== ".mp3" && suffix !== ".wav") {
+									continue;
+								}
+								break;
+						}
+						// Test if this file already exists
+						var newContent = true;
+						for (var i = 0; i !== dataGroup.length; ++i) {
+							if (dataGroup[i]["size"] === size) {
+								// Same file
+								newContent = false;
+								break;
+							}
+						}
+						if (!newContent) {
+							// Not a new content, restart the loop
+							continue;
+						}
+						dataGroup.push(elementData);
+						animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + name + log.EDIT_PANE_PLAYABLE_FILE_ADDED);
+						// Add to the edit pane
+						switch (typeNum) {
+							case 1:
+								// Video
+								// Helper call to edit.media
+								edit.addMedia(-1, {
+									fileName: name,
+									url: contentUrl,
+									title: name.substring(0, name.length - 4)
+								});
+								break;
+							case 3:
+								// Voice
+								// Helper call to edit.media
+								edit.addMedia(-3, {
+									fileName: name,
+									url: contentUrl,
+									title: name.substring(0, name.length - 4)
+								});
+								break;
 						}
 					}
-					if (!newContent) {
-						// Not a new content, restart the loop
-						continue;
-					}
-					dataGroup.push(elementData);
-					animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + name + log.EDIT_PANE_PLAYABLE_FILE_ADDED);
-					// Add to the edit pane
+					// Right click to select
+					edit.playableSetToggle();
+					animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
+				})
+				.fail(function(xhr, status, error) {
+					animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 					switch (typeNum) {
 						case 1:
 							// Video
-							// Helper call to edit.media
-							edit.addMedia(-1, {
-								fileName: name,
-								url: contentUrl,
-								title: name.substring(0, name.length - 4)
-							});
+							animation.warning("#add-video");
 							break;
 						case 3:
 							// Voice
-							// Helper call to edit.media
-							edit.addMedia(-3, {
-								fileName: name,
-								url: contentUrl,
-								title: name.substring(0, name.length - 4)
-							});
+							animation.warning("#add-voice");
 							break;
 					}
-				}
-				// Right click to select
-				edit.playableSetToggle();
-				animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
-			})
-			.fail(function(xhr, status, error) {
-				animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-				switch (typeNum) {
-					case 1:
-						// Video
-						animation.warning("#add-video");
-						break;
-					case 3:
-						// Voice
-						animation.warning("#add-voice");
-						break;
-				}
-			});
+				});
+		});
 	});
 };
 /**
@@ -2605,14 +2569,14 @@ edit.playableSetToggle = function() {
  * @param {Function} callback - The callback function to be called after all the processing is done
  */
 edit.playableSave = function(typeNum, callback) {
-	var dateStr = edit.getDate(),
-		resourceDir = "/drive/root:/Apps/Journal/resource",
-		contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
-		dataGroup,
-		localData,
-		pending = 0;
-	// Transferring all the data
-	switch (typeNum) {
+	edit.getDate(function(dateStr) {
+		var resourceDir = "/drive/root:/Apps/Journal/resource",
+			contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
+			dataGroup,
+			localData,
+			pending = 0;
+		// Transferring all the data
+		switch (typeNum) {
 		case 1:
 			// Video
 			dataGroup = edit.videos;
@@ -2624,182 +2588,191 @@ edit.playableSave = function(typeNum, callback) {
 			break;
 		default:
 			return;
-	}
-	// Collect data from HTML element
-	$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
-		for (var i = 0; i !== dataGroup.length; ++i) {
-			if ($(this).children("a").hasClass(dataGroup[i]["name"])) {
-				var match = (dataGroup[i]["resource"] && $(this).hasClass("resource")) || (!dataGroup[i]["resource"] && $(this).hasClass("data"));
-				// Avoid cross-folder confusion to the files with the same name
-				if (match) {
-					// Update location setup
-					dataGroup[i]["change"] = $(this).hasClass("change");
+		}
+		// Collect data from HTML element
+		$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+			for (var i = 0; i !== dataGroup.length; ++i) {
+				if ($(this).children("a").hasClass(dataGroup[i]["name"])) {
+					var match = (dataGroup[i]["resource"] && $(this).hasClass("resource")) || (!dataGroup[i]["resource"] && $(this).hasClass("data"));
+					// Avoid cross-folder confusion to the files with the same name
+					if (match) {
+						// Update location setup
+						dataGroup[i]["change"] = $(this).hasClass("change");
+						break;
+					}
+				}
+			}
+		});
+		// Sync from localStorage to dataGroup
+		for (var i = 0; i !== localData.length; ++i) {
+			for (var j = 0; j !== dataGroup.length; ++j) {
+				if (localData[i] && localData[i]["fileName"] === dataGroup[j]["name"]) {
+					// Matched
+					dataGroup[j]["title"] = localData[i]["title"];
 					break;
 				}
 			}
 		}
-	});
-	// Sync from localStorage to dataGroup
-	for (var i = 0; i !== localData.length; ++i) {
-		for (var j = 0; j !== dataGroup.length; ++j) {
-			if (localData[i] && localData[i]["fileName"] === dataGroup[j]["name"]) {
-				// Matched
-				dataGroup[j]["title"] = localData[i]["title"];
-				break;
+		// Get pending total
+		for (var i = 0; i !== dataGroup.length; ++i) {
+			if (dataGroup[i]["change"]) {
+				++pending;
 			}
 		}
-	}
-	// Get pending total
-	for (var i = 0; i !== dataGroup.length; ++i) {
-		if (dataGroup[i]["change"]) {
-			++pending;
-		}
-	}
-	if (pending === 0) {
-		// Nothing to be transferred
-		callback();
-	} else {
-		getTokenCallback(function(token) {
-			animation.log(log.EDIT_PANE_PLAYABLE_SAVE_START + edit.mediaName(typeNum) + log.EDIT_PANE_PLAYABLE_SAVE_START_END, 1);
-			for (var i = 0; i !== dataGroup.length; ++i) {
-				if (dataGroup[i]["change"]) {
-					// This element wants to change its location
-					var name = dataGroup[i]["name"],
-						title = dataGroup[i]["title"],
-						id = dataGroup[i]["id"],
-						newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
-						path;
-					dataGroup[i]["success"] = false;
-					if (dataGroup[i]["resource"]) {
-						// Wants to be removed, search for the title in the cache
-						for (var j = 0; j !== localData.length; ++j) {
-							if (localData[j]["fileName"] === name) {
-								// Find the corresponding name
-								newName = title + name.substring(name.length - 4);
-								break;
-							}
-						}
-						path = contentDir;
-					} else {
-						// Wants to be added to the entry
-						path = resourceDir;
-					}
-					var requestJson = {
-						name: newName,
-						parentReference: {
-							path: path
-						}
-					};
-					// Use id to navigate to the file to avoid coding problem for utf-8 characters
-					var url;
-					if (id) {
-						url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
-					} else {
-						path = path === resourceDir ? contentDir : resourceDir;
-						url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
-					}
-					$.ajax({
-						type: "PATCH",
-						url: url,
-						contentType: "application/json",
-						data: JSON.stringify(requestJson)
-					})
-						.done(function(data) {
-							--pending;
-							var title = "";
-							for (var j = 0; j !== dataGroup.length; ++j) {
-								if (dataGroup[j]["id"] === data["id"]) {
-									// ID matched
-									title = dataGroup[j]["title"];
-									dataGroup[j]["success"] = true;
-									// "resource" is to be changed later
-									//// dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-									// Update map
-									delete journal.archive.map[dataGroup[j]["name"]];
-									if (!dataGroup[j]["resource"]) {
-										// If the source is from data, new name must be added
-										var newName = data["name"];
-										dataGroup[j]["newName"] = newName;
-										journal.archive.map[newName] = {
-											id: data["id"],
-											size: data["size"],
-											url: data["@content.downloadUrl"]
-										};
-									}
+		if (pending === 0) {
+			// Nothing to be transferred
+			// Clean all the data if the user asked for it but did nothing to it
+			// Process HTML element
+			$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+				if ($(this).hasClass("data")) {
+					// Moved to data
+					$(this).addClass("ignore").empty().fadeOut();
+				}
+			});
+			callback();
+		} else {
+			getTokenCallback(function(token) {
+				animation.log(log.EDIT_PANE_PLAYABLE_SAVE_START + edit.mediaName(typeNum) + log.EDIT_PANE_PLAYABLE_SAVE_START_END, 1);
+				for (var i = 0; i !== dataGroup.length; ++i) {
+					if (dataGroup[i]["change"]) {
+						// This element wants to change its location
+						var name = dataGroup[i]["name"],
+							title = dataGroup[i]["title"],
+							id = dataGroup[i]["id"],
+							newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
+							path;
+						dataGroup[i]["success"] = false;
+						if (dataGroup[i]["resource"]) {
+							// Wants to be removed, search for the title in the cache
+							for (var j = 0; j !== localData.length; ++j) {
+								if (localData[j]["fileName"] === name) {
+									// Find the corresponding name
+									newName = title + name.substring(name.length - 4);
 									break;
 								}
 							}
-							animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + title + log.EDIT_PANE_PLAYABLE_FILE_SAVED);
-						})
-						.fail(function(xhr, status, error) {
-							--pending;
-							animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
-							animation.warning("#add-" + edit.mediaName(typeNum));
-						})
-						.always(function() {
-							if (pending <= 0) {
-								// Finished all the processing
-								// Process HTML element
-								$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
-									$(this).removeClass("change");
-									for (var j = 0; j !== dataGroup.length; ++j) {
-										if (!$(this).hasClass("ignore")) {
-											if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
-												var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
-												// Avoid cross-folder confusion to the files with the same name
-												if (match) {
-													if (dataGroup[j]["success"]) {
-														dataGroup[j]["success"] = false;
-														dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-														// Transfer succeeds, update the class
-														if ($(this).hasClass("resource")) {
-															$(this).removeClass("resource").addClass("data");
-														} else if ($(this).hasClass("data")) {
-															$(this).removeClass("data").addClass("resource");
+							path = contentDir;
+						} else {
+							// Wants to be added to the entry
+							path = resourceDir;
+						}
+						var requestJson = {
+							name: newName,
+							parentReference: {
+								path: path
+							}
+						};
+						// Use id to navigate to the file to avoid coding problem for utf-8 characters
+						var url;
+						if (id) {
+							url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
+						} else {
+							path = path === resourceDir ? contentDir : resourceDir;
+							url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
+						}
+						$.ajax({
+								type: "PATCH",
+								url: url,
+								contentType: "application/json",
+								data: JSON.stringify(requestJson)
+							})
+							.done(function(data) {
+								--pending;
+								var title = "";
+								for (var j = 0; j !== dataGroup.length; ++j) {
+									if (dataGroup[j]["id"] === data["id"]) {
+										// ID matched
+										title = dataGroup[j]["title"];
+										dataGroup[j]["success"] = true;
+										// "resource" is to be changed later
+										//// dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+										// Update map
+										delete journal.archive.map[dataGroup[j]["name"]];
+										if (!dataGroup[j]["resource"]) {
+											// If the source is from data, new name must be added
+											var newName = data["name"];
+											dataGroup[j]["newName"] = newName;
+											journal.archive.map[newName] = {
+												id: data["id"],
+												size: data["size"],
+												url: data["@content.downloadUrl"]
+											};
+										}
+										break;
+									}
+								}
+								animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + title + log.EDIT_PANE_PLAYABLE_FILE_SAVED);
+							})
+							.fail(function(xhr, status, error) {
+								--pending;
+								animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
+								animation.warning("#add-" + edit.mediaName(typeNum));
+							})
+							.always(function() {
+								if (pending <= 0) {
+									// Finished all the processing
+									// Process HTML element
+									$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+										$(this).removeClass("change");
+										for (var j = 0; j !== dataGroup.length; ++j) {
+											if (!$(this).hasClass("ignore")) {
+												if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
+													var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
+													// Avoid cross-folder confusion to the files with the same name
+													if (match) {
+														if (dataGroup[j]["success"]) {
+															dataGroup[j]["success"] = false;
+															dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+															// Transfer succeeds, update the class
+															if ($(this).hasClass("resource")) {
+																$(this).removeClass("resource").addClass("data");
+															} else if ($(this).hasClass("data")) {
+																$(this).removeClass("data").addClass("resource");
+															}
+															// Also update <a> if a new name is available
+															if (dataGroup[j]["newName"]) {
+																dataGroup[j]["name"] = dataGroup[j]["newName"];
+																$(this).children("a").attr("class", dataGroup[j]["newName"]);
+																// Remove this
+																delete dataGroup[j]["newName"];
+															}
 														}
-														// Also update <a> if a new name is available
-														if (dataGroup[j]["newName"]) {
-															dataGroup[j]["name"] = dataGroup[j]["newName"];
-															$(this).children("a").attr("class", dataGroup[j]["newName"]);
-															// Remove this
-															delete dataGroup[j]["newName"];
-														}
+														break;
 													}
-													break;
 												}
 											}
 										}
+										if ($(this).hasClass("data")) {
+											// Moved to data
+											$(this).addClass("ignore").empty().fadeOut();
+										}
+									});
+									// Process JS data
+									var cacheData = [];
+									for (var j = 0; j !== dataGroup.length; ++j) {
+										dataGroup[j]["change"] = false;
+										if (dataGroup[j]["resource"]) {
+											// Update local cache 
+											cacheData.push({
+												fileName: dataGroup[j]["newName"] || dataGroup[j]["name"],
+												title: dataGroup[j]["title"]
+											});
+										} else {
+											// Remove unnecessary data member
+											dataGroup.splice(j, 1);
+											--j;
+										}
 									}
-									if ($(this).hasClass("data")) {
-										// Moved to data
-										$(this).addClass("ignore").empty().fadeOut();
-									}
-								});
-								// Process JS data
-								var cacheData = [];
-								for (var j = 0; j !== dataGroup.length; ++j) {
-									dataGroup[j]["change"] = false;
-									if (dataGroup[j]["resource"]) {
-										// Update local cache 
-										cacheData.push({
-											fileName: dataGroup[j]["newName"] || dataGroup[j]["name"],
-											title: dataGroup[j]["title"]
-										});
-									} else {
-										// Remove unnecessary data member
-										dataGroup.splice(j, 1);
-										--j;
-									}
+									localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
+									animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(typeNum) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
+									callback();
 								}
-								localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
-								animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(typeNum) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
-								callback();
-							}
-						});
+							});
+					}
 				}
-			}
-		});
-	}
+			});
+		}
+	});
 };
 
 /******************************************************************

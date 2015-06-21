@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -234,19 +234,19 @@ body {
 	transition: height .2s;
 }
 
-#contents::before {
-	content: "Add something here :)";
-	position: absolute;
-	z-index: 0;
-	color: #F4F4F4;
-	font-size: 25px;
-	background-color: rgba(146, 146, 146, 0.5);
-	border-radius: 100px;
-	padding: .5em 0;
-	width: 38%;
-	top: 50%;
-	text-align: center;
-}
+	#contents::before {
+		content: "Add something here :)";
+		position: absolute;
+		z-index: 0;
+		color: #F4F4F4;
+		font-size: 25px;
+		background-color: rgba(146, 146, 146, 0.5);
+		border-radius: 100px;
+		padding: .5em 0;
+		width: 38%;
+		top: 50%;
+		text-align: center;
+	}
 
 #list {
 	display: none;
@@ -649,16 +649,14 @@ body {
 
 	#list div.attached {
 		display: inline-block;
-	
-}
+	}
 
 		#list div.attached span {
 			background-position-y: -450px;
 			/* border-radius: 10px; */
 			background-color: initial !important;
 			margin-right: 5px;
-		
-}
+		}
 
 			#list div.attached span:before {
 				color: #4e4e4e;
@@ -1184,7 +1182,7 @@ body {
 			}
 
 			#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c01,
-						#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c02,
+			#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c02,
 			#detail .icontags span.c05, #edit-pane #attach-area .icontags p.c05,
 			#detail .icontags span.c06, #edit-pane #attach-area .icontags p.c06,
 			#detail .icontags span.c07, #edit-pane #attach-area .icontags p.c07,
@@ -1215,9 +1213,9 @@ body {
 				top: -8px;
 			}
 
-			#detail .icontags span.c02::before, #edit-pane #attach-area .icontags p.c02::before {
-				content: "\f0e5";
-			}
+				#detail .icontags span.c02::before, #edit-pane #attach-area .icontags p.c02::before {
+					content: "\f0e5";
+				}
 
 			#detail .icontags span.c03, #edit-pane #attach-area .icontags p.c03 {
 				background-position: -265px -395px;
@@ -1361,13 +1359,12 @@ body {
 		line-height: 0;
 		margin: 10px 0 10px;
 		white-space: nowrap;
-	
-}
+	}
 
 		#detail .photo a span {
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
+			display: inline-block;
+			height: 100%;
+			vertical-align: middle;
 		}
 
 		#detail .photo a:hover span, #detail .photo a:focus span, #detail .photo a:active span {
@@ -1378,13 +1375,12 @@ body {
 		max-height: 100%;
 		background-image: url('../img/pic.png');
 		max-width: 100%;
-	
 		display: inline-block;
 		background-repeat: no-repeat;
 		background-attachment: fixed;
 		background-position: center;
 		vertical-align: middle;
-}
+	}
 
 	#detail .jplayer-wrap {
 		margin: 0 auto;
@@ -2484,7 +2480,7 @@ body {
 				opacity: .5 !important;
 			}
 
-		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images div.highlight {
+		#edit-pane #attach-area .icontags p.highlight, #edit-pane #attach-area .types p.highlight, #edit-pane #attach-area .images div.resource {
 			opacity: 1;
 		}
 
@@ -2577,7 +2573,34 @@ body {
 	margin: 0;
 	opacity: .1;
 	transition: opacity .4s ease;
+	position: relative;
 }
+
+#edit-pane .images span {
+	display: inline-block;
+	height: 100px;
+	width: 100px;
+	opacity: 1 !important;
+	left: 0;
+	top: 0;
+	position: absolute;
+}
+
+#edit-pane .images div.resource.change {
+	opacity: .1 !important;
+}
+
+	#edit-pane .images div.resource.change span {
+		background-image: url('../img/minus@2x.png');
+	}
+
+#edit-pane .images div.data.change, #edit-pane .images div.queue.change {
+	opacity: 1 !important;
+}
+
+	#edit-pane .images div.data.change span, #edit-pane .images div.queue.change span {
+		background-image: url('../img/add@2x.png');
+	}
 
 #edit-pane .images img {
 	margin: 1px;
@@ -2837,7 +2860,7 @@ body {
 #attach-area .voice input, #attach-area .place input { /* padding-top: 7px; */
 }
 
-#attach-area .voice span, #attach-area .video span {
+#attach-area .voice span, #attach-area .video span, #attach-area .images span {
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	background-size: 25px;

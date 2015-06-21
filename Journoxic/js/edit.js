@@ -1611,10 +1611,10 @@ edit.photo = function(isQueue) {
 						// The image should be highlighted if it is already at resource folder
 						htmlContent = "<div class=\"resource\">";
 					} else {
-						htmlContent = "<div>";
+						htmlContent = "<div class=\"data\">";
 					}
 				}
-				htmlContent += "<img src=\"" + edit.photos[i]["url"] + "\"/></div>";
+				htmlContent += "<span></span><img src=\"" + edit.photos[i]["url"] + "\"/></div>";
 				$("#attach-area .images").append(htmlContent);
 			}
 			// Stop throttle 
@@ -1821,12 +1821,12 @@ edit.photoSave = function(callback) {
 											if (edit.photos[j]["success"]) {
 												if (edit.photos[j]["resource"]) {
 													// Originally at /resource
-													$(this).removeClass("resource");
+													$(this).addClass("data").removeClass("resource");
 													// Remove from the map
 													delete journal.archive.map[edit.photos[j]["name"]];
 												} else {
 													// Originally at /data
-													$(this).addClass("resource").removeClass("queue");
+													$(this).addClass("resource").removeClass("queue data");
 												}
 												edit.photos[j]["resource"] = !edit.photos[j]["resource"];
 											}

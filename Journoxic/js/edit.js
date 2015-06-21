@@ -1120,7 +1120,7 @@ edit.getDate = function(callback) {
 			}
 		}
 	}
-	if (dateStr) {
+	if (!dateStr) {
 		var date;
 		if (localStorage["created"]) {
 			// Date will be based on created
@@ -1638,10 +1638,10 @@ edit.photo = function(isQueue) {
 				localStorage["images"] = JSON.stringify(images);
 			}
 		}
+		edit.getDate(function(dateStr) {
 		// Get resource photos from user content folder
 		animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
 		// Get correct date folder
-		edit.getDate(function(dateStr) {
 			processFunc(dateStr);
 		});
 	} else {

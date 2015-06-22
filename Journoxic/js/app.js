@@ -42,6 +42,14 @@ app.version = {
 	data: 2
 };
 
+/** Whether there are any outgoing ajax event */
+app.isAjaxActive = false;
+/** The timeout time for ajax, in milliseconds */
+app.timeOut = 10000;
+
+/**
+ * Initializes this app
+ */
 app.init = function() {
 	// Enter to search
 	var thisApp = this;
@@ -131,6 +139,18 @@ app.init = function() {
 				headerShowMenu($(this).attr("id"));
 			});
 		}
+	});
+	// Network setup
+	// Setup timeout time
+	$.ajaxSetup({
+		timeout: app.timeOut
+	});
+	// Setup network monitor
+	$(document).ajaxStart(function() {
+		app.isAjaxActive = true;
+	});
+	$(document).ajaxStop(function() {
+		app.isAjaxActive = false;
 	});
 };
 /**

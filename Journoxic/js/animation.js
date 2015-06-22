@@ -126,6 +126,7 @@ window.log = {
 	QUEUE_FOUND_VOICES: " voice(s) added",
 	QUEUE_FAILED: "Cannot find queue resources",
 	QUEUE_END: "Queue resources loaded",
+	NETWORK_WORKING: "Please wait until all network activities stop",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",

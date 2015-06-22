@@ -9,12 +9,6 @@
  * 
  */
 
-var ROOTURL = "https://api.onedrive.com/v1.0/drive/special/approot";
-
-/************************************************************************
-		EVERY PATH SHOULD _NOT_ BE _STARTED_ AND _ENDED_ WITH '/'
- ************************************************************************/
-
 /**
  * Downloads the file (including the text file and the media file) from OneDrive
  * @param {String} url - The direct url of the file. Default is from core/data.js
@@ -262,7 +256,6 @@ function createFolder(dateStr, callback) {
 				409: function() {
 					edit.isFolder = true;
 					edit.folderDate = dateStr;
-					animation.debug("Folder created conflict");
 				}
 			}
 		}).done(function() {

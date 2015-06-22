@@ -287,6 +287,11 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 };
 edit.quit = function(selector, save) {
+	if (isAjaxActive) {
+		// Do not quit if network is still working
+		animation.warning(log.NETWORK_WORKING);
+		return;
+	}
 	clearInterval(edit.intervalId);
 	edit.time = 0;
 	edit.mediaIndex = {};
@@ -321,6 +326,11 @@ edit.quit = function(selector, save) {
  * @param {string} selector - The selector to show the finished animation
  */
 edit.save = function(selector) {
+	if (isAjaxActive) {
+		// Do not save if network is still working
+		animation.warning(log.NETWORK_WORKING);
+		return;
+	}
 	var id, html;
 	animation.log(log.EDIT_PANE_SAVE_START, 1);
 	if (animation.isShown("#confirm")) {
@@ -1594,7 +1604,6 @@ edit.photo = function(isQueue) {
 							onclick: "edit.addMedia(0)",
 							href: "#"
 						});
-						animation.debug("status: " + status);
 						// Test if error is not found
 						if (error === "Not Found" && !addQueue) {
 							// If the error is not found and the user just wants to add the photo from this folder, then report error

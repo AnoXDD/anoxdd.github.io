@@ -1,4 +1,4 @@
-﻿app.version.main = "v3.20.0 Build 062115_2309";
+﻿app.version.main = "v3.20.1 Build 062215_1640";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -16,6 +16,12 @@ $("#version").html(app.version.main);
  * v3.20 - 
  * [Chg] Productivity update: many features will be reorgainzed to fit more functions
  * [Fix] Covertype photo will now correctly be chosen
+ * 
+ * v3.20 - Network Update
+ * [Add] Visual feedback for all the possible network activities
+ * [Add] Throttle for some functions with network activities
+ * [Chg] Remove the refresh-media button, and clean up the leftover
+ * [Chg] Shorten the log feedback to provide more useful information
  * 
  * v3.19 - Queue support
  * [Add] Support for /queue folder: now all the media can be added from /queue

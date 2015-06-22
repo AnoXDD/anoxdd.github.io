@@ -14,21 +14,28 @@ network.interval = 0;
  * @param {number} breakpoint - The number of breakpoints
  */
 network.init = function(breakpoint) {
-		$("#network-progress").removeAttr("style");
-	if (breakpoint < 0) {
+	// Remove all the network activity bar
+	$("#network-bar").remove();
+	$(".header").append("<div id=\"network-bar\" ><div id=\"network-progress\"><div id=\"network-followup\"></div></div></div>");
+	if (!breakpoint || breakpoint < 0) {
 		breakpoint = 0;
 	}
 	network.current = 0;
 	network.breakpoint = breakpoint || 0;
 	network.setPercent(0);
-	$("#network-bar").removeClass("hidden");
 	// Increment by a little automatically
+	clearInterval(network.interval);
 	network.interval = setInterval(function() {
+		// Render the network progress bar given `network.percent`
+		$("#network-progress").css("width", network.percent * 100 + "%");
 		// The network bar will not exceed half-way
-		if (network.percent < (network.current + .5) / (network.breakpoint + 1) && network.percent < 1) {
+		if (network.percent < (network.current + .5) / (network.breakpoint + 1)) {
 			network.percent += .015;
 		}
-			$("#network-progress").css("width", network.percent * 100 + "%");
+		if (parseInt($("#network-bar").css("width")) <= parseInt($("#network-progress").css("width"))) {
+			network.destroy();
+			return;
+		}
 	}, 1000);
 }
 
@@ -37,12 +44,7 @@ network.init = function(breakpoint) {
  * @param {number} percent - The percent of the network bar. A number between 0 and 1
  */
 network.setPercent = function(percent) {
-	if (percent >= 1) {
-		// Destroy this network bar if percent is overflow
-		network.destroy();
-	} else {
-		network.percent = percent;
-	}
+	network.percent = percent;
 }
 
 /**
@@ -66,9 +68,14 @@ network.next = function() {
  * Destories the network bar and hide it. This function will set the percent to 1 then hide it
  */
 network.destroy = function() {
-	clearInterval(network.interval);
-			$("#network-progress").css("width", "100%");
-	$("#network-bar").addClass("hidden");
+	if (network.percent < 1) {
+		// Set to a larger value to make the slide bar go faster
+		network.percent = 2;
+		// Use the interval function to destroy this one
+	} else {
+		clearInterval(network.interval);
+		$("#network-bar").remove();
+	}
 }
 
 

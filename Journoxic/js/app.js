@@ -148,9 +148,12 @@ app.init = function() {
 	// Setup network monitor
 	$(document).ajaxStart(function() {
 		app.isAjaxActive = true;
+		// By default, just initialize the network bar
+		network.init();
 	});
 	$(document).ajaxStop(function() {
 		app.isAjaxActive = false;
+		network.destroy();
 	});
 };
 /**

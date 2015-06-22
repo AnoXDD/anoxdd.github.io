@@ -70,11 +70,21 @@
 
 @keyframes followup {
 	0% {
-		left: -50px;
+		left: -1%;
+		width: 1%;
+	}
+
+	40% {
+		width: 15%;
+	}
+
+	60% {
+		width: 13%;
 	}
 
 	100% {
 		left: 100%;
+		width: 5%;
 	}
 }
 
@@ -2128,9 +2138,13 @@ body {
 
 	.header #network-bar {
 		height: 2px;
-		transition: opacity 10s ease;
+		transition: opacity .4s ease;
 		background-color: #808080;
 		opacity: 1;
+		display: block;
+		position: relative;
+		top: -60px;
+		overflow: hidden;
 }
 
 
@@ -2139,20 +2153,21 @@ body {
 		width: 0;
 		background-color: #FAFAFA;
 	
-		transition: width 1s linear;
 		overflow: hidden;
+					box-shadow: 0 0 5px #fafafa;
+		transition: width 1s linear;
 }
+
 
 	.header #network-followup {
     background: #555;
-    width: 50px;
     position: relative;
     transition: left .4s ease;
     left: 100%;
 }
 
 .header #network-bar:not(.hidden) #network-followup {
-	animation: followup 2s infinite ease;
+	animation: followup 2s infinite ease-out;
 }
 
 #feedback {

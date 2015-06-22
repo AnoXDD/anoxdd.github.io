@@ -431,7 +431,10 @@ edit.exportCache = function(index) {
 	data["processed"] = 0;
 	// Title
 	data["title"] = localStorage["title"] || "Untitled";
-	data["coverType"] = parseInt(localStorage["coverType"]) || edit.coverAuto();
+	data["coverType"] = parseInt(localStorage["coverType"]);
+	if (data["coverType"] <= 0) {
+		data["coverType"] = edit.coverAuto();
+	}
 	if (!data["attachments"]) {
 		data["attachments"] = 0;
 	}
@@ -1345,7 +1348,7 @@ edit.coverSet = function(type, isToggle) {
 	// Show all the type selectors
 	$(".types p").removeClass("hidden selected");
 	if (isToggle && localStorage["coverType"] == coverType) {
-		localStorage["coverType"] = coverType = 0;
+		localStorage["coverType"] = coverType = -1;
 	} else {
 		localStorage["coverType"] = coverType;
 		var name = edit.mediaName(typeNum);
@@ -1369,7 +1372,7 @@ edit.coverAuto = function(typeList) {
 	var priority = ["images", "music", "book", "movie", "video", "voice", "weblink", "place"];
 	typeList = typeList || edit.coverRefresh();
 	for (var i = 0; i !== priority.length; ++i) {
-		if (priority[i] in typeList) {
+		if (typeList.indexOf(priority[i]) !== -1) {
 			// Return to stop this function
 			return edit.coverSet(priority[i]);
 		}

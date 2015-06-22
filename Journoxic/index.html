@@ -10,6 +10,11 @@
 <body>
 	<!-- Search bar -->
 	<div class="header">
+		<div id="network-bar" class="hidden">
+			<div id="network-progress">
+				<div id="network-followup"></div>
+			</div>
+		</div>
 		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. </p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
@@ -100,7 +105,7 @@
 	<script src="js/edit.js"></script>
 	<script src="js/app.js"></script>
 	<script src="js/archive.js"></script>
-	<script src="js/onedrive.v2.js"></script>
+	<script src="js/network.js"></script>
 	<script src="js/version.js"></script>
 	<script type="text/x-template" id="list-view">
 		<li>

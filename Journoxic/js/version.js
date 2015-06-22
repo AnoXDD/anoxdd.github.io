@@ -1,4 +1,4 @@
-﻿app.version.main = "v3.20.1 Build 062215_1640";
+﻿app.version.main = "v3.20.2 Build 062215_1837 [network]";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -13,7 +13,7 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  * [Add] View by year
  * 
- * v3.20 - 
+ * v3.? - 
  * [Chg] Productivity update: many features will be reorgainzed to fit more functions
  * [Fix] Covertype photo will now correctly be chosen
  * 
@@ -22,6 +22,7 @@ $("#version").html(app.version.main);
  * [Add] Throttle for some functions with network activities
  * [Chg] Remove the refresh-media button, and clean up the leftover
  * [Chg] Shorten the log feedback to provide more useful information
+ * [Chg] Rename onedrive.v2.js to network.js and add more functions to that file
  * 
  * v3.19 - Queue support
  * [Add] Support for /queue folder: now all the media can be added from /queue

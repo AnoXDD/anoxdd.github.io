@@ -287,7 +287,7 @@ edit.init = function(overwrite, index) {
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 };
 edit.quit = function(selector, save) {
-	if (isAjaxActive) {
+	if (app.isAjaxActive) {
 		// Do not quit if network is still working
 		animation.warning(log.NETWORK_WORKING);
 		return;
@@ -326,7 +326,7 @@ edit.quit = function(selector, save) {
  * @param {string} selector - The selector to show the finished animation
  */
 edit.save = function(selector) {
-	if (isAjaxActive) {
+	if (app.isAjaxActive) {
 		// Do not save if network is still working
 		animation.warning(log.NETWORK_WORKING);
 		return;

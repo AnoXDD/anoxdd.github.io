@@ -1,16 +1,35 @@
-﻿/**
+/**
  * Was previously onedrive.v2.js, renamed for convenience
  */
 
 window.network = {};
 
 network.percent = 0;
+network.current = 0;
+network.breakpoint = 0;
+network.interval = 0;
 
 /**
  * Initializes the network bar and show it
+ * @param {number} breakpoint - The number of breakpoints
  */
-network.init = function() {
-	
+network.init = function(breakpoint) {
+		$("#network-progress").removeAttr("style");
+	if (breakpoint < 0) {
+		breakpoint = 0;
+	}
+	network.current = 0;
+	network.breakpoint = breakpoint || 0;
+	network.setPercent(0);
+	$("#network-bar").removeClass("hidden");
+	// Increment by a little automatically
+	network.interval = setInterval(function() {
+		// The network bar will not exceed half-way
+		if (network.percent < (network.current + .5) / (network.breakpoint + 1) && network.percent < 1) {
+			network.percent += .015;
+		}
+			$("#network-progress").css("width", network.percent * 100 + "%");
+	}, 1000);
 }
 
 /**
@@ -18,7 +37,12 @@ network.init = function() {
  * @param {number} percent - The percent of the network bar. A number between 0 and 1
  */
 network.setPercent = function(percent) {
-	
+	if (percent >= 1) {
+		// Destroy this network bar if percent is overflow
+		network.destroy();
+	} else {
+		network.percent = percent;
+	}
 }
 
 /**
@@ -27,14 +51,24 @@ network.setPercent = function(percent) {
  * @returns {} 
  */
 network.setStatus = function(status) {
-	
+
+}
+
+/**
+ * Pushes network bar to the next breakpoint
+ * @returns {} 
+ */
+network.next = function() {
+	network.setPercent(++network.current / (network.breakpoint + 1));
 }
 
 /**
  * Destories the network bar and hide it. This function will set the percent to 1 then hide it
  */
 network.destroy = function() {
-	
+	clearInterval(network.interval);
+			$("#network-progress").css("width", "100%");
+	$("#network-bar").addClass("hidden");
 }
 
 

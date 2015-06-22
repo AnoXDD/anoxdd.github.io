@@ -2122,20 +2122,24 @@ body {
 
 		.header #network-bar.hidden {
 			opacity: 0;
-		}
+		
+			transition: opacity .4s ease;
+}
 
 	.header #network-bar {
 		height: 2px;
-		transition: opacity .4s ease;
+		transition: opacity 10s ease;
 		background-color: #808080;
+		opacity: 1;
 }
 
 
 	.header #network-progress {
 		height: 2px;
+		width: 0;
 		background-color: #FAFAFA;
 	
-		transition: width .4s ease;
+		transition: width 1s linear;
 		overflow: hidden;
 }
 

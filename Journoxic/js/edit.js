@@ -333,6 +333,7 @@ edit.save = function(selector) {
 	}
 	var id, html;
 	animation.log(log.EDIT_PANE_SAVE_START, 1);
+	network.init(3);
 	if (animation.isShown("#confirm")) {
 		// Confirm button will be pressed automatically if shown
 		animation.log(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
@@ -346,8 +347,11 @@ edit.save = function(selector) {
 	edit.processRemovalList();
 	// Save photos, voices and videos
 	edit.photoSave(function() {
+		network.init();
 		edit.playableSave(1, function() {
+			network.init();
 			edit.playableSave(3, function() {
+				network.init();
 				clearInterval(id);
 				var index = edit.find(localStorage["created"]);
 				edit.exportCache(index);
@@ -361,6 +365,7 @@ edit.save = function(selector) {
 				// Show finish animation
 				animation.finished(selector);
 				animation.log(log.EDIT_PANE_SAVE_END, -1);
+				network.destroy();
 				// Upload the file to OneDrive
 				uploadFile();
 			});
@@ -768,96 +773,99 @@ edit.addMediaFromQueue = function() {
 	// Add throttle
 	$("#return-lost-media").removeAttr("onclick");
 	animation.log(log.QUEUE_START, 1);
-	edit.photo(true);
-	getTokenCallback(function(token) {
-		var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
-		$.ajax({
-			type: "GET",
-			url: url
-		})
-			.done(function(data, status, xhr) {
-				/* Iterator */
-				var i = 0;
-				var itemList = data["value"],
-					addedVoice = 0,
-					addedVideo = 0;
-				// Iterate to find all the results on the server
-				for (var key = 0, len = itemList.length; key !== len; ++key) {
-					var id = itemList[key]["id"],
-						size = itemList[key]["size"],
-						name = itemList[key]["name"],
-						contentUrl = itemList[key]["@content.downloadUrl"],
-						suffix = name.substring(name.length - 4).toLowerCase(),
-						elementData = {
-							id: id,
-							name: name,
-							title: name.substring(0, name.length - 4),
-							url: contentUrl,
-							size: size,
-							resource: false,
-							change: true
-						},
-						newContent = true;
-					// Test supported file types, if file is not supported then restart the loop
-					if (suffix === ".mp4") {
-						// Video
-						// Test if this medium is duplicate
-						for (i = 0; i !== edit.videos.length; ++i) {
-							if (edit.videos[i]["size"] === size) {
-								newContent = false;
-								break;
+	network.init(1);
+	edit.photo(true, function() {
+		network.next();
+		getTokenCallback(function(token) {
+			var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			$.ajax({
+				type: "GET",
+				url: url
+			})
+				.done(function(data, status, xhr) {
+					/* Iterator */
+					var i = 0;
+					var itemList = data["value"],
+						addedVoice = 0,
+						addedVideo = 0;
+					// Iterate to find all the results on the server
+					for (var key = 0, len = itemList.length; key !== len; ++key) {
+						var id = itemList[key]["id"],
+							size = itemList[key]["size"],
+							name = itemList[key]["name"],
+							contentUrl = itemList[key]["@content.downloadUrl"],
+							suffix = name.substring(name.length - 4).toLowerCase(),
+							elementData = {
+								id: id,
+								name: name,
+								title: name.substring(0, name.length - 4),
+								url: contentUrl,
+								size: size,
+								resource: false,
+								change: true
+							},
+							newContent = true;
+						// Test supported file types, if file is not supported then restart the loop
+						if (suffix === ".mp4") {
+							// Video
+							// Test if this medium is duplicate
+							for (i = 0; i !== edit.videos.length; ++i) {
+								if (edit.videos[i]["size"] === size) {
+									newContent = false;
+									break;
+								}
 							}
-						}
-						if (!newContent) {
-							continue;
-						}
-						++addedVideo;
-						edit.videos.push(elementData);
-						// Add to the edit pane
-						edit.addMedia(-1, {
-							fileName: name,
-							url: contentUrl,
-							title: name.substring(0, name.length - 4)
-						});
-					} else if (suffix === ".mp3" || suffix === ".wav") {
-						// Voice
-						// Test if this medium is duplicate
-						for (i = 0; i !== edit.voices.length; ++i) {
-							if (edit.voices[i]["size"] === size) {
-								newContent = false;
-								break;
+							if (!newContent) {
+								continue;
 							}
+							++addedVideo;
+							edit.videos.push(elementData);
+							// Add to the edit pane
+							edit.addMedia(-1, {
+								fileName: name,
+								url: contentUrl,
+								title: name.substring(0, name.length - 4)
+							});
+						} else if (suffix === ".mp3" || suffix === ".wav") {
+							// Voice
+							// Test if this medium is duplicate
+							for (i = 0; i !== edit.voices.length; ++i) {
+								if (edit.voices[i]["size"] === size) {
+									newContent = false;
+									break;
+								}
+							}
+							if (!newContent) {
+								continue;
+							}
+							++addedVoice;
+							edit.voices.push(elementData);
+							// Add to the edit pane
+							edit.addMedia(-3, {
+								fileName: name,
+								url: contentUrl,
+								title: name.substring(0, name.length - 4)
+							});
 						}
-						if (!newContent) {
-							continue;
-						}
-						++addedVoice;
-						edit.voices.push(elementData);
-						// Add to the edit pane
-						edit.addMedia(-3, {
-							fileName: name,
-							url: contentUrl,
-							title: name.substring(0, name.length - 4)
-						});
 					}
-				}
-				// Right click to select
-				edit.playableSetToggle();
-				if (addedVideo > 0) {
-					animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
-				}
-				if (addedVoice > 0) {
-					animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
-				}
-			})
-			.fail(function(xhr, status, error) {
-				animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
-			})
-			.always(function() {
-				// Add it back
-				$("#return-lost-media").attr("onclick", "app.cleanResource()");
-				animation.log(log.QUEUE_END, -1);
-			});
+					// Right click to select
+					edit.playableSetToggle();
+					if (addedVideo > 0) {
+						animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
+					}
+					if (addedVoice > 0) {
+						animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
+					}
+				})
+				.fail(function(xhr, status, error) {
+					animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+				})
+				.always(function() {
+					// Add it back
+					$("#return-lost-media").attr("onclick", "app.cleanResource()");
+					animation.log(log.QUEUE_END, -1);
+				});
+		});
 	});
 }
 /**
@@ -1441,8 +1449,9 @@ edit.coverTest = function(type) {
 /**
  * Adds the photo on the edit-pane and extend the photo area
  * @param {boolean} isQueue (Optional) - whether the source of the photos is /queue
+ * @param {function} callback - The callback function after the images are loaded
  */
-edit.photo = function(isQueue) {
+edit.photo = function(isQueue, callback) {
 	if (edit.photos.length !== 0 && !isQueue) {
 		// Return if edit.photo is already displayed
 		animation.error(log.EDIT_PANE_IMAGES_ALREADY_LOADED);
@@ -1618,7 +1627,10 @@ edit.photo = function(isQueue) {
 				.always(function() {
 					// Test if queue photo is to be added
 					if (addQueue) {
-						edit.photo(true);
+						edit.photo(true, callback);
+					} else {
+						// Finished everything, just call callback 
+						callback();
 					}
 				});
 		});
@@ -1651,9 +1663,9 @@ edit.photo = function(isQueue) {
 			}
 		}
 		edit.getDate(function(dateStr) {
-		// Get resource photos from user content folder
-		animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
-		// Get correct date folder
+			// Get resource photos from user content folder
+			animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
+			// Get correct date folder
 			processFunc(dateStr);
 		});
 	} else {
@@ -2589,17 +2601,17 @@ edit.playableSave = function(typeNum, callback) {
 			pending = 0;
 		// Transferring all the data
 		switch (typeNum) {
-		case 1:
-			// Video
-			dataGroup = edit.videos;
-			localData = JSON.parse(localStorage["video"]);
-			break;
-		case 3:
-			dataGroup = edit.voices;
-			localData = JSON.parse(localStorage["voice"]);
-			break;
-		default:
-			return;
+			case 1:
+				// Video
+				dataGroup = edit.videos;
+				localData = JSON.parse(localStorage["video"]);
+				break;
+			case 3:
+				dataGroup = edit.voices;
+				localData = JSON.parse(localStorage["voice"]);
+				break;
+			default:
+				return;
 		}
 		// Collect data from HTML element
 		$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
@@ -2683,11 +2695,11 @@ edit.playableSave = function(typeNum, callback) {
 							url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
 						}
 						$.ajax({
-								type: "PATCH",
-								url: url,
-								contentType: "application/json",
-								data: JSON.stringify(requestJson)
-							})
+							type: "PATCH",
+							url: url,
+							contentType: "application/json",
+							data: JSON.stringify(requestJson)
+						})
 							.done(function(data) {
 								--pending;
 								var title = "";

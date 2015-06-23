@@ -88,16 +88,6 @@ function downloadFile(url) {
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
 	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
-	// Show progress on hover
-	$("#refresh-media").hover(function() {
-		var percent = parseInt(_.size(journal.archive.map) / journal.archive.media * 100);
-		if (isNaN(percent)) {
-			percent = 0;
-		}
-		$(this).html(percent + "%");
-	}, function() {
-		$(this).html("&#xf021");
-	});
 	getTokenCallback(function(token) {
 		if (token != "") {
 			// Get text data
@@ -119,6 +109,7 @@ function downloadFile(url) {
 						// Get the data number
 						journal.archive.media = data["folder"]["childCount"];
 						animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
+						network.init(journal.archive.media);
 						downloadMedia();
 					}).fail(function(xhr, status, error) {
 						animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
@@ -162,7 +153,7 @@ function downloadMedia(url) {
 		url: url
 	}).done(function(data, status, xhr) {
 		if (data["@odata.nextLink"]) {
-			// More content available!
+			// More contents available!
 			var nextUrl = data["@odata.nextLink"];
 			var groups = nextUrl.split("&");
 			// Manually to ask server return downloadUrl
@@ -183,16 +174,14 @@ function downloadMedia(url) {
 				size: itemList[key]["size"]
 			};
 			journal.archive.map[itemList[key]["name"]] = dataElement;
+			network.next();
 		}
 		// Show progress
 		var finished = _.size(journal.archive.map);
 		animation.log(log.CONTENTS_DOWNLOAD_MEDIA_LOADED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
-		$("#refresh-media").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%,#3f3f3f " + finished / journal.archive.media * 100 + "%,#343434 0%,#343434 100%)");
 		if (finished == journal.archive.media) {
-			// All the media have been loaded, so refresh button goes back to original status
-			$("#refresh-media").html("&#xf021").removeClass("spin").css("background", "").unbind("mouseenter mouseleave");
 			animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
-			animation.finished("#refresh-media");
+			network.destroy();
 		}
 		////console.log("downloadFile()\tFinish media data");
 	});
@@ -208,6 +197,7 @@ function uploadFile() {
 	// Change loading icons and disable click
 	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
+		network.init(1);
 		var d = new Date(),
 			month = d.getMonth() + 1,
 			day = d.getDate(),
@@ -232,17 +222,17 @@ function uploadFile() {
 		})
 			////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
 			.done(function() {
-				$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%, #3f3f3f 50%, #343434 0%, #343434 100%)");
 				////console.log("uploadFile():\t Done backup");
 				animation.log(log.CONTENTS_UPLOAD_BACKUP);
+				network.next();
 				// Clean the unnecessary data
 				var tmp = edit.minData();
 				$.ajax({
-					type: "PUT",
-					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
-					contentType: "text/plain",
-					data: JSON.stringify(tmp)
-				})
+						type: "PUT",
+						url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
+						contentType: "text/plain",
+						data: JSON.stringify(tmp)
+					})
 					.done(function(data, status, xhr) {
 						////console.log("uploadFile():\t Done!");
 						animation.log(log.CONTENTS_UPLOAD_END, -1);
@@ -250,10 +240,14 @@ function uploadFile() {
 					.fail(function(xhr, status, error) {
 						animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 						////alert("Cannot upload files");
+					})
+					.always(function() {
+						network.next();
 					});
 			})
 			.fail(function(xhr, status, error) {
 				animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+				network.destroy();
 				////alert("Cannot backup the file");
 			})
 			.always(function() {

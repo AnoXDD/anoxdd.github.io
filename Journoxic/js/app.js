@@ -153,7 +153,10 @@ app.init = function() {
 	});
 	$(document).ajaxStop(function() {
 		app.isAjaxActive = false;
-		network.destroy();
+		if (network.breakpoint === 0) {
+			// Do not destroy it if there are breakpoints
+			network.destroy();
+		}
 	});
 };
 /**

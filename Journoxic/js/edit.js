@@ -667,6 +667,37 @@ edit.change = function(key, value) {
 /************************** EDITING *******************************/
 
 /**
+ * Removes an entry from view-list
+ */
+edit.removeEntry = function() {
+	// Change the data displayed
+	--app.displayedNum;
+	var data = journal.archive.data[app.currentDisplayed];
+	app.displayedChars -= data["text"]["chars"];
+	app.displayedLines -= data["text"]["lines"];
+	app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
+	// Remove from the map
+	delete journal.archive.data[app.currentDisplayed];
+	// Clear from the list
+	var $entry = $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ")");
+	if ($entry.next().length === 0 || $entry.next.has("p.separator").length !== 0) {
+		// Reaches EOF or the beginning of next month (separator)
+		$entry.fadeOut(500, function() {
+			$(this).empty();
+		});
+	} else {
+		// Pretend there is a separator
+		$entry.children("a").fadeOut(500, function() {
+			$(this).remove();
+		});
+	}
+	app.detail.prototype.hideDetail();
+	$(".loadmore").trigger("click");
+	// Save to cache
+	edit.saveDataCache();
+	headerShowMenu("edit");
+}
+/**
  * Adds a medium to the edit pane, given the typeNum
  * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
  * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName", "id" and "title" key
@@ -931,24 +962,7 @@ edit.confirm = function() {
 		if (edit.confirmName == "discard") {
 			edit.quit(false);
 		} else if (edit.confirmName == "delete") {
-			// Change the data displayed
-			--app.displayedNum;
-			var data = journal.archive.data[app.currentDisplayed];
-			app.displayedChars -= data["text"]["chars"];
-			app.displayedLines -= data["text"]["lines"];
-			app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
-			// Remove from the map
-			delete journal.archive.data[app.currentDisplayed];
-			// Clear from the list
-			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
-				// Remove this from the list
-				$(this).remove();
-			});
-			app.detail.prototype.hideDetail();
-			$(".loadmore").trigger("click");
-			// Save to cache
-			edit.saveDataCache();
-			headerShowMenu("edit");
+			edit.removeEntry();
 		} else if (edit.confirmName == "add") {
 			edit.init(true);
 		} else if (edit.confirmName == "edit") {

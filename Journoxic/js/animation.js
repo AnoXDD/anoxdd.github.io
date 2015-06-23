@@ -304,7 +304,7 @@ animation.deny = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE10A").css({
+			$(this).html("&#xf05e").css({
 				color: "#000",
 				background: "#fff"
 			});

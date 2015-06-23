@@ -117,15 +117,15 @@ function downloadFile(url) {
 				})
 				.fail(function(xhr, status, error) {
 					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-					////alert("Cannot download the file. Do you enable CORS?");
-				})
-				.always(function() {
 					// Change loading icons and re-enable click
 					$("#download").html("&#xf0ed").removeClass("spin").attr({
 						onclick: "downloadFile()",
 						href: "#"
 					});
 					animation.finished("#download");
+					////alert("Cannot download the file. Do you enable CORS?");
+				})
+				.always(function() {
 					animation.log(log.CONTENTS_DOWNLOAD_END, -1);
 					////console.log("downloadFile()\tFinish downloading");
 				});
@@ -147,7 +147,6 @@ function downloadMedia(url) {
 		journal.archive.map = {};
 		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
 	}
-	$("#refresh-media").addClass("spin");
 	$.ajax({
 		type: "GET",
 		url: url
@@ -182,6 +181,12 @@ function downloadMedia(url) {
 		if (finished == journal.archive.media) {
 			animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
 			network.destroy();
+			// Change loading icons and re-enable click
+			$("#download").html("&#xf0ed").removeClass("spin").attr({
+				onclick: "downloadFile()",
+				href: "#"
+			});
+			animation.finished("#download");
 		}
 		////console.log("downloadFile()\tFinish media data");
 	});

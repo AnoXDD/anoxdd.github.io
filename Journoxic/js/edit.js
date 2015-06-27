@@ -1025,7 +1025,7 @@ edit.fullScreen = function() {
 	// Disable auto-height
 	$(window).off("resize");
 	// Change the icon
-	animation.hideIcon(".actions a", function() {
+	animation.hideAllIcons(function() {
 		$("#toggle-screen").html("&#xf066").attr({
 			title: "Back to window",
 			onclick: "edit.windowMode()"
@@ -1912,7 +1912,7 @@ edit.videoHide = function() {
 	edit.videoSave(edit.mediaIndex["video"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideIcon("#action-option");
 	edit.mediaIndex["video"] = -1;
 	edit.isEditing = -1;
 };
@@ -2055,7 +2055,7 @@ edit.locationHide = function() {
 	$("#map-holder").fadeOut().html("<div id=\"map-selector\"></div>");
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
-	animation.hideIcon(".entry-option");
+	animation.hideIcon("#action-option");
 	edit.mediaIndex["place"] = -1;
 	edit.isEditing = "";
 };
@@ -2258,7 +2258,7 @@ edit.voiceHide = function() {
 	edit.voiceSave(edit.mediaIndex["voice"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideIcon("#action-option");
 	edit.mediaIndex["voice"] = -1;
 	edit.isEditing = -1;
 };
@@ -2357,7 +2357,7 @@ edit.weblinkHide = function() {
 	edit.weblinkSave(edit.mediaIndex["weblink"], 7);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideIcon("#action-option");
 	edit.mediaIndex["weblink"] = -1;
 	edit.isEditing = -1;
 };
@@ -2417,7 +2417,7 @@ edit.itunesHide = function(typeNum) {
 	edit.itunesSave(edit.mediaIndex[type], typeNum);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideIcon("#action-option");
 	edit.mediaIndex[type] = -1;
 	edit.isEditing = -1;
 };

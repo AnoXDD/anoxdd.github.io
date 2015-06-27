@@ -139,8 +139,15 @@ window.log = {
 };
 
 animation.degree = 0;
-animation.duration = 250;
+animation.duration = 300;
 animation.indent = 0;
+
+animation.showIcon = function(selector, callback) {
+	$(selector).fadeIn(animation.duration, callback).css({
+		top: "10px",
+		display:"inline-block"
+	});
+};
 
 animation.hideIcon = function(selector, callback) {
 	var length = $(selector).length - 1;
@@ -155,9 +162,13 @@ animation.hideIcon = function(selector, callback) {
 	});
 };
 
-animation.showIcon = function(selector, callback) {
-	$(selector).css({ top: "10px" }).fadeIn(animation.duration, callback);
-};
+/**
+ * Hides all the icons except for the menu that contains option icons
+ * @param {function} callback - The callback function
+ */
+animation.hideAllIcons = function(callback) {
+	animation.hideIcon(".actions > div:not(#action-option)", callback);
+}
 
 animation.isShown = function(selector) {
 	return $(selector).css("top") === "10px" && $(selector).css("display") !== "none";
@@ -179,7 +190,7 @@ animation.toggleIcon = function(selector, callback) {
  */
 animation.showMenu = function(name) {
 	// Just hide the direct children that are not entry-option
-	animation.hideIcon(".actions > div:not(#action-option)");
+	animation.hideAllIcons();
 	setTimeout(function() {
 		if (name === "add") {
 			name = "#action-add";
@@ -225,7 +236,7 @@ animation.setConfirm = function(name, type) {
 		return;
 	}
 	// Start a new one
-	animation.hideIcon(".entry-option", function() {
+	animation.hideIcon("#action-option a", function() {
 		var title;
 		// Assign the default value
 		type = type || "edit";

@@ -263,7 +263,7 @@ function showLoginButton() {
 		});
 	} else {
 		// Prompt the user to re-login
-		animation.hideIcon(".actions > div:not(#action-option)", function() {
+		animation.hideAllIcons(function() {
 			animation.showIcon("#signin");
 		});
 	}

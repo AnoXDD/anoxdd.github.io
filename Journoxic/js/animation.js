@@ -162,6 +162,7 @@ animation.showIcon = function(selector, callback) {
 animation.isShown = function(selector) {
 	return $(selector).css("top") === "10px" && $(selector).css("display") !== "none";
 };
+
 animation.toggleIcon = function(selector, callback) {
 	callback = callback || function() {
 	};
@@ -170,7 +171,31 @@ animation.toggleIcon = function(selector, callback) {
 	} else {
 		animation.showIcon(selector, callback);
 	}
-}; /* Set the name of confirm */
+};
+
+/**
+ * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html
+ * @param {string} name - The name of the menu
+ */
+animation.showMenu = function(name) {
+	// Just hide the direct children that are not entry-option
+	animation.hideIcon(".actions > div:not(#action-option)");
+	setTimeout(function() {
+		if (name === "add") {
+			name = "#action-add";
+		} else if (name === "archive") {
+			name = "#action-archive";
+		} else {
+			// name == undefined or other situations
+			name = "#action-menu";
+		}
+		//////////if (name === ".entry-edit" && localStorage["_cache"] == 1) {
+		//////////	animation.showIcon("#reread");
+		//////////}
+		animation.showIcon(name);
+	}, animation.duration + 50);
+};
+
 /**
  * Shows the confirm button given the argument for the event on clicking the button
  * @param {String/Number} name - The name of confirm opeartion
@@ -382,7 +407,7 @@ animation.log = function(message, indent, type) {
 				$(this).remove();
 			});
 		});
-			return false;
+		return false;
 	});
 	switch (type) {
 		case 1:
@@ -440,31 +465,4 @@ animation.debug = function(message) {
 	}
 }
 
-function headerShowMenu(name) {
-	animation.hideIcon(".actions a");
-	setTimeout(function() {
-		if (name === "edit") {
-			name = ".entry-edit";
-		} else if (name === "add") {
-			name = ".entry-add";
-		} else if (name === "comm") {
-			name = ".entry-comm";
-		} else if (name === "archive") {
-			name = ".entry-archive";
-		} else if (name === "settings") {
-			name = ".entry-settings";
-		} else {
-			// name == undefined or other situations
-			name = ".entry-menu";
-		}
-		// Disable going back for edit-pane
-		if (name !== ".entry-add" && name !== ".entry-menu") {
-			animation.showIcon("#show-menu");
-		}
-		if (name === ".entry-edit" && localStorage["_cache"] == 1) {
-			animation.showIcon("#reread");
-		}
-		animation.showIcon(name);
-	}, animation.duration + 50);
-};
 

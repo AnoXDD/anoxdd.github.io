@@ -128,7 +128,7 @@ app.init = function() {
 		// Exclude the refresh-data button
 		if ($(this).attr("id") !== "refresh-data") {
 			$(this).on("click", function() {
-				headerShowMenu($(this).attr("id"));
+				animation.showMenu($(this).attr("id"));
 			});
 		}
 	});
@@ -559,7 +559,7 @@ app.list.prototype = {
 		item.find(" > a").on("click", function(j) {
 			j.preventDefault();
 			// Show edit panel
-			headerShowMenu("edit");
+			animation.showMenu("edit");
 			// Remove all the photos that have already been loaded
 			if (app.photos) {
 				app.photos.remove();

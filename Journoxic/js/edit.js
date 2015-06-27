@@ -283,7 +283,7 @@ edit.init = function(overwrite, index) {
 		edit.playableSetToggle();
 		edit.refreshSummary();
 	});
-	headerShowMenu("add");
+	animation.showMenu("add");
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 };
 edit.quit = function(selector, save) {
@@ -309,7 +309,7 @@ edit.quit = function(selector, save) {
 		$("#contents").fadeIn();
 		// Reload
 		app.refresh();
-		headerShowMenu("edit");
+		animation.showMenu("edit");
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
@@ -695,7 +695,7 @@ edit.removeEntry = function() {
 	$(".loadmore").trigger("click");
 	// Save to cache
 	edit.saveDataCache();
-	headerShowMenu("edit");
+	animation.showMenu("edit");
 }
 /**
  * Adds a medium to the edit pane, given the typeNum
@@ -1048,7 +1048,7 @@ edit.windowMode = function() {
 	// Exit dark mode
 	$("#text-area").removeClass("dark").children().removeClass("dark");
 	// Change the icon
-	headerShowMenu("add");
+	animation.showMenu("add");
 	$("#toggle-screen").html("&#xf065").attr({
 		title: "Go fullscreen",
 		onclick: "edit.fullScreen()"

@@ -2280,7 +2280,7 @@ body {
 		position: relative;
 		text-align: center;
 		text-decoration: none;
-		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease, opacity .4s ease;
+		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease, opacity .4s ease, color .2s ease;
 		width: 30px;
 		z-index: 1;
 	
@@ -2396,7 +2396,10 @@ body {
 	#cssmenu .has-sub > ul li a {
     margin-top: 10px;
 		*margin-bottom: -1px;
-	}
+	
+    background-color: #BABABA;
+    color: #3F3F3F;
+}
 
 		#cssmenu .has-sub ul li:hover a {
 		}

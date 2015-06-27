@@ -68,6 +68,17 @@
 	}
 }
 
+@keyframes fadein {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+
 .spin {
 	-webkit-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
@@ -2243,12 +2254,11 @@ body {
 
 
 .actions {
-	border-spacing: 10px 0;
 	display: inline-block;
 	float: right;
 	position: absolute;
 	right: 10px;
-	top: 13px;
+	top: 7px;
 }
 
 	.actions > div {
@@ -2270,7 +2280,7 @@ body {
 		position: relative;
 		text-align: center;
 		text-decoration: none;
-		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease;
+		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease, opacity .4s ease;
 		width: 30px;
 		z-index: 1;
 	
@@ -2302,6 +2312,7 @@ body {
 #cssmenu li,
 #cssmenu span,
 #cssmenu a {
+    position: relative;
 }
 
 #cssmenu {
@@ -2310,7 +2321,7 @@ body {
 
 	#cssmenu:after,
 	#cssmenu ul:after {
-		content: '';
+		/* content: ''; */
 		display: block;
 		clear: both;
 	}
@@ -2324,8 +2335,8 @@ body {
 		list-style: none;
 	}
 
-	#cssmenu > ul > li {
-		display: inline-block;
+	#cssmenu > ul > li, #cssmenu > ul > li > ul > li > ul > li {
+		display: block;
 		float: left;
 		margin: 0;
 	}
@@ -2351,8 +2362,6 @@ body {
 	}
 
 	#cssmenu > ul > li > a {
-		color: #B7B7B7;
-		font-size: 18px;
 	}
 
 
@@ -2367,7 +2376,9 @@ body {
 
 		#cssmenu .has-sub:hover > ul {
 			display: block;
-		}
+		
+			animation: fadein .4s;
+}
 
 		#cssmenu .has-sub ul {
 			display: none;
@@ -2382,7 +2393,8 @@ body {
 		right: 0;
 	}
 
-	#cssmenu .has-sub ul li {
+	#cssmenu .has-sub > ul li a {
+    margin-top: 10px;
 		*margin-bottom: -1px;
 	}
 
@@ -2411,7 +2423,9 @@ body {
 	}
 
 	#cssmenu .has-sub .has-sub ul li a {
-	}
+	
+    top: -10px;
+}
 
 		#cssmenu .has-sub .has-sub ul li a:hover {
 		}

@@ -1,4 +1,4 @@
-﻿app.version.main = "v3.21.1 Build 062315_1933 [list_update]";
+﻿app.version.main = "v3.22.0 Build 062715_1502 [list_update]";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -14,7 +14,7 @@ $("#version").html(app.version.main);
  * [Add] View by year
  * 
  * v3.20 - 
- * [Chg] Productivity update: many features will be reorgainzed to fit more functions
+ * [Chg] Productivity update: many features will be reorganized to fit more functions
  * [Fix] Covertype photo will now correctly be chosen
  * 
  * v3.19 - Queue support

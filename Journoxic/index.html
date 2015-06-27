@@ -29,50 +29,63 @@
 	</div>
 	<div id="feedback"></div>
 	<div class="actions">
-		<a class="entry-option" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a>
-		<a class="entry-option" title="Play" id="play-media" onclick="app.audioPlayer.play()" href="#">&#xf04b</a>
-		<a class="entry-option" title="Stop" id="stop-media" onclick="app.audioPlayer.quit()" href="#">&#xf04d</a>
-		<a class="entry-option" title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#">&#xf065</a>
-		<a class="entry-option" id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
-		<a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a>
-		<!-- <a class="entry-add" title="Undo" id="add-undo" onclick="edit.undo()" href="#">&#xE10E</a>-->
-		<a class="entry-add" title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a>
-		<a class="entry-add" title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
-		<a class="entry-add" title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xf03d</a>
-		<a class="entry-add" title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xf130</a>
-		<a class="entry-add" title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xf041</a>
-		<a class="entry-add" title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="#">&#xf001</a>
-		<a class="entry-add" title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#xf008</a>
-		<a class="entry-add" title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xf02d</a>
-		<a class="entry-add" title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="#">&#xf0c1</a>
-		<a class="entry-add" title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xf0c7</a>
-		<a class="entry-add" title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a>
-		<a class="entry-add" title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xf065</a>
-		<a class="entry-archive" title="Apply the changes" id="archive-apply" onclick="archive.apply()" href="#">&#xf058</a>
-		<a class="entry-archive" title="Select archives below" id="archive-below" onclick="archive.selectBelow()" href="#">&#xf13a</a>
-		<a class="entry-archive" title="Reverse selection" id="archive-reverse" onclick="archive.reverse()" href="#">&#xf056</a>
-		<a class="entry-archive" title="Remove all the attributes" id="archive-clear" onclick="archive.clear()" href="#">&#xf057</a>
-		<a class="entry-archive" title="Restore" id="archive-restore" onclick="archive.restore()" href="#">&#xf019</a>
-		<a class="entry-archive" title="Toggle protection on this archive file" id="archive-protect" onclick="archive.toggle('protect')" href="#">&#xf023</a>
-		<a class="entry-archive" title="Delete this archive" id="archive-delete" onclick="archive.toggle('delete')" href="#">&#xf1f8</a>
-		<a class="entry-archive" title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a>
-		<a class="entry-comm" title="Refresh" id="refresh-media" onclick="app.refresh()" href="#">&#xf021</a>
-		<a class="entry-comm" title="Revert to archived data" id="undo-data" onclick="archive.init('#undo-data')" href="#">&#xf1da</a>
-		<a class="entry-comm" title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a>
-		<a class="entry-comm" title="Update data" id="upload" onclick="uploadFile()" href="#">&#xf0ee</a>
-		<a class="entry-comm" title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a>
-		<a class="entry-comm" title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xf204</a>
-		<a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a>
-		<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xf067</a>
-		<a class="entry-edit" title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xf044</a>
-		<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xf00d</a>
-		<a title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a>
-		<a class="entry-settings" title="Find lost media" id="find-lost-media" onclick="app.checkResource()" href="#">&#xf002</a>
-		<a class="entry-settings" title="Options" id="options">&#xf013</a>
-		<a class="entry-menu" title="Refresh" id="refresh-data" onclick="app.refresh()">&#xf021</a>
-		<a class="entry-menu" title="Edit entries" id="edit">&#xf040</a>
-		<a class="entry-menu" title="Sync contents" id="comm">&#xf0ec</a>
-		<a class="entry-menu" title="Settings" id="settings">&#xf0ad</a>
+		<div class="entry-option">
+			<a title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a>
+			<a title="Play" id="play-media" onclick="app.audioPlayer.play()" href="#">&#xf04b</a>
+			<a title="Stop" id="stop-media" onclick="app.audioPlayer.quit()" href="#">&#xf04d</a>
+			<a title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#">&#xf065</a>
+			<a id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
+		</div>
+		<div class="entry-add">
+			<a class="hidden" title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a>
+			<a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a>
+			<a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
+			<a title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xf03d</a>
+			<a title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xf130</a>
+			<a title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xf041</a>
+			<a title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="#">&#xf001</a>
+			<a title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="#">&#xf008</a>
+			<a title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="#">&#xf02d</a>
+			<a title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="#">&#xf0c1</a>
+			<a title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xf0c7</a>
+			<a title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a>
+			<a title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xf065</a>
+		</div>
+		<div class="entry-archive">
+			<a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a>
+			<a title="Apply the changes" id="archive-apply" onclick="archive.apply()" href="#">&#xf058</a>
+			<a title="Select archives below" id="archive-below" onclick="archive.selectBelow()" href="#">&#xf13a</a>
+			<a title="Reverse selection" id="archive-reverse" onclick="archive.reverse()" href="#">&#xf056</a>
+			<a title="Remove all the attributes" id="archive-clear" onclick="archive.clear()" href="#">&#xf057</a>
+			<a title="Restore" id="archive-restore" onclick="archive.restore()" href="#">&#xf019</a>
+			<a title="Toggle protection on this archive file" id="archive-protect" onclick="archive.toggle('protect')" href="#">&#xf023</a>
+			<a title="Delete this archive" id="archive-delete" onclick="archive.toggle('delete')" href="#">&#xf1f8</a>
+			<a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a>
+		</div>
+		<div class="entry-comm entry-group">
+			<a title="Refresh" id="refresh-media" onclick="app.refresh()" href="#">&#xf021</a>
+			<a title="Revert to archived data" id="undo-data" onclick="archive.init('#undo-data')" href="#">&#xf1da</a>
+			<a title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a>
+			<a title="Update data" id="upload" onclick="uploadFile()" href="#">&#xf0ee</a>
+			<a title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a>
+			<a title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xf204</a>
+		</div>
+		<div class="entry-edit entry-group">
+			<a class="entry-edit" title="Add an entry" id="add" onclick="edit.init()" href="#">&#xf067</a>
+			<a class="entry-edit" title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#">&#xf044</a>
+			<a class="entry-edit" title="Delete this entry" id="delete" href="#">&#xf00d</a>
+		</div>
+		<div class="entry-settings entry-group">
+			<a class="hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a>
+			<a title="Find lost media" id="find-lost-media" onclick="app.checkResource()" href="#">&#xf002</a>
+			<a title="Options" id="options">&#xf013</a>
+		</div>
+		<div class="entry-menu">
+			<a title="Refresh" id="refresh-data" onclick="app.refresh()">&#xf021</a>
+			<a title="Edit entries" id="edit">&#xf040</a>
+			<a title="Sync contents" id="comm">&#xf0ec</a>
+			<a title="Settings" id="settings">&#xf0ad</a>
+		</div>
 		<a title="Main menu" id="show-menu" onclick="headerShowMenu()" href="#">&#xf0c9</a>
 		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xf090</a>
 	</div>

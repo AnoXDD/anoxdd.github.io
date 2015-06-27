@@ -670,7 +670,7 @@ edit.change = function(key, value) {
  * Removes an entry from view-list
  */
 edit.removeEntry = function() {
-	// Change the data displayed
+	// Change the data displ1ayed
 	--app.displayedNum;
 	var data = journal.archive.data[app.currentDisplayed];
 	app.displayedChars -= data["text"]["chars"];

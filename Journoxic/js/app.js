@@ -116,7 +116,7 @@ app.init = function() {
 	});
 	// Test if there is any cache
 	animation.testCacheIcons();
-	// Todo if none subs for add actions, removeClass("has-sub")
+	animation.testSub("#add");
 };
 /**
  * Simply refreshes and force reload
@@ -131,7 +131,6 @@ app.refresh = function() {
  * @param {String} newContent - The string representing the new content of journal archive
  */
 app.load = function(filter, forceReload, newContent) {
-	// Todo show edit-icon and delete icon if there is anything displayed
 	if (newContent == "") {
 		// Try to add nothing
 		////console.log("app.load()\tNo new content!");
@@ -796,7 +795,9 @@ app.list.prototype = {
 		return [oldYear == newYear ? -1 : newYear, oldMonth == newMonth ? -1 : app.month_array[newMonth]];
 	}
 };
-/* Display the detail of the data at current index */
+/**
+ * Display the detail of the data at current index
+ */ 
 app.detail = function() {
 	var dataClip = journal.archive.data[app.currentDisplayed];
 	if (!dataClip.processed) {
@@ -924,6 +925,9 @@ app.detail = function() {
 			animation.error(log.FILE_NOT_LOADED + className + log.DOWNLOAD_PROMPT);
 		}
 	});
+	// Show edit and delete buttons
+	$("#edit-this, #delete").removeClass("hidden");
+	animation.testSub("#add");
 	return dataClip;
 };
 app.detail.prototype = {
@@ -975,6 +979,8 @@ app.detail.prototype = {
 	/* Hide the detail-view */
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
+		$("#edit-this, #delete").addClass("hidden");
+		animation.testSub("#add");
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");

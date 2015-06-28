@@ -243,6 +243,26 @@ animation.testCacheIcons = function() {
 		});
 	}
 }
+/**
+ * Tests the selected selector has any shown subs (i.e. not(.hidden)) and then add/remove has-sub on its parent `li`
+ * @param {string} selector -The seletor to be tested
+ */
+animation.testSub = function(selector) {
+	var hasChild = false;
+	$(selector).siblings("ul").children("li").children("a").each(function() {
+		if (!$(this).hasClass("hidden")) {
+			// This is not hidden
+			hasChild = true;
+			return;
+		}
+	});
+	// Add/remove `has-sub` according to `hasChild`
+	if (hasChild) {
+		$(selector).parent().addClass("has-sub");
+	} else {
+		$(selector).parent().removeClass("has-sub");
+	}
+}
 
 /* Return undefined if it is not shown */
 animation.blink = function(selector) {

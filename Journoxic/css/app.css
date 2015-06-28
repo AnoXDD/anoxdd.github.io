@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2284,9 +2284,9 @@ body {
 		position: relative;
 	}
 
-.actions > div {
-	display: none;
-}
+	.actions > div {
+		display: none;
+	}
 
 	.actions .entry-signin {
 		display: block;
@@ -2318,6 +2318,14 @@ body {
 		.actions a:hover {
 			background: #4e4e4e;
 			color: #d0d0d0;
+		}
+
+		.actions a.hidden {
+			display: none !important;
+		}
+
+		.actions a.hidden-icon:not(.hidden) {
+			animation: fadein-inline 1.5s;
 		}
 
 	.actions div {
@@ -2361,9 +2369,8 @@ body {
 			margin-bottom: -1px;
 			box-shadow: 0 0 10px black;
 			margin-top: 10px;
-		
 			display: block;
-}
+		}
 
 		.actions .has-sub .has-sub:hover > ul {
 			display: block;
@@ -2386,14 +2393,6 @@ body {
 
 	.actions ul ul li:hover > a {
 		color: #ffffff;
-	}
-
-	.actions .hidden {
-		display: none;
-	}
-
-	.actions .hidden-icon:not(.hidden) a {
-		animation: fadein-inline 1.5s;
 	}
 
 /*===============================EDIT_PANE============================*/

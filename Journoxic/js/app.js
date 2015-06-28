@@ -114,17 +114,9 @@ app.init = function() {
 		$("#total-time").text(app.displayedTime);
 		$("#search-result").fadeIn(500);
 	});
-	// Add clickon event for all the menu buttons
-	// Todo process this
-	$(".entry-menu").each(function() {
-		// Exclude the refresh-data button
-		if ($(this).attr("id") !== "refresh-data") {
-			$(this).on("click", function() {
-				animation.showMenuOnly($(this).attr("id"));
-			});
-		}
-	});
-	// Todo add icons show if there is cache
+	// Test if there is any cache
+	animation.testCacheIcons();
+	// Todo if none subs for add actions, removeClass("has-sub")
 };
 /**
  * Simply refreshes and force reload
@@ -139,6 +131,7 @@ app.refresh = function() {
  * @param {String} newContent - The string representing the new content of journal archive
  */
 app.load = function(filter, forceReload, newContent) {
+	// Todo show edit-icon and delete icon if there is anything displayed
 	if (newContent == "") {
 		// Try to add nothing
 		////console.log("app.load()\tNo new content!");

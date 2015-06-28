@@ -68,7 +68,7 @@ edit.init = function(overwrite, index) {
 			}
 		} else if (overwrite == undefined) {
 			// Do not overwrite or overwrite is undefined
-			animation.warning(log.OVERWRITE_CACHE_WARNING);
+			animation.warn(log.OVERWRITE_CACHE_WARNING);
 			return;
 		}
 	} else {
@@ -307,6 +307,8 @@ edit.quit = function(selector, save) {
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
+	// Test if there is any cache
+	animation.testCacheIcons();
 	// Reset videoplayer's heiht
 	app.videoPlayer.height = undefined;
 };
@@ -959,8 +961,6 @@ edit.mediaValue = function(type) {
  * @param {number} typeVal - The type numerical value of the type 
  */
 edit.setRemove = function(typeVal) {
-	// Todo test for location: should have pin-point presented
-	// Todo make sure all the quit will hide those buttons away (e.g. dismissing the map view)
 	edit.confirmVal = typeVal;
 	if (typeVal === 2) {
 		$("#pin-point").removeClass("hidden");

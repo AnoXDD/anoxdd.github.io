@@ -1678,9 +1678,10 @@ app.audioPlayer = function(selector, source) {
 		animation.log(AUDIO_DOWNLOAD_END, -1);
 		// Update the length
 		$("#music-length").html(app.audioPlayer.formatTime(music.duration));
+		// Hide the fullscreen icon
+		$("#toggle-media").addClass("hidden");
 		// Show the play icon
-		animation.showIcon("#play-media");
-		animation.showIcon("#stop-media");
+		animation.showMenu("media");
 	}; // Gets audio file duration
 	app.audioPlayer.music.addEventListener("canplaythrough", function() {
 		duration = app.audioPlayer.music.duration;
@@ -1742,8 +1743,7 @@ app.audioPlayer.quit = function() {
 		app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);
 	}
 	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
-	animation.hideIcon("#play-media");
-	animation.hideIcon("#stop-media");
+	animation.hideIcon("#action-media");
 };
 /**
  * Initializes a video player within the selector provided
@@ -1837,10 +1837,10 @@ app.videoPlayer = function(selector, source) {
 		}
 		// Update the length
 		$("#video-length").html(app.videoPlayer.formatTime(video.duration));
-		// Show the play icon
-		animation.showIcon("#play-media");
-		animation.showIcon("#stop-media");
-		animation.showIcon("#toggle-media");
+		// Show the fullscreen menu
+		$("#toggle-media").removeClass("hidden");
+		// Show the play icons
+		animation.showMenu("media");
 		// Show the control
 		$("#video-position, #video-length, #timeline").fadeIn().css("display", "inline-block");
 		// Recalculate the width
@@ -1937,9 +1937,7 @@ app.videoPlayer.quit = function() {
 		app.videoPlayer.playhead.removeEventListener("mousedown", app.videoPlayer.mouseDown);
 	}
 	window.removeEventListener("mouseup", app.videoPlayer.mouseUp);
-	animation.hideIcon("#play-media");
-	animation.hideIcon("#stop-media");
-	animation.hideIcon("#toggle-media");
+	animation.hideIcon("#action-media");
 	$("#toggle-media").html("&#xf065");
 	$("#video-fullscreen").fadeOut();
 	this.toggle.isFullScreen = false;

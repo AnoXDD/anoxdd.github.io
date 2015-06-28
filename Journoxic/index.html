@@ -31,10 +31,18 @@
 	<div class="actions">
 		<div id="action-option">
 			<a title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a>
-			<a title="Play" id="play-media" onclick="app.audioPlayer.play()" href="#">&#xf04b</a>
-			<a title="Stop" id="stop-media" onclick="app.audioPlayer.quit()" href="#">&#xf04d</a>
-			<a title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#">&#xf065</a>
 			<a id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
+		</div>
+		<div id="action-media">
+			<ul>
+				<li class="has-sub">
+					<a title="Play" id="play-media" onclick="app.audioPlayer.play()" href="#">&#xf04b</a>
+					<ul>
+						<li><a title="Stop" id="stop-media" onclick="app.audioPlayer.quit()" href="#">&#xf04d</a></li>
+						<li><a class="hidden" title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#">&#xf065</a></li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 		<div id="action-fullscreen">
 			<ul>
@@ -44,6 +52,8 @@
 		</div>
 		<div id="action-add">
 			<ul>
+				<li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a></li>
+				<li><a title="Go fullscreen" onclick="edit.fullScreen()" href="#">&#xf065</a></li>
 				<li class="has-sub">
 					<a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
 					<ul>
@@ -62,8 +72,6 @@
 						<li><a title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a></li>
 					</ul>
 				</li>
-				<li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a></li>
-				<li><a title="Go fullscreen" onclick="edit.fullScreen()" href="#">&#xf065</a></li>
 			</ul>
 		</div>
 		<div id="action-archive">

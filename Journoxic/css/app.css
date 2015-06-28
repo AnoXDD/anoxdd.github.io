@@ -78,6 +78,15 @@
 	}
 }
 
+@keyframes fadein-inline {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
 
 .spin {
 	-webkit-animation: spin 2s infinite linear;
@@ -89,6 +98,11 @@
 	-webkit-animation-direction: reverse;
 	animation: spin 2s infinite linear;
 	animation-direction: reverse;
+}
+
+.fadein-inline {
+	display: inline-block !important;
+	animation: fadein-inline 1.5s;
 }
 
 /*@font-face {
@@ -2270,19 +2284,9 @@ body {
 		position: relative;
 	}
 
-	.actions > div:not(#action-option) {
-		display: none;
-	}
-
-	.actions #action-option {
-		display: inline-block;
-	
-		position: relative;
-		top: -25px;
+.actions > div {
+	display: none;
 }
-	.actions #action-option a {
-		display: none;
-	}
 
 	.actions .entry-signin {
 		display: block;
@@ -2316,19 +2320,19 @@ body {
 			color: #d0d0d0;
 		}
 
-		.actions div {
-		}
-
-	.actions div > ul > li, .actions div > ul > li > ul > li > ul > li {
-		display: block;
-		float: left;
-		margin: 0;
+	.actions div {
 	}
 
-		.actions div > ul > li.active > a,
-		.actions div > ul > li:hover > a {
-			color: #ffffff;
+		.actions div > ul > li, .actions div > ul > li > ul > li > ul > li {
+			display: block;
+			float: left;
+			margin: 0;
 		}
+
+			.actions div > ul > li.active > a,
+			.actions div > ul > li:hover > a {
+				color: #ffffff;
+			}
 
 	.actions .has-sub {
 		z-index: 1;
@@ -2347,10 +2351,15 @@ body {
 			width: 50px;
 		}
 
+		.actions .has-sub > a {
+			box-shadow: 0 0 10px rgb(43, 43, 43);
+		}
+
 		.actions .has-sub > ul li a {
 			background-color: #DDDDDD;
 			color: #3F3F3F;
 			*margin-bottom: -1px;
+			box-shadow: 0 0 10px black;
 			margin-top: 10px;
 		}
 
@@ -2373,9 +2382,9 @@ body {
 		color: #ffffff;
 	}
 
-.actions .hidden {
-	display: none;
-}
+	.actions .hidden {
+		display: none;
+	}
 
 /*===============================EDIT_PANE============================*/
 

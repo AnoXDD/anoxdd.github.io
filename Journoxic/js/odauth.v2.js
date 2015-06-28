@@ -263,9 +263,8 @@ function showLoginButton() {
 		});
 	} else {
 		// Prompt the user to re-login
-		animation.hideAllIcons(function() {
-			animation.showIcon("#signin");
-		});
+		animation.hideAllMenus();
+		animation.showIcon("#signin");
 	}
 }
 

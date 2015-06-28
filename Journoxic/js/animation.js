@@ -163,11 +163,13 @@ animation.hideIcon = function(selector, callback) {
 };
 
 /**
- * Hides all the icons except for the menu that contains option icons
- * @param {function} callback - The callback function
+ * Hides all the icon menus
  */
-animation.hideAllIcons = function(callback) {
-	animation.hideIcon(".actions > div:not(#action-option)", callback);
+animation.hideAllMenus = function() {
+	$(".actions > div").each(function() {
+		// Iterate to remove class "fadein-inline"
+		$(this).removeClass("fadein-inline");
+	});
 }
 
 animation.isShown = function(selector) {
@@ -191,12 +193,12 @@ animation.toggleIcon = function(selector, callback) {
  * @see animation.showMenuOnly
  */
 animation.showMenu = function(name) {
-	name = "#actions-" + name;
+	name = "#action-" + name;
 	if ($(name).length === 0) {
 		// Invaild name
 		name = "#action-menu";
 	}
-	animation.showIcon(name);
+	$(name).addClass("fadein-inline");
 }
 
 /**
@@ -207,8 +209,8 @@ animation.showMenu = function(name) {
  */
 animation.showMenuOnly = function(name) {
 	// Just hide the direct children that are not entry-option
-	animation.hideAllIcons();
-	setTimeout(animation.showMenu(name), animation.duration + 50);
+	animation.hideAllMenus();
+	animation.showMenu(name);
 };
 
 /**

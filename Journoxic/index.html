@@ -46,7 +46,7 @@
 		</div>
 		<div id="action-fullscreen">
 			<ul>
-				<li><a  title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a></li>
+				<li><a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a></li>
 				<li><a title="Back to window" onclick="edit.windowMode()">&#xf066</a></li>
 			</ul>
 		</div>
@@ -76,7 +76,6 @@
 		</div>
 		<div id="action-archive">
 			<ul>
-				<li><a title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a></li>
 				<li><a title="Restore" id="archive-restore" onclick="archive.restore()" href="#">&#xf019</a></li>
 				<li class="has-sub">
 					<a title="Apply the changes" id="archive-apply" onclick="archive.apply()" href="#">&#xf058</a>
@@ -98,11 +97,12 @@
 		</div>
 		<div id="action-menu">
 			<ul>
+				<li ><a class="hidden" title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a></li>
 				<li class="has-sub">
 					<a title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#"><span>&#xf044</span></a>
 					<ul>
-						<li><a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a></li>
-						<li><a title="Delete this entry" id="delete" href="#"><span>&#xf00d</span></a></li>
+						<li class="has-sub"><a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a></li>
+						<li class="has-sub"><a title="Delete this entry" id="delete" href="#"><span>&#xf00d</span></a></li>
 					</ul>
 				</li>
 				<li class="has-sub">

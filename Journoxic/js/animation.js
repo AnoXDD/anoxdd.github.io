@@ -149,7 +149,6 @@ animation.showIcon = function(selector, callback) {
 		display: "inline-block"
 	});
 };
-
 animation.hideIcon = function(selector, callback) {
 	var length = $(selector).length - 1;
 	$(selector).each(function(index) {
@@ -162,39 +161,9 @@ animation.hideIcon = function(selector, callback) {
 		}
 	});
 };
-/**
- * Hides this menu
- * @param {string} name - The name of the menu to be hidden
- */
-animation.hideMenu = function(name) {
-	$(".actions > #" + name).removeClass("fadein-inline");
-	animation.hideHiddenIcons();
-}
-// Todo sort the functions here
-/**
- * Hides all the icon menus
- */
-animation.hideAllMenus = function() {
-	$(".actions > div").each(function() {
-		// Iterate to remove class "fadein-inline"
-		$(this).removeClass("fadein-inline");
-	});
-}
-
-/**
- * Hides all the hidden icons that are not displayed by default
- * @returns {} 
- */
-animation.hideHiddenIcons = function() {
-	$(".actions .hidden-icon").each(function() {
-		$(this).addClass("hidden");
-	});
-}
-
 animation.isShown = function(selector) {
 	return $(selector).css("top") === "10px" && $(selector).css("display") !== "none";
 };
-
 animation.toggleIcon = function(selector, callback) {
 	callback = callback || function() {
 	};
@@ -204,6 +173,25 @@ animation.toggleIcon = function(selector, callback) {
 		animation.showIcon(selector, callback);
 	}
 };
+
+/**
+ * Hides all the icon menus
+ */
+animation.hideAllMenus = function() {
+	$(".actions > div").each(function() {
+		// Iterate to remove class "fadein-inline"
+		$(this).removeClass("fadein-inline");
+	});
+}
+/**
+ * Hides all the hidden icons that are not displayed by default
+ * @returns {} 
+ */
+animation.hideHiddenIcons = function() {
+	$(".actions .hidden-icon").each(function() {
+		$(this).addClass("hidden");
+	});
+}
 
 /**
  * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
@@ -219,7 +207,6 @@ animation.showMenu = function(name) {
 	}
 	$(name).addClass("fadein-inline");
 }
-
 /**
  * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
  * This function will hide all the other menus else. To add a new menu list, use animation.showMenu
@@ -231,6 +218,14 @@ animation.showMenuOnly = function(name) {
 	animation.hideAllMenus();
 	animation.showMenu(name);
 };
+/**
+ * Hides this menu
+ * @param {string} name - The name of the menu to be hidden
+ */
+animation.hideMenu = function(name) {
+	$(".actions > #" + name).removeClass("fadein-inline");
+	animation.hideHiddenIcons();
+}
 
 /* Return undefined if it is not shown */
 animation.blink = function(selector) {

@@ -267,13 +267,13 @@ animation.setConfirm = function(name, type) {
 		}
 		animation.showIcon("#confirm");
 		if (name === "delete") {
-			title = "Confirm to remove this entry";
+			title = "Confirm to remove this entry"; //
 		} else if (name === "discard") {
-			title = "Discard this entry";
+			title = "Discard this entry"; //
 		} else if (name === "add") {
-			title = "Overwrite saved data to create a new entry";
+			title = "Overwrite saved data to create a new entry"; //
 		} else if (name === "edit") {
-			title = "Overwrite saved data to edit this entry";
+			title = "Overwrite saved data to edit this entry"; //
 		} else if (name === "save") {
 			title = "Save entry";
 		}

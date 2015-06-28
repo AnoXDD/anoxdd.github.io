@@ -2307,7 +2307,7 @@ body {
 		top: -10px;
 		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease, opacity .4s ease, color .2s ease;
 		width: 30px;
-		z-index: 1;
+		z-index: 50;
 	}
 
 		.actions a:active {
@@ -2335,7 +2335,7 @@ body {
 			}
 
 	.actions .has-sub {
-		z-index: 1;
+		z-index: 50;
 	}
 
 		.actions .has-sub:hover > ul {
@@ -2358,10 +2358,12 @@ body {
 		.actions .has-sub > ul li a {
 			background-color: #DDDDDD;
 			color: #3F3F3F;
-			*margin-bottom: -1px;
+			margin-bottom: -1px;
 			box-shadow: 0 0 10px black;
 			margin-top: 10px;
-		}
+		
+			display: block;
+}
 
 		.actions .has-sub .has-sub:hover > ul {
 			display: block;
@@ -2375,8 +2377,12 @@ body {
 		}
 
 			.actions .has-sub .has-sub ul li a {
-				top: -10px;
+				top: -20px;
 			}
+
+	.actions ul ul li a {
+		display: none;
+	}
 
 	.actions ul ul li:hover > a {
 		color: #ffffff;
@@ -2384,6 +2390,10 @@ body {
 
 	.actions .hidden {
 		display: none;
+	}
+
+	.actions .hidden-icon:not(.hidden) a {
+		animation: fadein-inline 1.5s;
 	}
 
 /*===============================EDIT_PANE============================*/
@@ -3047,7 +3057,7 @@ body {
 	position: absolute;
 	top: 85px;
 	width: -webkit-calc(100% - 16px);
-	z-index: 999999;
+	z-index: 9;
 }
 
 	#video-fullscreen #videoplayer video {

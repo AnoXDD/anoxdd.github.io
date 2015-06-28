@@ -13,6 +13,8 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  * [Add] View by year
  * 
+ * Todo reduce redundant id's in index.html
+ * 
  * v3.22 [current] List update
  * [Chg] How action buttons look like and the position of confirm button
  * 

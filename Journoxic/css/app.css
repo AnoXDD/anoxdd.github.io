@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2342,6 +2342,15 @@ body {
 				color: #ffffff;
 			}
 
+
+.actions > div > ul > li.has-sub > a::after {
+	content: "\A\f0d7";
+	position: relative;
+	top: -3px;
+	font-size: 11px;
+	display: block;
+}
+
 	.actions .has-sub {
 		z-index: 50;
 	}
@@ -2360,10 +2369,13 @@ body {
 		}
 
 		.actions .has-sub > a {
-			box-shadow: 0 0 10px rgb(43, 43, 43);
-		}
+			
+									box-shadow: 0 0 10px rgb(43, 43, 43);
+}
+
 
 		.actions .has-sub > ul li a {
+/* background: linear-gradient(to left, #ddd 0%,#ddd 90%,#B7B7B7 90%,#B7B7B7 100%); */
 			background-color: #DDDDDD;
 			color: #3F3F3F;
 			margin-bottom: -1px;
@@ -2390,6 +2402,17 @@ body {
 	.actions ul ul li a {
 		display: none;
 	}
+
+	.actions ul ul li.has-sub > a::after {
+		content: "\f0d9";
+		
+	
+		position: relative;
+		display: block;
+		bottom: 19px;
+		right: 16px;
+		font-size: 12px;
+}
 
 	.actions ul ul li:hover > a {
 		color: #ffffff;

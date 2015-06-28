@@ -282,7 +282,7 @@ function removeLoginButton(debug) {
 	animation.log(log.WELCOME);
 	$("#sign-in-prompt").remove();
 	animation.hideIcon("#signin", function() {
-		animation.showMenu();
+		animation.showMenuOnly();
 		$("#search-new").fadeIn();
 		$("#search-result").fadeIn();
 		$("#app").fadeIn();

@@ -283,7 +283,7 @@ edit.init = function(overwrite, index) {
 		edit.playableSetToggle();
 		edit.refreshSummary();
 	});
-	animation.showMenu("add");
+	animation.showMenuOnly("add");
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 };
 edit.quit = function(selector, save) {
@@ -309,7 +309,7 @@ edit.quit = function(selector, save) {
 		$("#contents").fadeIn();
 		// Reload
 		app.refresh();
-		animation.showMenu("edit");
+		animation.showMenuOnly("edit");
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
@@ -695,7 +695,7 @@ edit.removeEntry = function() {
 	$(".loadmore").trigger("click");
 	// Save to cache
 	edit.saveDataCache();
-	animation.showMenu("edit");
+	animation.showMenuOnly("edit");
 }
 /**
  * Adds a medium to the edit pane, given the typeNum
@@ -1025,15 +1025,7 @@ edit.fullScreen = function() {
 	// Disable auto-height
 	$(window).off("resize");
 	// Change the icon
-	animation.hideAllIcons(function() {
-		$("#toggle-screen").html("&#xf066").attr({
-			title: "Back to window",
-			onclick: "edit.windowMode()"
-		});
-	});
-	animation.showIcon("#toggle-screen");
-	// Add the icon
-	animation.showIcon("#toggle-light");
+	animation.showMenuOnly("fullscreen");
 	// Hide the other part
 	$(".header").fadeOut(400, function() {
 		$("#app").animate({ top: "2%", height: "95%" });
@@ -1048,11 +1040,7 @@ edit.windowMode = function() {
 	// Exit dark mode
 	$("#text-area").removeClass("dark").children().removeClass("dark");
 	// Change the icon
-	animation.showMenu("add");
-	$("#toggle-screen").html("&#xf065").attr({
-		title: "Go fullscreen",
-		onclick: "edit.fullScreen()"
-	});
+	animation.showMenuOnly("add");
 	// Resize
 	$("#app").animate({ top: "8%", height: "76%" });
 	$(".header").fadeIn(400, function() {

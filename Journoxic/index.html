@@ -36,13 +36,17 @@
 			<a title="Toggle fullscreen" id="toggle-media" onclick="app.videoPlayer.toggle()" href="#">&#xf065</a>
 			<a id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
 		</div>
+		<div id="action-fullscreen">
+			<ul>
+				<li><a  title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a></li>
+				<li><a title="Back to window" onclick="edit.windowMode()">&#xf066</a></li>
+			</ul>
+		</div>
 		<div id="action-add">
 			<ul>
-				<li><a class="hidden" title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a></li>
 				<li class="has-sub">
-					<a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a>
+					<a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
 					<ul>
-						<li><a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a></li>
 						<li><a title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="#">&#xf03d</a></li>
 						<li><a title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="#">&#xf130</a></li>
 						<li><a title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="#">&#xf041</a></li>
@@ -58,7 +62,8 @@
 						<li><a title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a></li>
 					</ul>
 				</li>
-				<li><a title="Go fullscreen" id="toggle-screen" onclick="edit.fullScreen()" href="#">&#xf065</a></li>
+				<li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a></li>
+				<li><a title="Go fullscreen" onclick="edit.fullScreen()" href="#">&#xf065</a></li>
 			</ul>
 		</div>
 		<div id="action-archive">
@@ -80,7 +85,7 @@
 					</ul>
 				</li>
 				<li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a></li>
-				<li><a title="Main menu" id="show-menu" onclick="animation.showMenu()" href="#">&#xf0c9</a></li>
+				<li><a title="Main menu" id="show-menu" onclick="animation.showMenuOnly()" href="#">&#xf0c9</a></li>
 			</ul>
 		</div>
 		<div id="action-menu">

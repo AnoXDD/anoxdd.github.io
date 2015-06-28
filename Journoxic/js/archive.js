@@ -62,7 +62,7 @@ archive.init = function(selector) {
 				// Display the result
 				archive.isDisplayed = true;
 				archive.lastLoaded = 0;
-				animation.showMenu("archive");
+				animation.showMenuOnly("archive");
 				// Hide searchbox
 				$("#search-new").fadeOut();
 				// Bind click event

@@ -145,7 +145,7 @@ animation.indent = 0;
 animation.showIcon = function(selector, callback) {
 	$(selector).fadeIn(animation.duration, callback).css({
 		top: "10px",
-		display:"inline-block"
+		display: "inline-block"
 	});
 };
 
@@ -185,26 +185,30 @@ animation.toggleIcon = function(selector, callback) {
 };
 
 /**
- * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html
+ * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
+ * This function will add the menu display on the screen. To show only this list, use animation.showMenuOnly
  * @param {string} name - The name of the menu
+ * @see animation.showMenuOnly
  */
 animation.showMenu = function(name) {
+	name = "#actions-" + name;
+	if ($(name).length === 0) {
+		// Invaild name
+		name = "#action-menu";
+	}
+	animation.showIcon(name);
+}
+
+/**
+ * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
+ * This function will hide all the other menus else. To add a new menu list, use animation.showMenu
+ * @param {String} name - The name of the menu
+ * @see animation.showMenu
+ */
+animation.showMenuOnly = function(name) {
 	// Just hide the direct children that are not entry-option
 	animation.hideAllIcons();
-	setTimeout(function() {
-		if (name === "add") {
-			name = "#action-add";
-		} else if (name === "archive") {
-			name = "#action-archive";
-		} else {
-			// name == undefined or other situations
-			name = "#action-menu";
-		}
-		//////////if (name === ".entry-edit" && localStorage["_cache"] == 1) {
-		//////////	animation.showIcon("#reread");
-		//////////}
-		animation.showIcon(name);
-	}, animation.duration + 50);
+	setTimeout(animation.showMenu(name), animation.duration + 50);
 };
 
 /**

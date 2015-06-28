@@ -162,7 +162,15 @@ animation.hideIcon = function(selector, callback) {
 		}
 	});
 };
-
+/**
+ * Hides this menu
+ * @param {string} name - The name of the menu to be hidden
+ */
+animation.hideMenu = function(name) {
+	$(".actions > #" + name).removeClass("fadein-inline");
+	animation.hideHiddenIcons();
+}
+// Todo sort the functions here
 /**
  * Hides all the icon menus
  */
@@ -170,6 +178,16 @@ animation.hideAllMenus = function() {
 	$(".actions > div").each(function() {
 		// Iterate to remove class "fadein-inline"
 		$(this).removeClass("fadein-inline");
+	});
+}
+
+/**
+ * Hides all the hidden icons that are not displayed by default
+ * @returns {} 
+ */
+animation.hideHiddenIcons = function() {
+	$(".actions .hidden-icon").each(function() {
+		$(this).addClass("hidden");
 	});
 }
 

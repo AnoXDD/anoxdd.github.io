@@ -962,6 +962,9 @@ edit.setRemove = function(typeVal) {
 	// Todo test for location: should have pin-point presented
 	// Todo make sure all the quit will hide those buttons away (e.g. dismissing the map view)
 	edit.confirmVal = typeVal;
+	if (typeVal === 2) {
+		$("#pin-point").removeClass("hidden");
+	}
 	$("#action-remove-confirm").removeClass("hidden");
 }
 /**
@@ -1635,9 +1638,9 @@ edit.photo = function(isQueue) {
 			}
 		}
 		edit.getDate(function(dateStr) {
-		// Get resource photos from user content folder
-		animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
-		// Get correct date folder
+			// Get resource photos from user content folder
+			animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
+			// Get correct date folder
 			processFunc(dateStr);
 		});
 	} else {
@@ -1891,7 +1894,7 @@ edit.videoHide = function() {
 	edit.videoSave(edit.mediaIndex["video"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon("#action-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["video"] = -1;
 	edit.isEditing = -1;
 };
@@ -2034,7 +2037,7 @@ edit.locationHide = function() {
 	$("#map-holder").fadeOut().html("<div id=\"map-selector\"></div>");
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
-	animation.hideIcon("#action-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["place"] = -1;
 	edit.isEditing = "";
 };
@@ -2237,7 +2240,7 @@ edit.voiceHide = function() {
 	edit.voiceSave(edit.mediaIndex["voice"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon("#action-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["voice"] = -1;
 	edit.isEditing = -1;
 };
@@ -2336,7 +2339,7 @@ edit.weblinkHide = function() {
 	edit.weblinkSave(edit.mediaIndex["weblink"], 7);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon("#action-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["weblink"] = -1;
 	edit.isEditing = -1;
 };
@@ -2396,7 +2399,7 @@ edit.itunesHide = function(typeNum) {
 	edit.itunesSave(edit.mediaIndex[type], typeNum);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon("#action-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex[type] = -1;
 	edit.isEditing = -1;
 };
@@ -2573,17 +2576,17 @@ edit.playableSave = function(typeNum, callback) {
 			pending = 0;
 		// Transferring all the data
 		switch (typeNum) {
-		case 1:
-			// Video
-			dataGroup = edit.videos;
-			localData = JSON.parse(localStorage["video"]);
-			break;
-		case 3:
-			dataGroup = edit.voices;
-			localData = JSON.parse(localStorage["voice"]);
-			break;
-		default:
-			return;
+			case 1:
+				// Video
+				dataGroup = edit.videos;
+				localData = JSON.parse(localStorage["video"]);
+				break;
+			case 3:
+				dataGroup = edit.voices;
+				localData = JSON.parse(localStorage["voice"]);
+				break;
+			default:
+				return;
 		}
 		// Collect data from HTML element
 		$("#attach-area ." + edit.mediaName(typeNum)).each(function() {
@@ -2667,11 +2670,11 @@ edit.playableSave = function(typeNum, callback) {
 							url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
 						}
 						$.ajax({
-								type: "PATCH",
-								url: url,
-								contentType: "application/json",
-								data: JSON.stringify(requestJson)
-							})
+							type: "PATCH",
+							url: url,
+							contentType: "application/json",
+							data: JSON.stringify(requestJson)
+						})
 							.done(function(data) {
 								--pending;
 								var title = "";

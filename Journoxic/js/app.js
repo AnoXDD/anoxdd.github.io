@@ -982,12 +982,6 @@ app.detail.prototype = {
 	/* Hide the detail-view */
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
-		$(".entry-edit").each(function() {
-			animation.hideIcon(this);
-		});
-		$(".entry-option").each(function() {
-			animation.hideIcon(this);
-		});
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");
@@ -1736,7 +1730,7 @@ app.audioPlayer.quit = function() {
 		app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);
 	}
 	window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
-	animation.hideIcon("#action-media");
+	animation.hideMenu("media");
 };
 /**
  * Initializes a video player within the selector provided
@@ -1930,7 +1924,7 @@ app.videoPlayer.quit = function() {
 		app.videoPlayer.playhead.removeEventListener("mousedown", app.videoPlayer.mouseDown);
 	}
 	window.removeEventListener("mouseup", app.videoPlayer.mouseUp);
-	animation.hideIcon("#action-media");
+	animation.hideMenu("media");
 	$("#toggle-media").html("&#xf065");
 	$("#video-fullscreen").fadeOut();
 	this.toggle.isFullScreen = false;

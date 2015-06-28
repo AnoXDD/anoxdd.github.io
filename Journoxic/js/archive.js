@@ -278,12 +278,6 @@ archive.detail.prototype = {
 	/* Hide the detail-view */
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
-		$(".entry-edit").each(function() {
-			animation.hideIcon(this);
-		});
-		$(".entry-option").each(function() {
-			animation.hideIcon(this);
-		});
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");

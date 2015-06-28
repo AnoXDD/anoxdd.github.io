@@ -1,4 +1,4 @@
-﻿app.version.main = "v3.22.11 Build 062815_1908 [list_update]";
+﻿app.version.main = "v3.22.12 Build 062815_1919 [list_update]";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -12,6 +12,9 @@ $("#version").html(app.version.main);
  * [Add] Shortcut keys management
  * [Add] Disable rightclick everywhere
  * [Add] View by year
+ * 
+ * v3.22 [current] List update
+ * [Chg] How action buttons look like and the position of confirm button
  * 
  * v3.20 - 
  * [Chg] Productivity update: many features will be reorganized to fit more functions

@@ -126,6 +126,7 @@ window.log = {
 	QUEUE_FOUND_VOICES: " voice(s) added",
 	QUEUE_FAILED: "Cannot find queue resources",
 	QUEUE_END: "Queue resources loaded",
+	OVERWRITE_CACHE_WARNING: "You have saved entry data. Either press confirm to overwrite or read it",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",
@@ -211,85 +212,6 @@ animation.showMenuOnly = function(name) {
 	// Just hide the direct children that are not entry-option
 	animation.hideAllMenus();
 	animation.showMenu(name);
-};
-
-/**
- * Shows the confirm button given the argument for the event on clicking the button
- * @param {String/Number} name - The name of confirm opeartion
- * @param {String} type - The type of confirm (edit, archive, etc.). Default value is "edit"
- */
-animation.setConfirm = function(name, type) {
-	var confirmName;
-	if (type === "edit") {
-		confirmName = edit.confirmName;
-	} else if (type === "archive") {
-		confirmName = archive.confirmName;
-	}
-	if (name === confirmName) {
-		if (typeof (name) == "number") {
-			// Always show
-			animation.showIcon("#confirm");
-			switch (name) {
-				case 2:
-					// Place
-					animation.toggleIcon("#pin-point");
-					break;
-			}
-		} else {
-			// Do not need to follow the steps below, just toggle it
-			animation.toggleIcon("#confirm");
-		}
-		return;
-	}
-	// Start a new one
-	animation.hideIcon("#action-option a", function() {
-		var title;
-		// Assign the default value
-		type = type || "edit";
-		// Change how it looks
-		if (typeof (name) == "number") {
-			$("#confirm").html("&#xf00d");
-			title = "Remove this medium";
-			switch (name) {
-				case 2:
-					// Place
-					animation.showIcon("#pin-point");
-					break;
-				case 1:
-					// Video
-				case 3:
-					// Voice
-					// Do not need to show confirm button
-					return true;
-			}
-		} else {
-			$("#confirm").html("&#xf00c");
-		}
-		animation.showIcon("#confirm");
-		if (name === "delete") {
-			title = "Confirm to remove this entry"; //
-		} else if (name === "discard") {
-			title = "Discard this entry"; //
-		} else if (name === "add") {
-			title = "Overwrite saved data to create a new entry"; //
-		} else if (name === "edit") {
-			title = "Overwrite saved data to edit this entry"; //
-		} else if (name === "save") {
-			title = "Save entry";
-		}
-		if (title == undefined) {
-			// Not a valid call
-			return false;
-		}
-		var onclick = "edit.confirm()";
-		if (type === "edit") {
-			edit.confirmName = name;
-		} else if (type === "archive") {
-			onclick = "archive.confirm()";
-			archive.confirmName = name;
-		}
-		$("#confirm").css("title", title).attr("onclick", onclick);
-	});
 };
 
 /* Return undefined if it is not shown */

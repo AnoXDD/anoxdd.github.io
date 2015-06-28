@@ -4,7 +4,7 @@ window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
 edit.intervalId = -1;
-edit.confirmName = "";
+edit.confirmVal = "";
 edit.currentEditing = -1;
 
 edit.photos = [];
@@ -68,13 +68,7 @@ edit.init = function(overwrite, index) {
 			}
 		} else if (overwrite == undefined) {
 			// Do not overwrite or overwrite is undefined
-			if (index != undefined) {
-				// Display edit-confirm
-				animation.setConfirm("edit");
-			} else {
-				// Display add-confirm
-				animation.setConfirm("add");
-			}
+			animation.warning(log.OVERWRITE_CACHE_WARNING);
 			return;
 		}
 	} else {
@@ -323,7 +317,7 @@ edit.quit = function(selector, save) {
 edit.save = function(selector) {
 	var id, html;
 	animation.log(log.EDIT_PANE_SAVE_START, 1);
-	if (animation.isShown("#confirm")) {
+	if (animation.isShown("#action-remove-confirm")) {
 		// Confirm button will be pressed automatically if shown
 		animation.log(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
 		edit.confirm();
@@ -670,6 +664,12 @@ edit.change = function(key, value) {
  * Removes an entry from view-list
  */
 edit.removeEntry = function() {
+	// Test if there are any deletable data
+	if (app.currentDisplayed == -1) {
+		animation.error(log.NO_ENTRY_SELECTED);
+		animation.deny("#delete");
+		return;
+	}
 	// Change the data displ1ayed
 	--app.displayedNum;
 	var data = journal.archive.data[app.currentDisplayed];
@@ -955,24 +955,15 @@ edit.mediaValue = function(type) {
 	return -1;
 }
 /**
- * A function to be called by confirm 
+ * Sets the medium to be removed and show the remove-confirm button
+ * @param {number} typeVal - The type numerical value of the type 
  */
-edit.confirm = function() {
-	if (typeof (edit.confirmName) == "string") {
-		if (edit.confirmName == "discard") {
-			edit.quit(false);
-		} else if (edit.confirmName == "delete") {
-			edit.removeEntry();
-		} else if (edit.confirmName == "add") {
-			edit.init(true);
-		} else if (edit.confirmName == "edit") {
-			edit.init(true, app.currentDisplayed);
-		}
-	} else {
-		// Media removal
-		edit.removeMedia(edit.confirmName);
-	}
-};
+edit.setRemove = function(typeVal) {
+	// Todo test for location: should have pin-point presented
+	// Todo make sure all the quit will hide those buttons away (e.g. dismissing the map view)
+	edit.confirmVal = typeVal;
+	$("#action-remove-confirm").removeClass("hidden");
+}
 /**
  * Cleans up all the media edit data to get ready for next editing 
  */
@@ -1064,8 +1055,8 @@ edit.saveTitle = function() {
 
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
-		char = text.length;
-	$("#entry-char").text(char);
+		len = text.length;
+	$("#entry-char").text(len);
 	// Cache the data
 	localStorage["body"] = text;
 	$("#entry-line").text(text.split(/\r*\n/).length);
@@ -1580,7 +1571,7 @@ edit.photo = function(isQueue) {
 				if (isQueue) {
 					animation.log(added + log.QUEUE_FOUND_IMAGES);
 				} else {
-					animation.setConfirm(0);
+					edit.setRemove(0);
 					// Test if any result was found
 					if (edit.photos.length === 0) {
 						animation.log(log.EDIT_PANE_IMAGES_END_NO_RESULT, -1);
@@ -1844,7 +1835,7 @@ edit.video = function(index, link) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex["video"] = index;
 	var selectorHeader = edit.getSelectorHeader("video");
-	animation.setConfirm(1);
+	edit.setRemove(1);
 	edit.func = $(selectorHeader + "a").attr("onclick");
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false);
@@ -1876,7 +1867,7 @@ edit.video = function(index, link) {
 			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
 	}
-	animation.setConfirm(1);
+	edit.setRemove(1);
 };
 edit.videoHide = function() {
 	if (edit.mediaIndex["video"] < 0) {
@@ -1934,7 +1925,7 @@ edit.location = function(index) {
 	}
 	edit.cleanupMediaEdit();
 	// Just start a new one
-	animation.setConfirm(2);
+	edit.setRemove(2);
 	// Update media index
 	edit.mediaIndex["place"] = index;
 	// Spread map-selector
@@ -2223,7 +2214,7 @@ edit.voice = function(index, link) {
 			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
 	}
-	animation.setConfirm(3);
+	edit.setRemove(3);
 };
 edit.voiceHide = function() {
 	if (edit.mediaIndex["voice"] < 0) {
@@ -2320,7 +2311,7 @@ edit.weblink = function(index) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex["weblink"] = index;
 	var selectorHeader = edit.getSelectorHeader("weblink");
-	animation.setConfirm(7);
+	edit.setRemove(7);
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
@@ -2373,7 +2364,7 @@ edit.itunes = function(index, typeNum) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex[type] = index;
 	var selectorHeader = edit.getSelectorHeader(type);
-	animation.setConfirm(typeNum);
+	edit.setRemove(typeNum);
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search

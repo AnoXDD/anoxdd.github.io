@@ -29,10 +29,6 @@
 	</div>
 	<div id="feedback"></div>
 	<div class="actions">
-		<div id="action-option">
-			<a title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a>
-			<a id="confirm" onclick="edit.confirm()" href="#">&#xf00c</a>
-		</div>
 		<div id="action-media">
 			<ul>
 				<li class="has-sub">
@@ -52,7 +48,8 @@
 		</div>
 		<div id="action-add">
 			<ul>
-				<li><a class="hidden-icon hidden"title="Remove" onclick="animation.debug('remove media entry')">&#xf00d</a></li>
+				<li><a class="hidden-icon hidden" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a></li>
+				<li><a class="hidden-icon hidden" title="Remove" id="action-remove-confirm" onclick="edit.removeMedia(edit.confirmVal)">&#xf00d</a></li>
 				<li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a></li>
 				<li><a title="Go fullscreen" onclick="edit.fullScreen()" href="#">&#xf065</a></li>
 				<li class="has-sub">
@@ -71,9 +68,9 @@
 					<a title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xf0c7</a>
 					<ul>
 						<li class="has-sub">
-							<a title="Discard and quit" id="add-discard" onclick="animation.setConfirm('discard')" href="#">&#xf014</a>
+							<a title="Discard and quit" id="add-discard" href="#">&#xf014</a>
 							<ul>
-								<li><a title="Confirm" onclick="animation.debug('confirm discard edit-pane')"></a></li>
+								<li><a title="Confirm" onclick="edit.quit()"></a></li>
 							</ul>
 						</li>
 					</ul>
@@ -109,19 +106,19 @@
 						<li class="has-sub">
 							<a class="hidden-icon hidden" title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a>
 							<ul>
-								<li><a title="Overwrite saved data to create a new entry" onclick="animation.debug('overwrite and create')">&#xf00c</a></li>
+								<li><a title="Overwrite saved data to create a new entry" onclick="edit.init(true)">&#xf00c</a></li>
 							</ul>
 						</li>
 						<li class="li-add-entry-sub">
 							<a title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#"><span>&#xf044</span></a>
 							<ul>
-								<li><a title="Overwrite saved data to edit this entry" onclick="animation.debug('overwrite and edit')">&#xf00c</a></li>
+								<li><a title="Overwrite saved data to edit this entry" onclick="edit.init(true, app.currentDisplayed)">&#xf00c</a></li>
 							</ul>
 						</li>
-						<li class="li-add-entry-sub">
-							<a title="Delete this entry" id="delete" href="#"><span>&#xf00d</span></a>
+						<li>
+							<a class="hidden-icon hidden" title="Delete this entry" id="delete" href="#"><span>&#xf00d</span></a>
 							<ul>
-								<li><a title="Confirm" onclick="animation.debug('confirm remove entry')">&#xf00c</a></li>
+								<li><a title="Confirm" onclick="edit.removeEntry()">&#xf00c</a></li>
 							</ul>
 						</li>
 					</ul>

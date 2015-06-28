@@ -114,16 +114,8 @@ app.init = function() {
 		$("#total-time").text(app.displayedTime);
 		$("#search-result").fadeIn(500);
 	});
-	// Show confirm button for delete
-	$("#delete").on("click", function() {
-		if (app.currentDisplayed == -1) {
-			animation.error(log.NO_ENTRY_SELECTED);
-			animation.deny(this);
-			return;
-		}
-		animation.setConfirm("delete");
-	});
 	// Add clickon event for all the menu buttons
+	// Todo process this
 	$(".entry-menu").each(function() {
 		// Exclude the refresh-data button
 		if ($(this).attr("id") !== "refresh-data") {
@@ -132,6 +124,7 @@ app.init = function() {
 			});
 		}
 	});
+	// Todo add icons show if there is cache
 };
 /**
  * Simply refreshes and force reload

@@ -2168,8 +2168,8 @@ body {
 		display: block;
 		position: relative;
 		top: -60px;
-		overflow: hidden;
-	}
+	
+}
 
 
 	.header #network-progress {
@@ -2177,9 +2177,10 @@ body {
 		width: 0;
 		background-color: #FAFAFA;
 		overflow: hidden;
-		box-shadow: 0 0 5px #fff;
 		transition: width 1s linear;
-	}
+	
+		box-shadow: 0 0 5px #fafafa;
+}
 
 
 	.header #network-followup {
@@ -2187,7 +2188,8 @@ body {
 		position: relative;
 		transition: left .4s ease;
 		left: 100%;
-	}
+	
+}
 
 	.header #network-bar:not(.hidden) #network-followup {
 		animation: followup 2s infinite ease-out;

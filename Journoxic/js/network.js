@@ -25,17 +25,23 @@ network.init = function(breakpoint) {
 	network.setPercent(0);
 	// Increment by a little automatically
 	clearInterval(network.interval);
+	var toDestroy = false;
 	network.interval = setInterval(function() {
-		// Render the network progress bar given `network.percent`
-		$("#network-progress").css("width", network.percent * 100 + "%");
+		// Test if the network bar needs destroyed 
+		if (toDestroy) {
+			network.destroy();
+			return;
+		}
 		// The network bar will not exceed half-way
 		if (network.percent < (network.current + .5) / (network.breakpoint + 1)) {
 			network.percent += .015;
 		}
-		if (parseInt($("#network-bar").css("width")) <= parseInt($("#network-progress").css("width"))) {
-			network.destroy();
-			return;
+		if (network.percent >= 1) {
+			network.percent = 1;
+			toDestroy = true;
 		}
+		// Render the network progress bar given `network.percent`
+		$("#network-progress").css("width", network.percent * 100 + "%");
 	}, 1000);
 }
 
@@ -233,11 +239,11 @@ function uploadFile() {
 				// Clean the unnecessary data
 				var tmp = edit.minData();
 				$.ajax({
-						type: "PUT",
-						url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
-						contentType: "text/plain",
-						data: JSON.stringify(tmp)
-					})
+					type: "PUT",
+					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
+					contentType: "text/plain",
+					data: JSON.stringify(tmp)
+				})
 					.done(function(data, status, xhr) {
 						////console.log("uploadFile():\t Done!");
 						animation.log(log.CONTENTS_UPLOAD_END, -1);

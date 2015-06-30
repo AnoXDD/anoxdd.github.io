@@ -668,6 +668,9 @@ app.list.prototype = {
 				if (journal.archive.map[first.fileName + "_thumb.jpg"]) {
 					fileName = journal.archive.map[first.fileName + "_thumb.jpg"]["url"];
 				}
+				if (fileName == undefined) {
+					return "<div class=\"dummy\"></div>";
+				}
 			}
 			// Check the validity of photos
 			////if (!fileName.match(/.(jpg|png)$/) && !!first.type)

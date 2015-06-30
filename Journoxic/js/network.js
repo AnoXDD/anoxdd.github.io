@@ -34,7 +34,7 @@ network.init = function(breakpoint) {
 		}
 		// The network bar will not exceed half-way
 		if (network.percent < (network.current + .5) / (network.breakpoint + 1)) {
-			network.percent += .015;
+			network.percent += .05;
 		}
 		if (network.percent >= 1) {
 			network.percent = 1;

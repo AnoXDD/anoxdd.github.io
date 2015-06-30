@@ -179,6 +179,9 @@ app.load = function(filter, forceReload, newContent) {
 	$("#search-result").hide();
 	// Also hide the detail view
 	app.detail.prototype.hideDetail();
+	// Test if #add has sub-menu
+	animation.testCacheIcons();
+	animation.testSub("#add");
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data.length);
@@ -953,6 +956,7 @@ app.detail = function() {
 	});
 	// Show edit and delete buttons
 	$("#edit-this, #delete").removeClass("hidden");
+	animation.testCacheIcons();
 	animation.testSub("#add");
 	return dataClip;
 };

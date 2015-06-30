@@ -246,7 +246,7 @@ animation.testCacheIcons = function() {
 }
 /**
  * Tests the selected selector has any shown subs (i.e. not(.hidden)) and then add/remove has-sub on its parent `li`
- * @param {string} selector -The seletor to be tested
+ * @param {string} selector - The seletor to be tested
  */
 animation.testSub = function(selector) {
 	var hasChild = false;

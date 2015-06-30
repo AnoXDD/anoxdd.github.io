@@ -2177,7 +2177,7 @@ body {
 		width: 0;
 		background-color: #FAFAFA;
 		overflow: hidden;
-		box-shadow: 0 0 5px #fafafa;
+		box-shadow: 0 0 5px #fff;
 		transition: width 1s linear;
 	}
 
@@ -2205,7 +2205,7 @@ body {
 		background: #444;
 		clear: both;
 		color: #BABABA;
-		float: right;
+		float: left;
 		font-size: 10px;
 		margin-bottom: 2px;
 		opacity: .3;
@@ -2376,7 +2376,7 @@ body {
 	float: right;
 	position: absolute;
 	right: 10px;
-	top: 13px;
+	top: 17px;
 }
 
 	.actions ul {

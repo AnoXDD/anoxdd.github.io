@@ -4,7 +4,7 @@ window.edit = {};
 /* The index of the entry being edited. Set to -1 to save a new entry */
 edit.time = 0;
 edit.intervalId = -1;
-edit.confirmName = "";
+edit.confirmVal = "";
 edit.currentEditing = -1;
 
 edit.photos = [];
@@ -68,13 +68,7 @@ edit.init = function(overwrite, index) {
 			}
 		} else if (overwrite == undefined) {
 			// Do not overwrite or overwrite is undefined
-			if (index != undefined) {
-				// Display edit-confirm
-				animation.setConfirm("edit");
-			} else {
-				// Display add-confirm
-				animation.setConfirm("add");
-			}
+			animation.warn(log.OVERWRITE_CACHE_WARNING);
 			return;
 		}
 	} else {
@@ -283,7 +277,7 @@ edit.init = function(overwrite, index) {
 		edit.playableSetToggle();
 		edit.refreshSummary();
 	});
-	headerShowMenu("add");
+	animation.showMenuOnly("add");
 	edit.intervalId = setInterval(edit.refreshTime, 1000);
 };
 edit.quit = function(selector, save) {
@@ -314,10 +308,12 @@ edit.quit = function(selector, save) {
 		$("#contents").fadeIn();
 		// Reload
 		app.refresh();
-		headerShowMenu("edit");
+		animation.showMenuOnly("edit");
 	});
 	// Clean cache anyway
 	edit.cleanEditCache();
+	// Test if there is any cache
+	animation.testCacheIcons();
 	// Reset videoplayer's heiht
 	app.videoPlayer.height = undefined;
 };
@@ -334,7 +330,7 @@ edit.save = function(selector) {
 	var id, html;
 	animation.log(log.EDIT_PANE_SAVE_START, 1);
 	network.init(3);
-	if (animation.isShown("#confirm")) {
+	if (animation.isShown("#action-remove-confirm")) {
 		// Confirm button will be pressed automatically if shown
 		animation.log(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
 		edit.confirm();
@@ -682,6 +678,43 @@ edit.change = function(key, value) {
 /************************** EDITING *******************************/
 
 /**
+ * Removes an entry from view-list
+ */
+edit.removeEntry = function() {
+	// Test if there are any deletable data
+	if (app.currentDisplayed == -1) {
+		animation.error(log.NO_ENTRY_SELECTED);
+		animation.deny("#delete");
+		return;
+	}
+	// Change the data displ1ayed
+	--app.displayedNum;
+	var data = journal.archive.data[app.currentDisplayed];
+	app.displayedChars -= data["text"]["chars"];
+	app.displayedLines -= data["text"]["lines"];
+	app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
+	// Remove from the map
+	delete journal.archive.data[app.currentDisplayed];
+	// Clear from the list
+	var $entry = $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ")");
+	if ($entry.next().length === 0 || $entry.next.has("p.separator").length !== 0) {
+		// Reaches EOF or the beginning of next month (separator)
+		$entry.fadeOut(500, function() {
+			$(this).empty();
+		});
+	} else {
+		// Pretend there is a separator
+		$entry.children("a").fadeOut(500, function() {
+			$(this).remove();
+		});
+	}
+	app.detail.prototype.hideDetail();
+	$(".loadmore").trigger("click");
+	// Save to cache
+	edit.saveDataCache();
+	animation.showMenuOnly("edit");
+}
+/**
  * Adds a medium to the edit pane, given the typeNum
  * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
  * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName", "id" and "title" key
@@ -942,41 +975,16 @@ edit.mediaValue = function(type) {
 	return -1;
 }
 /**
- * A function to be called by confirm 
+ * Sets the medium to be removed and show the remove-confirm button
+ * @param {number} typeVal - The type numerical value of the type 
  */
-edit.confirm = function() {
-	if (typeof (edit.confirmName) == "string") {
-		if (edit.confirmName == "discard") {
-			edit.quit(false);
-		} else if (edit.confirmName == "delete") {
-			// Change the data displayed
-			--app.displayedNum;
-			var data = journal.archive.data[app.currentDisplayed];
-			app.displayedChars -= data["text"]["chars"];
-			app.displayedLines -= data["text"]["lines"];
-			app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
-			// Remove from the map
-			delete journal.archive.data[app.currentDisplayed];
-			// Clear from the list
-			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").fadeOut(500, function() {
-				// Remove this from the list
-				$(this).remove();
-			});
-			app.detail.prototype.hideDetail();
-			$(".loadmore").trigger("click");
-			// Save to cache
-			edit.saveDataCache();
-			headerShowMenu("edit");
-		} else if (edit.confirmName == "add") {
-			edit.init(true);
-		} else if (edit.confirmName == "edit") {
-			edit.init(true, app.currentDisplayed);
-		}
-	} else {
-		// Media removal
-		edit.removeMedia(edit.confirmName);
+edit.setRemove = function(typeVal) {
+	edit.confirmVal = typeVal;
+	if (typeVal === 2) {
+		$("#pin-point").removeClass("hidden");
 	}
-};
+	$("#action-remove-confirm").removeClass("hidden");
+}
 /**
  * Cleans up all the media edit data to get ready for next editing 
  */
@@ -1029,15 +1037,7 @@ edit.fullScreen = function() {
 	// Disable auto-height
 	$(window).off("resize");
 	// Change the icon
-	animation.hideIcon(".actions a", function() {
-		$("#toggle-screen").html("&#xf066").attr({
-			title: "Back to window",
-			onclick: "edit.windowMode()"
-		});
-	});
-	animation.showIcon("#toggle-screen");
-	// Add the icon
-	animation.showIcon("#toggle-light");
+	animation.showMenuOnly("fullscreen");
 	// Hide the other part
 	$(".header").fadeOut(400, function() {
 		$("#app").animate({ top: "2%", height: "95%" });
@@ -1052,11 +1052,7 @@ edit.windowMode = function() {
 	// Exit dark mode
 	$("#text-area").removeClass("dark").children().removeClass("dark");
 	// Change the icon
-	headerShowMenu("add");
-	$("#toggle-screen").html("&#xf065").attr({
-		title: "Go fullscreen",
-		onclick: "edit.fullScreen()"
-	});
+	animation.showMenuOnly("add");
 	// Resize
 	$("#app").animate({ top: "8%", height: "76%" });
 	$(".header").fadeIn(400, function() {
@@ -1080,8 +1076,8 @@ edit.saveTitle = function() {
 
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
-		char = text.length;
-	$("#entry-char").text(char);
+		len = text.length;
+	$("#entry-char").text(len);
 	// Cache the data
 	localStorage["body"] = text;
 	$("#entry-line").text(text.split(/\r*\n/).length);
@@ -1597,7 +1593,7 @@ edit.photo = function(isQueue, callback) {
 				if (isQueue) {
 					animation.log(added + log.QUEUE_FOUND_IMAGES);
 				} else {
-					animation.setConfirm(0);
+					edit.setRemove(0);
 					// Test if any result was found
 					if (edit.photos.length === 0) {
 						animation.log(log.EDIT_PANE_IMAGES_END_NO_RESULT, -1);
@@ -1863,7 +1859,7 @@ edit.video = function(index, link) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex["video"] = index;
 	var selectorHeader = edit.getSelectorHeader("video");
-	animation.setConfirm(1);
+	edit.setRemove(1);
 	edit.func = $(selectorHeader + "a").attr("onclick");
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false);
@@ -1895,7 +1891,7 @@ edit.video = function(index, link) {
 			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
 	}
-	animation.setConfirm(1);
+	edit.setRemove(1);
 };
 edit.videoHide = function() {
 	if (edit.mediaIndex["video"] < 0) {
@@ -1919,7 +1915,7 @@ edit.videoHide = function() {
 	edit.videoSave(edit.mediaIndex["video"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["video"] = -1;
 	edit.isEditing = -1;
 };
@@ -1953,7 +1949,7 @@ edit.location = function(index) {
 	}
 	edit.cleanupMediaEdit();
 	// Just start a new one
-	animation.setConfirm(2);
+	edit.setRemove(2);
 	// Update media index
 	edit.mediaIndex["place"] = index;
 	// Spread map-selector
@@ -2062,7 +2058,7 @@ edit.locationHide = function() {
 	$("#map-holder").fadeOut().html("<div id=\"map-selector\"></div>");
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
-	animation.hideIcon(".entry-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["place"] = -1;
 	edit.isEditing = "";
 };
@@ -2242,7 +2238,7 @@ edit.voice = function(index, link) {
 			animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
 		}
 	}
-	animation.setConfirm(3);
+	edit.setRemove(3);
 };
 edit.voiceHide = function() {
 	if (edit.mediaIndex["voice"] < 0) {
@@ -2265,7 +2261,7 @@ edit.voiceHide = function() {
 	edit.voiceSave(edit.mediaIndex["voice"]);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["voice"] = -1;
 	edit.isEditing = -1;
 };
@@ -2339,7 +2335,7 @@ edit.weblink = function(index) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex["weblink"] = index;
 	var selectorHeader = edit.getSelectorHeader("weblink");
-	animation.setConfirm(7);
+	edit.setRemove(7);
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false);
 	// Press esc to save
@@ -2364,7 +2360,7 @@ edit.weblinkHide = function() {
 	edit.weblinkSave(edit.mediaIndex["weblink"], 7);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex["weblink"] = -1;
 	edit.isEditing = -1;
 };
@@ -2392,7 +2388,7 @@ edit.itunes = function(index, typeNum) {
 	edit.cleanupMediaEdit();
 	edit.mediaIndex[type] = index;
 	var selectorHeader = edit.getSelectorHeader(type);
-	animation.setConfirm(typeNum);
+	edit.setRemove(typeNum);
 	$(selectorHeader + "a").removeAttr("onclick");
 	$(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
 		// Press enter to search
@@ -2424,7 +2420,7 @@ edit.itunesHide = function(typeNum) {
 	edit.itunesSave(edit.mediaIndex[type], typeNum);
 	$("#edit-pane").off("keyup");
 	// Hide all the option button
-	animation.hideIcon(".entry-option");
+	animation.hideHiddenIcons();
 	edit.mediaIndex[type] = -1;
 	edit.isEditing = -1;
 };

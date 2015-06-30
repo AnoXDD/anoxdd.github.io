@@ -144,7 +144,7 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 	// Refresh token
 	// Expire after a year
 	expiration.setTime(expiration.getTime() + 31536000000);
-	cookie = "refresh=" + refreshToken + "; path=/; expires=" + expiration.toUTCString() ;
+	cookie = "refresh=" + refreshToken + "; path=/; expires=" + expiration.toUTCString();
 	console.log("setCookie(): cookie = " + cookie);
 	if (document.location.protocol.toLowerCase() == "https") {
 		cookie = cookie + ";secure";
@@ -263,9 +263,8 @@ function showLoginButton() {
 		});
 	} else {
 		// Prompt the user to re-login
-		animation.hideIcon(".actions a", function() {
-			animation.showIcon("#signin");
-		});
+		animation.hideAllMenus();
+		animation.showIcon("#signin");
 	}
 }
 
@@ -281,11 +280,13 @@ function removeLoginButton(debug) {
 	// Show everything app needs
 	animation.log(log.WELCOME);
 	$("#sign-in-prompt").remove();
-	headerShowMenu();
-	$("#search-new").fadeIn();
-	$("#search-result").fadeIn();
-	$("#app").fadeIn();
-	edit.tryReadCache();
+	animation.hideIcon("#signin", function() {
+		animation.showMenuOnly();
+		$("#search-new").fadeIn();
+		$("#search-result").fadeIn();
+		$("#app").fadeIn();
+		edit.tryReadCache();
+	});
 }
 
 function challengeForAuth() {

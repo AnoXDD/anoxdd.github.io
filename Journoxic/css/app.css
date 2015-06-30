@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -88,6 +88,26 @@
 	}
 }
 
+@keyframes fadein {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes fadein-inline {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
 .spin {
 	-webkit-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
@@ -102,6 +122,11 @@
 
 .followup {
 	animation: followup 2s infinite ease;
+}
+
+.fadein-inline {
+	display: inline-block !important;
+	animation: fadein-inline 1.5s;
 }
 
 /*@font-face {
@@ -2132,9 +2157,8 @@ body {
 
 		.header #network-bar.hidden {
 			opacity: 0;
-		
 			transition: opacity .4s ease;
-}
+		}
 
 	.header #network-bar {
 		height: 2px;
@@ -2145,30 +2169,29 @@ body {
 		position: relative;
 		top: -60px;
 		overflow: hidden;
-}
+	}
 
 
 	.header #network-progress {
 		height: 2px;
 		width: 0;
 		background-color: #FAFAFA;
-	
 		overflow: hidden;
-					box-shadow: 0 0 5px #fafafa;
+		box-shadow: 0 0 5px #fafafa;
 		transition: width 1s linear;
-}
+	}
 
 
 	.header #network-followup {
-    background: #555;
-    position: relative;
-    transition: left .4s ease;
-    left: 100%;
-}
+		background: #555;
+		position: relative;
+		transition: left .4s ease;
+		left: 100%;
+	}
 
-.header #network-bar:not(.hidden) #network-followup {
-	animation: followup 2s infinite ease-out;
-}
+	.header #network-bar:not(.hidden) #network-followup {
+		animation: followup 2s infinite ease-out;
+	}
 
 #feedback {
 	position: absolute;
@@ -2233,6 +2256,46 @@ body {
 			background: #777;
 		}
 
+		#feedback p:hover {
+			box-shadow: 1px 1px 1px #2B2B2B;
+			opacity: 1 !important;
+			transition: opacity .4s ease;
+		}
+
+		#feedback p:active {
+			opacity: .5 !important;
+		}
+
+		#feedback p.error {
+			background: #fff !important;
+			color: #000;
+			font-weight: bold;
+		}
+
+		#feedback p.warning {
+			background-color: #fff !important;
+			color: #000 !important;
+			font-style: italic;
+		}
+
+		#feedback p.indent-1 {
+			background: #585858;
+		}
+
+			#feedback p.indent-1.start::after { /*content: ' \2510';*/
+			}
+
+			#feedback p.indent-1::after {
+				content: ' \2502';
+			}
+
+			#feedback p.indent-1.end::after { /*content: ' \2518';*/
+			}
+
+		#feedback p.indent-2 {
+			background: #777;
+		}
+
 
 			#feedback p.indent-2.start::after { /*content: ' \252C\2524';*/
 			}
@@ -2248,7 +2311,6 @@ body {
 			background: #888888;
 			color: #ccc;
 		}
-
 
 			#feedback p.indent-3.start::after { /*content: ' \252C\2534\2524';*/
 			}
@@ -2309,32 +2371,47 @@ body {
 			#feedback p.indent-6.end::after { /*content: ' \2534\2500\2500\2500\2500\2518';*/
 			}
 
-
 .actions {
-	border-spacing: 10px 0;
-	display: inline-block;
+	display: block;
 	float: right;
 	position: absolute;
 	right: 10px;
 	top: 13px;
 }
 
+	.actions ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	.actions ul, .actions li, .actions span {
+		position: relative;
+	}
+
+	.actions > div {
+		display: none;
+	}
+
+	.actions .entry-signin {
+		display: block;
+	}
+
 	.actions a, .actions p {
 		background: #3f3f3f;
 		border-radius: 20px;
 		color: #b7b7b7;
-		display: table-cell;
+		display: block;
 		font-size: 18px;
-		height: 39px;
-		padding-bottom: 0px;
+		height: 30px;
+		margin-right: 10px;
+		padding: 7px 5px 3px 5px;
 		position: relative;
 		text-align: center;
 		text-decoration: none;
-		top: -80px;
-		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease;
-		vertical-align: middle;
-		width: 39px;
-		z-index: 1;
+		top: -10px;
+		transition: background .2s ease, transform 1.5s ease, box-shadow .4s ease, opacity .4s ease, color .2s ease;
+		width: 30px;
+		z-index: 50;
 	}
 
 		.actions a:active {
@@ -2346,6 +2423,101 @@ body {
 			background: #4e4e4e;
 			color: #d0d0d0;
 		}
+
+		.actions a.hidden {
+			display: none !important;
+		}
+
+		.actions a.hidden-icon:not(.hidden) {
+			animation: fadein-inline 1.5s;
+		}
+
+	.actions div {
+	}
+
+		.actions div > ul > li, .actions div > ul > li > ul > li > ul > li {
+			display: block;
+			float: left;
+			margin: 0;
+		}
+
+			.actions div > ul > li.active > a,
+			.actions div > ul > li:hover > a {
+				color: #ffffff;
+			}
+
+
+	.actions > div > ul > li.has-sub > a::after {
+		content: "\A\f0d7";
+		position: relative;
+		top: -3px;
+		font-size: 11px;
+		display: block;
+	}
+
+	.actions .has-sub {
+		z-index: 50;
+	}
+
+		.actions .has-sub:hover > ul {
+			animation: fadein .4s;
+			display: block;
+		}
+
+		.actions .has-sub ul {
+			display: none;
+			left: 0;
+			position: absolute;
+			top: 100%;
+			width: 50px;
+		}
+
+		.actions .has-sub > a {
+			box-shadow: 0 0 10px rgb(43, 43, 43);
+		}
+
+
+		.actions .has-sub > ul li a {
+			/* background: linear-gradient(to left, #ddd 0%,#ddd 90%,#B7B7B7 90%,#B7B7B7 100%); */
+			background-color: #DDDDDD;
+			color: #3F3F3F;
+			margin-bottom: -1px;
+			box-shadow: 0 0 10px black;
+			margin-top: 10px;
+			display: block;
+		}
+
+		.actions .has-sub .has-sub:hover > ul {
+			display: block;
+		}
+
+		.actions .has-sub .has-sub ul {
+			display: none;
+			left: -100%;
+			position: absolute;
+			top: 0;
+		}
+
+			.actions .has-sub .has-sub ul li a {
+				top: -20px;
+			}
+
+	.actions ul ul li a {
+		display: none;
+	}
+
+	.actions ul ul li.has-sub > a::after {
+		content: "\f0d9";
+		position: relative;
+		display: block;
+		bottom: 19px;
+		right: 16px;
+		font-size: 12px;
+	}
+
+	.actions ul ul li:hover > a {
+		color: #ffffff;
+	}
 
 /*===============================EDIT_PANE============================*/
 
@@ -3008,7 +3180,7 @@ body {
 	position: absolute;
 	top: 85px;
 	width: -webkit-calc(100% - 16px);
-	z-index: 999999;
+	z-index: 9;
 }
 
 	#video-fullscreen #videoplayer video {

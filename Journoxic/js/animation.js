@@ -127,6 +127,7 @@ window.log = {
 	QUEUE_FAILED: "Cannot find queue resources",
 	QUEUE_END: "Queue resources loaded",
 	NETWORK_WORKING: "Please wait until all network activities stop",
+	OVERWRITE_CACHE_WARNING: "You have saved entry data. Either press confirm to overwrite or read it",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",
@@ -140,9 +141,15 @@ window.log = {
 };
 
 animation.degree = 0;
-animation.duration = 250;
+animation.duration = 300;
 animation.indent = 0;
 
+animation.showIcon = function(selector, callback) {
+	$(selector).fadeIn(animation.duration, callback).css({
+		top: "10px",
+		display: "inline-block"
+	});
+};
 animation.hideIcon = function(selector, callback) {
 	var length = $(selector).length - 1;
 	$(selector).each(function(index) {
@@ -155,11 +162,6 @@ animation.hideIcon = function(selector, callback) {
 		}
 	});
 };
-
-animation.showIcon = function(selector, callback) {
-	$(selector).css({ top: "10px" }).fadeIn(animation.duration, callback);
-};
-
 animation.isShown = function(selector) {
 	return $(selector).css("top") === "10px" && $(selector).css("display") !== "none";
 };
@@ -171,85 +173,97 @@ animation.toggleIcon = function(selector, callback) {
 	} else {
 		animation.showIcon(selector, callback);
 	}
-}; /* Set the name of confirm */
-/**
- * Shows the confirm button given the argument for the event on clicking the button
- * @param {String/Number} name - The name of confirm opeartion
- * @param {String} type - The type of confirm (edit, archive, etc.). Default value is "edit"
- */
-animation.setConfirm = function(name, type) {
-	var confirmName;
-	if (type === "edit") {
-		confirmName = edit.confirmName;
-	} else if (type === "archive") {
-		confirmName = archive.confirmName;
-	}
-	if (name === confirmName) {
-		if (typeof (name) == "number") {
-			// Always show
-			animation.showIcon("#confirm");
-			switch (name) {
-				case 2:
-					// Place
-					animation.toggleIcon("#pin-point");
-					break;
-			}
-		} else {
-			// Do not need to follow the steps below, just toggle it
-			animation.toggleIcon("#confirm");
-		}
-		return;
-	}
-	// Start a new one
-	animation.hideIcon(".entry-option", function() {
-		var title;
-		// Assign the default value
-		type = type || "edit";
-		// Change how it looks
-		if (typeof (name) == "number") {
-			$("#confirm").html("&#xf00d");
-			title = "Remove this medium";
-			switch (name) {
-				case 2:
-					// Place
-					animation.showIcon("#pin-point");
-					break;
-				case 1:
-					// Video
-				case 3:
-					// Voice
-					// Do not need to show confirm button
-					return true;
-			}
-		} else {
-			$("#confirm").html("&#xf00c");
-		}
-		animation.showIcon("#confirm");
-		if (name === "delete") {
-			title = "Confirm to remove this entry";
-		} else if (name === "discard") {
-			title = "Discard this entry";
-		} else if (name === "add") {
-			title = "Overwrite saved data to create a new entry";
-		} else if (name === "edit") {
-			title = "Overwrite saved data to edit this entry";
-		} else if (name === "save") {
-			title = "Save entry";
-		}
-		if (title == undefined) {
-			// Not a valid call
-			return false;
-		}
-		var onclick = "edit.confirm()";
-		if (type === "edit") {
-			edit.confirmName = name;
-		} else if (type === "archive") {
-			onclick = "archive.confirm()";
-			archive.confirmName = name;
-		}
-		$("#confirm").css("title", title).attr("onclick", onclick);
-	});
 };
+
+/**
+ * Hides all the icon menus
+ */
+animation.hideAllMenus = function() {
+	$(".actions > div").each(function() {
+		// Iterate to remove class "fadein-inline"
+		$(this).removeClass("fadein-inline");
+	});
+}
+/**
+ * Hides all the hidden icons that are not displayed by default
+ * @returns {} 
+ */
+animation.hideHiddenIcons = function() {
+	$(".actions .hidden-icon").each(function() {
+		$(this).addClass("hidden");
+	});
+}
+
+/**
+ * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
+ * This function will add the menu display on the screen. To show only this list, use animation.showMenuOnly
+ * @param {string} name - The name of the menu
+ * @see animation.showMenuOnly
+ */
+animation.showMenu = function(name) {
+	name = "#action-" + name;
+	if ($(name).length === 0) {
+		// Invaild name
+		name = "#action-menu";
+	}
+	$(name).addClass("fadein-inline");
+}
+/**
+ * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
+ * This function will hide all the other menus else. To add a new menu list, use animation.showMenu
+ * @param {String} name - The name of the menu
+ * @see animation.showMenu
+ */
+animation.showMenuOnly = function(name) {
+	// Just hide the direct children that are not entry-option
+	animation.hideAllMenus();
+	animation.showMenu(name);
+};
+/**
+ * Hides this menu
+ * @param {string} name - The name of the menu to be hidden
+ */
+animation.hideMenu = function(name) {
+	$(".actions > #" + name).removeClass("fadein-inline");
+	animation.hideHiddenIcons();
+}
+/**
+ * Shows or hides the icons that ask the user to read or abandon cached data according to if there is any cached data
+ */
+animation.testCacheIcons = function() {
+	if (localStorage["_cache"] == 1) {
+		// There is cache
+		$("#reread").removeClass("hidden");
+		$(".li-add-entry-sub").each(function() {
+			$(this).addClass("has-sub");
+		});
+	} else {
+		$("#reread").addClass("hidden");
+		$(".li-add-entry-sub").each(function() {
+			$(this).removeClass("has-sub");
+		});
+	}
+}
+/**
+ * Tests the selected selector has any shown subs (i.e. not(.hidden)) and then add/remove has-sub on its parent `li`
+ * @param {string} selector -The seletor to be tested
+ */
+animation.testSub = function(selector) {
+	var hasChild = false;
+	$(selector).siblings("ul").children("li").children("a").each(function() {
+		if (!$(this).hasClass("hidden")) {
+			// This is not hidden
+			hasChild = true;
+			return;
+		}
+	});
+	// Add/remove `has-sub` according to `hasChild`
+	if (hasChild) {
+		$(selector).parent().addClass("has-sub");
+	} else {
+		$(selector).parent().removeClass("has-sub");
+	}
+}
 
 /* Return undefined if it is not shown */
 animation.blink = function(selector) {
@@ -305,7 +319,7 @@ animation.deny = function(selector) {
 		/* Keep a record of original text */
 		var text = $(selector).html();
 		$(selector).fadeOut(300, function() {
-			$(this).html("&#xE10A").css({
+			$(this).html("&#xf05e").css({
 				color: "#000",
 				background: "#fff"
 			});
@@ -383,7 +397,7 @@ animation.log = function(message, indent, type) {
 				$(this).remove();
 			});
 		});
-			return false;
+		return false;
 	});
 	switch (type) {
 		case 1:
@@ -441,31 +455,4 @@ animation.debug = function(message) {
 	}
 }
 
-function headerShowMenu(name) {
-	animation.hideIcon(".actions a");
-	setTimeout(function() {
-		if (name === "edit") {
-			name = ".entry-edit";
-		} else if (name === "add") {
-			name = ".entry-add";
-		} else if (name === "comm") {
-			name = ".entry-comm";
-		} else if (name === "archive") {
-			name = ".entry-archive";
-		} else if (name === "settings") {
-			name = ".entry-settings";
-		} else {
-			// name == undefined or other situations
-			name = ".entry-menu";
-		}
-		// Disable going back for edit-pane
-		if (name !== ".entry-add" && name !== ".entry-menu") {
-			animation.showIcon("#show-menu");
-		}
-		if (name === ".entry-edit" && localStorage["_cache"] == 1) {
-			animation.showIcon("#reread");
-		}
-		animation.showIcon(name);
-	}, animation.duration + 50);
-};
 

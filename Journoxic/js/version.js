@@ -1,4 +1,4 @@
-﻿app.version.main = "v3.20.6 Build 062315_1104 [network]";
+﻿﻿app.version.main = "v3.22.0 Build 063015_1038";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -13,9 +13,13 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  * [Add] View by year
  * 
- * v3.? - 
- * [Chg] Productivity update: many features will be reorgainzed to fit more functions
- * [Fix] Covertype photo will now correctly be chosen
+ * Todo reduce redundant id's in index.html
+ * 
+ * v3.22 Debug version
+ * [Fix] Fix the problems of previous two versions
+ * 
+ * v3.21 List update
+ * [Chg] How action buttons look like and the position of confirm button
  * 
  * v3.20 - Network Update
  * [Add] Visual feedback for all the possible network activities
@@ -23,6 +27,7 @@ $("#version").html(app.version.main);
  * [Chg] Remove the refresh-media button, and clean up the leftover
  * [Chg] Shorten the log feedback to provide more useful information
  * [Chg] Rename onedrive.v2.js to network.js and add more functions to that file
+ * [Fix] Covertype photo will now correctly be chosen
  * 
  * v3.19 - Queue support
  * [Add] Support for /queue folder: now all the media can be added from /queue

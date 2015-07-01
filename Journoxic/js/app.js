@@ -3,7 +3,7 @@ window.app = {};
 
 //(function(window, $) {
 journal.archive = {};
-journal.archive.data = [];
+journal.archive.data = {};
 /** The number of the total media */
 journal.archive.media = 0;
 /** The map to map the source name to the weblink. Format: {name: {id: xxx, url: xxx, size: xxx}} */
@@ -167,10 +167,10 @@ app.load = function(filter, forceReload, newContent) {
 		return;
 	} else if (newContent == undefined) {
 		// Filter out undefined element
-		journal.archive.data = journal.archive.data.filter(function(key) {
+		journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(key) {
 			return key != undefined;
 		});
-		if (journal.archive.data.length === 0) {
+		if (journal.archive.data[app.year].length === 0) {
 			////console.log("app.load()\tNo archive data!");
 			animation.error(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
 			animation.deny("#refresh-media");
@@ -186,7 +186,7 @@ app.load = function(filter, forceReload, newContent) {
 	animation.testSub("#add");
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
-		$("#total-entry").text(journal.archive.data.length);
+		$("#total-entry").text(journal.archive.data[app.year].length);
 		////console.log("Calling app.list(" + filter + ")");
 		////console.log("\t> lastLoaded = " + app.lastLoaded);
 		new app.list(filter);
@@ -224,8 +224,8 @@ app.load = function(filter, forceReload, newContent) {
 		$("#total-line").text(app.displayedLines);
 		$("#total-time").text(app.displayedTime);
 		// Refresh every stuff
-		for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
-			journal.archive.data[key]["processed"] = 0;
+		for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+			journal.archive.data[app.year][key]["processed"] = 0;
 		}
 		loadFunction();
 	}
@@ -255,7 +255,7 @@ app.loadScript = function(data, func, isScript) {
 	} else {
 		// Raw data
 		console.log("app.loadScript(): data.length = " + data.length);
-		journal.archive.data = app.updateData(JSON.parse(data));
+		journal.archive.data[app.year] = app.updateData(JSON.parse(data));
 		func();
 	}
 };
@@ -298,7 +298,7 @@ app.list = function(filter) {
 	////console.log("Called app.list(" + filter + ")");
 	var f = this,
 		/* The data loaded */
-		data = journal.archive.data; // original:[e]
+		data = journal.archive.data[app.year]; // original:[e]
 	journal.total = data.length;
 	var d = app.cList,
 		c = d.children("ul");
@@ -329,13 +329,13 @@ app.list.prototype = {
 	load: function(filter) {
 		////console.log("Call app.list.load(" + filter + ")");
 		var currentList = this, // [h]
-			contents = journal.archive.data, // original:[f]
+			contents = journal.archive.data[app.year], // original:[f]
 			currentLoaded = app.lastLoaded, // original [g]
 			lastQualifiedLoaded = app.lastQualified;
 		// Adjust if the number of contents needed to be loaded is more than all the available contents
 		// Load the contents
-		if (app.lastLoaded >= journal.archive.data.length) {
-			currentLoaded = app.lastLoaded = journal.archive.data.length - 1;
+		if (app.lastLoaded >= journal.archive.data[app.year].length) {
+			currentLoaded = app.lastLoaded = journal.archive.data[app.year].length - 1;
 		}
 		contents[currentLoaded].index = currentLoaded;
 		// Test if current entry satisfies the filter
@@ -349,7 +349,7 @@ app.list.prototype = {
 					lastTime = contents[lastQualifiedLoaded].time.start || contents[lastQualifiedLoaded].time.created;
 				}
 				// Go to load/change html of the content
-				currentList.html(journal.archive.data[currentLoaded], lastTime);
+				currentList.html(journal.archive.data[app.year][currentLoaded], lastTime);
 				// Track the index of this data
 				lastQualifiedLoaded = currentLoaded;
 				// Update other information
@@ -833,7 +833,7 @@ app.list.prototype = {
  * Display the detail of the data at current index
  */ 
 app.detail = function() {
-	var dataClip = journal.archive.data[app.currentDisplayed];
+	var dataClip = journal.archive.data[app.year][app.currentDisplayed];
 	if (!dataClip.processed) {
 		dataClip.chars = dataClip.text.chars + " Chars";
 		dataClip.lines = dataClip.text.lines + " Lines";
@@ -889,7 +889,7 @@ app.detail = function() {
 	});
 	// Click to load the photos
 	$(".center").on("click", function() {
-		var data = journal.archive.data[app.currentDisplayed];
+		var data = journal.archive.data[app.year][app.currentDisplayed];
 		if (data["images"]) {
 			for (var key = 0; key != data["images"].length; ++key) {
 				var file = data["images"][key].fileName;
@@ -1978,8 +1978,8 @@ app.checkResource = function() {
 		groups = ["images", "video", "voice"],
 		undefMedia = 0;
 	// Iterate to find any media that is not contained in archive.data
-	for (var i = 0, length = journal.archive.data.length; i !== length; ++i) {
-		var dataClip = journal.archive.data[i];
+	for (var i = 0, length = journal.archive.data[app.year].length; i !== length; ++i) {
+		var dataClip = journal.archive.data[app.year][i];
 		// Iterate to find all the media in different groups
 		for (var j = 0; j !== groups.length; ++j) {
 			if (dataClip[groups[j]]) {

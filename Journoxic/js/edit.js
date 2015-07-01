@@ -51,7 +51,7 @@ edit.init = function(overwrite, index) {
 			edit.cleanEditCache();
 			if (index != undefined && index != -1) {
 				// Modify an entry
-				data = journal.archive.data[index];
+				data = journal.archive.data[app.year][index];
 				localStorage["created"] = data["time"]["created"];
 			}
 		} else if (overwrite == false) {
@@ -59,7 +59,7 @@ edit.init = function(overwrite, index) {
 			if (localStorage["created"]) {
 				index = edit.find(localStorage["created"]);
 				if (index !== -1) {
-					data = journal.archive.data[index];
+					data = journal.archive.data[app.year][index];
 				}
 			} else {
 				// Nothing found, start a new one
@@ -73,7 +73,7 @@ edit.init = function(overwrite, index) {
 		}
 	} else {
 		if (index != undefined) {
-			data = journal.archive.data[index];
+			data = journal.archive.data[app.year][index];
 		}
 	}
 	// If still no available data to be stored, create a new one
@@ -352,7 +352,7 @@ edit.save = function(selector) {
 				var index = edit.find(localStorage["created"]);
 				edit.exportCache(index);
 				edit.sortArchive();
-				journal.archive.data = edit.minData();
+				journal.archive.data[app.year] = edit.minData();
 				edit.saveDataCache();
 				$(selector).html(html).removeClass("spin").attr({
 					onclick: "edit.save('" + selector + "')",
@@ -435,7 +435,7 @@ edit.importCache = function(data) {
 	return data;
 };
 edit.exportCache = function(index) {
-	var data = journal.archive.data[index] || {};
+	var data = journal.archive.data[app.year][index] || {};
 	// Process body from cache
 	data = edit.exportCacheBody(data);
 	// Force the program to reload it
@@ -474,10 +474,10 @@ edit.exportCache = function(index) {
 	data["attachments"] = attach;
 	if (index < 0) {
 		// Create a new entry
-		journal.archive.data.push(data);
+		journal.archive.data[app.year].push(data);
 	} else {
 		// Modify the new one
-		journal.archive.data[index] = data;
+		journal.archive.data[app.year][index] = data;
 		app.currentDisplayed = -1;
 	}
 };
@@ -535,10 +535,10 @@ edit.cleanEditCache = function() {
 	edit.videos = [];
 };
 /**
- * Saves the entire journal.archive.data to cache
+ * Saves only the data in journal.archive.data of this year to cache
  */
 edit.saveDataCache = function() {
-	localStorage["archive"] = JSON.stringify(journal.archive.data);
+	localStorage["archive"] = JSON.stringify(journal.archive.data[new Date().getFullYear()]);
 };
 /**
  * Cleans the cache for journal.archive.data
@@ -552,7 +552,7 @@ edit.removeDataCache = function() {
 edit.tryReadCache = function() {
 	if (localStorage["archive"]) {
 		// Seems that there is available data
-		journal.archive.data = JSON.parse(localStorage["archive"]);
+		journal.archive.data[new Date().getFullYear()] = JSON.parse(localStorage["archive"]);
 		app.refresh();
 	}
 };
@@ -567,10 +567,10 @@ edit.tryReadCache = function() {
  * @returns {number} - The index of data, -1 if not found
  */
 edit.find = function(created) {
-	for (var key = 0, len = journal.archive.data.length; key != len; ++key) {
-		if (journal.archive.data[key]) {
-			if (journal.archive.data[key]["time"]) {
-				if (journal.archive.data[key]["time"]["created"] == created) {
+	for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+		if (journal.archive.data[app.year][key]) {
+			if (journal.archive.data[app.year][key]["time"]) {
+				if (journal.archive.data[app.year][key]["time"]["created"] == created) {
 					return key;
 				}
 			}
@@ -599,7 +599,7 @@ edit.newContent = function() {
  * Minimizes the data, remove unnecessary tags 
  */
 edit.minData = function() {
-	var tmp = journal.archive.data.filter(function(key) {
+	var tmp = journal.archive.data[app.year].filter(function(key) {
 		return key != undefined;
 	});
 	for (var key = 0, len = tmp.length; key != len; ++key) {
@@ -629,7 +629,7 @@ edit.minData = function() {
  * Sorts journal.archive.data 
  */
 edit.sortArchive = function() {
-	journal.archive.data.sort(function(a, b) {
+	journal.archive.data[app.year].sort(function(a, b) {
 		// From the latest to oldest
 		return b["time"]["created"] - a["time"]["created"];
 	});
@@ -689,12 +689,12 @@ edit.removeEntry = function() {
 	}
 	// Change the data displ1ayed
 	--app.displayedNum;
-	var data = journal.archive.data[app.currentDisplayed];
+	var data = journal.archive.data[app.year][app.currentDisplayed];
 	app.displayedChars -= data["text"]["chars"];
 	app.displayedLines -= data["text"]["lines"];
 	app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
 	// Remove from the map
-	delete journal.archive.data[app.currentDisplayed];
+	delete journal.archive.data[app.year][app.currentDisplayed];
 	// Clear from the list
 	var $entry = $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ")");
 	if ($entry.next().length === 0 || $entry.next.has("p.separator").length !== 0) {

@@ -71,7 +71,7 @@ network.next = function() {
 }
 
 /**
- * Destories the network bar and hide it. This function will set the percent to 1 then hide it
+ * Destroies the network bar and hide it. This function will set the percent to 1 then hide it
  */
 network.destroy = function() {
 	if (network.percent < 1) {
@@ -84,6 +84,37 @@ network.destroy = function() {
 	}
 }
 
+/**
+ * ****************************************************************************
+ */
+
+/**
+ * Returns the url of resource folder (where the media in the entry are located) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + "/`year`". The returned string should be appended with ":/" if necessary
+ * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/`year`"
+ * @returns {string} - The correct url given `app.year` (The year displayed)
+ */
+function getResourceUrlHeader(isAbsolute) {
+	if (isAbsolute) {
+		return "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + 
+			app.year;
+	} else {
+		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/" 
+			+app.year;
+	}
+}
+
+/**
+ * Returns the url of core data (.js file) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/core/`year`/data.js". The returned string should be appended with ":/" if necessary
+ * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/`year`/data.js"
+ * @returns {string} - The correct url given `app.year` (The year displayed) or `app.year` to the core data .js
+ */
+function getCoreDataUrlHeader(isAbsolute) {
+	if (isAbsolute) {
+		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + app.year + "data.js";
+	} else {
+		return "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + app.year + "data.js";
+	}
+}
 
 /**
  * Downloads the file (including the text file and the media file) from OneDrive
@@ -97,7 +128,8 @@ function downloadFile(url) {
 	getTokenCallback(function(token) {
 		if (token != "") {
 			// Get text data
-			url = url || "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token;
+			url = url || getCoreDataUrlHeader(true)+
+				":/content?access_token=" + token;
 			$.ajax({
 				type: "GET",
 				url: url
@@ -110,7 +142,7 @@ function downloadFile(url) {
 					// Get metadata
 					$.ajax({
 						type: "GET",
-						url: "https://api.onedrive.com/v1.0/drive/special/approot:/resource:?select=folder&access_token=" + token
+						url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
 					}).done(function(data, status, xhr) {
 						// Get the data number
 						journal.archive.media = data["folder"]["childCount"];
@@ -151,7 +183,7 @@ function downloadMedia(url) {
 		// Initial call
 		var token = getTokenFromCookie();
 		journal.archive.map = {};
-		url = "https://api.onedrive.com/v1.0/drive/special/approot:/resource:/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
+		url = getResourceUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
 	}
 	$.ajax({
 		type: "GET",
@@ -227,7 +259,7 @@ function uploadFile() {
 		// Backup the original file
 		$.ajax({
 			type: "PATCH",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/data.js?access_token=" + token,
+			url: getCoreDataUrlHeader() + "?access_token=" + token,
 			contentType: "application/json",
 			data: JSON.stringify(data)
 		})
@@ -240,7 +272,7 @@ function uploadFile() {
 				var tmp = edit.minData();
 				$.ajax({
 					type: "PUT",
-					url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
+					url: getCoreDataUrlHeader(true) + ":/content?access_token=" + token,
 					contentType: "text/plain",
 					data: JSON.stringify(tmp)
 				})

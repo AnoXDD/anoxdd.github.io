@@ -25,7 +25,7 @@ archive.init = function(selector) {
 		animation.log(log.ARCHIVE_START, 1);
 		$.ajax({
 			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + app.year + ":/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
 		})
 			.done(function(data, status, xhr) {
 				if (data["@odata.nextLink"]) {

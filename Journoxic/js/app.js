@@ -10,6 +10,8 @@ journal.archive.media = 0;
 journal.archive.map = {};
 
 app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+/** The year to be displayed */
+app.year = new Date().getFullYear();
 /** The resource folder of all the images/video/music covers, etc. */
 app.resource = "resource/";
 /** The number of the pages already loaded */

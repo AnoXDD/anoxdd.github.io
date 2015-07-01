@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.22.4 Build 063015_2100";
+﻿﻿app.version.main = "v3.23.0 Build 070115_1924";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -14,6 +14,9 @@ $("#version").html(app.version.main);
  * [Add] View by year
  * 
  * Todo reduce redundant id's in index.html
+ * 
+ * v3.33 Year support
+ * [Add] View entries by years
  * 
  * v3.22 Debug version
  * [Fix] Fix the problems of previous two versions

@@ -2590,7 +2590,7 @@ edit.playableSetToggle = function() {
  */
 edit.playableSave = function(typeNum, callback) {
 	edit.getDate(function(dateStr) {
-		var resourceDir = "/drive/root:/Apps/Journal/resource",
+		var resourceDir = "/drive/root:/Apps/Journal/resource/" + app.year,
 			contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
 			dataGroup,
 			localData,

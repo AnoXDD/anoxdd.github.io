@@ -89,30 +89,51 @@ network.destroy = function() {
  */
 
 /**
- * Returns the url of resource folder (where the media in the entry are located) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + "/`year`". The returned string should be appended with ":/" if necessary
+ * Returns the url of resource folder (where the media in the entry are located) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/resource/`year`". The returned string should be appended with ":/" if necessary
  * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/`year`"
- * @returns {string} - The correct url given `app.year` (The year displayed)
+ * @param {number} year (Optional) - The year of the resource folder. Default value is `app.year`
+ * @returns {string} - The correct url given `app.year` (the year displayed) or specified year
  */
-function getResourceUrlHeader(isAbsolute) {
-	if (isAbsolute) {
+function getResourceUrlHeader(isAbsolute, year) {
+	year = year || app.year;
+if (isAbsolute) {
 		return "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + 
-			app.year;
+			year;
 	} else {
 		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/" 
-			+app.year;
+			+year;
+	}
+}
+
+/**
+ * Returns the url of data folder (where media that are not in the entries are located) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/data/`year`". The returned string should be appended with ":/" if necessary
+ * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/`year`"
+ * @param {number} year (Optional) - The year of the resource folder. Default value is `app.year`
+ * @returns {string} - The correct url given `app.year` (the year displayed) or specified year
+ */
+function getDataUrlHeader(isAbsolute, year) {
+	year = year || app.year;
+	if (isAbsolute) {
+		return "https://api.onedrive.com/v1.0/drive/special/approot:/data/" +
+			year;
+	} else {
+		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/"
+			+ year;
 	}
 }
 
 /**
  * Returns the url of core data (.js file) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/core/`year`/data.js". The returned string should be appended with ":/" if necessary
  * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/`year`/data.js"
- * @returns {string} - The correct url given `app.year` (The year displayed) or `app.year` to the core data .js
+ * @param {number} year (Optional) - The year of the core data. Default value is `app.year`
+ * @returns {string} - The correct url given `app.year` (the year displayed) or `app.year` to the core data .js
  */
-function getCoreDataUrlHeader(isAbsolute) {
+function getCoreDataUrlHeader(isAbsolute, year) {
+	year = year || app.year;
 	if (isAbsolute) {
-		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + app.year + "data.js";
+		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "data.js";
 	} else {
-		return "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + app.year + "data.js";
+		return "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + year + "data.js";
 	}
 }
 
@@ -355,7 +376,7 @@ function createFolder(dateStr, callback) {
 		};
 		$.ajax({
 			type: "POST",
-			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/children?access_token=" + token,
+			url: getDataUrlHeader(true) + ":/children?access_token=" + token,
 			contentType: "application/json",
 			data: JSON.stringify(requestJson),
 			statusCode: {

@@ -1497,7 +1497,7 @@ edit.photo = function(isQueue, callback) {
 			if (isQueue) {
 				url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 			} else {
-				url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+				url = getDataUrlHeader() + "/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 			}
 			$.ajax({
 				type: "GET",
@@ -1725,8 +1725,8 @@ edit.photoSave = function(callback) {
 			}
 
 			// Start to change location
-			var resourceDir = "/drive/root:/Apps/Journal/resource",
-				contentDir = "/drive/root:/Apps/Journal/data/" + timeHeader,
+			var resourceDir = "/drive/root:/Apps/Journal/resource/" + app.year,
+				contentDir = "/drive/root:/Apps/Journal/data/" + app.year + "/" + timeHeader,
 				processingPhoto = 0;
 			if (photoQueue.length !== 0) {
 				// Process the photos
@@ -2450,7 +2450,7 @@ edit.itunesSave = function(index, typeNum) {
 edit.playableSearch = function(typeNum) {
 	getTokenCallback(function(token) {
 		edit.getDate(function(dateStr) {
-			var url = "https://api.onedrive.com/v1.0/drive/special/approot:/data/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			var url = getDataUrlHeader() + "/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 			animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_START, 1);
 			$.ajax({
 				type: "GET",
@@ -2591,7 +2591,7 @@ edit.playableSetToggle = function() {
 edit.playableSave = function(typeNum, callback) {
 	edit.getDate(function(dateStr) {
 		var resourceDir = "/drive/root:/Apps/Journal/resource/" + app.year,
-			contentDir = "/drive/root:/Apps/Journal/data/" + dateStr,
+			contentDir = "/drive/root:/Apps/Journal/data/" + app.year + "/" + dateStr,
 			dataGroup,
 			localData,
 			pending = 0;

@@ -2036,7 +2036,7 @@ app.cleanResource = function() {
 			// Finds all the available folder names
 			$.ajax({
 				type: "GET",
-				url: "https://api.onedrive.com/v1.0/drive/special/approot:/data:/children?select=name&top=500&access_token=" + token
+				url: getDataUrlHeader() + ":/children?select=name&top=500&access_token=" + token
 			}).done(function(data) {
 				var itemList = data["value"],
 					folders = [];
@@ -2067,7 +2067,7 @@ app.cleanResource = function() {
 					if (id) {
 						url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,@content.downloadUrl&access_token=" + token;
 					} else {
-						url = "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/" + encodeURI(lostMedia[i]) + "/" + "?select=id,@content.downloadUrl&access_token=" + token;
+						url = getResourceUrlHeader(true) + "/" + encodeURI(lostMedia[i]) + "/" + "?select=id,@content.downloadUrl&access_token=" + token;
 					}
 					// Trying to send to the folder
 					$.ajax({

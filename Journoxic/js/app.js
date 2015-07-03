@@ -629,21 +629,20 @@ app.list.prototype = {
 			// No result found
 			return false;
 		}
-		console.log("Passed all");
 		return true;
 	},
 	/* Returns the date string */
 	date: function(time, timeOnly) {
 		var date = new Date(time),
-			year = date.getFullYear(),
+			//// year = date.getFullYear(),
 			month = date.getMonth(),
 			day = date.getDate(),
 			hour = date.getHours(),
-			minute = date.getMinutes(),
-			minute = minute < 10 ? "0" + minute : minute;
+			minute = date.getMinutes();
+		minute = minute < 10 ? "0" + minute : minute;
 		hour = hour < 10 ? "0" + hour : hour;
 		if (!timeOnly) {
-			return app.month_array[month] + " " + day + ", " + year + " " + hour + ":" + minute;
+			return app.month_array[month] + " " + day + /*", " + year +*/ " " + hour + ":" + minute;
 		} else {
 			return hour + ":" + minute;
 		}
@@ -700,9 +699,7 @@ app.list.prototype = {
 			data.datetime += " - " + this.date(data.time.end, 1);
 		}
 		// Separator
-		var dateArr = this.isInSameMonth(createTime, lastTime);
-		data.year = dateArr[0];
-		data.month = dateArr[1];
+		data.month = this.isInSameMonth(createTime, lastTime);
 		// Get the attached data
 		data.attached = this.attached(data.attachments);
 		var item = $(app.itemView(data));
@@ -950,18 +947,22 @@ app.list.prototype = {
 	 Tests if the months and years are the same. 
 	 Returns an array as [year, month] 0 if are, the month of the new one if not
 	 */
+	/**
+	 * Tests if two passed-in parameters have the same months. If not, returns the month of the first parameter.
+	 * @param {number} newTime - The newer time, measured by seconds since epoch
+	 * @param {number} oldTime - The older time, measured by seconds since epoch
+	 * @returns {number} - The month of `newTime` if two time differs, -1 if same
+	 */
 	isInSameMonth: function(newTime, oldTime) {
 		var newDate = new Date(newTime),
-			newMonth = newDate.getMonth(),
-			newYear = newDate.getFullYear();
+			newMonth = newDate.getMonth();
 		// Just initialized
-		if (oldTime == 0) {
-			return [newYear, app.month_array[newMonth]];
+		if (oldTime === 0) {
+			return app.month_array[newMonth];
 		}
 		var oldDate = new Date(oldTime),
-			oldMonth = oldDate.getMonth(),
-			oldYear = oldDate.getFullYear();
-		return [oldYear == newYear ? -1 : newYear, oldMonth == newMonth ? -1 : app.month_array[newMonth]];
+			oldMonth = oldDate.getMonth();
+		return oldMonth === newMonth ? -1 : app.month_array[newMonth];
 	}
 };
 /**

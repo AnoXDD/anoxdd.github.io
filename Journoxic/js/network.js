@@ -96,12 +96,12 @@ network.destroy = function() {
  */
 function getResourceUrlHeader(isAbsolute, year) {
 	year = year || app.year;
-if (isAbsolute) {
-		return "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" + 
+	if (isAbsolute) {
+		return "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" +
 			year;
 	} else {
-		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/" 
-			+year;
+		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/"
+			+ year;
 	}
 }
 
@@ -150,7 +150,7 @@ function downloadFile(url, textOnly) {
 	getTokenCallback(function(token) {
 		if (token != "") {
 			// Get text data
-			url = url || getCoreDataUrlHeader(true)+
+			url = url || getCoreDataUrlHeader(true) +
 				":/content?access_token=" + token;
 			$.ajax({
 				type: "GET",
@@ -163,13 +163,20 @@ function downloadFile(url, textOnly) {
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Get metadata
 					$.ajax({
-							type: "GET",
-							url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
-						})
+						type: "GET",
+						url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
+					})
 						.done(function(data, status, xhr) {
 							// Get the data number
 							journal.archive.media = data["folder"]["childCount"];
-							if (!textOnly) {
+							if (textOnly) {
+								// Change loading icons and re-enable click
+								$("#download").html("&#xf0ed").removeClass("spin").attr({
+									onclick: "downloadFile()",
+									href: "#"
+								});
+								animation.finished("#download");
+							} else {
 								animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
 								network.init(journal.archive.media);
 								downloadMedia();

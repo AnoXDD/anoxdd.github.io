@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2205,6 +2205,29 @@ body {
 		animation: followup 2s infinite ease-out;
 	}
 
+	.header #year {
+    position: absolute;
+
+	
+    top: 0px;
+    right: 0px;
+    font-size: 20px;
+    color: #dadada;
+    background-color: #555;
+    text-align: center;
+    width: 60px;
+    height: 63px;
+    padding-top: 7px;
+    box-shadow: 0 0 10px #2B2B2B;
+}
+
+	.header #year::before {
+		content: "\f133\A";
+	
+		margin-right: 3px;
+		display: block;
+}
+
 #feedback {
 	position: absolute;
 	left: 8px;
@@ -2387,7 +2410,7 @@ body {
 	display: block;
 	float: right;
 	position: absolute;
-	right: 10px;
+	right: 75px;
 	top: 17px;
 }
 
@@ -2537,6 +2560,7 @@ body {
 	}
 
 	.actions #signin {
+    top: 5px;
 	}
 
 /*===============================EDIT_PANE============================*/

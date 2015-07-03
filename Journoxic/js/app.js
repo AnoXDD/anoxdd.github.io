@@ -172,7 +172,14 @@ app.load = function(filter, forceReload, newContent) {
 	} else if (newContent == undefined) {
 		// Filter out undefined element
 		journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(key) {
-			return key != undefined;
+			if (key == undefined) {
+				// Do not need this one
+				return false;
+			}
+			// Test if the data is in current `app.year`
+			var time = journal.archive.data[app.year][key]["time"];
+			// Either the created time or the start time of the entry
+			return time["created"] == app.year || time["start"] == app.year;
 		});
 		if (journal.archive.data[app.year].length === 0) {
 			////console.log("app.load()\tNo archive data!");

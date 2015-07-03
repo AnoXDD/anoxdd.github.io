@@ -126,7 +126,7 @@ app.init = function() {
 		$("#search-result").fadeIn(500);
 	});
 	// Set the current year
-	$("#year").html(app.year);
+	$("#year").html(app.year).fadeIn();
 	app.getYears();
 	// Network setup
 	// Setup timeout time
@@ -177,9 +177,9 @@ app.load = function(filter, forceReload, newContent) {
 				return false;
 			}
 			// Test if the data is in current `app.year`
-			var time = journal.archive.data[app.year][key]["time"];
+			var time = key["time"];
 			// Either the created time or the start time of the entry
-			return time["created"] == app.year || time["start"] == app.year;
+			return new Date(time["created"]).getFullYear() == app.year || new Date(time["start"]).getFullYear() == app.year;
 		});
 		if (journal.archive.data[app.year].length === 0) {
 			////console.log("app.load()\tNo archive data!");
@@ -342,6 +342,7 @@ app.yearUpdate = function(year) {
 		// The data is not loaded
 		downloadFile(undefined, true);
 	}
+	app.refresh();
 }
 /**
  * Sets the year to the previous year. 

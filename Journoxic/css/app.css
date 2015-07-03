@@ -125,8 +125,8 @@
 }
 
 .fadein-inline {
-	display: inline-block !important;
 	animation: fadein-inline 1.5s;
+	display: inline-block !important;
 }
 
 /*@font-face {
@@ -2173,32 +2173,32 @@ body {
 		}
 
 	.header #network-bar {
-		height: 2px;
-		width: 100%;
-		transition: opacity .4s ease;
 		background-color: #808080;
-		opacity: 1;
 		display: block;
+		height: 2px;
+		opacity: 1;
 		position: absolute;
 		top: 0px;
+		transition: opacity .4s ease;
+		width: 100%;
 	}
 
 
 	.header #network-progress {
-		height: 2px;
-		width: 0;
 		background-color: #FAFAFA;
+		box-shadow: 0 0 5px #fafafa;
+		height: 2px;
 		overflow: hidden;
 		transition: width 1s linear;
-		box-shadow: 0 0 5px #fafafa;
+		width: 0;
 	}
 
 
 	.header #network-followup {
 		background: #555;
+		left: 100%;
 		position: relative;
 		transition: left .4s ease;
-		left: 100%;
 	}
 
 	.header #network-bar:not(.hidden) #network-followup {
@@ -2206,28 +2206,29 @@ body {
 	}
 
 	.header #year {
-		position: absolute;
-		top: 0px;
-		right: 0px;
-		font-size: 20px;
-		color: #dadada;
 		background-color: #555;
-		text-align: center;
-		width: 60px;
-		height: 63px;
-		padding-top: 7px;
 		box-shadow: 0 0 10px #2B2B2B;
+		color: #dadada;
+		font-size: 20px;
+		height: 63px;
+		opacity: 0;
+		padding-top: 7px;
+		position: absolute;
+		right: 0px;
+		text-align: center;
+		top: 0px;
+		width: 60px;
 	}
 
 		.header #year::before {
 			content: "\f133\A";
-			margin-right: 3px;
 			display: block;
+			margin-right: 3px;
 		}
 
 #feedback {
-	position: absolute;
 	left: 8px;
+	position: absolute;
 	top: 80px;
 	transition: opacity .5s ease;
 	z-index: 9;
@@ -2486,10 +2487,10 @@ body {
 
 	.actions > div > ul > li.has-sub > a::after {
 		content: "\A\f0d7";
+		display: block;
+		font-size: 11px;
 		position: relative;
 		top: -3px;
-		font-size: 11px;
-		display: block;
 	}
 
 	.actions .has-sub {
@@ -2517,11 +2518,11 @@ body {
 		.actions .has-sub > ul li a {
 			/* background: linear-gradient(to left, #ddd 0%,#ddd 90%,#B7B7B7 90%,#B7B7B7 100%); */
 			background-color: #DDDDDD;
-			color: #3F3F3F;
-			margin-bottom: -1px;
 			box-shadow: 0 0 10px black;
-			margin-top: 10px;
+			color: #3F3F3F;
 			display: block;
+			margin-bottom: -1px;
+			margin-top: 10px;
 		}
 
 		.actions .has-sub .has-sub:hover > ul {
@@ -2544,12 +2545,12 @@ body {
 	}
 
 	.actions ul ul li.has-sub > a::after {
-		content: "\f0d9";
-		position: relative;
-		display: block;
 		bottom: 19px;
-		right: 16px;
+		content: "\f0d9";
+		display: block;
 		font-size: 12px;
+		position: relative;
+		right: 16px;
 	}
 
 	.actions ul ul li:hover > a {

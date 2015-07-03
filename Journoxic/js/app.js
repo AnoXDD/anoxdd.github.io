@@ -183,13 +183,12 @@ app.load = function(filter, forceReload, newContent) {
 				return new Date(time["created"]).getFullYear() == app.year || new Date(time["start"]).getFullYear() == app.year;
 
 			});
-		}
 		if (journal.archive.data[app.year].length === 0) {
 			////console.log("app.load()\tNo archive data!");
 			animation.error(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
 			animation.deny("#refresh-media");
 			return;
-		}
+		}}
 	}
 	// Hide anyway
 	$("#search-result").hide();
@@ -344,8 +343,9 @@ app.yearUpdate = function(year) {
 	if (!journal.archive.data[app.year]) {
 		// The data is not loaded
 		downloadFile(undefined, true);
+	} else {
+		app.refresh();
 	}
-	app.refresh();
 }
 /**
  * Sets the year to the previous year. 

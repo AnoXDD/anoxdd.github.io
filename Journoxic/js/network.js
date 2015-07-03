@@ -169,6 +169,7 @@ function downloadFile(url, textOnly) {
 						.done(function(data, status, xhr) {
 							// Get the data number
 							journal.archive.media = data["folder"]["childCount"];
+							app.refresh();
 							if (textOnly) {
 								// Change loading icons and re-enable click
 								$("#download").html("&#xf0ed").removeClass("spin").attr({

@@ -31,6 +31,7 @@
 			<p>Total time:</p>
 			<p id="total-time">...</p>
 		</div>
+		<div id="year"></div>
 	</div>
 	<div id="feedback"></div>
 	<div class="actions">
@@ -106,25 +107,6 @@
 		<div id="action-menu">
 			<ul>
 				<li class="has-sub">
-					<a title="This year" onclick="app.next(true)" href="#">&#xf015</a>
-					<ul>
-						<li class="has-sub">
-							<a title="Previous year" id="prev-year" class="hidden-icon" onclick="app.prev()" href="#">&#xf104</a>
-							<ul>
-								<li><a title="Earliest year" onclick="app.prev(true)" href="#">&#xf100</a></li>
-							</ul>
-						</li>
-						<li><a title="Next year" id="next-year" class="hidden-icon hidden" onclick="app.next()" href="#">&#xf105</a></li>
-					</ul>
-					<ul></ul>
-				</li>
-				<li class="has-sub">
-
-					<ul>
-						<li><a title="This year" onclick="app.next(true)" href="#">&#xf015</a></li>
-					</ul>
-				</li>
-				<li class="has-sub">
 					<a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a>
 					<ul>
 						<li class="has-sub">
@@ -146,6 +128,19 @@
 							</ul>
 						</li>
 					</ul>
+				</li>
+				<li class="has-sub">
+					<a title="This year" id ="this-year"onclick="app.next(true)" href="#">&#xf015</a>
+					<ul>
+						<li class="has-sub">
+							<a title="Previous year" id="prev-year" class="hidden-icon" onclick="app.prev()" href="#">&#xf104</a>
+							<ul>
+								<li><a title="Earliest year" onclick="app.prev(true)" href="#">&#xf100</a></li>
+							</ul>
+						</li>
+						<li><a title="Next year" id="next-year" class="hidden-icon hidden" onclick="app.next()" href="#">&#xf105</a></li>
+					</ul>
+					<ul></ul>
 				</li>
 				<li class="has-sub">
 					<a title="Refresh" id="refresh-media" onclick="app.refresh()" href="#"><span>&#xf021</span></a>
@@ -177,7 +172,6 @@
 		</div>
 		<div id="edit-pane"></div>
 	</div>
-	<div id="year"></div>
 	<div id="version"></div>
 	<script id="odauth" src="js/odauth.v2.js" clientid="000000004C14D0D9" clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>

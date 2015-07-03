@@ -161,9 +161,9 @@ input {
 	transition: box-shadow .4s ease;
 }
 
-input:active, input:focus, input:hover {
-	box-shadow: 0 0 8px #000;
-}
+	input:active, input:focus, input:hover {
+		box-shadow: 0 0 8px #eee;
+	}
 
 body {
 	background-attachment: fixed;
@@ -260,9 +260,9 @@ body {
 	width: 90%;
 }
 
-#app:hover {
-	z-index: 10;
-}
+	#app:hover {
+		z-index: 10;
+	}
 
 	#app.detail-view .header h1 {
 		display: none;
@@ -2181,8 +2181,7 @@ body {
 		display: block;
 		position: absolute;
 		top: 0px;
-	
-}
+	}
 
 
 	.header #network-progress {
@@ -2191,9 +2190,8 @@ body {
 		background-color: #FAFAFA;
 		overflow: hidden;
 		transition: width 1s linear;
-	
 		box-shadow: 0 0 5px #fafafa;
-}
+	}
 
 
 	.header #network-followup {
@@ -2201,8 +2199,7 @@ body {
 		position: relative;
 		transition: left .4s ease;
 		left: 100%;
-	
-}
+	}
 
 	.header #network-bar:not(.hidden) #network-followup {
 		animation: followup 2s infinite ease-out;
@@ -2439,10 +2436,10 @@ body {
 			color: #d0d0d0;
 		}
 
-.actions a.text {
-	font-size: 14px;
-	padding: 10px 7px 0px 5px;
-}
+		.actions a.text {
+			font-size: 14px;
+			padding: 10px 7px 0px 5px;
+		}
 
 		.actions a.hidden {
 			display: none !important;
@@ -2537,6 +2534,9 @@ body {
 
 	.actions ul ul li:hover > a {
 		color: #ffffff;
+	}
+
+	.actions #signin {
 	}
 
 /*===============================EDIT_PANE============================*/

@@ -301,14 +301,19 @@ app.getYears = function() {
 	animation.log(log.GET_YEARS_START);
 	getTokenCallback(function(token) {
 		$.ajax({
-				type: "GET",
-				url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=name&orderby=name&access_token=" + token
-			})
+			type: "GET",
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=name&orderby=name&access_token=" + token
+		})
 			.done(function(data) {
 				var itemList = data["value"];
 				app.years = [];
 				for (var i = 0; i !== itemList.length; ++i) {
-					app.years.push(itemList[i]["name"]);
+					var name = itemList[i]["name"];
+					// Deliberately force equal them to test if `name` is an integer
+					if (parseInt(name) == name) {
+						name = parseInt(name);
+						app.years.push(name);
+					}
 				}
 				animation.log(log.GET_YEARS_END);
 			})
@@ -347,6 +352,7 @@ app.prev = function(isToEnd) {
 		// Current year is invalid, sets to this year
 		app.year = new Date().getFullYear();
 		$("#next-year").addClass("hidden");
+		animation.testSub("#this-year");
 		return;
 	}
 	if (index === 0) {
@@ -361,12 +367,14 @@ app.prev = function(isToEnd) {
 		// Show previous year button
 		$("#prev-year").removeClass("hidden");
 	}
+	$("#next-year").removeClass("hidden");
+	animation.testSub("#this-year");
 	if (isToEnd) {
 		index = 0;
 	} else {
 		--index;
 	}
-	app.yearUpdate(app.year[index]);
+	app.yearUpdate(app.years[index]);
 }
 /**
  * Sets the year to the next year
@@ -384,26 +392,38 @@ app.next = function(isToEnd) {
 		// Current year is invalid, sets to this year
 		app.year = new Date().getFullYear();
 		$("#next-year").addClass("hidden");
+		animation.testSub("#this-year");
 		return;
 	}
 	if (index === app.years.length - 1) {
-		// This year is the latest year displayable, but this value is not possible at this point because the button that has access to this call should be hidden
-		animation.debug("Invalid call: app.next() called while no later year available");
+		if (isToEnd) {
+			// A call from the button to display current year
+			if (app.year === app.years[index]) {
+				// If `app.year` is this year, simply refresh the app
+				app.refresh();
+			}
+		} else {
+			// This year is the latest year displayable, but this value is not possible at this point because the button that has access to this call should be hidden
+			animation.debug("Invalid call: app.next() called while no later year available");
+		}
 		return;
 	}
 	if (index === app.years.length - 2) {
 		// Hide next year button
 		$("#next-year").addClass("hidden");
+		animation.testSub("#this-year");
 	} else {
 		// Show previous year button
 		$("#next-year").removeClass("hidden");
 	}
+	$("#prev-year").removeClass("hidden");
+	animation.testSub("#this-year");
 	if (isToEnd) {
 		index = app.years.length - 1;
 	} else {
 		++index;
 	}
-	app.yearUpdate(app.year[index]);
+	app.yearUpdate(app.years[index]);
 }
 /**
  * Displays a list on the #list
@@ -946,7 +966,7 @@ app.list.prototype = {
 };
 /**
  * Display the detail of the data at current index
- */ 
+ */
 app.detail = function() {
 	var dataClip = journal.archive.data[app.year][app.currentDisplayed];
 	if (!dataClip.processed) {

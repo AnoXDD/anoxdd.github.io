@@ -126,7 +126,7 @@ app.init = function() {
 		$("#search-result").fadeIn(500);
 	});
 	// Set the current year
-	$("#year").html(app.year).fadeIn();
+	$("#year").html(app.year).css("opacity", "1");
 	app.getYears();
 	// Network setup
 	// Setup timeout time
@@ -171,16 +171,19 @@ app.load = function(filter, forceReload, newContent) {
 		return;
 	} else if (newContent == undefined) {
 		// Filter out undefined element
-		journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(key) {
-			if (key == undefined) {
-				// Do not need this one
-				return false;
-			}
-			// Test if the data is in current `app.year`
-			var time = key["time"];
-			// Either the created time or the start time of the entry
-			return new Date(time["created"]).getFullYear() == app.year || new Date(time["start"]).getFullYear() == app.year;
-		});
+		if (journal.archive.data[app.year]) {
+			journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(key) {
+				if (key == undefined) {
+					// Do not need this one
+					return false;
+				}
+				// Test if the data is in current `app.year`
+				var time = key["time"];
+				// Either the created time or the start time of the entry
+				return new Date(time["created"]).getFullYear() == app.year || new Date(time["start"]).getFullYear() == app.year;
+
+			});
+		}
 		if (journal.archive.data[app.year].length === 0) {
 			////console.log("app.load()\tNo archive data!");
 			animation.error(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);

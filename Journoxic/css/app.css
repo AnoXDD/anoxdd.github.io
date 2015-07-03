@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -155,6 +155,14 @@ html, body {
 body, input, select, textarea {
 	-webkit-appearance: none;
 	font-family: 'Segoe UI', 'FontAwesome', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+input {
+	transition: box-shadow .4s ease;
+}
+
+input:active, input:focus, input:hover {
+	box-shadow: 0 0 8px #000;
 }
 
 body {
@@ -2430,6 +2438,11 @@ body {
 			background: #4e4e4e;
 			color: #d0d0d0;
 		}
+
+.actions a.text {
+	font-size: 14px;
+	padding: 10px 7px 0px 5px;
+}
 
 		.actions a.hidden {
 			display: none !important;

@@ -128,6 +128,10 @@ window.log = {
 	QUEUE_END: "Queue resources loaded",
 	NETWORK_WORKING: "Please wait until all network activities stop",
 	OVERWRITE_CACHE_WARNING: "You have saved entry data. Either press confirm to overwrite or read it",
+	GET_YEARS_START: "Loading year list ...",
+	GET_YEARS_FAIL: "Cannot load year list",
+	GET_YEARS_END: "Year list loaded",
+	YEAR_SWITCHED_TO: "Year switched to ",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",

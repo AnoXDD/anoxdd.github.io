@@ -131,17 +131,18 @@ function getDataUrlHeader(isAbsolute, year) {
 function getCoreDataUrlHeader(isAbsolute, year) {
 	year = year || app.year;
 	if (isAbsolute) {
-		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "data.js";
+		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "/data.js";
 	} else {
-		return "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + year + "data.js";
+		return "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + year + "/data.js";
 	}
 }
 
 /**
  * Downloads the file (including the text file and the media file) from OneDrive
  * @param {String} url - The direct url of the file. Default is from core/data.js
+ * @param {Boolean} textOnly - whether to download text file or not
  */
-function downloadFile(url) {
+function downloadFile(url, textOnly) {
 	animation.log(log.CONTENTS_DOWNLOAD_START, 1);
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
@@ -162,17 +163,21 @@ function downloadFile(url) {
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Get metadata
 					$.ajax({
-						type: "GET",
-						url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
-					}).done(function(data, status, xhr) {
-						// Get the data number
-						journal.archive.media = data["folder"]["childCount"];
-						animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
-						network.init(journal.archive.media);
-						downloadMedia();
-					}).fail(function(xhr, status, error) {
-						animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-					});
+							type: "GET",
+							url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
+						})
+						.done(function(data, status, xhr) {
+							// Get the data number
+							journal.archive.media = data["folder"]["childCount"];
+							if (!textOnly) {
+								animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
+								network.init(journal.archive.media);
+								downloadMedia();
+							}
+						})
+						.fail(function(xhr, status, error) {
+							animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+						});
 				})
 				.fail(function(xhr, status, error) {
 					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);

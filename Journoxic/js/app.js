@@ -12,6 +12,7 @@ journal.archive.map = {};
 app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 /** The year to be displayed */
 app.year = new Date().getFullYear();
+app.years = [];
 /** The resource folder of all the images/video/music covers, etc. */
 app.resource = "resource/";
 /** The number of the pages already loaded */
@@ -124,6 +125,9 @@ app.init = function() {
 		$("#total-time").text(app.displayedTime);
 		$("#search-result").fadeIn(500);
 	});
+	// Set the current year
+	$("#year").html(app.year);
+	app.getYears();
 	// Network setup
 	// Setup timeout time
 	$.ajaxSetup({
@@ -290,6 +294,117 @@ app.updateData = function(data, toVersion) {
 	}
 	return data;
 };
+/**
+ * Gets all the available year by the folder name under /core/ and stores them in `app.years`, in ascending order (earliest year first)
+ */
+app.getYears = function() {
+	animation.log(log.GET_YEARS_START);
+	getTokenCallback(function(token) {
+		$.ajax({
+				type: "GET",
+				url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=name&orderby=name&access_token=" + token
+			})
+			.done(function(data) {
+				var itemList = data["value"];
+				app.years = [];
+				for (var i = 0; i !== itemList.length; ++i) {
+					app.years.push(itemList[i]["name"]);
+				}
+				animation.log(log.GET_YEARS_END);
+			})
+			.fail(function(xhr, status, error) {
+				animation.error(log.GET_YEARS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+			});
+	});
+}
+/**
+ * Change the year of the contents to be displayed, and refreshes the display view. If the operation is illegal (e.g. the user tries to go to the next year of this year, although (s)he can hack to do that).
+ * This function does NOT check the correctness of the year passed in, and will automatically download the contents of the data if no data found for this year in the memory.
+ * @param {number} year - The year to go
+ */
+app.yearUpdate = function(year) {
+	app.year = year;
+	$("#year").html(year);
+	animation.log(log.YEAR_SWITCHED_TO + year);
+	if (!journal.archive.data[app.year]) {
+		// The data is not loaded
+		downloadFile(undefined, true);
+	}
+}
+/**
+ * Sets the year to the previous year. 
+ * This function will guarantee the correctless of `app.year`, and will correct it if `app.year` is invalid.
+ * @param {boolean} isToEnd - If year goes to the earliest possible year
+ */
+app.prev = function(isToEnd) {
+	if (app.isAjaxActive) {
+		// Do not switch if network is still working
+		animation.warning(log.NETWORK_WORKING);
+		return;
+	}
+	var index = app.years.indexOf(app.year);
+	if (index === -1) {
+		// Current year is invalid, sets to this year
+		app.year = new Date().getFullYear();
+		$("#next-year").addClass("hidden");
+		return;
+	}
+	if (index === 0) {
+		// This year is the earliest year displayable, but this value is not possible at this point because the button that has access to this call should be hidden
+		animation.debug("Invalid call: app.prev() called while no earlier year available");
+		return;
+	}
+	if (index === 1) {
+		// Hide previous year button
+		$("#prev-year").addClass("hidden");
+	} else {
+		// Show previous year button
+		$("#prev-year").removeClass("hidden");
+	}
+	if (isToEnd) {
+		index = 0;
+	} else {
+		--index;
+	}
+	app.yearUpdate(app.year[index]);
+}
+/**
+ * Sets the year to the next year
+ * This function will guarantee the correctless of `app.year`, and will correct it if `app.year` is invalid.
+ * @param {boolean} isToEnd - If year goes to the latest year (i.e. this year)
+ */
+app.next = function(isToEnd) {
+	if (app.isAjaxActive) {
+		// Do not switch if network is still working
+		animation.warning(log.NETWORK_WORKING);
+		return;
+	}
+	var index = app.years.indexOf(app.year);
+	if (index === -1) {
+		// Current year is invalid, sets to this year
+		app.year = new Date().getFullYear();
+		$("#next-year").addClass("hidden");
+		return;
+	}
+	if (index === app.years.length - 1) {
+		// This year is the latest year displayable, but this value is not possible at this point because the button that has access to this call should be hidden
+		animation.debug("Invalid call: app.next() called while no later year available");
+		return;
+	}
+	if (index === app.years.length - 2) {
+		// Hide next year button
+		$("#next-year").addClass("hidden");
+	} else {
+		// Show previous year button
+		$("#next-year").removeClass("hidden");
+	}
+	if (isToEnd) {
+		index = app.years.length - 1;
+	} else {
+		++index;
+	}
+	app.yearUpdate(app.year[index]);
+}
 /**
  * Displays a list on the #list
  * @param {String} filter - The request string to display certain filter

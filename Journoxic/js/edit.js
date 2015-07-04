@@ -352,6 +352,7 @@ edit.save = function(selector) {
 				var index = edit.find(localStorage["created"]);
 				edit.exportCache(index);
 				edit.sortArchive();
+				edit.removeDuplicate();
 				journal.archive.data[app.year] = edit.minData();
 				edit.saveDataCache();
 				$(selector).html(html).removeClass("spin").attr({
@@ -614,7 +615,6 @@ edit.minData = function() {
 		delete tmp[key]["processed"];
 		delete tmp[key]["summary"];
 		delete tmp[key]["type"];
-		delete tmp[key]["year"];
 		// Remove undefined object
 		for (var i = 0; i < tmp[key].length; ++i) {
 			if (tmp[key][i] == undefined || tmp[key][i] == "undefined") {
@@ -634,6 +634,19 @@ edit.sortArchive = function() {
 		return b["time"]["created"] - a["time"]["created"];
 	});
 };
+/**
+ * Removes the duplicate entries under `journal.archive.data`. By duplicate, it means two entries, being sorted, have the same created time (and that's it). 
+ * This function assumes that `journal.archive.data` is sorted
+ */
+edit.removeDuplicate = function() {
+	for (var i = 0; i !== journal.archive.data[app.year].length - 1; ++i) {
+		if (journal.archive.data[app.year][i] === journal.archive.data[app.year][i + 1]) {
+			// Same contents, remove this one
+			app.yearChange[app.year] = true;
+			journal.archive.data[app.year].splice(i--, 1);
+		}
+	}
+}
 
 /******************************************************************
  ************************ CONTENT CONTROL *************************
@@ -687,7 +700,10 @@ edit.removeEntry = function() {
 		animation.deny("#delete");
 		return;
 	}
-	// Change the data displ1ayed
+	// The data have been changed
+	app.yearChange[app.year] = true;
+	$("#year").addClass("change");
+	// Change the data displayed
 	--app.displayedNum;
 	var data = journal.archive.data[app.year][app.currentDisplayed];
 	app.displayedChars -= data["text"]["chars"];

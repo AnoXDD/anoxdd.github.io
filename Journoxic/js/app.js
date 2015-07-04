@@ -13,6 +13,10 @@ app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 /** The year to be displayed */
 app.year = new Date().getFullYear();
 app.years = [];
+/** The data to be appended to the year, if this year has not already loaded */
+app.yearQueue = {};
+/** Whether there are any changes for this year (used for remind the user to upload the data */
+app.yearChange = {};
 /** The resource folder of all the images/video/music covers, etc. */
 app.resource = "resource/";
 /** The number of the pages already loaded */
@@ -154,15 +158,15 @@ app.init = function() {
  * Simply refreshes and force reload
  */
 app.refresh = function() {
-	app.load("", true);
+	app.load("");
 }
 /**
  * Reloads the content view of the journal. 
  * @param {String} filter - The string representing the filter of display
- * @param {Boolean} forceReload - Whether this reload is force, i.e. variables will be reset
  * @param {String} newContent - The string representing the new content of journal archive
+ * @version 2.0 - Removes param `forceReload` as every call to this function needs a force reload
  */
-app.load = function(filter, forceReload, newContent) {
+app.load = function(filter, newContent) {
 	if (newContent == "") {
 		// Try to add nothing
 		////console.log("app.load()\tNo new content!");
@@ -172,23 +176,48 @@ app.load = function(filter, forceReload, newContent) {
 	} else if (newContent == undefined) {
 		// Filter out undefined element
 		if (journal.archive.data[app.year]) {
-			journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(key) {
-				if (key == undefined) {
+			// Test if there are any data in the queue
+			if (app.yearQueue[app.year]) {
+				app.yearChange[app.year] = true;
+				// Push to the new data
+				journal.archive.data[app.year].push.apply(journal.archive.data[app.year], app.yearQueue[app.year]);
+				// Then sort it to remove the duplicate
+				edit.sortArchive();
+				edit.removeDuplicate();
+				// Remove the data from the queue
+				delete app.yearQueue[app.year];
+			}
+			journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
+				if (entry == undefined) {
+					app.yearChange[app.year] = true;
 					// Do not need this one
 					return false;
 				}
 				// Test if the data is in current `app.year`
-				var time = key["time"];
+				var time = entry["time"],
+					createdYear = new Date(time["created"]).getFullYear(),
+					startYear = new Date(time["created"]).getFullYear();
 				// Either the created time or the start time of the entry
-				return new Date(time["created"]).getFullYear() == app.year || new Date(time["start"]).getFullYear() == app.year;
-
+				if (createdYear == app.year || startYear == app.year) {
+					return true;
+				} else {
+					// Move this entry to a new year, given the created time
+					if (!app.yearQueue[created]) {
+						app.yearQueue[created] = [];
+					}
+					// Add to this year
+					app.yearQueue[created].push(entry);
+					app.yearChange[created] = true;
+					return false;
+				}
 			});
-		if (journal.archive.data[app.year].length === 0) {
-			////console.log("app.load()\tNo archive data!");
-			animation.error(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
-			animation.deny("#refresh-media");
-			return;
-		}}
+			if (journal.archive.data[app.year].length === 0) {
+				////console.log("app.load()\tNo archive data!");
+				animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
+				animation.deny("#refresh-media");
+				return;
+			}
+		}
 	}
 	// Hide anyway
 	$("#search-result").hide();
@@ -215,33 +244,37 @@ app.load = function(filter, forceReload, newContent) {
 			edit.saveDataCache();
 		}
 	}
-	if (forceReload) {
-		// Start to reload
-		// Reset animation indentation
-		animation.indent = 0;
-		// Remove all the child elements and always
-		animation.log(log.CONTENTS_RELOADED);
-		console.log("==================Force loaded==================");
-		$("#list").empty();
-		app.lastLoaded = 0;
-		app.lastQualified = -1;
-		app.displayedChars = 0;
-		app.displayedLines = 0;
-		app.displayedNum = 0;
-		app.displayedTime = 0;
-		app.currentDisplayed = -1;
-		app.command = filter;
-		$("#query").val(filter);
-		$("#total-displayed").text(app.displayedNum);
-		$("#total-char").text(app.displayedChars);
-		$("#total-line").text(app.displayedLines);
-		$("#total-time").text(app.displayedTime);
-		// Refresh every stuff
-		for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
-			journal.archive.data[app.year][key]["processed"] = 0;
-		}
-		loadFunction();
+	// Start to reload
+	// Reset animation indentation
+	animation.indent = 0;
+	// Remove all the child elements and always
+	animation.log(log.CONTENTS_RELOADED);
+	console.log("==================Force loaded==================");
+	$("#list").empty();
+	app.lastLoaded = 0;
+	app.lastQualified = -1;
+	app.displayedChars = 0;
+	app.displayedLines = 0;
+	app.displayedNum = 0;
+	app.displayedTime = 0;
+	app.currentDisplayed = -1;
+	app.command = filter;
+	$("#query").val(filter);
+	$("#total-displayed").text(app.displayedNum);
+	$("#total-char").text(app.displayedChars);
+	$("#total-line").text(app.displayedLines);
+	$("#total-time").text(app.displayedTime);
+	// Refresh every stuff
+	for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+		journal.archive.data[app.year][key]["processed"] = 0;
 	}
+	// Show the dot for changed stuff
+	if (app.yearChange[app.year]) {
+		$("#year").addClass("change");
+	} else {
+		$("#year").removeClass("change");
+	}
+	loadFunction();
 	// Show the final result anyway
 	$("#search-result").fadeIn(500);
 	if (filter == undefined) {
@@ -318,7 +351,7 @@ app.getYears = function() {
 				app.years = [];
 				for (var i = 0; i !== itemList.length; ++i) {
 					var name = itemList[i]["name"];
-					// Deliberately force equal them to test if `name` is an integer
+					// Deliberately not force equal them to test if `name` is an integer
 					if (parseInt(name) == name) {
 						name = parseInt(name);
 						app.years.push(name);
@@ -1069,7 +1102,7 @@ app.detail = function() {
 	$(".icontags > span").on("click", function() {
 		var tag = app.tag().getValueByHtml(this.className);
 		if (tag != "") {
-			app.load("#" + tag, true);
+			app.load("#" + tag);
 		}
 	});
 	////$(window).on("keyup.detail-key", function(n) {

@@ -158,9 +158,12 @@ function downloadFile(url, textOnly) {
 			})
 				.done(function(data, status, xhr) {
 					window.app.dataLoaded = false;
-					window.app.load("", true, xhr.responseText);
+					window.app.load("", xhr.responseText);
 					////console.log("downloadFile()\tFinish core data");
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
+					// Now the data is up-to-date
+					app.yearChange[app.year] = false;
+					$("#year").removeClass("change");
 					// Get metadata
 					$.ajax({
 						type: "GET",
@@ -301,6 +304,9 @@ function uploadFile() {
 			.done(function() {
 				////console.log("uploadFile():\t Done backup");
 				animation.log(log.CONTENTS_UPLOAD_BACKUP);
+				// Now the data is up-to-date
+				app.yearChange[app.year] = false;
+				$("#year").removeClass("change");
 				network.next();
 				// Clean the unnecessary data
 				var tmp = edit.minData();

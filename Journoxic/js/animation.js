@@ -132,6 +132,8 @@ window.log = {
 	GET_YEARS_FAIL: "Cannot load year list",
 	GET_YEARS_END: "Year list loaded",
 	YEAR_SWITCHED_TO: "Year switched to ",
+	DATA_MOVED_TO_OTHER_YEAR: "Some data migrated to year ",
+	DATA_MOVED_TO_OTHER_YEAR_END: ". Upload those data or they will be lost",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",

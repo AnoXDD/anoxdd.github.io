@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2225,6 +2225,15 @@ body {
 			content: "\f133\A";
 			display: block;
 			margin-right: 3px;
+		}
+
+		.header #year.change::after {
+			content: "\f14b";
+			display: block;
+			position: relative;
+			font-size: 12px;
+			bottom: 60px;
+			left: 21px;
 		}
 
 #feedback {

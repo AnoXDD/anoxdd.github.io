@@ -639,8 +639,8 @@ edit.sortArchive = function() {
  * This function assumes that `journal.archive.data` is sorted
  */
 edit.removeDuplicate = function() {
-	for (var i = 0; i !== journal.archive.data[app.year].length - 1; ++i) {
-		if (journal.archive.data[app.year][i] === journal.archive.data[app.year][i + 1]) {
+	for (var i = 0; i < journal.archive.data[app.year].length - 1; ++i) {
+		if (journal.archive.data[app.year][i]["time"]["created"] === journal.archive.data[app.year][i + 1]["time"]["created"]) {
 			// Same contents, remove this one
 			app.yearChange[app.year] = true;
 			journal.archive.data[app.year].splice(i--, 1);

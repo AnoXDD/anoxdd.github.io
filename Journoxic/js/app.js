@@ -188,6 +188,7 @@ app.load = function(filter, newContent) {
 				// Remove the data from the queue
 				delete app.yearQueue[app.year];
 			}
+			var queuedYears = [];
 			journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
 				if (entry == undefined) {
 					app.yearChange[app.year] = true;
@@ -209,9 +210,11 @@ app.load = function(filter, newContent) {
 					// Add to this year
 					app.yearQueue[createdYear].push(entry);
 					app.yearChange[createdYear] = true;
+					queuedYears.push(createdYear);
 					return false;
 				}
 			});
+			animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
 			if (journal.archive.data[app.year].length === 0) {
 				////console.log("app.load()\tNo archive data!");
 				animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);

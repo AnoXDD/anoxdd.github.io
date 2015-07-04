@@ -52,7 +52,7 @@ app.version = {
 /** Whether there are any outgoing ajax event */
 app.isAjaxActive = false;
 /** The timeout time for ajax, in milliseconds */
-app.timeOut = 10000;
+app.timeOut = 15000;
 
 /**
  * Initializes this app

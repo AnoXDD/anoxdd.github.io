@@ -167,6 +167,7 @@ app.refresh = function() {
  * @version 2.0 - Removes param `forceReload` as every call to this function needs a force reload
  */
 app.load = function(filter, newContent) {
+	// Test the validity of `newContent`
 	if (newContent == "") {
 		// Try to add nothing
 		////console.log("app.load()\tNo new content!");
@@ -219,6 +220,7 @@ app.load = function(filter, newContent) {
 			}
 		}
 	}
+	// Reset the UI
 	// Hide anyway
 	$("#search-result").hide();
 	// Also hide the detail view
@@ -234,6 +236,7 @@ app.load = function(filter, newContent) {
 		new app.list(filter);
 		app.dataLoaded = true;
 	};
+	// Try to find the new data (if applicable)
 	if (!app.dataLoaded) {
 		// app.loadScript("core/data.js", loadFunction, true);
 		if (newContent) {
@@ -244,7 +247,7 @@ app.load = function(filter, newContent) {
 			edit.saveDataCache();
 		}
 	}
-	// Start to reload
+	// Start to reload, HERE GOES ALL THE DATA RESET
 	// Reset animation indentation
 	animation.indent = 0;
 	// Remove all the child elements and always
@@ -264,15 +267,16 @@ app.load = function(filter, newContent) {
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);
 	$("#total-time").text(app.displayedTime);
-	// Refresh every stuff
-	for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
-		journal.archive.data[app.year][key]["processed"] = 0;
-	}
+	$("#year").html(app.year);
 	// Show the dot for changed stuff
 	if (app.yearChange[app.year]) {
 		$("#year").addClass("change");
 	} else {
 		$("#year").removeClass("change");
+	}
+	// Refresh every stuff
+	for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+		journal.archive.data[app.year][key]["processed"] = 0;
 	}
 	loadFunction();
 	// Show the final result anyway
@@ -365,20 +369,46 @@ app.getYears = function() {
 	});
 }
 /**
- * Change the year of the contents to be displayed, and refreshes the display view. If the operation is illegal (e.g. the user tries to go to the next year of this year, although (s)he can hack to do that).
- * This function does NOT check the correctness of the year passed in, and will automatically download the contents of the data if no data found for this year in the memory.
+ * Calls the program to start changing the year, and if the change succeeds, it will call `app.yearUpdate` for further updating. However, this 
+ * This function will check the correctness of the year passed in, and will automatically download the contents of the data if no data found for this year in the memory.
  * @param {number} year - The year to go
  */
-app.yearUpdate = function(year) {
-	if (!journal.archive.data[app.year]) {
-		// The data is not loaded
+app.yearUpdateTry = function(year) {
+	app.year = year;
+	if (!journal.archive.data[year]) {
+		// The data is not loaded yet, download the data
 		downloadFile(undefined, true);
 	} else {
-		app.refresh();
-		app.year = year;
-		$("#year").html(year);
-		animation.log(log.YEAR_SWITCHED_TO + year);
+		app.yearUpdate(year);
 	}
+}
+/**
+ * Change the year of the contents to be displayed, and refreshes the display view (by calling `app.refresh()`). 
+ * This function does not accept any parameters by using `app.year` to update everything with it. It does NOT check the validness of `app.year`, and will assume that it is a valid one (e.g. the data is already loaded). However, if `app.year` is invalid that `(app.years.indexOf(app.year))` yields -1, `app.year` will be set to this year and it will call `app.yearUpdateTry()`. This function will also correct the buttons for switching between years.
+ */
+app.yearUpdate = function() {
+	$("#year").html(app.year);
+	app.refresh();
+	// Test the correctness of the buttons
+	var index = app.years.indexOf(app.year);
+	if (index === -1) {
+		// Invalid year
+		app.yearUpdateTry(new Date().getFullYear());
+		return;
+	} else if (index === 0) {
+		// The earliest year
+		$("#prev-year").addClass("hidden");
+		$("#next-year").removeClass("hidden");
+	} else if (index === app.years.length - 2) {
+		// "This" year
+		$("#next-year").addClass("hidden");
+		$("#prev-year").removeClass("hidden");
+	} else {
+		// Any situation else
+		$("#next-year, #prev-year").removeClass("hidden");
+	}
+	animation.testSub("#this-year");
+	animation.log(log.YEAR_SWITCHED_TO + app.year);
 }
 /**
  * Sets the year to the previous year. 
@@ -394,31 +424,15 @@ app.prev = function(isToEnd) {
 	var index = app.years.indexOf(app.year);
 	if (index === -1) {
 		// Current year is invalid, sets to this year
-		app.year = new Date().getFullYear();
-		$("#next-year").addClass("hidden");
-		animation.testSub("#this-year");
+		app.yearUpdateTry(new Date().getFullYear());
 		return;
 	}
-	if (index === 0) {
-		// This year is the earliest year displayable, but this value is not possible at this point because the button that has access to this call should be hidden
-		animation.debug("Invalid call: app.prev() called while no earlier year available");
-		return;
-	}
-	if (index === 1) {
-		// Hide previous year button
-		$("#prev-year").addClass("hidden");
-	} else {
-		// Show previous year button
-		$("#prev-year").removeClass("hidden");
-	}
-	$("#next-year").removeClass("hidden");
-	animation.testSub("#this-year");
 	if (isToEnd) {
 		index = 0;
 	} else {
 		--index;
 	}
-	app.yearUpdate(app.years[index]);
+	app.yearUpdateTry(app.years[index]);
 }
 /**
  * Sets the year to the next year
@@ -434,40 +448,15 @@ app.next = function(isToEnd) {
 	var index = app.years.indexOf(app.year);
 	if (index === -1) {
 		// Current year is invalid, sets to this year
-		app.year = new Date().getFullYear();
-		$("#next-year").addClass("hidden");
-		animation.testSub("#this-year");
+		app.yearUpdateTry(new Date().getFullYear());
 		return;
 	}
-	if (index === app.years.length - 1) {
-		if (isToEnd) {
-			// A call from the button to display current year
-			if (app.year === app.years[index]) {
-				// If `app.year` is this year, simply refresh the app
-				app.refresh();
-			}
-		} else {
-			// This year is the latest year displayable, but this value is not possible at this point because the button that has access to this call should be hidden
-			animation.debug("Invalid call: app.next() called while no later year available");
-		}
-		return;
-	}
-	if (index === app.years.length - 2) {
-		// Hide next year button
-		$("#next-year").addClass("hidden");
-		animation.testSub("#this-year");
-	} else {
-		// Show previous year button
-		$("#next-year").removeClass("hidden");
-	}
-	$("#prev-year").removeClass("hidden");
-	animation.testSub("#this-year");
 	if (isToEnd) {
 		index = app.years.length - 1;
 	} else {
 		++index;
 	}
-	app.yearUpdate(app.years[index]);
+	app.yearUpdateTry(app.years[index]);
 }
 /**
  * Displays a list on the #list

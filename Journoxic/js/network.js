@@ -164,34 +164,35 @@ function downloadFile(url, textOnly) {
 					// Now the data is up-to-date
 					app.yearChange[app.year] = false;
 					$("#year").removeClass("change");
-					// Get metadata
-					$.ajax({
-						type: "GET",
-						url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
-					})
-						.done(function(data, status, xhr) {
-							// Get the data number
-							journal.archive.media = data["folder"]["childCount"];
-							app.year = year;
-							$("#year").html(year);
-							animation.log(log.YEAR_SWITCHED_TO + year);
-							app.refresh();
-							if (textOnly) {
-								// Change loading icons and re-enable click
-								$("#download").html("&#xf0ed").removeClass("spin").attr({
-									onclick: "downloadFile()",
-									href: "#"
-								});
-								animation.finished("#download");
-							} else {
+					app.yearUpdate();
+					if (textOnly) {
+						// Change loading icons and re-enable click
+						$("#download").html("&#xf0ed").removeClass("spin").attr({
+							onclick: "downloadFile()",
+							href: "#"
+						});
+						animation.finished("#download");
+					} else {
+						// Get metadata
+						$.ajax({
+							type: "GET",
+							url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
+						})
+							.done(function(data, status, xhr) {
+								// Get the data number
+								journal.archive.media = data["folder"]["childCount"];
+								app.year = year;
+								$("#year").html(year);
+								animation.log(log.YEAR_SWITCHED_TO + year);
+								app.refresh();
 								animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
 								network.init(journal.archive.media);
 								downloadMedia();
-							}
-						})
-						.fail(function(xhr, status, error) {
-							animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-						});
+							})
+							.fail(function(xhr, status, error) {
+								animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+							});
+					}
 				})
 				.fail(function(xhr, status, error) {
 					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
@@ -200,6 +201,8 @@ function downloadFile(url, textOnly) {
 						onclick: "downloadFile()",
 						href: "#"
 					});
+					// `app.year` does not change
+					app.year = $("#year").html();
 					network.destroy();
 					animation.finished("#download");
 					////alert("Cannot download the file. Do you enable CORS?");

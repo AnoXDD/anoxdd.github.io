@@ -399,7 +399,7 @@ app.yearUpdate = function() {
 		// The earliest year
 		$("#prev-year").addClass("hidden");
 		$("#next-year").removeClass("hidden");
-	} else if (index === app.years.length - 2) {
+	} else if (index === app.years.length - 1) {
 		// "This" year
 		$("#next-year").addClass("hidden");
 		$("#prev-year").removeClass("hidden");

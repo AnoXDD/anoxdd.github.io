@@ -202,8 +202,7 @@ function downloadFile(url, textOnly) {
 						href: "#"
 					});
 					// `app.year` does not change
-					app.year = $("#year").html();
-					network.destroy();
+					app.year = parseInt($("#year").html());
 					animation.finished("#download");
 					////alert("Cannot download the file. Do you enable CORS?");
 				})

@@ -257,10 +257,7 @@ function getAppInfo() {
 function showLoginButton() {
 	var refresh = getRefreshFromCookie();
 	if (refresh) {
-		// Get access token from refresh
-		refreshToken(function() {
 			removeLoginButton();
-		});
 	} else {
 		// Prompt the user to re-login
 		animation.hideAllMenus();

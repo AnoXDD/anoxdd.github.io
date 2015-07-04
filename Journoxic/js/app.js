@@ -202,12 +202,12 @@ app.load = function(filter, newContent) {
 					return true;
 				} else {
 					// Move this entry to a new year, given the created time
-					if (!app.yearQueue[created]) {
-						app.yearQueue[created] = [];
+					if (!app.yearQueue[createdYear]) {
+						app.yearQueue[createdYear] = [];
 					}
 					// Add to this year
-					app.yearQueue[created].push(entry);
-					app.yearChange[created] = true;
+					app.yearQueue[createdYear].push(entry);
+					app.yearChange[createdYear] = true;
 					return false;
 				}
 			});
@@ -370,14 +370,14 @@ app.getYears = function() {
  * @param {number} year - The year to go
  */
 app.yearUpdate = function(year) {
-	app.year = year;
-	$("#year").html(year);
-	animation.log(log.YEAR_SWITCHED_TO + year);
 	if (!journal.archive.data[app.year]) {
 		// The data is not loaded
 		downloadFile(undefined, true);
 	} else {
 		app.refresh();
+		app.year = year;
+		$("#year").html(year);
+		animation.log(log.YEAR_SWITCHED_TO + year);
 	}
 }
 /**
@@ -388,7 +388,7 @@ app.yearUpdate = function(year) {
 app.prev = function(isToEnd) {
 	if (app.isAjaxActive) {
 		// Do not switch if network is still working
-		animation.warning(log.NETWORK_WORKING);
+		animation.warn(log.NETWORK_WORKING);
 		return;
 	}
 	var index = app.years.indexOf(app.year);
@@ -428,7 +428,7 @@ app.prev = function(isToEnd) {
 app.next = function(isToEnd) {
 	if (app.isAjaxActive) {
 		// Do not switch if network is still working
-		animation.warning(log.NETWORK_WORKING);
+		animation.warn(log.NETWORK_WORKING);
 		return;
 	}
 	var index = app.years.indexOf(app.year);

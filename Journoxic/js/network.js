@@ -172,6 +172,9 @@ function downloadFile(url, textOnly) {
 						.done(function(data, status, xhr) {
 							// Get the data number
 							journal.archive.media = data["folder"]["childCount"];
+							app.year = year;
+							$("#year").html(year);
+							animation.log(log.YEAR_SWITCHED_TO + year);
 							app.refresh();
 							if (textOnly) {
 								// Change loading icons and re-enable click
@@ -197,6 +200,7 @@ function downloadFile(url, textOnly) {
 						onclick: "downloadFile()",
 						href: "#"
 					});
+					network.destroy();
 					animation.finished("#download");
 					////alert("Cannot download the file. Do you enable CORS?");
 				})
@@ -225,46 +229,50 @@ function downloadMedia(url) {
 	$.ajax({
 		type: "GET",
 		url: url
-	}).done(function(data, status, xhr) {
-		if (data["@odata.nextLink"]) {
-			// More contents available!
-			var nextUrl = data["@odata.nextLink"];
-			var groups = nextUrl.split("&");
-			// Manually to ask server return downloadUrl
-			for (var i = 0; i !== groups.length; ++i) {
-				if (groups[i].startsWith("$select")) {
-					groups[i] = "$select=id,name,size,@content.downloadUrl";
-					break;
+	})
+		.done(function(data, status, xhr) {
+			if (data["@odata.nextLink"]) {
+				// More contents available!
+				var nextUrl = data["@odata.nextLink"];
+				var groups = nextUrl.split("&");
+				// Manually to ask server return downloadUrl
+				for (var i = 0; i !== groups.length; ++i) {
+					if (groups[i].startsWith("$select")) {
+						groups[i] = "$select=id,name,size,@content.downloadUrl";
+						break;
+					}
 				}
+				nextUrl = groups.join("&");
+				downloadMedia(nextUrl);
 			}
-			nextUrl = groups.join("&");
-			downloadMedia(nextUrl);
-		}
-		var itemList = data["value"];
-		for (var key = 0, len = itemList.length; key != len; ++key) {
-			var dataElement = {
-				id: itemList[key]["id"],
-				url: itemList[key]["@content.downloadUrl"],
-				size: itemList[key]["size"]
-			};
-			journal.archive.map[itemList[key]["name"]] = dataElement;
-			network.next();
-		}
-		// Show progress
-		var finished = _.size(journal.archive.map);
-		animation.log(log.CONTENTS_DOWNLOAD_MEDIA_LOADED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
-		if (finished == journal.archive.media) {
-			animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
+			var itemList = data["value"];
+			for (var key = 0, len = itemList.length; key != len; ++key) {
+				var dataElement = {
+					id: itemList[key]["id"],
+					url: itemList[key]["@content.downloadUrl"],
+					size: itemList[key]["size"]
+				};
+				journal.archive.map[itemList[key]["name"]] = dataElement;
+				network.next();
+			}
+			// Show progress
+			var finished = _.size(journal.archive.map);
+			animation.log(log.CONTENTS_DOWNLOAD_MEDIA_LOADED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
+			if (finished == journal.archive.media) {
+				animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
+				network.destroy();
+				// Change loading icons and re-enable click
+				$("#download").html("&#xf0ed").removeClass("spin").attr({
+					onclick: "downloadFile()",
+					href: "#"
+				});
+				animation.finished("#download");
+			}
+			////console.log("downloadFile()\tFinish media data");
+		})
+		.fail(function() {
 			network.destroy();
-			// Change loading icons and re-enable click
-			$("#download").html("&#xf0ed").removeClass("spin").attr({
-				onclick: "downloadFile()",
-				href: "#"
-			});
-			animation.finished("#download");
-		}
-		////console.log("downloadFile()\tFinish media data");
-	});
+		});
 }
 
 /**

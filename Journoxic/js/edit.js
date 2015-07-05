@@ -149,7 +149,7 @@ edit.init = function(overwrite, index) {
 				var dateStr = $(this).val().substring(0, 6),
 					date;
 				if (!isNaN(parseInt(dateStr))) {
-					var dateNum = edit.convertTime(parseInt(dateStr));
+					var dateNum = edit.convertTime(dateStr);
 					// Re-evaluate the month, day and the year to make sure it IS a true date
 					date = new Date(dateNum);
 					var isMonthMatch = date.getMonth() + 1 == dateStr.substring(0, 2),
@@ -249,8 +249,10 @@ edit.init = function(overwrite, index) {
 		// Bind hotkeys to add tags
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "return", function() {
+				// Cache the data
+	localStorage["body"] = $("#entry-body").val();
 			// Command line work
-			var lines = localStorage["body"].split(/\r*\n/);
+			var lines = $("#entry-body").val().split(/\r*\n/);
 			for (var i = 0; i < lines.length; ++i) {
 				var line = lines[i],
 					flag = false,
@@ -289,11 +291,14 @@ edit.init = function(overwrite, index) {
 				}
 				if (flag) {
 					// Remove the current line
-					lines.splice(--i, 1);
+					lines.splice(i--, 1);
 				}
 			}
 			var newBody = lines.join("\r\n");
 			$("#entry-body").val(newBody);
+		})
+		.bind("keyup", "space", function() {
+			edit.refreshSummary();
 		})
 			.bind("keyup", "ctrl+shift+f", function() {
 				edit.toggleTag("friendship");
@@ -1118,8 +1123,6 @@ edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
 		len = text.length;
 	$("#entry-char").text(len);
-	// Cache the data
-	localStorage["body"] = text;
 	$("#entry-line").text(text.split(/\r*\n/).length);
 };
 edit.refreshTime = function() {

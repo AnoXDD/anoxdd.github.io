@@ -218,7 +218,14 @@ app.load = function(filter, newContent) {
 			if (queuedYears.length > 0) {
 				animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
 				// Add to `app.years`
-				app.years.push.apply(app.years, queuedYears);
+				for (var i = 0; i !== queuedYears.length; ++i) {
+					if (app.years.indexOf(queuedYears[i]) !== -1) {
+						// This year does not exist in `app.years`
+						app.years.push(queuedYears[i]);
+					}
+				}
+				// Sort the years
+				app.years.sort();
 			}
 			if (journal.archive.data[app.year].length === 0) {
 				////console.log("app.load()\tNo archive data!");

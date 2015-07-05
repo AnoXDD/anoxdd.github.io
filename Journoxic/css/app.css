@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -163,7 +163,7 @@ input, text-area {
 }
 
 	input:active, input:focus, input:hover, textarea:active, textarea:focus, textarea:hover {
-		box-shadow: 0 0 5px #2C2C2C;
+		box-shadow: 0 0 5px #AAA;
 	}
 
 	input.dark:active, input.dark:focus, input.dark:hover, textarea.dark:active, textarea.dark:focus, textarea.dark:hover {
@@ -2187,6 +2187,7 @@ body {
 		top: 0px;
 		transition: opacity .4s ease;
 		width: 100%;
+		z-index: 10;
 	}
 
 
@@ -2217,6 +2218,7 @@ body {
 	color: #dadada;
 	font-size: 20px;
 	height: 63px;
+	margin: 8px;
 	opacity: 0;
 	padding-top: 7px;
 	position: absolute;

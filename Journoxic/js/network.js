@@ -144,7 +144,7 @@ function getCoreDataUrlHeader(isAbsolute, year) {
 }
 
 /**
- * Downloads the file (including the text file and the media file) from OneDrive
+ * Downloads the file (including the text file and the media file) from OneDrive. If even the folders are not created, this function will also make sure necessary folders exist
  * @param {String} url - The direct url of the file. Default is from core/data.js
  * @param {Boolean} textOnly - whether to download text file or not
  */
@@ -154,7 +154,58 @@ function downloadFile(url, textOnly) {
 	// Change loading icons and disable click
 	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
-		if (token != "") {
+		if (network.yearFolders.indexOf(app.year) === -1) {
+			// Create a folder instead of searching for it
+			var created = 0,
+				abort = false,
+				urls = [
+					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
+					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
+					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"
+				],
+				requestJson = {
+					name: app.year,
+					folder: {}
+				};
+			// Start create all the folder needed
+			network.init(urls.length - 1);
+			for (var i = 0; i !== urls.length; ++i) {
+				$.ajax({
+					type: "POST",
+					url: urls[i] + "children?access_token=" + token,
+					contentType: "application/json",
+					data: JSON.stringify(requestJson)
+				})
+					.done(function() {
+						network.next();
+						if (++created === urls.length) {
+							// All have been created
+							network.yearFolders.push(app.year);
+							// Refresh the data
+							app.refresh();
+						}
+					})
+					.fail(function(xhr) {
+						if (xhr.status == 409) {
+							// Conflict, considered this folder is created successfully
+							network.next();
+							if (++created === urls.length) {
+								// All have been created
+								network.yearFolders.push(app.year);
+								// Refresh the data
+								app.refresh();
+							}
+						} else {
+							network.destroy();
+							if (!abort) {
+								animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
+							}
+							// Abort everything, to prevent multiple prompt of the error
+							abort = true;
+						}
+					});
+			}
+		} else {
 			// Get text data
 			url = url || getCoreDataUrlHeader(true) +
 				":/content?access_token=" + token;
@@ -218,10 +269,9 @@ function downloadFile(url, textOnly) {
 }
 
 /**
- * Recusively reads all the children under resource folder and read them as media
+ * Recusively reads all the children under resource folder and read them as media. 
  * This function will not refresh the token because it assumes that it will be only called after downloadFile()
  * @param {string} url - The address of "nextLink", should be empty at the first call. Used for recursion
- * @returns {} 
  */
 function downloadMedia(url) {
 	// Reset map
@@ -282,7 +332,6 @@ function downloadMedia(url) {
 
 /**
  * Uploads journal.archive.data to OneDrive and creates a backup. If this folder does not exist, this function will create a folder before uploading
- * @returns {} 
  */
 function uploadFile() {
 	////console.log("Starting uploadFile()");
@@ -374,11 +423,11 @@ function uploadFile() {
 			network.init(urls.length);
 			for (var i = 0; i !== urls.length; ++i) {
 				$.ajax({
-						type: "POST",
-						url: urls[i] + "children?access_token=" + token,
-						contentType: "application/json",
-						data: JSON.stringify(requestJson)
-					})
+					type: "POST",
+					url: urls[i] + "children?access_token=" + token,
+					contentType: "application/json",
+					data: JSON.stringify(requestJson)
+				})
 					.done(function() {
 						network.next();
 						if (++created === urls.length) {

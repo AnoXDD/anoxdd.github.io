@@ -204,6 +204,14 @@ function downloadFile(url, textOnly) {
 					}
 				})
 				.fail(function(xhr, status, error) {
+					if (xhr.status == 404) {
+						// Not found, but the folder is there, guess the data should be in `app.yearQueue`
+						if (app.yearQueue[app.year]) {
+							// It IS in `app.yearQueue`, pretend it is a successful load
+							app.refresh();
+							return;
+						}
+					}
 					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 					// Change loading icons and re-enable click
 					$("#download").html("&#xf0ed").removeClass("spin").attr({

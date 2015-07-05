@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.23.27 Build 070515_1947";
+﻿﻿app.version.main = "v3.23.28 Build 070515_2104";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -17,7 +17,6 @@ $("#version").html(app.version.main);
  * Todo add an integrity check before logging in
  * Todo add "uploadAll" for changed years
  * Todo add animation when `app.year` changes
- * Todo test what happens when the year changes
  * 
  * v3.24 Log update
  * [Chg] Make log more efficient

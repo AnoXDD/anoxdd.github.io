@@ -67,7 +67,7 @@ window.log = {
 	CONTENTS_UPLOAD_BACKUP: "Data backup finished",
 	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
 	CONTENTS_UPLOAD_REGISTER_FAIL: "Cannot register folder for this year. Please try again later",
-	CONTENTS_UPLOAD_END: "Data upload finished",
+	CONTENTS_UPLOAD_END: "Data upload finished for ",
 	CONTENTS_UPLOAD_FAIL: "Cannot upload data",
 	CONTENTS_UPGRADING: "Upgrading content data to latest version ...",
 	COVER_PHOTO_FOUND: "Found cover photo ",

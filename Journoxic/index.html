@@ -147,7 +147,12 @@
 					<ul>
 						<li><a title="Revert to archived data" id="undo-data" onclick="archive.init('#undo-data')" href="#">&#xf1da</a></li>
 						<li><a title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a></li>
-						<li><a title="Update data" id="upload" onclick="uploadFile()" href="#">&#xf0ee</a></li>
+						<li class="has-sub">
+							<a title="Update data" id="upload" onclick="uploadSingleFile()" href="#">&#xf0ee</a>
+							<ul>
+								<li><a title="Upload all changed data" id="upload-all" onclick="uploadAllFiles()" href="#">&#xf0ee<span>&#xf0c2</span></a></li>
+							</ul>
+						</li>
 						<li><a title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a></li>
 						<li><a title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xf204</a></li>
 					</ul>

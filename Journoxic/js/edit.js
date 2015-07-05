@@ -415,7 +415,7 @@ edit.save = function(selector) {
 				animation.log(log.EDIT_PANE_SAVE_END, -1);
 				network.destroy();
 				// Upload the file to OneDrive
-				uploadFile();
+				uploadSingleFile();
 			});
 		});
 	});

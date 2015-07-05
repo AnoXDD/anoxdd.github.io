@@ -175,7 +175,7 @@ function downloadFile(url, textOnly) {
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Now the data is up-to-date
 					app.yearChange[app.year] = false;
-					$("#year-change").removeClass("change");
+					$("#year").removeClass("change");
 					app.yearUpdate();
 					if (textOnly) {
 						// Change loading icons and re-enable click
@@ -221,7 +221,7 @@ function downloadFile(url, textOnly) {
 					}
 					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 					// `app.year` does not change
-					app.year = parseInt($("#year").attr("class").substring(1));
+					app.year = parseInt($("#year").html());
 					////alert("Cannot download the file. Do you enable CORS?");
 				})
 				.always(function() {
@@ -335,7 +335,7 @@ function uploadFile(dataYear) {
 					animation.log(log.CONTENTS_UPLOAD_BACKUP);
 					// Now the data is up-to-date
 					app.yearChange[app.year] = false;
-					$("#year-change").removeClass("change");
+					$("#year").removeClass("change");
 					network.next();
 					// Clean the unnecessary data
 					var tmp = edit.minData();

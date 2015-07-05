@@ -233,7 +233,7 @@ function getAppInfo() {
 	if (!redirectUri) {
 		alert("the odauth script tag needs a redirectUri attribute set to your redirect landing url");
 	}
-
+	
 	var clientSecret = scriptTag.getAttribute("clientSecret");
 	if (!clientSecret) {
 		alert("the odauth script tag needs a clientSecret attribute to refresh the token");

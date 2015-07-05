@@ -208,6 +208,7 @@ function downloadFile(url, textOnly) {
 						// Not found, but the folder is there, guess the data should be in `app.yearQueue`
 						if (app.yearQueue[app.year]) {
 							// It IS in `app.yearQueue`, pretend it is a successful load
+							app.yearUpdate();
 							app.refresh();
 							return;
 						}

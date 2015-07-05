@@ -249,8 +249,8 @@ edit.init = function(overwrite, index) {
 		// Bind hotkeys to add tags
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "return", function() {
-				// Cache the data
-	localStorage["body"] = $("#entry-body").val();
+			// Cache the data
+			localStorage["body"] = $("#entry-body").val();
 			// Command line work
 			var lines = $("#entry-body").val().split(/\r*\n/);
 			for (var i = 0; i < lines.length; ++i) {
@@ -731,7 +731,7 @@ edit.removeEntry = function() {
 	}
 	// The data have been changed
 	app.yearChange[app.year] = true;
-	$("#year").addClass("change");
+	$("#year-change").addClass("change");
 	// Change the data displayed
 	--app.displayedNum;
 	var data = journal.archive.data[app.year][app.currentDisplayed];

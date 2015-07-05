@@ -125,7 +125,7 @@ app.init = function() {
 		$("#search-result").fadeIn(500);
 	});
 	// Set the current year
-	$("#year").html(app.year).css("opacity", "1");
+	$("#year").attr("class", app.year).css("opacity", "1");
 	app.getYears();
 	// Network setup
 	// Setup timeout time
@@ -209,7 +209,7 @@ app.load = function(filter, newContent) {
 				app.yearChange[createdYear] = true;
 				// This year has also been changed
 				app.yearChange[app.year] = true;
-				$("#year").addClass("change");
+				$("#year-change").addClass("change");
 				// Test for uniqueness
 				if (queuedYears.indexOf(createdYear) === -1) {
 					queuedYears.push(createdYear);
@@ -284,12 +284,12 @@ app.load = function(filter, newContent) {
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);
 	$("#total-time").text(app.displayedTime);
-	$("#year").html(app.year);
+	$("#year").attr("class", app.year);
 	// Show the dot for changed stuff
 	if (app.yearChange[app.year]) {
-		$("#year").addClass("change");
+		$("#year-change").addClass("change");
 	} else {
-		$("#year").removeClass("change");
+		$("#year-change").removeClass("change");
 	}
 	// Refresh every stuff
 	for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
@@ -411,7 +411,7 @@ app.yearUpdateTry = function(year) {
  * This function does not accept any parameters by using `app.year` to update everything with it. It does NOT check the validness of `app.year`, and will assume that it is a valid one (e.g. the data is already loaded). However, if `app.year` is invalid that `(app.years.indexOf(app.year))` yields -1, `app.year` will be set to this year and it will call `app.yearUpdateTry()`. This function will also correct the buttons for switching between years.
  */
 app.yearUpdate = function() {
-	$("#year").html(app.year);
+	$("#year").attr("class", app.year);
 	app.refresh();
 	// Test the correctness of the buttons
 	animation.testYearButton();

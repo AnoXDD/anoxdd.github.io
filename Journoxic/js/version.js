@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.23.28 Build 070515_2104";
+﻿﻿app.version.main = "v3.23.29 Build 070515_2123";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -15,7 +15,6 @@ $("#version").html(app.version.main);
  * 
  * Todo reduce redundant id's in index.html
  * Todo add an integrity check before logging in
- * Todo add "uploadAll" for changed years
  * Todo add animation when `app.year` changes
  * 
  * v3.24 Log update

@@ -175,7 +175,7 @@ function downloadFile(url, textOnly) {
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Now the data is up-to-date
 					app.yearChange[app.year] = false;
-					$("#year").removeClass("change");
+					$("#year-change").removeClass("change");
 					app.yearUpdate();
 					if (textOnly) {
 						// Change loading icons and re-enable click
@@ -335,7 +335,7 @@ function uploadFile(dataYear) {
 					animation.log(log.CONTENTS_UPLOAD_BACKUP);
 					// Now the data is up-to-date
 					app.yearChange[app.year] = false;
-					$("#year").removeClass("change");
+					$("#year-change").removeClass("change");
 					network.next();
 					// Clean the unnecessary data
 					var tmp = edit.minData();

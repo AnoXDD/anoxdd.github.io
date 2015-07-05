@@ -32,7 +32,9 @@
 			<p id="total-time">...</p>
 		</div>
 	</div>
-	<div id="year"></div>
+	<div id="year">
+		<span id="year-change"></span>
+	</div>
 	<div id="feedback"></div>
 	<div class="actions">
 		<div id="action-media">
@@ -130,7 +132,7 @@
 					</ul>
 				</li>
 				<li class="has-sub">
-					<a title="This year" id ="this-year"onclick="app.next(true)" href="#">&#xf015</a>
+					<a title="This year" id="this-year" onclick="app.next(true)" href="#">&#xf015</a>
 					<ul>
 						<li class="has-sub">
 							<a title="Previous year" id="prev-year" class="hidden-icon" onclick="app.prev()" href="#">&#xf104</a>
@@ -384,7 +386,7 @@
 				<p class="entry-icons" id="elapsed" title="Time elapsed">&#xf04b</p>
 				<p class="entry-data" id="entry-elapsed" title="Time elapsed">0:00</p>
 			</div>
-			<textarea id="entry-body" ></textarea>
+			<textarea id="entry-body"></textarea>
 			<div id="map-holder">
 				<div id="map-selector"></div>
 			</div>

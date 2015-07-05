@@ -221,7 +221,7 @@ function downloadFile(url, textOnly) {
 					}
 					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
 					// `app.year` does not change
-					app.year = parseInt($("#year").html());
+					app.year = parseInt($("#year").attr("class").substring(1));
 					////alert("Cannot download the file. Do you enable CORS?");
 				})
 				.always(function() {

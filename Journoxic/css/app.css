@@ -2229,13 +2229,12 @@ body {
 	width: 60px;
 }
 
-	#year::before {
-		content: "\f133\A";
+	#year .2015::before {
+		content: "\f133  2015";
 		display: block;
-		margin-right: 3px;
 	}
 
-	#year.change::after {	
+	#year-change::after {	
 		content: "\f14b";
 		display: block;
 		position: relative;

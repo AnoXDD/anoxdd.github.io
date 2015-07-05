@@ -219,7 +219,7 @@ app.load = function(filter, newContent) {
 				animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
 				// Add to `app.years`
 				for (var i = 0; i !== queuedYears.length; ++i) {
-					if (app.years.indexOf(queuedYears[i]) !== -1) {
+					if (app.years.indexOf(queuedYears[i]) === -1) {
 						// This year does not exist in `app.years`
 						app.years.push(queuedYears[i]);
 					}

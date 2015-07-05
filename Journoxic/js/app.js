@@ -379,6 +379,12 @@ app.getYears = function() {
 						network.yearFolders.push(name);
 					}
 				}
+				// If it is the first day of the year and this folder is not created, add this year to `app.years`
+				if (app.years.indexOf(new Date().getFullYear()) === -1) {
+					// It is supposed to the latest year
+					app.years.push(new Date().getFullYear());
+					// So unnecessary to sort it after push
+				}
 				animation.log(log.GET_YEARS_END);
 			})
 			.fail(function(xhr, status, error) {

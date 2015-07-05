@@ -141,6 +141,7 @@ edit.init = function(overwrite, index) {
 			if (n.keyCode == 13) {
 				// Test to add date header
 				if (isNaN(parseInt($(this).val().substring(0, 6)))) {
+					// Todo test the validity of this number
 					var date = new Date().getTime();
 					date = new Date(date - 14400000);
 					$(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
@@ -301,7 +302,7 @@ edit.quit = function(selector, save) {
 	// Set everything to initial state
 	edit.cleanupMediaEdit();
 	// Content processing
-	$(".header div").fadeIn();
+	$(".header div:not(#year)").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
 		// Remove the edit pane
 		$("#edit-pane").html("");

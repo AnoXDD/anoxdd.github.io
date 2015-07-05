@@ -141,7 +141,8 @@ p {
 }
 
 img, input, button {
-	border: 0;
+	border: none;
+	outline: none;
 }
 
 ul, li {
@@ -157,13 +158,18 @@ body, input, select, textarea {
 	font-family: 'Segoe UI', 'FontAwesome', 'Microsoft YaHei UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-input {
+input, text-area {
 	transition: box-shadow .4s ease;
 }
 
-	input:active, input:focus, input:hover {
-		box-shadow: 0 0 8px #eee;
+	input:active, input:focus, input:hover, textarea:active, textarea:focus, textarea:hover {
+		box-shadow: 0 0 5px #2C2C2C;
 	}
+
+	input.dark:active, input.dark:focus, input.dark:hover, textarea.dark:active, textarea.dark:focus, textarea.dark:hover {
+		box-shadow: 0 0 5px #DDD;
+	}
+
 
 body {
 	background-attachment: fixed;
@@ -2205,36 +2211,36 @@ body {
 		animation: followup 2s infinite ease-out;
 	}
 
-	.header #year {
-		background-color: #555;
-		box-shadow: 0 0 10px #2B2B2B;
-		color: #dadada;
-		font-size: 20px;
-		height: 63px;
-		opacity: 0;
-		padding-top: 7px;
-		position: absolute;
-		right: 0px;
-		text-align: center;
-		transition: opacity .4s ease;
-		top: 0px;
-		width: 60px;
+#year {
+	background-color: #555;
+	box-shadow: 0 0 10px #2B2B2B;
+	color: #dadada;
+	font-size: 20px;
+	height: 63px;
+	opacity: 0;
+	padding-top: 7px;
+	position: absolute;
+	left: 0px;
+	text-align: center;
+	transition: opacity .4s ease;
+	top: 0px;
+	width: 60px;
+}
+
+	#year::before {
+		content: "\f133\A";
+		display: block;
+		margin-right: 3px;
 	}
 
-		.header #year::before {
-			content: "\f133\A";
-			display: block;
-			margin-right: 3px;
-		}
-
-		.header #year.change::after {
-			content: "\f14b";
-			display: block;
-			position: relative;
-			font-size: 12px;
-			bottom: 60px;
-			left: 21px;
-		}
+	#year.change::after {	
+		content: "\f14b";
+		display: block;
+		position: relative;
+		font-size: 12px;
+		bottom: 60px;
+		left: 21px;
+	}
 
 #feedback {
 	left: 8px;
@@ -2418,7 +2424,7 @@ body {
 	display: block;
 	float: right;
 	position: absolute;
-	right: 75px;
+	right: 7px;
 	top: 17px;
 }
 
@@ -2681,7 +2687,7 @@ body {
 		margin-left: 5px;
 		outline: 0;
 		padding: 10px 30px;
-		transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease;
+		transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease, box-shadow .4s ease;
 	}
 
 		#edit-pane #entry-body:focus, #entry-header:focus { /*outline: #dddddd solid 1px;*/
@@ -2803,11 +2809,6 @@ body {
 		padding: 5px 23px;
 		width: -webkit-calc(100% - 55px);
 	}
-
-		#edit-pane #attach-area .texttags #entry-tag:focus, #edit-pane #attach-area input:focus {
-			background: #eeeeee;
-			outline: none;
-		}
 
 	#edit-pane #attach-area .types {
 		display: block;

@@ -8,6 +8,8 @@ network.percent = 0;
 network.current = 0;
 network.breakpoint = 0;
 network.interval = 0;
+/** The local variables to store if current year has /core/ folder */
+network.yearFolders = [];
 
 /**
  * Initializes the network bar and show it
@@ -278,7 +280,7 @@ function downloadMedia(url) {
 }
 
 /**
- * Uploads journal.archive.data to OneDrive and creates a backup
+ * Uploads journal.archive.data to OneDrive and creates a backup. If this folder does not exist, this function will create a folder before uploading
  * @returns {} 
  */
 function uploadFile() {
@@ -287,71 +289,129 @@ function uploadFile() {
 	// Change loading icons and disable click
 	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
-		network.init(1);
-		var d = new Date(),
-			month = d.getMonth() + 1,
-			day = d.getDate(),
-			year = d.getFullYear() % 100,
-			hour = d.getHours(),
-			minute = d.getMinutes(),
-			second = d.getSeconds();
-		month = month < 10 ? "0" + month : month;
-		day = day < 10 ? "0" + day : day;
-		year = year < 10 ? "0" + year : year;
-		hour = hour < 10 ? "0" + hour : hour;
-		minute = minute < 10 ? "0" + minute : minute;
-		second = second < 10 ? "0" + second : second;
-		var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
-			data = { name: fileName };
-		// Backup the original file
-		$.ajax({
-			type: "PATCH",
-			url: getCoreDataUrlHeader() + "?access_token=" + token,
-			contentType: "application/json",
-			data: JSON.stringify(data)
-		})
-			////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
-			.done(function() {
-				////console.log("uploadFile():\t Done backup");
-				animation.log(log.CONTENTS_UPLOAD_BACKUP);
-				// Now the data is up-to-date
-				app.yearChange[app.year] = false;
-				$("#year").removeClass("change");
-				network.next();
-				// Clean the unnecessary data
-				var tmp = edit.minData();
-				$.ajax({
-					type: "PUT",
-					url: getCoreDataUrlHeader(true) + ":/content?access_token=" + token,
-					contentType: "text/plain",
-					data: JSON.stringify(tmp)
+		/**
+		 * The function to be called to upload the file. This function assumes that the folder has already been prepared
+		 */
+		var upload = function() {
+			var d = new Date(),
+				month = d.getMonth() + 1,
+				day = d.getDate(),
+				year = d.getFullYear() % 100,
+				hour = d.getHours(),
+				minute = d.getMinutes(),
+				second = d.getSeconds();
+			month = month < 10 ? "0" + month : month;
+			day = day < 10 ? "0" + day : day;
+			year = year < 10 ? "0" + year : year;
+			hour = hour < 10 ? "0" + hour : hour;
+			minute = minute < 10 ? "0" + minute : minute;
+			second = second < 10 ? "0" + second : second;
+			var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
+				data = { name: fileName };
+			// Backup the original file
+			$.ajax({
+				type: "PATCH",
+				url: getCoreDataUrlHeader() + "?access_token=" + token,
+				contentType: "application/json",
+				data: JSON.stringify(data)
+			})
+				////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
+				.done(function() {
+					////console.log("uploadFile():\t Done backup");
+					animation.log(log.CONTENTS_UPLOAD_BACKUP);
+					// Now the data is up-to-date
+					app.yearChange[app.year] = false;
+					$("#year").removeClass("change");
+					network.next();
+					// Clean the unnecessary data
+					var tmp = edit.minData();
+					$.ajax({
+						type: "PUT",
+						url: getCoreDataUrlHeader(true) + ":/content?access_token=" + token,
+						contentType: "text/plain",
+						data: JSON.stringify(tmp)
+					})
+						.done(function(data, status, xhr) {
+							////console.log("uploadFile():\t Done!");
+							animation.log(log.CONTENTS_UPLOAD_END, -1);
+						})
+						.fail(function(xhr, status, error) {
+							animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+							////alert("Cannot upload files");
+						})
+						.always(function() {
+							network.next();
+						});
 				})
-					.done(function(data, status, xhr) {
-						////console.log("uploadFile():\t Done!");
-						animation.log(log.CONTENTS_UPLOAD_END, -1);
-					})
-					.fail(function(xhr, status, error) {
-						animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-						////alert("Cannot upload files");
-					})
-					.always(function() {
-						network.next();
+				.fail(function(xhr, status, error) {
+					animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+					network.destroy();
+					////alert("Cannot backup the file");
+				})
+				.always(function() {
+					// Change loading icons and re-enable click
+					$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
+						onclick: "uploadFile()",
+						href: "#"
 					});
-			})
-			.fail(function(xhr, status, error) {
-				animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-				network.destroy();
-				////alert("Cannot backup the file");
-			})
-			.always(function() {
-				// Change loading icons and re-enable click
-				$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-					onclick: "uploadFile()",
-					href: "#"
+					animation.finished("#upload");
+					////console.log("uploadFile()\tFinish uploading");
 				});
-				animation.finished("#upload");
-				////console.log("uploadFile()\tFinish uploading");
-			});
+		};
+		if (network.yearFolders.indexOf(app.year) === -1) {
+			// This `app.year` has not already registered on the website
+			var created = 0,
+				abort = false,
+				urls = ["https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
+					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
+					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"],
+				requestJson = {
+					name: app.year,
+					folder: {}
+				};
+			// Start create all the folder needed
+			network.init(urls.length);
+			for (var i = 0; i !== urls.length; ++i) {
+				$.ajax({
+						type: "POST",
+						url: urls[i] + "children?access_token=" + token,
+						contentType: "application/json",
+						data: JSON.stringify(requestJson)
+					})
+					.done(function() {
+						network.next();
+						if (++created === urls.length) {
+							// All have been created
+							network.yearFolders.push(app.year);
+							// Upload the data
+							upload();
+						}
+					})
+					.fail(function(xhr) {
+						if (xhr.status == 409) {
+							// Conflict, considered this folder is created successfully
+							network.next();
+							if (++created === urls.length) {
+								// All have been created
+								network.yearFolders.push(app.year);
+								// Upload the data
+								upload();
+							}
+						} else {
+							network.destroy();
+							if (!abort) {
+								animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
+							}
+							// Abort everything, to prevent multiple prompt of the error
+							abort = true;
+						}
+					});
+			}
+		} else {
+			// Just upload it
+			network.init(1);
+			upload();
+		}
 	});
 }
 
@@ -397,7 +457,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
  * @param {string} dateStr - The name of the folder to be created
  * @param {function} callback - The callback function after completion of creating
  */
-function createFolder(dateStr, callback) {
+function createDateFolder(dateStr, callback) {
 	getTokenCallback(function(token) {
 		var requestJson = {
 			name: dateStr,
@@ -415,14 +475,16 @@ function createFolder(dateStr, callback) {
 					edit.folderDate = dateStr;
 				}
 			}
-		}).done(function() {
-			// Successfully created this directory
-			edit.isFolder = true;
-			edit.folderDate = dateStr;
-			animation.log(log.FOLDER_CREATED);
-		}).always(function() {
-			// Always try to run the callback function
-			callback(dateStr);
-		});
+		})
+			.done(function() {
+				// Successfully created this directory
+				edit.isFolder = true;
+				edit.folderDate = dateStr;
+				animation.log(log.FOLDER_CREATED);
+			})
+			.always(function() {
+				// Always try to run the callback function
+				callback(dateStr);
+			});
 	});
 }

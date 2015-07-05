@@ -175,7 +175,6 @@ app.load = function(filter, newContent) {
 		animation.deny("#refresh-media");
 		return;
 	} else if (newContent == undefined) {
-		// Filter out undefined element
 		if (journal.archive.data[app.year]) {
 			// Test if there are any data in the queue
 			if (app.yearQueue[app.year]) {
@@ -189,6 +188,7 @@ app.load = function(filter, newContent) {
 				delete app.yearQueue[app.year];
 			}
 			var queuedYears = [];
+			// Filter out undefined element and entries not belong to this year
 			journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
 				if (entry == undefined) {
 					app.yearChange[app.year] = true;
@@ -210,11 +210,19 @@ app.load = function(filter, newContent) {
 					// Add to this year
 					app.yearQueue[createdYear].push(entry);
 					app.yearChange[createdYear] = true;
-					queuedYears.push(createdYear);
+					// This year has also been changed
+					app.yearChange[app.year] = true;
+					$("#year").addClass("change");
+					// Test for uniqueness
+					if (queuedYears.indexOf(createdYear) === -1) {
+						queuedYears.push(createdYear);
+					}
 					return false;
 				}
 			});
-			animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
+			if (queuedYears.length > 0) {
+				animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
+			}
 			if (journal.archive.data[app.year].length === 0) {
 				////console.log("app.load()\tNo archive data!");
 				animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
@@ -362,6 +370,7 @@ app.getYears = function() {
 					if (parseInt(name) == name) {
 						name = parseInt(name);
 						app.years.push(name);
+						network.yearFolders.push(name);
 					}
 				}
 				animation.log(log.GET_YEARS_END);

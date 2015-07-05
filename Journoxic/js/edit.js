@@ -1168,7 +1168,7 @@ edit.getDate = function(callback) {
 	// Test server folder validity
 	if (dateStr != edit.folderDate) {
 		// Try to create the folder
-		createFolder(dateStr, callback);
+		createDateFolder(dateStr, callback);
 	} else {
 		callback(dateStr);
 	}

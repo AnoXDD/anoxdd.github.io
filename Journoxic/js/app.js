@@ -125,7 +125,7 @@ app.init = function() {
 		$("#search-result").fadeIn(500);
 	});
 	// Set the current year
-	$("#year").toggle("slide", { direction: "up" }).html(app.year).toggle("slide", { direction: "up" }).css("opacity", "1");
+	$("#year").effect("slide", { direction: "up" });
 	app.getYears();
 	// Network setup
 	// Setup timeout time
@@ -284,7 +284,7 @@ app.load = function(filter, newContent) {
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);
 	$("#total-time").text(app.displayedTime);
-	$("#year").toggle("slide", { direction: "up" }).html(app.year).toggle("slide", { direction: "up" });
+	$("#year").effect("slide", { direction: "up" }).html(app.year);
 	// Show the dot for changed stuff
 	if (app.yearChange[app.year]) {
 		$("#year").addClass("change");
@@ -411,7 +411,6 @@ app.yearUpdateTry = function(year) {
  * This function does not accept any parameters by using `app.year` to update everything with it. It does NOT check the validness of `app.year`, and will assume that it is a valid one (e.g. the data is already loaded). However, if `app.year` is invalid that `(app.years.indexOf(app.year))` yields -1, `app.year` will be set to this year and it will call `app.yearUpdateTry()`. This function will also correct the buttons for switching between years.
  */
 app.yearUpdate = function() {
-	$("#year").toggle("slide", { direction: "up" }).html(app.year).toggle("slide", { direction: "up" });
 	app.refresh();
 	// Test the correctness of the buttons
 	animation.testYearButton();

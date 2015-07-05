@@ -138,18 +138,34 @@ edit.init = function(overwrite, index) {
 		$("#photo-preview").hide();
 		// Enter to finish entry header
 		$("#entry-header").keyup(function(n) {
+			edit.saveTitle();
 			if (n.keyCode == 13) {
-				// Test to add date header
-				if (isNaN(parseInt($(this).val().substring(0, 6)))) {
-					// Todo test the validity of this number
-					var date = new Date().getTime();
-					date = new Date(date - 14400000);
-					$(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
-				}
+				// Jump to the body
 				$("#entry-body").focus();
 			}
-			edit.saveTitle();
-		});
+		})
+			.blur(function() {
+				// This header has lost its focus, test its date string validity
+				var dateStr = $(this).val().substring(0, 6),
+					date;
+				if (!isNaN(parseInt(dateStr))) {
+					var dateNum = edit.convertTime(parseInt(dateStr));
+					// Re-evaluate the month, day and the year to make sure it IS a true date
+					date = new Date(dateNum);
+					var isMonthMatch = date.getMonth() + 1 == dateStr.substring(0, 2),
+						isDayMatch = date.getDate() == dateStr.substring(2, 4),
+						// Has to match both original year in title and `app.year`
+						isYearMatch = date.getFullYear() % 100 == dateStr.substring(4, 6) && date.getFullYear() === app.year;
+					if (isMonthMatch && isDayMatch && isYearMatch) {
+						// Everything matches, good work user
+						return;
+					}
+				}
+				// If this function has not been returned, then the header does not have a valid date header
+				date = new Date().getTime();
+				date = new Date(date - 14400000);
+				$(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
+			});
 		// Enter to add tag
 		$("#entry-tag").keyup(function(n) {
 			if (n.keyCode == 13) {
@@ -234,21 +250,50 @@ edit.init = function(overwrite, index) {
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "return", function() {
 			// Command line work
-			var body = $("#entry-body").val(),
-				/* The start of the last line before return is hit*/
-				start = body.lastIndexOf("\n", body.length - 2) + 1,
-				/* The last line */
-				last = body.substring(start, body.length - 1),
-				truncate = false;
-			if (last.length > 2 && last.charAt(0) === "#") {
-				// Add a tag
-				edit.addTag(last.substring(1));
-				truncate = true;
+			var lines = localStorage["body"].split(/\r*\n/);
+			for (var i = 0; i < lines.length; ++i) {
+				var line = lines[i],
+					flag = false,
+					convertedTime;
+				if (line.substring(0, 7) === "Begin @") {
+					convertedTime = edit.convertTime(line.substring(8));
+					if (new Date(convertedTime).getFullYear() === app.year) {
+						// Year in range, overwrite start time
+						data["time"]["start"] = convertedTime;
+						animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+					} else {
+						// Invalid date
+						animation.error(log.TIME_NOT_IN_RANGE);
+					}
+					flag = true;
+				} else if (line.substring(0, 5) === "End @") {
+					// Overwrite end time
+					data["time"]["end"] = edit.convertTime(line.substring(6));
+					animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(data["time"]["end"]));
+					flag = true;
+				} else if (line.substring(0, 9) === "Created @") {
+					convertedTime = edit.convertTime(line.substring(10));
+					if (new Date(convertedTime).getFullYear() === app.year) {
+						// Year in range, overwrite created time
+						data["time"]["created"] = convertedTime;
+						animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+					} else {
+						// Invalid date
+						animation.error(log.TIME_NOT_IN_RANGE);
+					}
+					flag = true;
+				} else if (line.length > 2 && line.charAt(0) === "#") {
+					// Add a tag
+					edit.addTag(line.substring(1));
+					flag = true;
+				}
+				if (flag) {
+					// Remove the current line
+					lines.splice(--i, 1);
+				}
 			}
-			if (truncate) {
-				// Truncate the "command" just input
-				$("#entry-body").val(body.substring(0, start));
-			}
+			var newBody = lines.join("\r\n");
+			$("#entry-body").val(newBody);
 		})
 			.bind("keyup", "ctrl+shift+f", function() {
 				edit.toggleTag("friendship");
@@ -302,7 +347,7 @@ edit.quit = function(selector, save) {
 	// Set everything to initial state
 	edit.cleanupMediaEdit();
 	// Content processing
-	$(".header div:not(#year)").fadeIn();
+	$(".header div").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
 		// Remove the edit pane
 		$("#edit-pane").html("");
@@ -484,8 +529,9 @@ edit.exportCache = function(index) {
 	}
 };
 /**
- * Reads the cache and process start, created and end time from the text body
+ * Reads the cache and process metadata about the text body
  * @param {object} data - The data clip of entry to be processed
+ * @returns {object} data - Processed data
  */
 edit.exportCacheBody = function(data) {
 	if (!data["time"]) {
@@ -493,37 +539,14 @@ edit.exportCacheBody = function(data) {
 	}
 	data["time"]["created"] = parseInt(localStorage["created"]);
 	// Test if begin and end time is overwritten
-	var lines = localStorage["body"].split(/\r*\n/);
-	for (var i = 0; i != lines.length; ++i) {
-		var line = lines[i],
-			flag = false;
-		if (line.substring(0, 7) == "Begin @") {
-			// Overwrite begintime
-			data["time"]["start"] = edit.convertTime(line.substring(8));
-			flag = true;
-		} else if (line.substring(0, 5) == "End @") {
-			// Overwrite endtime
-			data["time"]["end"] = edit.convertTime(line.substring(6));
-			flag = true;
-		} else if (line.substring(0, 9) == "Created @") {
-			// Overwrite createdtime
-			data["time"]["created"] = edit.convertTime(line.substring(10));
-			flag = true;
-		}
-		if (flag) {
-			// Remove the current line
-			lines.splice(i, 1);
-			--i;
-		}
-	}
 	if (!data["text"]) {
 		data["text"] = {};
 	}
-	var newBody = lines.join("\r\n");
-	data["text"]["body"] = newBody;
-	data["text"]["chars"] = newBody.length;
-	data["text"]["lines"] = lines.length;
-	data["text"]["ext"] = newBody.substring(0, 50);
+	var body = localStorage["body"];
+	data["text"]["body"] = body;
+	data["text"]["chars"] = body.length;
+	data["text"]["lines"] = body.split(/\r*\n/).length;
+	data["text"]["ext"] = body.substring(0, 50);
 	return data;
 };
 edit.cleanEditCache = function() {

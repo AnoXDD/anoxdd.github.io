@@ -135,6 +135,10 @@ window.log = {
 	YEAR_SWITCHED_TO: "Year switched to ",
 	DATA_MOVED_TO_OTHER_YEAR: "Some data migrated to year ",
 	DATA_MOVED_TO_OTHER_YEAR_END: ". Upload those data or they will be lost",
+	CREATED_TIME_CHANGED_TO: "Created time for this entry changed to ",
+	START_TIME_CHANGED_TO: "Start time for this entry changed to ",
+	END_TIME_CHANGED_TO: "End time for this entry changed to ",
+	TIME_NOT_IN_RANGE: "Time does not fit in this year",
 
 	SERVER_RETURNS: ". The server returns error \"",
 	SERVER_RETURNS_END: "\"",

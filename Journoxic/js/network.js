@@ -156,55 +156,10 @@ function downloadFile(url, textOnly) {
 	getTokenCallback(function(token) {
 		if (network.yearFolders.indexOf(app.year) === -1) {
 			// Create a folder instead of searching for it
-			var created = 0,
-				abort = false,
-				urls = [
-					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
-					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
-					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"
-				],
-				requestJson = {
-					name: app.year,
-					folder: {}
-				};
-			// Start create all the folder needed
-			network.init(urls.length - 1);
-			for (var i = 0; i !== urls.length; ++i) {
-				$.ajax({
-					type: "POST",
-					url: urls[i] + "children?access_token=" + token,
-					contentType: "application/json",
-					data: JSON.stringify(requestJson)
-				})
-					.done(function() {
-						network.next();
-						if (++created === urls.length) {
-							// All have been created
-							network.yearFolders.push(app.year);
-							// Refresh the data
-							app.refresh();
-						}
-					})
-					.fail(function(xhr) {
-						if (xhr.status == 409) {
-							// Conflict, considered this folder is created successfully
-							network.next();
-							if (++created === urls.length) {
-								// All have been created
-								network.yearFolders.push(app.year);
-								// Refresh the data
-								app.refresh();
-							}
-						} else {
-							network.destroy();
-							if (!abort) {
-								animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
-							}
-							// Abort everything, to prevent multiple prompt of the error
-							abort = true;
-						}
-					});
-			}
+			createFolders(function() {
+				// Simply refresh the list-view
+				app.refresh();
+			}, 3);
 		} else {
 			// Get text data
 			url = url || getCoreDataUrlHeader(true) +
@@ -410,53 +365,7 @@ function uploadFile() {
 		};
 		if (network.yearFolders.indexOf(app.year) === -1) {
 			// This `app.year` has not already registered on the website
-			var created = 0,
-				abort = false,
-				urls = ["https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
-					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
-					"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"],
-				requestJson = {
-					name: app.year,
-					folder: {}
-				};
-			// Start create all the folder needed
-			network.init(urls.length);
-			for (var i = 0; i !== urls.length; ++i) {
-				$.ajax({
-					type: "POST",
-					url: urls[i] + "children?access_token=" + token,
-					contentType: "application/json",
-					data: JSON.stringify(requestJson)
-				})
-					.done(function() {
-						network.next();
-						if (++created === urls.length) {
-							// All have been created
-							network.yearFolders.push(app.year);
-							// Upload the data
-							upload();
-						}
-					})
-					.fail(function(xhr) {
-						if (xhr.status == 409) {
-							// Conflict, considered this folder is created successfully
-							network.next();
-							if (++created === urls.length) {
-								// All have been created
-								network.yearFolders.push(app.year);
-								// Upload the data
-								upload();
-							}
-						} else {
-							network.destroy();
-							if (!abort) {
-								animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
-							}
-							// Abort everything, to prevent multiple prompt of the error
-							abort = true;
-						}
-					});
-			}
+			createFolders(upload, 5);
 		} else {
 			// Just upload it
 			network.init(1);
@@ -537,4 +446,61 @@ function createDateFolder(dateStr, callback) {
 				callback(dateStr);
 			});
 	});
+}
+
+/**
+ * Creates the necessary folders (/core/, /resource/, /data/) for this `app.year`
+ * @param {function} callback(token) - The callback function after all the folders exist (already existed or newly created), can have a parameter for access_token
+ * @param {number} breakpoints - The number of breakpoints for network progress bar
+ */
+function createFolders(callback, breakpoints) {
+	getTokenCallback(function(token) {
+		var created = 0,
+			abort = false,
+			urls = ["https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
+				"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
+				"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"],
+			requestJson = {
+				name: app.year,
+				folder: {}
+			};
+		// Start create all the folder needed
+		network.init(breakpoints);
+		for (var i = 0; i !== urls.length; ++i) {
+			$.ajax({
+				type: "POST",
+				url: urls[i] + "children?access_token=" + token,
+				contentType: "application/json",
+				data: JSON.stringify(requestJson)
+			})
+				.done(function() {
+					network.next();
+					if (++created === urls.length) {
+						// All have been created
+						network.yearFolders.push(app.year);
+						// Upload the data
+						callback(token);
+					}
+				})
+				.fail(function(xhr) {
+					if (xhr.status == 409) {
+						// Conflict, considered this folder is created successfully
+						network.next();
+						if (++created === urls.length) {
+							// All have been created
+							network.yearFolders.push(app.year);
+							// Upload the data
+							callback(token);
+						}
+					} else {
+						network.destroy();
+						if (!abort) {
+							animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
+						}
+						// Abort everything, to prevent multiple prompt of the error
+						abort = true;
+					}
+				});
+		}
+	})
 }

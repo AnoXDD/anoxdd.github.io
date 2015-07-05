@@ -271,6 +271,29 @@ animation.testSub = function(selector) {
 		$(selector).parent().removeClass("has-sub");
 	}
 }
+/**
+ * Tests the validity on UI for buttons with year switch, including adding/removing prev/next year button according to the position of `app.year` in `app.years`.
+ */
+animation.testYearButton = function() {
+	var index = app.years.indexOf(app.year);
+	if (index === -1) {
+		// Invalid year
+		app.yearUpdateTry(new Date().getFullYear());
+		return;
+	} else if (index === 0) {
+		// The earliest year
+		$("#prev-year").addClass("hidden");
+		$("#next-year").removeClass("hidden");
+	} else if (index === app.years.length - 1) {
+		// "This" year
+		$("#next-year").addClass("hidden");
+		$("#prev-year").removeClass("hidden");
+	} else {
+		// Any situation else
+		$("#next-year, #prev-year").removeClass("hidden");
+	}
+	animation.testSub("#this-year");
+}
 
 /* Return undefined if it is not shown */
 animation.blink = function(selector) {

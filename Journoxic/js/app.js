@@ -217,6 +217,8 @@ app.load = function(filter, newContent) {
 			});
 			if (queuedYears.length > 0) {
 				animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
+				// Add to `app.years`
+				app.years.push.apply(app.years, queuedYears);
 			}
 			if (journal.archive.data[app.year].length === 0) {
 				////console.log("app.load()\tNo archive data!");
@@ -397,29 +399,12 @@ app.yearUpdate = function() {
 	$("#year").html(app.year);
 	app.refresh();
 	// Test the correctness of the buttons
-	var index = app.years.indexOf(app.year);
-	if (index === -1) {
-		// Invalid year
-		app.yearUpdateTry(new Date().getFullYear());
-		return;
-	} else if (index === 0) {
-		// The earliest year
-		$("#prev-year").addClass("hidden");
-		$("#next-year").removeClass("hidden");
-	} else if (index === app.years.length - 1) {
-		// "This" year
-		$("#next-year").addClass("hidden");
-		$("#prev-year").removeClass("hidden");
-	} else {
-		// Any situation else
-		$("#next-year, #prev-year").removeClass("hidden");
-	}
-	animation.testSub("#this-year");
+	animation.testYearButton();
 	animation.log(log.YEAR_SWITCHED_TO + app.year);
 }
 /**
  * Sets the year to the previous year. 
- * This function will guarantee the correctless of `app.year`, and will correct it if `app.year` is invalid.
+ * This function will guarantee the correctness of `app.year`, and will correct it if `app.year` is invalid.
  * @param {boolean} isToEnd - If year goes to the earliest possible year
  */
 app.prev = function(isToEnd) {

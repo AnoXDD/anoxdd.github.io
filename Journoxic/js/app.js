@@ -49,11 +49,6 @@ app.version = {
 	data: 2
 };
 
-/** Whether there are any outgoing ajax event */
-app.isAjaxActive = false;
-/** The timeout time for ajax, in milliseconds */
-app.timeOut = 15000;
-
 /**
  * Initializes this app
  */
@@ -135,16 +130,16 @@ app.init = function() {
 	// Network setup
 	// Setup timeout time
 	$.ajaxSetup({
-		timeout: app.timeOut
+		timeout: network.timeOut
 	});
 	// Setup network monitor
 	$(document).ajaxStart(function() {
-		app.isAjaxActive = true;
+		network.isAjaxActive = true;
 		// By default, just initialize the network bar
 		network.init();
 	});
 	$(document).ajaxStop(function() {
-		app.isAjaxActive = false;
+		network.isAjaxActive = false;
 		if (network.breakpoint === 0) {
 			// Do not destroy it if there are breakpoints
 			network.destroy();
@@ -428,7 +423,7 @@ app.yearUpdate = function() {
  * @param {boolean} isToEnd - If year goes to the earliest possible year
  */
 app.prev = function(isToEnd) {
-	if (app.isAjaxActive) {
+	if (network.isAjaxActive) {
 		// Do not switch if network is still working
 		animation.warn(log.NETWORK_WORKING);
 		return;
@@ -452,7 +447,7 @@ app.prev = function(isToEnd) {
  * @param {boolean} isToEnd - If year goes to the latest year (i.e. this year)
  */
 app.next = function(isToEnd) {
-	if (app.isAjaxActive) {
+	if (network.isAjaxActive) {
 		// Do not switch if network is still working
 		animation.warn(log.NETWORK_WORKING);
 		return;

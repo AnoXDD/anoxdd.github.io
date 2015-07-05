@@ -10,6 +10,10 @@ network.breakpoint = 0;
 network.interval = 0;
 /** The local variables to store if current year has /core/ folder */
 network.yearFolders = [];
+/** Whether there are any outgoing ajax event */
+network.isAjaxActive = false;
+/** The timeout time for ajax, in milliseconds */
+network.timeOut = 15000;
 
 /**
  * Initializes the network bar and show it
@@ -183,9 +187,6 @@ function downloadFile(url, textOnly) {
 							.done(function(data, status, xhr) {
 								// Get the data number
 								journal.archive.media = data["folder"]["childCount"];
-								app.year = year;
-								$("#year").html(year);
-								animation.log(log.YEAR_SWITCHED_TO + year);
 								app.refresh();
 								animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
 								network.init(journal.archive.media);

@@ -81,7 +81,7 @@ function getTokenCallback(callback) {
 		var token = getTokenFromCookie();
 		callback(token);
 	} else if (getRefreshFromCookie()) {
-		// Previos session expired
+		// Previous session expired
 		animation.log(log.AUTH_REFRESH_EXPIRED);
 		refreshToken(callback);
 	}

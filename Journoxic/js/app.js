@@ -170,70 +170,72 @@ app.load = function(filter, newContent) {
 		animation.deny("#refresh-media");
 		return;
 	} else if (newContent == undefined) {
-		if (journal.archive.data[app.year]) {
-			// Test if there are any data in the queue
-			if (app.yearQueue[app.year]) {
-				app.yearChange[app.year] = true;
-				// Push to the new data
-				journal.archive.data[app.year].push.apply(journal.archive.data[app.year], app.yearQueue[app.year]);
-				// Then sort it to remove the duplicate
-				edit.sortArchive();
-				edit.removeDuplicate();
-				// Remove the data from the queue
-				delete app.yearQueue[app.year];
-			}
-			var queuedYears = [];
-			// Filter out undefined element and entries not belong to this year
-			journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
-				if (entry == undefined) {
-					app.yearChange[app.year] = true;
-					// Do not need this one
-					return false;
-				}
-				// Test if the data is in current `app.year`
-				var time = entry["time"],
-					createdYear = new Date(time["created"]).getFullYear(),
-					startYear = new Date(time["created"]).getFullYear();
-				// Either the created time or the start time of the entry
-				if (createdYear == app.year || startYear == app.year) {
-					return true;
-				} else {
-					// Move this entry to a new year, given the created time
-					if (!app.yearQueue[createdYear]) {
-						app.yearQueue[createdYear] = [];
-					}
-					// Add to this year
-					app.yearQueue[createdYear].push(entry);
-					app.yearChange[createdYear] = true;
-					// This year has also been changed
-					app.yearChange[app.year] = true;
-					$("#year").addClass("change");
-					// Test for uniqueness
-					if (queuedYears.indexOf(createdYear) === -1) {
-						queuedYears.push(createdYear);
-					}
-					return false;
-				}
-			});
-			if (queuedYears.length > 0) {
-				animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
-				// Add to `app.years`
-				for (var i = 0; i !== queuedYears.length; ++i) {
-					if (app.years.indexOf(queuedYears[i]) === -1) {
-						// This year does not exist in `app.years`
-						app.years.push(queuedYears[i]);
-					}
-				}
-				// Sort the years
-				app.years.sort();
-			}
-			if (journal.archive.data[app.year].length === 0) {
-				////console.log("app.load()\tNo archive data!");
-				animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
-				animation.deny("#refresh-media");
-				return;
-			}
+		if (!journal.archive.data[app.year]) {
+			journal.archive.data[app.year] = [];
 		}
+		// Test if there are any data in the queue
+		if (app.yearQueue[app.year]) {
+			app.yearChange[app.year] = true;
+			// Push to the new data
+			journal.archive.data[app.year].push.apply(journal.archive.data[app.year], app.yearQueue[app.year]);
+			// Then sort it to remove the duplicate
+			edit.sortArchive();
+			edit.removeDuplicate();
+			// Remove the data from the queue
+			delete app.yearQueue[app.year];
+		}
+		var queuedYears = [];
+		// Filter out undefined element and entries not belong to this year
+		journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
+			if (entry == undefined) {
+				app.yearChange[app.year] = true;
+				// Do not need this one
+				return false;
+			}
+			// Test if the data is in current `app.year`
+			var time = entry["time"],
+				createdYear = new Date(time["created"]).getFullYear(),
+				startYear = new Date(time["created"]).getFullYear();
+			// Either the created time or the start time of the entry
+			if (createdYear == app.year || startYear == app.year) {
+				return true;
+			} else {
+				// Move this entry to a new year, given the created time
+				if (!app.yearQueue[createdYear]) {
+					app.yearQueue[createdYear] = [];
+				}
+				// Add to this year
+				app.yearQueue[createdYear].push(entry);
+				app.yearChange[createdYear] = true;
+				// This year has also been changed
+				app.yearChange[app.year] = true;
+				$("#year").addClass("change");
+				// Test for uniqueness
+				if (queuedYears.indexOf(createdYear) === -1) {
+					queuedYears.push(createdYear);
+				}
+				return false;
+			}
+		});
+		if (queuedYears.length > 0) {
+			animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
+			// Add to `app.years`
+			for (var i = 0; i !== queuedYears.length; ++i) {
+				if (app.years.indexOf(queuedYears[i]) === -1) {
+					// This year does not exist in `app.years`
+					app.years.push(queuedYears[i]);
+				}
+			}
+			// Sort the years
+			app.years.sort();
+		}
+		if (journal.archive.data[app.year].length === 0) {
+			////console.log("app.load()\tNo archive data!");
+			animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
+			animation.deny("#refresh-media");
+			return;
+		}
+
 	}
 	// Reset the UI
 	// Hide anyway

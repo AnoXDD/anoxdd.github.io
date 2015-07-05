@@ -461,7 +461,7 @@ function createFolders(callback, breakpoints) {
 				"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
 				"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"],
 			requestJson = {
-				name: app.year,
+				name: app.year.toString(),
 				folder: {}
 			};
 		// Start create all the folder needed

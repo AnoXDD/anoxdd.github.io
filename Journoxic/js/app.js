@@ -1656,10 +1656,6 @@ app.PhotoViewer.prototype = {
 		var e = $("<div class=\"wrap swipe\">").html(d);
 		var g = $("<div class=\"control\">");
 		g.append("<input type=\"button\" value=\"Close\" class=\"btn-close\"/>");
-		////if (f.length > 1) {
-		////	g.append('<input type="button" value="Prev" class="btn-prev"/>');
-		////	g.append('<input type="button" value="Next" class="btn-next"/>');
-		////}
 		if (!!c) {
 			c.css("width", f.length * 17).wrap("<div class=\"pagination\"/>").parent().appendTo(g);
 		}
@@ -1691,12 +1687,6 @@ app.PhotoViewer.prototype = {
 		$("input.btn-close", g).on("click", function() {
 			j.close();
 		});
-		////$("input.btn-prev", g).on("click", function() {
-		////	j.prev();
-		////});
-		////$("input.btn-next", g).on("click", function() {
-		////	j.next();
-		////});
 		var h = c.find(" > ul > li > img");
 
 		function d(n) {

@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.23.32 Build 070515_2230";
+﻿﻿app.version.main = "v3.24.0 Build 070615_1113";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -11,13 +11,13 @@ $("#version").html(app.version.main);
  * [Add] Automatically create an entry based on \queue
  * [Add] Shortcut keys management
  * [Add] Disable rightclick everywhere
- * [Add] View by year
+ * [Chg] Make log more efficient
  * 
  * Todo reduce redundant id's in index.html
  * Todo add an integrity check before logging in
  * 
- * v3.24 Log update
- * [Chg] Make log more efficient
+ * v3.24 HTML/CSS update
+ * [Chg] Reduce redundant id's and css entries
  * 
  * v3.23 Year support
  * [Add] View entries by years

@@ -74,7 +74,7 @@
 					<a title="Save" id="add-save-local" onclick="edit.save('#add-save-local')" href="#">&#xf0c7</a>
 					<ul>
 						<li class="has-sub">
-							<a title="Discard and quit" id="add-discard" href="#">&#xf014</a>
+							<a title="Discard and quit" href="#">&#xf014</a>
 							<ul>
 								<li><a title="Confirm" onclick="edit.quit()">&#xf00c</a></li>
 							</ul>
@@ -85,19 +85,19 @@
 		</div>
 		<div id="action-archive">
 			<ul>
-				<li><a title="Restore" id="archive-restore" onclick="archive.restore()" href="#">&#xf019</a></li>
+				<li><a title="Restore" onclick="archive.restore()" href="#">&#xf019</a></li>
 				<li class="has-sub">
-					<a title="Apply the changes" id="archive-apply" onclick="archive.apply()" href="#">&#xf058</a>
+					<a title="Apply the changes" onclick="archive.apply()" href="#">&#xf058</a>
 					<ul>
-						<li><a title="Reverse selection" id="archive-reverse" onclick="archive.reverse()" href="#">&#xf056</a></li>
-						<li><a title="Select archives below" id="archive-below" onclick="archive.selectBelow()" href="#">&#xf13a</a></li>
-						<li><a title="Remove all the attributes" id="archive-clear" onclick="archive.clear()" href="#">&#xf057</a></li>
+						<li><a title="Reverse selection" onclick="archive.reverse()" href="#">&#xf056</a></li>
+						<li><a title="Select archives below" onclick="archive.selectBelow()" href="#">&#xf13a</a></li>
+						<li><a title="Remove all the attributes" onclick="archive.clear()" href="#">&#xf057</a></li>
 					</ul>
 				</li>
 				<li class="has-sub">
-					<a title="Delete this archive" id="archive-delete" onclick="archive.toggle('delete')" href="#">&#xf1f8</a>
+					<a title="Delete this archive" onclick="archive.toggle('delete')" href="#">&#xf1f8</a>
 					<ul>
-						<li><a title="Toggle protection on this archive file" id="archive-protect" onclick="archive.toggle('protect')" href="#">&#xf023</a></li>
+						<li><a title="Toggle protection on this archive file" onclick="archive.toggle('protect')" href="#">&#xf023</a></li>
 					</ul>
 				</li>
 				<li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a></li>
@@ -130,7 +130,7 @@
 					</ul>
 				</li>
 				<li class="has-sub">
-					<a title="This year" id ="this-year"onclick="app.next(true)" href="#">&#xf015</a>
+					<a title="This year" id="this-year" onclick="app.next(true)" href="#">&#xf015</a>
 					<ul>
 						<li class="has-sub">
 							<a title="Previous year" id="prev-year" class="hidden-icon" onclick="app.prev()" href="#">&#xf104</a>
@@ -153,7 +153,7 @@
 								<li><a title="Upload all changed data" id="upload-all" onclick="uploadAllFiles()" href="#">&#xf0ee<span>&#xf0c2</span></a></li>
 							</ul>
 						</li>
-						<li><a title="Refresh token" id="refresh-token" onclick="refreshToken()" href="#">&#xf084</a></li>
+						<li><a title="Refresh token" onclick="refreshToken()" href="#">&#xf084</a></li>
 						<li><a title="Toggle auto-refresh token" id="toggle-refresh-token" onclick="toggleAutoRefreshToken()" href="#">&#xf204</a></li>
 					</ul>
 				</li>
@@ -161,7 +161,7 @@
 					<a title="Options" id="options">&#xf013</a>
 					<ul>
 						<li><a class="hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
-						<li><a title="Find lost media" id="find-lost-media" onclick="app.checkResource()" href="#">&#xf002</a></li>
+						<li><a title="Find lost media" onclick="app.checkResource()" href="#">&#xf002</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -384,7 +384,7 @@
 				<p class="entry-icons" id="elapsed" title="Time elapsed">&#xf04b</p>
 				<p class="entry-data" id="entry-elapsed" title="Time elapsed">0:00</p>
 			</div>
-			<textarea id="entry-body" ></textarea>
+			<textarea id="entry-body"></textarea>
 			<div id="map-holder">
 				<div id="map-selector"></div>
 			</div>

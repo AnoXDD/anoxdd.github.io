@@ -64,10 +64,7 @@ archive.init = function(selector) {
 				archive.lastLoaded = 0;
 				animation.showMenuOnly("archive");
 				// Hide searchbox
-				$("#search-new").fadeOut();
-				// Bind click event
-				$("#comm").click(archive.quit);
-				$("#show-menu").click(archive.quit);
+				$("#search-new, #search-result").fadeOut();
 				archive.load();
 			})
 			.fail(function(xhr, status, error) {
@@ -502,10 +499,8 @@ archive.quit = function() {
 		archive.isDisplayed = false;
 		$("#list").empty();
 		$("#detail").empty();
-		// Unbind events
-		$("#show-menu").off("click");
 		// Reshow the menu
 		$("#refresh-media").trigger("click");
-		$("#search-new").fadeIn();
+		$("#search-new, #search-result").fadeIn();
 	}
 }

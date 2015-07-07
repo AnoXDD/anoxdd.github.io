@@ -129,7 +129,7 @@ edit.init = function(overwrite, index) {
 	var editPane = $(edit.editView(data));
 
 	// Content processing
-	$(".header div").fadeOut();
+	$("#search-new, #search-result").fadeOut();
 	// Initialize the contents
 	$("#contents").fadeOut(400, function() {
 		// Initialize the pane, this line must be the first one!
@@ -352,7 +352,7 @@ edit.quit = function(selector, save) {
 	// Set everything to initial state
 	edit.cleanupMediaEdit();
 	// Content processing
-	$(".header div").fadeIn();
+	$("#search-new, #search-result").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
 		// Remove the edit pane
 		$("#edit-pane").html("");

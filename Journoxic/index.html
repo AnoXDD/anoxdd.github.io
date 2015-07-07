@@ -10,14 +10,10 @@
 <body>
 	<!-- Search bar -->
 	<div class="header">
-		<div id="network-bar" class="hidden">
-			<div id="network-progress">
-				<div id="network-followup"></div>
-			</div>
-		</div>
 		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. </p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
+			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select" />
 		</div>
 		<div id="search-result">
 			<p>Total entries: </p>
@@ -101,11 +97,12 @@
 					</ul>
 				</li>
 				<li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a></li>
-				<li><a title="Main menu" id="show-menu" onclick="animation.showMenuOnly()" href="#">&#xf0c9</a></li>
+				<li><a title="Main menu" onclick="archive.quit()" href="#">&#xf0c9</a></li>
 			</ul>
 		</div>
 		<div id="action-menu">
 			<ul>
+				<li><a title="Analyze entries" onclick="stats.init()">&#xf0ce</a></li>
 				<li class="has-sub">
 					<a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a>
 					<ul>
@@ -166,6 +163,13 @@
 				</li>
 			</ul>
 		</div>
+		<div id="action-stats">
+			<ul>
+				<li><a title="Reset the map" onclick="stats.removeAll()" href="#">&#xf014</a></li>
+				<li><a title="Toggle graph" onclick="stats.toggleGraph()" href="#">&#xf080</a></li>
+				<li><a title="Main menu" onclick="stats.quit()" href="#">&#xf0c9</a></li>
+			</ul>
+		</div>
 		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xf090</a>
 	</div>
 	<div id="video-fullscreen"></div>
@@ -176,6 +180,10 @@
 			<div id="detail"></div>
 		</div>
 		<div id="edit-pane"></div>
+		<div id="stats-pane">
+			<table id="stats-table"></table>
+			<div id="graph" class="hidden"></div>
+		</div>
 	</div>
 	<div id="version"></div>
 	<script id="odauth" src="js/odauth.v2.js" clientid="000000004C14D0D9" clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf" scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder" redirecturi="https://anoxdd.github.io/Journoxic/callback.html"></script>
@@ -218,7 +226,7 @@
 			</a>
 		</li>
 	</script>
-<script type="text/x-template" id="detail-view">
+	<script type="text/x-template" id="detail-view">
 		<div class="head">
 			<p class="title"><%- title %></p>
 			<p class="charline"><%- chars %></p>

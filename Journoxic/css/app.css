@@ -98,16 +98,6 @@
 	}
 }
 
-@keyframes fadein-inline {
-	0% {
-		opacity: 0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-}
-
 .spin {
 	-webkit-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
@@ -124,8 +114,12 @@
 	animation: followup 2s infinite ease;
 }
 
+.fadein {
+	animation: fadein 1.5s;
+}
+
 .fadein-inline {
-	animation: fadein-inline 1.5s;
+	animation: fadein 1.5s;
 	display: inline-block !important;
 }
 

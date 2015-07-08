@@ -61,7 +61,29 @@ stats.init = function() {
 	$("#stats-query").fadeIn();
 	// Empty this input box
 	$("#stats-query").val("");
-	stats.bindInput("#stats-query");
+	$("#stats-query").bind("keyup", "return", function() {
+			var newEntry = $(selector).val();
+			newEntry = stats.simplifyEntry(newEntry);
+			if (newEntry.length === 0) {
+				// Empty string, do nothing
+				$(selector).effect("highlight", { color: "#000" });
+				animation.error(log.STATS_ENTRY_EMPTY_STRING);
+				return;
+			}
+			if (stats.entries[newEntry]) {
+				// Already there
+				$(selector).effect("highlight", { color: "#000" });
+				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
+			} else {
+				// This is a valid entry
+				$(selector).effect("highlight", { color: "#ddd" });
+				// Add a new entry
+				stats.addEntry(newEntry);
+			}
+			// Update the value
+			stats.oldValue = newEntry;
+			$(this).blur();
+		});
 	stats.initTable();
 	animation.showMenuOnly("stats");
 	// Bind click to select for `.checkbox`
@@ -152,12 +174,11 @@ stats.addEntry = function(entry, overwriteNum) {
 	htmlContent += "</tr>";
 	if (overwriteNum) {
 		// Overwrite a content
-		$("tbody:nth-child(" + overwriteNum + ")").html(htmlContent).addClass("fadein").on("contextmenu", function() {
+		$("tbody input")[overwriteNum].html(htmlContent).addClass("fadein").on("contextmenu", function() {
 			// Right click to remove it
 			$(this).slideUp(200, function() {
 				$(this).remove();
 			});
-			alert(stats.oldValue);
 			// Todo remove it from `stats.entries`
 			return false;
 		});
@@ -171,47 +192,39 @@ stats.addEntry = function(entry, overwriteNum) {
 			return false;
 		});
 	}
-	var index = overwriteNum || $("tr").length - 2;
+	var index = overwriteNum || $("tr").length;
 	// Add press return to change the value
-	stats.bindInput($("tbody input")[index]);
-}
-
-/**
- * Binds the selector so that what inside can (possibly and hopefully) be added to the table
- * @param {string} selector - The selector to bind this event
- */
-stats.bindInput = function(selector) {
-	$(selector).unbind("keyup").off("focus blur")
+	$("tbody input")[index].unbind("keyup").off("focus blur")
 		.focus(function() {
 			// Record the old value
-			stats.oldValue = $(this).val();
+			stats.oldValue = $(selector).val();
 		})
 		.blur(function() {
-			$(this).val(stats.oldValue);
+			$(selector).val(stats.oldValue);
 			stats.oldValue = "";
 		})
 		.bind("keyup", "return", function() {
-			var newEntry = $(this).val();
+			var newEntry = $(selector).val();
 			newEntry = stats.simplifyEntry(newEntry);
 			if (newEntry.length === 0) {
 				// Empty string, do nothing
-				$(this).effect("highlight", { color: "#000" });
+				$(selector).effect("highlight", { color: "#000" });
 				animation.error(log.STATS_ENTRY_EMPTY_STRING);
 				return;
 			}
 			if (stats.entries[newEntry]) {
 				// Already there
-				$(this).effect("highlight", { color: "#000" });
+				$(selector).effect("highlight", { color: "#000" });
 				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
 			} else {
 				// This is a valid entry
-				$(this).effect("highlight", { color: "#ddd" });
+				$(selector).effect("highlight", { color: "#ddd" });
 				// Add a new entry
-				stats.addEntry(newEntry);
+				stats.addEntry(newEntry, index);
 			}
 			// Update the value
 			stats.oldValue = newEntry;
-			$(this).select();
+			$(this).blur();
 		})
 		.bind("keyup", "esc", function() {
 			$(this).blur();

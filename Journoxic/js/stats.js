@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The file to handle stats display for this year
  */
 
@@ -157,6 +157,7 @@ stats.addEntry = function(entry, overwriteNum) {
 			$(this).slideUp(200, function() {
 				$(this).remove();
 			});
+			alert(stats.oldValue);
 			// Todo remove it from `stats.entries`
 			return false;
 		});
@@ -170,9 +171,9 @@ stats.addEntry = function(entry, overwriteNum) {
 			return false;
 		});
 	}
-	var index = overwriteNum || $("tr").length;
+	var index = overwriteNum || $("tr").length - 2;
 	// Add press return to change the value
-	stats.bindInput("tbody:nth-child(" + index + ") input");
+	stats.bindInput($("tbody input")[index]);
 }
 
 /**
@@ -183,34 +184,34 @@ stats.bindInput = function(selector) {
 	$(selector).unbind("keyup").off("focus blur")
 		.focus(function() {
 			// Record the old value
-			stats.oldValue = $(selector).val();
+			stats.oldValue = $(this).val();
 		})
 		.blur(function() {
-			$(selector).val(stats.oldValue);
+			$(this).val(stats.oldValue);
 			stats.oldValue = "";
 		})
 		.bind("keyup", "return", function() {
-			var newEntry = $(selector).val();
+			var newEntry = $(this).val();
 			newEntry = stats.simplifyEntry(newEntry);
 			if (newEntry.length === 0) {
 				// Empty string, do nothing
-				$(selector).effect("highlight", { color: "#000" });
+				$(this).effect("highlight", { color: "#000" });
 				animation.error(log.STATS_ENTRY_EMPTY_STRING);
 				return;
 			}
 			if (stats.entries[newEntry]) {
 				// Already there
-				$(selector).effect("highlight", { color: "#000" });
+				$(this).effect("highlight", { color: "#000" });
 				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
 			} else {
 				// This is a valid entry
-				$(selector).effect("highlight", { color: "#ddd" });
+				$(this).effect("highlight", { color: "#ddd" });
 				// Add a new entry
 				stats.addEntry(newEntry);
 			}
 			// Update the value
 			stats.oldValue = newEntry;
-			$(this).blur();
+			$(this).select();
 		})
 		.bind("keyup", "esc", function() {
 			$(this).blur();

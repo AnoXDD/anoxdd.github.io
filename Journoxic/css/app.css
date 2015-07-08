@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -3026,9 +3026,31 @@ body {
 		width: 30%;
 	}
 
-	#stats-table th {
+	#stats-table th, #stats-table td, #stats-table input {
 		background-color: #626262;
 		color: #fff;
 		height: 30px;
 		border-radius: 5px;
 	}
+
+	#stats-table td {
+		text-align: center;
+		background-color: #DBDBDB;
+		font-size: 15px;
+		color: #000;
+		padding: 0;
+	}
+
+	#stats-table input {
+		height: 100%;
+		width: 90%;
+		background-color: #DBDBDB;
+		padding: 0 5%;
+		text-align: right;
+		color: #454545;
+	}
+
+		#stats-table input:focus, #stats-table input:hover {
+			background-color: #eee;
+			color: #111;
+		}

@@ -4,6 +4,8 @@
 
 window.stats = {};
 
+/** The value before the entry is added */
+stats.oldValue = "";
 /** The entries to be searched, with its result */
 stats.entries = {};
 /** The options for searching, will implement setup page later */
@@ -25,6 +27,7 @@ stats.isLeapYear = false;
 
 /** Set to a number not equal to -1 to indicate the entry that is currently editing */
 stats.isEditing = -1;
+stats.isGraphDisplayed = false;
 
 /**
  * Initializes the stats panel 
@@ -34,6 +37,8 @@ stats.init = function() {
 	// Initialize variables
 	stats.result = [];
 	stats.isLeapYear = new Date(app.year, 1, 29).getMonth() === 1;
+	stats.isGraphDisplayed = false;
+	stats.oldValue = "";
 	if (stats.isLeapYear) {
 		// This is a leap year
 		stats.monthVal = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -81,7 +86,7 @@ stats.init = function() {
 stats.initTable = function() {
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<tbody><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th></tr></tbody>");
+	$("#stats-table").html("<tbody><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></tbody>");
 	$("tbody").addClass("fadein");
 }
 
@@ -132,11 +137,15 @@ stats.addEntry = function(entry, overwriteNum) {
 	for (i = 0; i !== stats.monthVal.length; ++i) {
 		monthCount[i] = 0;
 		for (var j = 0; j !== stats.monthVal[i]; ++j, ++day) {
-			monthCount[i] += result[day];
+			if (result[day]) {
+				monthCount[i] += result[day];
+			} else {
+				result[day] = 0;
+			}
 		}
 	}
 	// Show the html result
-	var htmlContent = "<tr><td><input type='text' class='edit' autocomplete='off' onclick='this.select' value='" + entry + "' /></td>";
+	var htmlContent = "<tr><td><input type='text' class='edit' autocomplete='off' onclick='this.select()' value='" + entry + "' /></td>";
 	for (i = 0; i !== monthCount.length; ++i) {
 		htmlContent += "<td>" + monthCount[i] + "</td>";
 	}
@@ -148,6 +157,7 @@ stats.addEntry = function(entry, overwriteNum) {
 			$(this).slideUp(200, function() {
 				$(this).remove();
 			});
+			// Todo remove it from `stats.entries`
 			return false;
 		});
 	} else {
@@ -170,28 +180,41 @@ stats.addEntry = function(entry, overwriteNum) {
  * @param {string} selector - The selector to bind this event
  */
 stats.bindInput = function(selector) {
-	$(selector).unbind("keyup").bind("keyup", "return", function() {
-		var newEntry = $(selector).val();
-		newEntry = stats.simplifyEntry(newEntry);
-		if (newEntry.length === 0) {
-			// Empty string, do nothing
-			$(selector).effect("highlight", { color: "#000" });
-			// logs.STATS_ENTRY_EMPTY_STRING
-			animation.error("MISSING ERROR");
-			return;
-		}
-		if (stats.entries[newEntry]) {
-			// Already there
-			$(selector).effect("highlight", { color: "#000" });
-			// logs.STATS_ENTRY_ALREADY_EXIST
-			animation.error("MISSING ERROR");
-		} else {
-			// This is a valid entry
-			$(selector).effect("highlight", { color: "#ddd" });
-			// Add a new entry
-			stats.addEntry(newEntry);
-		}
-	});
+	$(selector).unbind("keyup").off("focus blur")
+		.focus(function() {
+			// Record the old value
+			stats.oldValue = $(selector).val();
+		})
+		.blur(function() {
+			$(selector).val(stats.oldValue);
+			stats.oldValue = "";
+		})
+		.bind("keyup", "return", function() {
+			var newEntry = $(selector).val();
+			newEntry = stats.simplifyEntry(newEntry);
+			if (newEntry.length === 0) {
+				// Empty string, do nothing
+				$(selector).effect("highlight", { color: "#000" });
+				animation.error(log.STATS_ENTRY_EMPTY_STRING);
+				return;
+			}
+			if (stats.entries[newEntry]) {
+				// Already there
+				$(selector).effect("highlight", { color: "#000" });
+				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
+			} else {
+				// This is a valid entry
+				$(selector).effect("highlight", { color: "#ddd" });
+				// Add a new entry
+				stats.addEntry(newEntry);
+			}
+			// Update the value
+			stats.oldValue = newEntry;
+			$(this).blur();
+		})
+		.bind("keyup", "esc", function() {
+			$(this).blur();
+		});
 }
 
 /**
@@ -274,15 +297,17 @@ stats.getResult = function(entry) {
 			for (var j = 0; j !== strings.length; ++j) {
 				// Iterate strings
 				var string = strings[j];
-				for (var k = 0; k !== keywords.length; ++k) {
-					// Iterate keywords
-					var keyword = keywords[k];
-					if (!result[day]) {
-						result[day] = 0;
+				if (string) {
+					for (var k = 0; k !== keywords.length; ++k) {
+						// Iterate keywords
+						var keyword = keywords[k];
+						if (!result[day]) {
+							result[day] = 0;
+						}
+						// Add the counts of the keyword
+						result[day] += (string.match(new RegExp(keyword, "gi")) || []).
+							length;
 					}
-					// Add the counts of the keyword
-					result[day] += (string.match(new RegExp(keyword, "g")) || []).
-						length;
 				}
 			}
 		}
@@ -317,6 +342,8 @@ stats.isInTimeRange = function(createdTime) {
  */
 stats.removeAll = function() {
 	$("#stats-table").html("").fadeIn().css("display", "inline-table");
+	stats.entries = {};
+	stats.hideGraph();
 }
 
 /**
@@ -324,7 +351,7 @@ stats.removeAll = function() {
  * Todo add a parameter to determine whether to display as each day or each month
  */
 stats.toggleGraph = function() {
-	if ($("#graph").css("display", "none")) {
+	if (!stats.isGraphDisplayed) {
 		stats.showGraph();
 	} else {
 		stats.hideGraph();
@@ -335,8 +362,10 @@ stats.toggleGraph = function() {
  * Shows the analysis graph
  */
 stats.showGraph = function() {
+	stats.isGraphDisplayed = true;
 	var series = [];
 	for (var i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
+		var name = entries[i];
 		series.push({
 			name: entries[i],
 			data: stats.entries[name]
@@ -381,8 +410,9 @@ stats.showGraph = function() {
  * Hides the analysis graph
  */
 stats.hideGraph = function() {
+	stats.isGraphDisplayed = false;
 	$("#graph").fadeOut(function() {
-		$(this).remove();
+		$(this).html("");
 	});
 }
 

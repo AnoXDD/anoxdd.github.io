@@ -1,4 +1,4 @@
-/**
+﻿/**
  * The file to handle stats display for this year
  */
 
@@ -58,7 +58,6 @@ stats.init = function() {
 	$("#stats-query").val("");
 	stats.bindInput("#stats-query");
 	stats.initTable();
-	stats.getYearSum();
 	animation.showMenuOnly("stats");
 	// Bind click to select for `.checkbox`
 	$("#stats-options li.checkbox").each(function() {
@@ -71,6 +70,7 @@ stats.init = function() {
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything
 		$("#search-result").addClass("stats").unbind("mouseenter mouseleave");
+		stats.getYearSum();
 		$("#stats-pane").fadeIn();
 	});
 }

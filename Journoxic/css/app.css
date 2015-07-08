@@ -1622,7 +1622,11 @@ body {
 /*=========================== Header ============================*/
 
 #total-entry::before {
-	content: "\f022\ATotal";
+	content: "\f022";
+}
+
+#total-displayed::before {
+	content: "\f02d";
 }
 
 #total-char::before {
@@ -1638,19 +1642,21 @@ body {
 }
 
 
-.search-result {
+.search-data {
 	padding-right: 20px;
 }
 
-	.search-result::before {
+	.search-data::before {
+		margin-right: 1ch;
 	}
 
-.stats .search-result::before {
-	background-color: #555;
+.stats .search-data::before {
 	font-size: 20px;
+	font-size: 14px;
+	color: #454545;
 }
 
-.stats .search-result {
+.stats .search-data {
 	color: initial;
 	font-size: 15px;
 }
@@ -1668,6 +1674,7 @@ body {
 		margin: 0;
 		padding: 0;
 		display: inline-block;
+		margin-right: 3ch;
 	}
 
 	.header #sign-in-prompt {
@@ -1713,7 +1720,7 @@ body {
 		left: 0px;
 		/* margin: 0 auto 10px; */
 		margin: 0 5%;
-		transition: .4s ease;
+		transition: top .4s ease, left .4s ease, padding .4s ease, background .4s ease;
 		position: absolute;
 		overflow: hidden;
 		text-align: center;
@@ -1729,12 +1736,12 @@ body {
 		}
 
 		.header #search-result.stats {
-			top: 149px;
-			left: 0;
-			background-color: initial;
+			top: 157px;
+			left: 22.5%;
+			background-color: #DDD;
 			height: initial;
-			width: initial;
-			padding: 20px;
+			width: 40%;
+			padding: 10px 0;
 		}
 
 
@@ -1786,7 +1793,6 @@ body {
 	}
 
 	.header .stats ul, .header .stats li {
-		display: block;
 		text-align: left;
 	}
 
@@ -2266,7 +2272,7 @@ body {
 		top: .4em !important;
 	}
 
-	#edit-pane #entry-summary .entry-icons, .stats .search-result::before {
+	#edit-pane #entry-summary .entry-icons {
 		background-color: #dddddd;
 		border-radius: 30px;
 		display: inline-block;
@@ -2939,7 +2945,7 @@ body {
 		text-overflow: clip;
 	}
 
-.stats.search-result::before {
+.stats.search-data::before {
 	padding: 6px 5px 0 4px;
 	margin-right: 4px;
 }

@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.25.3 Build 070815_1459 [chart]";
+﻿﻿app.version.main = "v3.25.4 Build 070815_1850";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -15,6 +15,9 @@ $("#version").html(app.version.main);
  * 
  * Todo reduce redundant id's in index.html
  * Todo add an integrity check before logging in
+ * 
+ * v3.25 Data analysis support
+ * [Add] Graph and table analysis of keywords for data
  * 
  * v3.24 HTML/CSS update
  * [Chg] Reduce redundant id's and css entries

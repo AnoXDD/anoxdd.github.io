@@ -305,9 +305,9 @@ stats.showGraph = function() {
 			valueSuffix: " time(s)"
 		},
 		legend: {
-			layout: 'vertical',
-			align: 'right',
-			verticalAlign: 'middle',
+			layout: "vertical",
+			align: "right",
+			verticalAlign: "middle",
 			borderWidth: 0
 		},
 		series: series
@@ -319,6 +319,8 @@ stats.showGraph = function() {
  * Hides the analysis graph
  */
 stats.hideGraph = function() {
-
+	$("#graph").fadeOut(function() {
+		$(this).remove();
+	});
 }
 

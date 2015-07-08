@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The file to handle stats display for this year
  */
 
@@ -58,6 +58,7 @@ stats.init = function() {
 	$("#stats-query").val("");
 	stats.bindInput("#stats-query");
 	stats.initTable();
+	stats.getYearSum();
 	animation.showMenuOnly("stats");
 	// Bind click to select for `.checkbox`
 	$("#stats-options li.checkbox").each(function() {
@@ -234,7 +235,11 @@ stats.getYearSum = function() {
 	$("#total-char").text(totalChar);
 	$("#total-line").text(totalLine);
 	// Human-readable time
-	$("#total-time").text(Math.floor(totalTime / 60) + ":" + totalTime % 60);
+	var minute = totalTime % 60;
+	if (minute < 10) {
+		minute = "0" + minute;
+	}
+	$("#total-time").text(Math.floor(totalTime / 60) + ":" + minute);
 }
 
 /**

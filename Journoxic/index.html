@@ -13,30 +13,15 @@
 		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. </p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
-			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select()" value="Add entry ..." />
+			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
 		<div id="search-result">
 			<ul>
-				<li>
-					<p>Total entries: </p>
-					<p id="total-entry">...</p>
-				</li>
-				<li class="stats-hidden">
-					<p>Displayed: </p>
-					<p id="total-displayed">...</p>
-				</li>
-				<li>
-					<p>Total chars: </p>
-					<p id="total-char">...</p>
-				</li>
-				<li>
-					<p>Total lines: </p>
-					<p id="total-line">...</p>
-				</li>
-				<li>
-					<p>Total time:</p>
-					<p id="total-time">...</p>
-				</li>
+				<li class="search-data" id="total-entry">...</li>
+				<li class="search-result" id="total-displayed">...</li>
+				<li class="search-result" id="total-char">...</li>
+				<li class="search-result" id="total-line">...</li>
+				<li class="search-result" id="total-time">...</li>
 			</ul>
 		</div>
 	</div>

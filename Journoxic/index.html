@@ -13,7 +13,7 @@
 		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. </p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
-			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select" />
+			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select()" />
 		</div>
 		<div id="search-result">
 			<p>Total entries: </p>
@@ -165,7 +165,7 @@
 		</div>
 		<div id="action-stats">
 			<ul>
-				<li><a title="Reset the map" onclick="stats.removeAll()" href="#">&#xf014</a></li>
+				<li><a title="Reset the map" onclick="stats.initTable()" href="#">&#xf014</a></li>
 				<li><a title="Toggle graph" onclick="stats.toggleGraph()" href="#">&#xf080</a></li>
 				<li><a title="Main menu" onclick="stats.quit()" href="#">&#xf0c9</a></li>
 			</ul>
@@ -181,6 +181,12 @@
 		</div>
 		<div id="edit-pane"></div>
 		<div id="stats-pane">
+			<div id="stats-options">
+				<ul>
+					<li class="checkbox checked" encode="isIncludingTitles">Including titles</li>
+					<li class="checkbox" encode="isIncludingTags">Including tags</li>
+				</ul>
+			</div>
 			<table id="stats-table"></table>
 			<div id="graph" class="hidden"></div>
 		</div>
@@ -558,7 +564,7 @@
 			</a>
 		</li>
 	</script>
-	<script type="text/x-template" id="archive-detail-view">
+<script type="text/x-template" id="archive-detail-view">
 		<div class="head">
 			<p class="title"><%- name %></p>
 			<p class="datetime">Created: <%- created %></p>

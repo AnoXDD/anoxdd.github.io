@@ -10,10 +10,14 @@ stats.entries = {};
 stats.options = {
 	/** Both `startDay` and `endDay` are measured in the amount of days since the first day of the year (the value for the first day is 0). The `endDay` will not be included */
 	startDay: 0,
-	endDay: 365,
+	endDay: 366,
+	// Todo add a calendar to display
 	isIncludingTitles: true,
 	isIncludingTags: false
 };
+
+/** Set to a number not equal to -1 to indicate the entry that is currently editing */
+stats.isEditing = -1;
 
 /**
  * Initializes the stats panel 
@@ -25,28 +29,17 @@ stats.init = function() {
 	// Animation for initialization
 	$("#query").fadeOut();
 	$("#stats-query").fadeIn();
-	$("#stats-query").bind("keyup", "return", function() {
-		var newEntry = $("#stats-query").val();
-		newEntry = stats.simplifyEntry(newEntry);
-		if (newEntry.length === 0) {
-			// Empty string, do nothing
-			$("#stats-query").effect("highlight", { color: "#000" });
-			// logs.STATS_ENTRY_EMPTY_STRING
-			animation.error("MISSING ERROR");
-			return;
-		}
-		if (stats.entries[newEntry]) {
-			// Already there
-			$("#stats-query").effect("highlight", { color: "#000" });
-			// logs.STATS_ENTRY_ALREADY_EXIST
-			animation.error("MISSING ERROR");
-		} else {
-			// Add this one to the entry
-			$("#stats-query").effect("highlight", { color: "#ddd" });
-			stats.addEntry(newEntry);
-		}
-		// Empty this input box
-		$("#stats-query").val("");
+	// Empty this input box
+	$("#stats-query").val("");
+	stats.bindInput("#stats-query");
+	stats.initTable();
+		// Bind click to select for `.checkbox`
+	$("#stats-options li.checkbox").each(function() {
+		$(this).click(function() {
+			$(this).toggleClass("checked");
+			var name = $(this).attr("encode");
+			stats.options[name] = !stats.options[name];
+		});
 	});
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything
@@ -59,12 +52,12 @@ stats.init = function() {
 
 /**
  * Initializes or resets the table for display
- * @returns {} 
  */
 stats.initTable = function() {
+	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<thead><tr></tr><tr>Jan</tr><tr>Feb</tr><tr>Mar</tr><tr>Apr</tr><tr>Mar</tr><tr>Jun</tr><tr>Jul</tr><tr>Aug</tr><tr>Sep</tr><tr>Oct</tr><tr>Nov</tr><tr>Dec</tr></thead><tbody></tbody>");
-	$("thead").addClass("fadein");
+	$("#stats-table").html("<tbody><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th></tr></tbody>");
+	$("tbody").addClass("fadein");
 }
 
 /**
@@ -76,6 +69,10 @@ stats.quit = function() {
 	// Animation to recover what it was
 	$("#query").fadeIn();
 	$("#stats-query").fadeOut();
+	// Unbind click to toggle checkbox
+	$("#stats-options li.checkbox").each(function() {
+		$(this).unbind("click");
+	});
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();
@@ -85,8 +82,9 @@ stats.quit = function() {
 /**
  * Adds an entry to the stats chart. If the entries have multiple keywords, separate by `|`
  * @param {string} entry - An entry string of keywords separated by `|`
+ * @param {number} overwriteNum (Optional) - The index of the table row to be overwriten, started with 1
  */
-stats.addEntry = function(entry) {
+stats.addEntry = function(entry, overwriteNum) {
 	/* Iterator */
 	var i;
 	// Empty or create it anyway
@@ -103,21 +101,69 @@ stats.addEntry = function(entry) {
 	}
 	var day = 0;
 	for (i = 0; i !== monthVal.length; ++i) {
-		var thisMonth = monthVal[i];
 		monthCount[i] = 0;
 		for (var j = 0; j !== monthVal[i]; ++j, ++day) {
 			monthCount[i] += result[day];
 		}
 	}
 	// Show the html result
-	var htmlContent = "<tr><td>" + entry + "</td>";
+	var htmlContent = "<tr><td><input type='text' class='edit' autocomplete='off' onclick='this.select' value='" + entry + "' /></td>";
 	for (i = 0; i !== monthCount.length; ++i) {
 		htmlContent += "<td>" + monthCount[i] + "</td>";
 	}
 	htmlContent += "</tr>";
-	// There should be only one table
-	$(htmlContent).appendTo("tbody").addClass("fadein");
-	// Todo add more to what happens when the user clicks on the entry (try to edit/remove it)
+	if (overwriteNum) {
+		// Overwrite a content
+		$("tbody:nth-child(" + overwriteNum + ")").html(htmlContent).addClass("fadein").on("contextmenu", function() {
+			// Right click to remove it
+			$(this).slideUp(200, function() {
+				$(this).remove();
+			});
+			return false;
+		});
+	} else {
+		// Append to the end of the table
+		$(htmlContent).appendTo("tbody").addClass("fadein").on("contextmenu", function() {
+			// Right click to remove it
+			$(this).slideUp(200, function() {
+				$(this).remove();
+			});
+			return false;
+		});
+	}
+	var index = overwriteNum || $("tr").length;
+	// Add press return to change the value
+	stats.bindInput("tbody:nth-child(" + index + ") input");
+	// Right click to remove this entry
+}
+
+/**
+ * Binds the selector so that what inside can (possibly and hopefully) be added to the table
+ * @param {string} selector - The selector to bind this event
+ */
+stats.bindInput = function(selector) {
+	$(selector).bind("keyup", "return", function() {
+		var newEntry = $(selector).val();
+		newEntry = stats.simplifyEntry(newEntry);
+		if (newEntry.length === 0) {
+			// Empty string, do nothing
+			$(selector).effect("highlight", { color: "#000" });
+			// logs.STATS_ENTRY_EMPTY_STRING
+			animation.error("MISSING ERROR");
+			return;
+		}
+		if (stats.entries[newEntry]) {
+			// Already there
+			$(selector).effect("highlight", { color: "#000" });
+			// logs.STATS_ENTRY_ALREADY_EXIST
+			animation.error("MISSING ERROR");
+		} else {
+			// This is a valid entry
+			$(selector).effect("highlight", { color: "#ddd" });
+			// Add a new entry
+			stats.addEntry(newEntry);
+		}
+	});
 }
 
 /**
@@ -158,26 +204,28 @@ stats.getResult = function(entry) {
 			date = new Date(data["time"]["created"]),
 			firstDay = new Date(app.year, 0, 1),
 			day = Math.floor((new Date(date) - firstDay) / 86400000);
-		strings.push(data["text"]["body"]);
-		if (this.options.isIncludingTags) {
-			strings.push(data["tags"]);
-		}
-		if (this.options.isIncludingTitles) {
-			strings.push(data["title"]);
-		}
-		// The time is in range
-		for (var j = 0; j !== strings.length; ++j) {
-			// Iterate strings
-			var string = strings[j];
-			for (var k = 0; k !== keywords.length; ++k) {
-				// Iterate keywords
-				var keyword = keywords[k];
-				if (!result[day]) {
-					result[day] = 0;
+		if (day >= stats.options.startDay && day <= stats.options.endDay) {
+			strings.push(data["text"]["body"]);
+			if (this.options.isIncludingTags) {
+				strings.push(data["tags"]);
+			}
+			if (this.options.isIncludingTitles) {
+				strings.push(data["title"]);
+			}
+			// The time is in range
+			for (var j = 0; j !== strings.length; ++j) {
+				// Iterate strings
+				var string = strings[j];
+				for (var k = 0; k !== keywords.length; ++k) {
+					// Iterate keywords
+					var keyword = keywords[k];
+					if (!result[day]) {
+						result[day] = 0;
+					}
+					// Add the counts of the keyword
+					result[day] += (string.match(new RegExp(keyword, "g")) || []).
+						length;
 				}
-				// Add the counts of the keyword
-				result[day] += (string.match(new RegExp(keyword, "g")) || []).
-					length;
 			}
 		}
 	}
@@ -188,7 +236,7 @@ stats.getResult = function(entry) {
  * Removes all the entries on the chart to reset the chart 
  */
 stats.removeAll = function() {
-
+	$("#stats-table").fadeOut().remove();
 }
 
 /**

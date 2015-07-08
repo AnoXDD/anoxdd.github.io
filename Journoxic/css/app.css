@@ -286,16 +286,16 @@ body {
 						content: "\f14a\A0\f1f8";
 					}
 
-				#list li.archive a.protect::before {
-					content: "\f14a\A0\f023" !important;
-				}
-
 				#list li.archive a:not(.change)::before {
 					content: "\f0c8";
 				}
 
 				#list li.archive a.delete:not(.change)::before {
 					content: "\f0c8\A0\f1f8";
+				}
+
+				#list li.archive a.protect::before {
+					content: "\f14a\A0\f023" !important;
 				}
 
 				#list li.archive a.protect:not(.change)::before {
@@ -700,17 +700,17 @@ body {
 					content: "\f0c1";
 				}
 
-#list .loadmore {
-	background-color: #dadada;
-	border-radius: 10px;
-	color: black;
-	cursor: pointer;
-	font-size: 9px;
-	height: 4px;
-	margin: 0 auto;
-	text-align: center;
-	width: 80%;
-}
+	#list .loadmore {
+		background-color: #dadada;
+		border-radius: 10px;
+		color: black;
+		cursor: pointer;
+		font-size: 9px;
+		height: 4px;
+		margin: 0 auto;
+		text-align: center;
+		width: 80%;
+	}
 
 #detail {
 	display: none;

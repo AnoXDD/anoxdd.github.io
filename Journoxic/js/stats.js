@@ -170,7 +170,7 @@ stats.addEntry = function(entry, overwriteNum) {
  * @param {string} selector - The selector to bind this event
  */
 stats.bindInput = function(selector) {
-	$(selector).bind("keyup", "return", function() {
+	$(selector).unbind("keyup").bind("keyup", "return", function() {
 		var newEntry = $(selector).val();
 		newEntry = stats.simplifyEntry(newEntry);
 		if (newEntry.length === 0) {
@@ -259,8 +259,10 @@ stats.getResult = function(entry) {
 	for (var i = 0; i !== journal.archive.data[app.year].length; ++i) {
 		// The string result to search
 		var strings = [],
-			data = journal.archive.data[app.year][i];
-		if (stats.isInTimeRange(data["time"]["created"])) {
+			data = journal.archive.data[app.year][i],
+			createdTime = data["time"]["created"];
+		if (stats.isInTimeRange(createdTime)) {
+			var day = stats.getDayNumber(createdTime);
 			strings.push(data["text"]["body"]);
 			if (this.options.isIncludingTags) {
 				strings.push(data["tags"]);
@@ -288,15 +290,25 @@ stats.getResult = function(entry) {
 	return result;
 }
 
+
+/**
+ * Gets how many days have passed since the first day of `app.year`. The first day should return 0
+ * @param {number} time - The time to get the result
+ * @returns {number} - How many day have passed
+ */
+stats.getDayNumber = function(time) {
+	var date = new Date(time),
+		firstDay = new Date(app.year, 0, 1);
+	return Math.floor((new Date(date) - firstDay) / 86400000);
+}
+
 /**
  * Tests if the passed in created time is in range limited by `stats.options`
  * @param {number} createdTime - The started time of seconds since epoch
  * @returns {boolean} - Whether created time is in the range
  */
 stats.isInTimeRange = function(createdTime) {
-	var date = new Date(createdTime),
-		firstDay = new Date(app.year, 0, 1),
-		day = Math.floor((new Date(date) - firstDay) / 86400000);
+	var day = stats.getDayNumber(createdTime);
 	return day >= stats.options.startDay && day <= stats.options.endDay;
 }
 
@@ -304,7 +316,7 @@ stats.isInTimeRange = function(createdTime) {
  * Removes all the entries on the chart to reset the chart 
  */
 stats.removeAll = function() {
-	$("#stats-table").fadeOut().html("");
+	$("#stats-table").html("").fadeIn().css("display", "inline-table");
 }
 
 /**

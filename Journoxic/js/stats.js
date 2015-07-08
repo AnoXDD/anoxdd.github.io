@@ -15,6 +15,13 @@ stats.options = {
 	isIncludingTitles: true,
 	isIncludingTags: false
 };
+/** A list to hold all the human-readable date from the first day to the last day for `app.year` */
+stats.eachDay = [];
+/**
+ * A list to hold all the values for each year
+ */
+stats.monthVal = [];
+stats.isLeapYear = false;
 
 /** Set to a number not equal to -1 to indicate the entry that is currently editing */
 stats.isEditing = -1;
@@ -26,6 +33,24 @@ stats.isEditing = -1;
 stats.init = function() {
 	// Initialize variables
 	stats.result = [];
+	stats.isLeapYear = new Date(app.year, 1, 29).getMonth() === 1;
+	if (stats.isLeapYear) {
+		// This is a leap year
+		stats.monthVal = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	} else {
+		stats.monthVal = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	}
+	for (var i = 1; ; ++i) {
+		var date = new Date(app.year, 0, i);
+		if (date.getFullYear() !== app.year) {
+			// New day, stop executing
+			break;
+		} else {
+			var month = app.month_array[date.getMonth()],
+				day = date.getDate();
+			stats.eachDay.push(month + " " + day);
+		}
+	}
 	// Animation for initialization
 	$("#query").fadeOut();
 	$("#stats-query").fadeIn();
@@ -33,7 +58,7 @@ stats.init = function() {
 	$("#stats-query").val("");
 	stats.bindInput("#stats-query");
 	stats.initTable();
-		// Bind click to select for `.checkbox`
+	// Bind click to select for `.checkbox`
 	$("#stats-options li.checkbox").each(function() {
 		$(this).click(function() {
 			$(this).toggleClass("checked");
@@ -92,17 +117,10 @@ stats.addEntry = function(entry, overwriteNum) {
 	stats.entries[entry] = result;
 	// Process each month's list
 	var monthCount = new Array(12),
-		monthVal;
-	if (result.length === 366) {
-		// Leap year
-		monthVal = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	} else {
-		monthVal = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	}
-	var day = 0;
-	for (i = 0; i !== monthVal.length; ++i) {
+		day = 0;
+	for (i = 0; i !== stats.monthVal.length; ++i) {
 		monthCount[i] = 0;
-		for (var j = 0; j !== monthVal[i]; ++j, ++day) {
+		for (var j = 0; j !== stats.monthVal[i]; ++j, ++day) {
 			monthCount[i] += result[day];
 		}
 	}
@@ -191,7 +209,7 @@ stats.simplifyEntry = function(str) {
 stats.getResult = function(entry) {
 	var keywords = entry.split("|"),
 		result;
-	if (new Date(app.year, 1, 29).getMonth() === 1) {
+	if (stats.isLeapYear) {
 		// This is a leap year
 		result = new Array(366);
 	} else {
@@ -241,9 +259,10 @@ stats.removeAll = function() {
 
 /**
  * Toggles to show the analysis graph
+ * Todo add a parameter to determine whether to display as each day or each month
  */
 stats.toggleGraph = function() {
-	if ($("#graph").hasClass("hidden")) {
+	if ($("#graph").css("display", "none")) {
 		stats.showGraph();
 	} else {
 		stats.hideGraph();
@@ -254,8 +273,47 @@ stats.toggleGraph = function() {
  * Shows the analysis graph
  */
 stats.showGraph = function() {
-
-}
+	var series = [];
+	for (var i = 0, entries = Object.keys(stats.entries); i !== entries.length; ++i) {
+		series.push({
+			name: entries[i],
+			data: stats.entries[name]
+		});
+	}
+	var data = {
+		title: {
+			text: "Stats for this year",
+			x: -20 //center
+		},
+		subtitle: {
+			text: "Collected from " + $("#total-char").html() + " in " + $("#total-entry").html() + " entries",
+			x: -20
+		},
+		xAxis: {
+			categories: stats.eachDay
+		},
+		yAxis: {
+			plotLines: [
+				{
+					value: 0,
+					width: 1,
+					color: "#808080"
+				}
+			]
+		},
+		tooltip: {
+			valueSuffix: " time(s)"
+		},
+		legend: {
+			layout: 'vertical',
+			align: 'right',
+			verticalAlign: 'middle',
+			borderWidth: 0
+		},
+		series: series
+	};
+	$("#graph").fadeIn().highcharts(data);
+};
 
 /**
  * Hides the analysis graph

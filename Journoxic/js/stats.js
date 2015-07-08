@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The file to handle stats display for this year
  */
 
@@ -58,6 +58,7 @@ stats.init = function() {
 	$("#stats-query").val("");
 	stats.bindInput("#stats-query");
 	stats.initTable();
+	animation.showMenuOnly("stats");
 	// Bind click to select for `.checkbox`
 	$("#stats-options li.checkbox").each(function() {
 		$(this).click(function() {
@@ -101,6 +102,7 @@ stats.quit = function() {
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();
+		animation.showMenuOnly();
 	});
 }
 
@@ -152,7 +154,6 @@ stats.addEntry = function(entry, overwriteNum) {
 	var index = overwriteNum || $("tr").length;
 	// Add press return to change the value
 	stats.bindInput("tbody:nth-child(" + index + ") input");
-	// Right click to remove this entry
 }
 
 /**
@@ -254,7 +255,7 @@ stats.getResult = function(entry) {
  * Removes all the entries on the chart to reset the chart 
  */
 stats.removeAll = function() {
-	$("#stats-table").fadeOut().remove();
+	$("#stats-table").fadeOut().html("");
 }
 
 /**

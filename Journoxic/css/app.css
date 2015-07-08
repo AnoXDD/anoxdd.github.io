@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2860,3 +2860,8 @@ body {
 	#archive-preview td {
 		text-overflow: clip;
 	}
+
+#stats-pane {
+	display: none;
+	height:100%;
+}

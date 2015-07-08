@@ -1,4 +1,4 @@
-/**
+﻿/**
  * The file to handle stats display for this year
  */
 
@@ -62,28 +62,30 @@ stats.init = function() {
 	// Empty this input box
 	$("#stats-query").val("");
 	$("#stats-query").bind("keyup", "return", function() {
-			var newEntry = $(selector).val();
-			newEntry = stats.simplifyEntry(newEntry);
-			if (newEntry.length === 0) {
-				// Empty string, do nothing
-				$(selector).effect("highlight", { color: "#000" });
-				animation.error(log.STATS_ENTRY_EMPTY_STRING);
-				return;
-			}
-			if (stats.entries[newEntry]) {
-				// Already there
-				$(selector).effect("highlight", { color: "#000" });
-				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
-			} else {
-				// This is a valid entry
-				$(selector).effect("highlight", { color: "#ddd" });
-				// Add a new entry
-				stats.addEntry(newEntry);
-			}
-			// Update the value
-			stats.oldValue = newEntry;
-			$(this).blur();
-		});
+		var newEntry = $(this).val();
+		newEntry = stats.simplifyEntry(newEntry);
+		if (newEntry.length === 0) {
+			// Empty string, do nothing
+			$(this).effect("highlight", { color: "#000" });
+			animation.error(log.STATS_ENTRY_EMPTY_STRING);
+			return;
+		}
+		if (stats.entries[newEntry]) {
+			// Already there
+			$(this).effect("highlight", { color: "#000" });
+			animation.error(log.STATS_ENTRY_ALREADY_EXIST);
+		} else {
+			// This is a valid entry
+			$(this).effect("highlight", { color: "#ddd" });
+			// Add a new entry
+			stats.addEntry(newEntry);
+			$(this).val("");
+			$(this).focus();
+		}
+		// Update the value
+		stats.oldValue = newEntry;
+		$(this).select();
+	});
 	stats.initTable();
 	animation.showMenuOnly("stats");
 	// Bind click to select for `.checkbox`
@@ -179,7 +181,7 @@ stats.addEntry = function(entry, overwriteNum) {
 			$(this).slideUp(200, function() {
 				$(this).remove();
 			});
-			// Todo remove it from `stats.entries`
+			delete stats.entries(stats.oldValue);
 			return false;
 		});
 	} else {
@@ -189,36 +191,37 @@ stats.addEntry = function(entry, overwriteNum) {
 			$(this).slideUp(200, function() {
 				$(this).remove();
 			});
+			delete stats.entries(stats.oldValue);
 			return false;
 		});
 	}
 	var index = overwriteNum || $("tr").length;
 	// Add press return to change the value
-	$("tbody input")[index].unbind("keyup").off("focus blur")
+	$("tr:nth-child(" + index + ") input").unbind("keyup").off("focus blur")
 		.focus(function() {
 			// Record the old value
-			stats.oldValue = $(selector).val();
+			stats.oldValue = $(this).val();
 		})
 		.blur(function() {
-			$(selector).val(stats.oldValue);
+			$(this).val(stats.oldValue);
 			stats.oldValue = "";
 		})
 		.bind("keyup", "return", function() {
-			var newEntry = $(selector).val();
+			var newEntry = $(this).val();
 			newEntry = stats.simplifyEntry(newEntry);
 			if (newEntry.length === 0) {
 				// Empty string, do nothing
-				$(selector).effect("highlight", { color: "#000" });
+				$(this).effect("highlight", { color: "#000" });
 				animation.error(log.STATS_ENTRY_EMPTY_STRING);
 				return;
 			}
 			if (stats.entries[newEntry]) {
 				// Already there
-				$(selector).effect("highlight", { color: "#000" });
+				$(this).effect("highlight", { color: "#000" });
 				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
 			} else {
 				// This is a valid entry
-				$(selector).effect("highlight", { color: "#ddd" });
+				$(this).effect("highlight", { color: "#ddd" });
 				// Add a new entry
 				stats.addEntry(newEntry, index);
 			}

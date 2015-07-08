@@ -13,19 +13,31 @@
 		<p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the author's own need. For more information, visit the author's homepage for (possibly) more details. </p>
 		<div id="search-new">
 			<input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()" />
-			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select()" />
+			<input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select()" value="Add entry ..." />
 		</div>
 		<div id="search-result">
-			<p>Total entries: </p>
-			<p id="total-entry">...</p>
-			<p>Displayed: </p>
-			<p id="total-displayed">...</p>
-			<p>Total chars: </p>
-			<p id="total-char">...</p>
-			<p>Total lines: </p>
-			<p id="total-line">...</p>
-			<p>Total time:</p>
-			<p id="total-time">...</p>
+			<ul>
+				<li>
+					<p>Total entries: </p>
+					<p id="total-entry">...</p>
+				</li>
+				<li class="stats-hidden">
+					<p>Displayed: </p>
+					<p id="total-displayed">...</p>
+				</li>
+				<li>
+					<p>Total chars: </p>
+					<p id="total-char">...</p>
+				</li>
+				<li>
+					<p>Total lines: </p>
+					<p id="total-line">...</p>
+				</li>
+				<li>
+					<p>Total time:</p>
+					<p id="total-time">...</p>
+				</li>
+			</ul>
 		</div>
 	</div>
 	<div id="year"></div>

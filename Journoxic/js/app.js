@@ -115,7 +115,7 @@ app.init = function() {
 			}
 		});
 	// Change the format of time on hover
-	$("#search-result").hover(function() {
+	$("#search-result:not(.stats)").hover(function() {
 		$("#search-result").hide();
 		$("#total-time").text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
 		$("#search-result").fadeIn(500);

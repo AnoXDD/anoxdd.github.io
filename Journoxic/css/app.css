@@ -1687,6 +1687,15 @@ body {
 			padding-right: 20px;
 		}
 
+		.header #search-result.stats {
+
+		}
+
+		.header #search-result.stats .stats-hidden {
+    display: none;
+			
+		}
+
 	.header #network-bar, .header #network-bar div {
 		height: 2px;
 	}
@@ -1737,7 +1746,7 @@ body {
 	font-size: 20px;
 	height: 63px;
 	margin: 8px;
-	opacity: 0;
+	opacity: 1;
 	padding-top: 7px;
 	position: absolute;
 	left: 0px;
@@ -2861,7 +2870,14 @@ body {
 		text-overflow: clip;
 	}
 
+#stats-query {
+	position: absolute;
+	top: 22px;
+	left: -webkit-calc(39%);
+	margin: 0;
+}
 #stats-pane {
 	display: none;
 	height:100%;
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * The file to handle stats display for this year
  */
 
@@ -69,9 +69,7 @@ stats.init = function() {
 	});
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything
-		$("#search-result").each(function() {
-			$(this).addClass("stats");
-		});
+		$("#search-result").addClass("stats").unbind("mouseenter mouseleave");
 		$("#stats-pane").fadeIn();
 	});
 }
@@ -99,10 +97,20 @@ stats.quit = function() {
 	$("#stats-options li.checkbox").each(function() {
 		$(this).unbind("click");
 	});
+	$("#search-result").removeClass("stats").hover(function() {
+		$("#search-result").hide();
+		$("#total-time").text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
+		$("#search-result").fadeIn(500);
+	}, function() {
+		$("#search-result").hide();
+		$("#total-time").text(app.displayedTime);
+		$("#search-result").fadeIn(500);
+	});;
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();
 		animation.showMenuOnly();
+		app.refresh();
 	});
 }
 
@@ -203,6 +211,33 @@ stats.simplifyEntry = function(str) {
 }
 
 /**
+ * Gets the summary for this year and update necessary DOM's
+ */
+stats.getYearSum = function() {
+	var totalChar = 0,
+		totalLine = 0,
+		totalTime = 0;
+	for (var i = 0; i !== journal.archive.data[app.year].length; ++i) {
+		var data = journal.archive.data[app.year][i];
+		if (stats.isInTimeRange(data["time"]["created"])) {
+			totalChar += data["text"]["chars"];
+			totalLine += data["text"]["lines"];
+			if (data["time"]["end"]) {
+				var timeDelta = (data["time"]["end"] - data["time"]["start"]) / 60000;
+				if (!isNaN(timeDelta)) {
+					totalTime += timeDelta;
+				}
+			}
+		}
+	}
+	// Update it on DOM
+	$("#total-char").text(totalChar);
+	$("#total-line").text(totalLine);
+	// Human-readable time
+	$("#total-time").text(Math.floor(totalTime / 60) + ":" + totalTime % 60);
+}
+
+/**
  * Gets the result of this entry search, of 12 sizes, which refers to 12 months
  * @param {string} entry - An entry string of keywords separated by `|`
  * @returns {object} - A list of 12 elements, refer to 12 months, each of which has at most 31 elements refer to each day in the month
@@ -219,11 +254,8 @@ stats.getResult = function(entry) {
 	for (var i = 0; i !== journal.archive.data[app.year].length; ++i) {
 		// The string result to search
 		var strings = [],
-			data = journal.archive.data[app.year][i],
-			date = new Date(data["time"]["created"]),
-			firstDay = new Date(app.year, 0, 1),
-			day = Math.floor((new Date(date) - firstDay) / 86400000);
-		if (day >= stats.options.startDay && day <= stats.options.endDay) {
+			data = journal.archive.data[app.year][i];
+		if (stats.isInTimeRange(data["time"]["created"])) {
 			strings.push(data["text"]["body"]);
 			if (this.options.isIncludingTags) {
 				strings.push(data["tags"]);
@@ -252,6 +284,18 @@ stats.getResult = function(entry) {
 }
 
 /**
+ * Tests if the passed in created time is in range limited by `stats.options`
+ * @param {number} createdTime - The started time of seconds since epoch
+ * @returns {boolean} - Whether created time is in the range
+ */
+stats.isInTimeRange = function(createdTime) {
+	var date = new Date(createdTime),
+		firstDay = new Date(app.year, 0, 1),
+		day = Math.floor((new Date(date) - firstDay) / 86400000);
+	return day >= stats.options.startDay && day <= stats.options.endDay;
+}
+
+/**
  * Removes all the entries on the chart to reset the chart 
  */
 stats.removeAll = function() {
@@ -275,7 +319,7 @@ stats.toggleGraph = function() {
  */
 stats.showGraph = function() {
 	var series = [];
-	for (var i = 0, entries = Object.keys(stats.entries); i !== entries.length; ++i) {
+	for (var i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
 		series.push({
 			name: entries[i],
 			data: stats.entries[name]

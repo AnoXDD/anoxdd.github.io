@@ -267,7 +267,10 @@ stats.simplifyEntry = function(str) {
 stats.getYearSum = function() {
 	var totalChar = 0,
 		totalLine = 0,
-		totalTime = 0;
+		totalTime = 0,
+		totalImage = 0,
+		totalVideo = 0,
+		totalVoice = 0;
 	for (var i = 0; i !== journal.archive.data[app.year].length; ++i) {
 		var data = journal.archive.data[app.year][i];
 		if (stats.isInTimeRange(data["time"]["created"])) {
@@ -278,6 +281,15 @@ stats.getYearSum = function() {
 				if (!isNaN(timeDelta)) {
 					totalTime += timeDelta;
 				}
+			}
+			if (data["images"]) {
+				totalImage += data["images"].length;
+			}
+			if (data["video"]) {
+				totalVideo += data["video"].length;
+			}
+			if (data["voice"]) {
+				totalVoice += data["voice"].length;
 			}
 		}
 	}
@@ -290,7 +302,9 @@ stats.getYearSum = function() {
 		minute = "0" + minute;
 	}
 	$("#total-time").text(Math.floor(totalTime / 60) + ":" + minute);
-	// Todo add more details for the number of videos/photos/etc this year
+	$("#total-image").text(totalImage);
+	$("#total-video").text(totalVideo);
+	$("#total-voice").text(totalVoice);
 }
 
 /**
@@ -411,12 +425,15 @@ stats.showGraph = function() {
 		}
 	}
 	var data = {
+		chart: {
+		backgroundColor: "#f3f3f3"	
+		},
 		title: {
 			text: "Stats for this year",
 			x: -20 //center
 		},
 		subtitle: {
-			text: "Collected from " + $("#total-char").html() + " in " + $("#total-entry").html() + " entries",
+			text: "Collected from " + $("#total-char").html() + " chars in " + $("#total-entry").html() + " entries",
 			x: -20
 		},
 		xAxis: {
@@ -428,10 +445,10 @@ stats.showGraph = function() {
 				value: 0,
 				width: 1,
 				color: "#808080"
-			}]
-		},
-		tooltip: {
-			valueSuffix: " time(s)"
+			}],
+			title: {
+				text: "Times"
+			}
 		},
 		legend: {
 			layout: "vertical",
@@ -439,7 +456,10 @@ stats.showGraph = function() {
 			verticalAlign: "middle",
 			borderWidth: 0
 		},
-		series: series
+		series: series,
+		exporting: {
+			filename: "Journal Analysis " + app.year
+		}
 	};
 	$("#graph").fadeIn().highcharts(data);
 };

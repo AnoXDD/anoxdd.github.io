@@ -1594,7 +1594,7 @@ edit.photo = function(isQueue, callback) {
 				}
 				for (; i !== edit.photos.length; ++i) {
 					var htmlContent;
-					if (isQ ueue) {
+					if (isQueue) {
 						// The images cannot be in the resource folder
 						htmlContent = "<div class=\"queue\">";
 					} else {

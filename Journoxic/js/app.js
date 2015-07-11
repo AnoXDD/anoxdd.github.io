@@ -115,14 +115,16 @@ app.init = function() {
 			}
 		});
 	// Change the format of time on hover
-	$("#search-result:not(.stats)").hover(function() {
-		$("#search-result").hide();
-		$("#total-time").text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
-		$("#search-result").fadeIn(500);
-	}, function() {
-		$("#search-result").hide();
-		$("#total-time").text(app.displayedTime);
-		$("#search-result").fadeIn(500);
+	$(document).delegate("#search-result:not(.stats)", "mouseover mouseleave", function(e) {
+		if (e.type === "mouseover") {
+			$("#search-result").hide();
+			$("#total-time").text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
+			$("#search-result").fadeIn(500);
+		} else {
+			$("#search-result").hide();
+			$("#total-time").text(app.displayedTime);
+			$("#search-result").fadeIn(500);
+		}
 	});
 	// Set the current year
 	$("#year").effect("slide", { direction: "up" });

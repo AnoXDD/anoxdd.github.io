@@ -103,9 +103,65 @@ stats.init = function() {
 			stats.options[name] = !stats.options[name];
 		});
 	});
+	// Hover to highlight the same column and row
+	$("#stats-table").delegate("td", "mouseover mouseleave contextmenu", function(e) {
+			if (e.type === "mouseover") {
+				$(this).parent().addClass("hover");
+				$("colgroup").eq($(this).index()).addClass("hover");
+			} else if (e.type === "mouseleave") {
+				$(this).parent().removeClass("hover");
+				$("colgroup").eq($(this).index()).removeClass("hover");
+			} else {
+				// Right click
+				var key = stats.oldValue || $(this).siblings("input").val("");
+				$(this).parent().slideUp(200, function() {
+					$(this).remove();
+				});
+				delete stats.entries(key);
+				return false;
+			}
+		})
+		.delegate("input", "focus blur keyup", function(e) {
+			if (e.type === "focus") {
+				// Record the old value
+				stats.oldValue = $(this).val();
+			} else if (e.type === "blur") {
+				$(this).val(stats.oldValue);
+				stats.oldValue = "";
+			} else {
+				if (e.keyCode === 13) {
+					// Return pressed
+					var newEntry = $(this).val();
+					newEntry = stats.simplifyEntry(newEntry);
+					if (newEntry.length === 0) {
+						// Empty string, do nothing
+						$(this).effect("highlight", { color: "#000" });
+						animation.error(log.STATS_ENTRY_EMPTY_STRING);
+						return;
+					}
+					if (stats.entries[newEntry]) {
+						// Already there
+						$(this).effect("highlight", { color: "#000" });
+						animation.error(log.STATS_ENTRY_ALREADY_EXIST);
+					} else {
+						// This is a valid entry
+						$(this).effect("highlight", { color: "#ddd" });
+						// Add a new entry
+						var index = $(this).parent().parent().index();
+						stats.addEntry(newEntry, index);
+					}
+					// Update the value
+					stats.oldValue = newEntry;
+					$(this).blur();
+				} else if (e.keyCode === 27) {
+					// Esc pressed
+					$(this).blur();
+				}
+			}
+		});
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything
-		$("#search-result").addClass("stats").unbind("mouseenter mouseleave");
+		$("#search-result").addClass("stats");
 		stats.getYearSum();
 		$("#stats-pane").fadeIn();
 	});
@@ -117,7 +173,7 @@ stats.init = function() {
 stats.initTable = function() {
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<tbody><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></tbody>");
+	$("#stats-table").html("<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
 	$("tbody").addClass("fadein");
 }
 
@@ -133,15 +189,9 @@ stats.quit = function() {
 	$("#stats-options li.checkbox").each(function() {
 		$(this).unbind("click");
 	});
-	$("#search-result").removeClass("stats").hover(function() {
-		$("#search-result").hide();
-		$("#total-time").text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
-		$("#search-result").fadeIn(500);
-	}, function() {
-		$("#search-result").hide();
-		$("#total-time").text(app.displayedTime);
-		$("#search-result").fadeIn(500);
-	});;
+	$("#search-result").removeClass("stats");
+	// Unbind hover to highlight the same column and row
+	$("#stats-table").undelegate("td").undelegate("input");
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();
@@ -181,64 +231,14 @@ stats.addEntry = function(entry, overwriteNum) {
 		htmlContent += "<td>" + monthCount[i] + "</td>";
 	}
 	htmlContent += "<td>" + sum + "</td></tr>";
+	$("#stats-table").prepend("<colgroup></colgroup>");
 	if (overwriteNum) {
 		// Overwrite a content
-		$("tbody input")[overwriteNum].html(htmlContent).addClass("fadein").on("contextmenu", function() {
-			// Right click to remove it
-			$(this).slideUp(200, function() {
-				$(this).remove();
-			});
-			delete stats.entries(stats.oldValue);
-			return false;
-		});
+		$("tbody input:nth-child(" + overwriteNum + ")").html(htmlContent).addClass("fadein");
 	} else {
 		// Append to the end of the table
-		$(htmlContent).appendTo("tbody").addClass("fadein").on("contextmenu", function() {
-			// Right click to remove it
-			$(this).slideUp(200, function() {
-				$(this).remove();
-			});
-			delete stats.entries(stats.oldValue);
-			return false;
-		});
+		$(htmlContent).appendTo("tbody").addClass("fadein");
 	}
-	var index = overwriteNum || $("tr").length;
-	// Add press return to change the value
-	$("tr:nth-child(" + index + ") input").unbind("keyup").off("focus blur")
-		.focus(function() {
-			// Record the old value
-			stats.oldValue = $(this).val();
-		})
-		.blur(function() {
-			$(this).val(stats.oldValue);
-			stats.oldValue = "";
-		})
-		.bind("keyup", "return", function() {
-			var newEntry = $(this).val();
-			newEntry = stats.simplifyEntry(newEntry);
-			if (newEntry.length === 0) {
-				// Empty string, do nothing
-				$(this).effect("highlight", { color: "#000" });
-				animation.error(log.STATS_ENTRY_EMPTY_STRING);
-				return;
-			}
-			if (stats.entries[newEntry]) {
-				// Already there
-				$(this).effect("highlight", { color: "#000" });
-				animation.error(log.STATS_ENTRY_ALREADY_EXIST);
-			} else {
-				// This is a valid entry
-				$(this).effect("highlight", { color: "#ddd" });
-				// Add a new entry
-				stats.addEntry(newEntry, index);
-			}
-			// Update the value
-			stats.oldValue = newEntry;
-			$(this).blur();
-		})
-		.bind("keyup", "esc", function() {
-			$(this).blur();
-		});
 }
 
 /**
@@ -397,6 +397,7 @@ stats.showGraph = function() {
 		});
 	}
 	var data = {
+		
 		title: {
 			text: "Stats for this year",
 			x: -20 //center
@@ -409,6 +410,7 @@ stats.showGraph = function() {
 			categories: stats.eachDay
 		},
 		yAxis: {
+			min: 0,
 			plotLines: [
 				{
 					value: 0,

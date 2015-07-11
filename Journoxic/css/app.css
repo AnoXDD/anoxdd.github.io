@@ -3036,21 +3036,23 @@ body {
 	}
 
 	#stats-table td {
-		text-align: center;
 		background-color: #DBDBDB;
+		text-align: center;
 		font-size: 15px;
 		color: #000;
 		padding: 0;
 		transition: background-color .4s ease;
 	}
 
-		#stats-table td:hover {
-			background-color: #aaa;
-		}
 
-	#stats-table .hover {
-		background-color: white;
+	#stats-table tr:hover td, #stats-table .hover {
+		background-color: #aaa;
 	}
+
+	#stats-table td:nth-last-child(1) {
+		background-color: #bbb;
+	}
+
 
 	#stats-table input {
 		height: 100%;

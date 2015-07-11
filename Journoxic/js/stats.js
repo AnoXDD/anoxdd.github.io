@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The file to handle stats display for this year
  */
 
@@ -107,17 +107,17 @@ stats.init = function() {
 	$("#stats-table").delegate("td", "mouseover mouseleave contextmenu", function(e) {
 			if (e.type === "mouseover") {
 				$(this).parent().addClass("hover");
-				$("colgroup").eq($(this).index()).addClass("hover");
+				$("tr td:nth-child("+($(this).index() + 1)+")").addClass("hover");
 			} else if (e.type === "mouseleave") {
 				$(this).parent().removeClass("hover");
-				$("colgroup").eq($(this).index()).removeClass("hover");
+				$("tr td:nth-child("+($(this).index() + 1)+")").removeClass("hover");
 			} else {
 				// Right click
 				var key = stats.oldValue || $(this).siblings("input").val("");
 				$(this).parent().slideUp(200, function() {
 					$(this).remove();
 				});
-				delete stats.entries(key);
+				delete stats.entries[key];
 				return false;
 			}
 		})
@@ -173,7 +173,12 @@ stats.init = function() {
 stats.initTable = function() {
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
+	$("#stats-table").html("<colgroup></colgroup><colgroup></colgroup>" +
+		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
+		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
+		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
+		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
+		"<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
 	$("tbody").addClass("fadein");
 }
 
@@ -231,7 +236,6 @@ stats.addEntry = function(entry, overwriteNum) {
 		htmlContent += "<td>" + monthCount[i] + "</td>";
 	}
 	htmlContent += "<td>" + sum + "</td></tr>";
-	$("#stats-table").prepend("<colgroup></colgroup>");
 	if (overwriteNum) {
 		// Overwrite a content
 		$("tbody input:nth-child(" + overwriteNum + ")").html(htmlContent).addClass("fadein");

@@ -4,6 +4,14 @@
 
 window.stats = {};
 
+/**
+ * Todo fix graph display problem
+ * Todo graph: the lowest value should be 0 (non-negative)
+ * Todo removeAll() should work
+ * Todo Don't include date in graph that does not have journals
+ * 
+ */
+
 /** The value before the entry is added */
 stats.oldValue = "";
 /** The entries to be searched, with its result */
@@ -31,7 +39,6 @@ stats.isGraphDisplayed = false;
 
 /**
  * Initializes the stats panel 
- * @returns {} 
  */
 stats.init = function() {
 	// Initialize variables
@@ -116,7 +123,6 @@ stats.initTable = function() {
 
 /**
  * Quits the stats panel
- * @returns {} 
  */
 stats.quit = function() {
 	stats.removeAll();
@@ -157,23 +163,24 @@ stats.addEntry = function(entry, overwriteNum) {
 	stats.entries[entry] = result;
 	// Process each month's list
 	var monthCount = new Array(12),
-		day = 0;
+		day = 0,
+		sum = 0;
 	for (i = 0; i !== stats.monthVal.length; ++i) {
 		monthCount[i] = 0;
 		for (var j = 0; j !== stats.monthVal[i]; ++j, ++day) {
 			if (result[day]) {
 				monthCount[i] += result[day];
-			} else {
-				result[day] = 0;
 			}
 		}
+		// Add to the sum
+		sum += monthCount[i];
 	}
 	// Show the html result
 	var htmlContent = "<tr><td><input type='text' class='edit' autocomplete='off' onclick='this.select()' value='" + entry + "' /></td>";
 	for (i = 0; i !== monthCount.length; ++i) {
 		htmlContent += "<td>" + monthCount[i] + "</td>";
 	}
-	htmlContent += "</tr>";
+	htmlContent += "<td>" + sum + "</td></tr>";
 	if (overwriteNum) {
 		// Overwrite a content
 		$("tbody input")[overwriteNum].html(htmlContent).addClass("fadein").on("contextmenu", function() {
@@ -280,6 +287,7 @@ stats.getYearSum = function() {
 		minute = "0" + minute;
 	}
 	$("#total-time").text(Math.floor(totalTime / 60) + ":" + minute);
+	// Todo add more details for the number of videos/photos/etc this year
 }
 
 /**
@@ -322,8 +330,7 @@ stats.getResult = function(entry) {
 							result[day] = 0;
 						}
 						// Add the counts of the keyword
-						result[day] += (string.match(new RegExp(keyword, "gi")) || []).
-							length;
+						result[day] += (string.match(new RegExp(keyword, "gi")) || []).length;
 					}
 				}
 			}
@@ -380,7 +387,8 @@ stats.toggleGraph = function() {
  */
 stats.showGraph = function() {
 	stats.isGraphDisplayed = true;
-	var series = [];
+	var series = [],
+		days = [];
 	for (var i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
 		var name = entries[i];
 		series.push({

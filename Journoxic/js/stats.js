@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The file to handle stats display for this year
  */
 
@@ -87,8 +87,6 @@ stats.init = function() {
 			$(this).val("");
 			$(this).focus();
 		}
-		// Update the value
-		stats.oldValue = newEntry;
 		$(this).select();
 	});
 	stats.initTable();
@@ -119,11 +117,11 @@ stats.init = function() {
 				return false;
 			}
 		})
-		.delegate("input", "focus blur keyup", function(e) {
-			if (e.type === "focus") {
+		.delegate("input", "focusin focusout keyup", function(e) {
+			if (e.type === "focusin") {
 				// Record the old value
 				stats.oldValue = $(this).val();
-			} else if (e.type === "blur") {
+			} else if (e.type === "focusout") {
 				$(this).val(stats.oldValue);
 				stats.oldValue = "";
 			} else {
@@ -149,11 +147,15 @@ stats.init = function() {
 						stats.addEntry(newEntry, index);
 					}
 					// Update the value
-					stats.oldValue = newEntry;
-					$(this).blur();
+					
+				$(this).val(newEntry);
+				stats.oldValue = "";
+				this.blur();
 				} else if (e.keyCode === 27) {
 					// Esc pressed
-					$(this).blur();
+				$(this).val(stats.oldValue);
+				stats.oldValue = "";
+				this.blur();
 				}
 			}
 		});
@@ -169,6 +171,7 @@ stats.init = function() {
  * Initializes or resets the table for display
  */
 stats.initTable = function() {
+	stats.oldValue = "";
 	stats.removeAll();
 	// The first line
 	$("#stats-table").html("<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");

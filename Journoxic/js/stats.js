@@ -1,11 +1,10 @@
-/**
+﻿/**
  * The file to handle stats display for this year
  */
 
 window.stats = {};
 
 /**
- * Todo removeAll() should work
  * Todo Don't include date in graph that does not have journals
  * 
  */
@@ -133,28 +132,30 @@ stats.init = function() {
 						// Empty string, do nothing
 						$(this).effect("highlight", { color: "#000" });
 						animation.error(log.STATS_ENTRY_EMPTY_STRING);
+						$(this).val(stats.oldValue);
 						return;
 					}
 					if (stats.entries[newEntry]) {
 						// Already there
 						$(this).effect("highlight", { color: "#000" });
 						animation.error(log.STATS_ENTRY_ALREADY_EXIST);
+												$(this).val(stats.oldValue);
+return;
 					} else {
 						// This is a valid entry
-						$(this).effect("highlight", { color: "#ddd" });
+						$(this).parent().parent().effect("highlight", { color: "#ddd" });
 						// Add a new entry
-						var index = $(this).parent().parent().index();
+						var index = $(this).parent().parent().index() + 1;
+						// Remove the old value
+						delete stats.entries[stats.oldValue];
 						stats.addEntry(newEntry, index);
 					}
 					// Update the value
 					
-				$(this).val(newEntry);
-				stats.oldValue = "";
+				stats.oldValue = newEntry;
 				this.blur();
 				} else if (e.keyCode === 27) {
 					// Esc pressed
-				$(this).val(stats.oldValue);
-				stats.oldValue = "";
 				this.blur();
 				}
 			}
@@ -174,7 +175,7 @@ stats.initTable = function() {
 	stats.oldValue = "";
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
+	$("#stats-table").html("<thead><tr><th>Index</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
 	$("tbody").addClass("fadein");
 }
 
@@ -227,15 +228,17 @@ stats.addEntry = function(entry, overwriteNum) {
 		sum += monthCount[i];
 	}
 	// Show the html result
-	var htmlContent = "<tr><td><input type='text' class='edit' autocomplete='off' onclick='this.select()' value='" + entry + "' /></td>";
+	var htmlContent = "<td><input type='text' class='edit' autocomplete='off' onclick='this.select()' value='" + entry + "' /></td>";
 	for (i = 0; i !== monthCount.length; ++i) {
 		htmlContent += "<td>" + monthCount[i] + "</td>";
 	}
-	htmlContent += "<td>" + sum + "</td></tr>";
+	htmlContent += "<td>" + sum + "</td>";
 	if (overwriteNum) {
 		// Overwrite a content
-		$("tbody input:nth-child(" + overwriteNum + ")").html(htmlContent).addClass("fadein");
+		$("tbody tr:nth-child(" + overwriteNum + ") input").parent().parent().html(htmlContent).addClass("fadein");
 	} else {
+		// Wrap with <tr>
+		htmlContent = "<tr>" + htmlContent + "</tr>";
 		// Append to the end of the table
 		$(htmlContent).appendTo("tbody").addClass("fadein");
 	}

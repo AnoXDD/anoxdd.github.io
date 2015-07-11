@@ -1,12 +1,10 @@
-/**
+﻿/**
  * The file to handle stats display for this year
  */
 
 window.stats = {};
 
 /**
- * Todo fix graph display problem
- * Todo graph: the lowest value should be 0 (non-negative)
  * Todo removeAll() should work
  * Todo Don't include date in graph that does not have journals
  * 
@@ -173,12 +171,7 @@ stats.init = function() {
 stats.initTable = function() {
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<colgroup></colgroup><colgroup></colgroup>" +
-		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
-		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
-		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
-		"<colgroup></colgroup><colgroup></colgroup><colgroup></colgroup>" +
-		"<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
+	$("#stats-table").html("<thead><tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
 	$("tbody").addClass("fadein");
 }
 

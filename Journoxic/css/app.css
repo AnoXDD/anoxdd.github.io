@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -1641,7 +1641,7 @@ body {
 /*=========================== Header ============================*/
 
 #total-entry::before {
-	content: "\f022";
+	content: "\f0f6";
 }
 
 #total-displayed::before {
@@ -1664,6 +1664,17 @@ body {
 	content: "\f017";
 }
 
+#total-image::before {
+	content: "\f1c5";
+}
+
+#total-video::before {
+	content: "\f1c8";
+}
+
+#total-voice::before {
+	content: "\f1c7";
+}
 
 .search-data {
 	padding-right: 20px;
@@ -1816,9 +1827,15 @@ body {
 		animation: followup 2s infinite ease-out;
 	}
 
+	.header .hidden {
+		display: none;
+	}
+
 	.header .stats ul, .header .stats li {
 		text-align: center;
+		display: initial;
 	}
+
 
 
 #year {

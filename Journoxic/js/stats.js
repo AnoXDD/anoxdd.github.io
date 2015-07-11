@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The file to handle stats display for this year
  */
 
@@ -65,7 +65,7 @@ stats.init = function() {
 	$("#stats-query").fadeIn();
 	// Empty this input box
 	$("#stats-query").val("");
-	$("#stats-query").bind("keyup", "return", function() {
+	$("#stats-query").unbind("keyup").bind("keyup", "return", function() {
 		var newEntry = $(this).val();
 		newEntry = stats.simplifyEntry(newEntry);
 		if (newEntry.length === 0) {
@@ -108,7 +108,7 @@ stats.init = function() {
 			$("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
 		} else {
 			// Right click
-			var key = stats.oldValue || $(this).siblings("input").val("");
+			var key = stats.oldValue || $(this).parent().children("td").children("input").val();
 			$(this).parent().slideUp(200, function() {
 				$(this).remove();
 			});
@@ -186,14 +186,14 @@ stats.quit = function() {
 	stats.removeAll();
 	// Animation to recover what it was
 	$("#query").fadeIn();
-	$("#stats-query").fadeOut();
+	$("#stats-query").fadeOut().unbind("keyup");
 	// Unbind click to toggle checkbox
 	$("#stats-options li.checkbox").each(function() {
 		$(this).unbind("click");
 	});
 	$("#search-result").removeClass("stats");
 	// Unbind hover to highlight the same column and row
-	$("#stats-table").undelegate("td").undelegate("input");
+	$("#stats-table").undelegate("td","mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup");
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();

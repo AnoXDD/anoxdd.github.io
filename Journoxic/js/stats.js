@@ -100,22 +100,22 @@ stats.init = function() {
 	});
 	// Hover to highlight the same column and row
 	$("#stats-table").delegate("td", "mouseover mouseleave contextmenu", function(e) {
-			if (e.type === "mouseover") {
-				$(this).parent().addClass("hover");
-				$("tr td:nth-child("+($(this).index() + 1)+")").addClass("hover");
-			} else if (e.type === "mouseleave") {
-				$(this).parent().removeClass("hover");
-				$("tr td:nth-child("+($(this).index() + 1)+")").removeClass("hover");
-			} else {
-				// Right click
-				var key = stats.oldValue || $(this).siblings("input").val("");
-				$(this).parent().slideUp(200, function() {
-					$(this).remove();
-				});
-				delete stats.entries[key];
-				return false;
-			}
-		})
+		if (e.type === "mouseover") {
+			$(this).parent().addClass("hover");
+			$("tr td:nth-child(" + ($(this).index() + 1) + ")").addClass("hover");
+		} else if (e.type === "mouseleave") {
+			$(this).parent().removeClass("hover");
+			$("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
+		} else {
+			// Right click
+			var key = stats.oldValue || $(this).siblings("input").val("");
+			$(this).parent().slideUp(200, function() {
+				$(this).remove();
+			});
+			delete stats.entries[key];
+			return false;
+		}
+	})
 		.delegate("input", "focusin focusout keyup", function(e) {
 			if (e.type === "focusin") {
 				// Record the old value
@@ -139,8 +139,8 @@ stats.init = function() {
 						// Already there
 						$(this).effect("highlight", { color: "#000" });
 						animation.error(log.STATS_ENTRY_ALREADY_EXIST);
-												$(this).val(stats.oldValue);
-return;
+						$(this).val(stats.oldValue);
+						return;
 					} else {
 						// This is a valid entry
 						$(this).parent().parent().effect("highlight", { color: "#ddd" });
@@ -151,12 +151,12 @@ return;
 						stats.addEntry(newEntry, index);
 					}
 					// Update the value
-					
-				stats.oldValue = newEntry;
-				this.blur();
+
+					stats.oldValue = newEntry;
+					this.blur();
 				} else if (e.keyCode === 27) {
 					// Esc pressed
-				this.blur();
+					this.blur();
 				}
 			}
 		});
@@ -398,9 +398,19 @@ stats.showGraph = function() {
 			name: entries[i],
 			data: stats.entries[name]
 		});
+		// Test if `days` has been initialized according to the dates available
+		if (i === 0) {
+			var entry = stats.entries[name];
+			// Only do this check once
+			for (var j = 0; j !== entry.length; ++j) {
+				if (entry[j] != undefined) {
+					// A valid date
+					days.push(stats.eachDay[j]);
+				}
+			}
+		}
 	}
 	var data = {
-		
 		title: {
 			text: "Stats for this year",
 			x: -20 //center
@@ -410,17 +420,15 @@ stats.showGraph = function() {
 			x: -20
 		},
 		xAxis: {
-			categories: stats.eachDay
+			categories: days
 		},
 		yAxis: {
 			min: 0,
-			plotLines: [
-				{
-					value: 0,
-					width: 1,
-					color: "#808080"
-				}
-			]
+			plotLines: [{
+				value: 0,
+				width: 1,
+				color: "#808080"
+			}]
 		},
 		tooltip: {
 			valueSuffix: " time(s)"

@@ -157,7 +157,7 @@
 				<li class="has-sub">
 					<a title="Options" id="options">&#xf013</a>
 					<ul>
-						<li><a class="hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
+						<li><a class="hidden-icon hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
 						<li><a title="Find lost media" onclick="app.checkResource()" href="#">&#xf002</a></li>
 					</ul>
 				</li>
@@ -166,7 +166,13 @@
 		<div id="action-stats">
 			<ul>
 				<li><a title="Reset the map" onclick="stats.initTable()" href="#">&#xf014</a></li>
-				<li><a title="Toggle graph" onclick="stats.toggleGraph()" href="#">&#xf080</a></li>
+				<li>
+					<a title="Toggle graph" onclick="stats.toggleGraph()" href="#">&#xf080</a>
+					<ul>
+						<li><a title="Download this chart" onclick="Chart.exportChart()" class="hidden-icon hidden" href="#">&#xf019</a></li>
+						<li><a title="Toggle chart view" onclick="" class="hidden-icon hidden">&#xf133</a></li>
+					</ul>
+				</li>
 				<li><a title="Main menu" onclick="stats.quit()" href="#">&#xf0c9</a></li>
 			</ul>
 		</div>

@@ -4,11 +4,6 @@
 
 window.stats = {};
 
-/**
- * Todo Don't include date in graph that does not have journals
- * 
- */
-
 /** The value before the entry is added */
 stats.oldValue = "";
 /** The entries to be searched, with its result */
@@ -20,7 +15,8 @@ stats.options = {
 	endDay: 366,
 	// Todo add a calendar to display
 	isIncludingTitles: true,
-	isIncludingTags: false
+	isIncludingTags: false,
+	viewAsMonth: false
 };
 /** A list to hold all the human-readable date from the first day to the last day for `app.year` */
 stats.eachDay = [];
@@ -167,7 +163,6 @@ stats.init = function() {
 		$("#stats-pane").fadeIn();
 	});
 }
-
 /**
  * Initializes or resets the table for display
  */
@@ -178,7 +173,6 @@ stats.initTable = function() {
 	$("#stats-table").html("<thead><tr><th>Index</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
 	$("tbody").addClass("fadein");
 }
-
 /**
  * Quits the stats panel
  */
@@ -193,7 +187,7 @@ stats.quit = function() {
 	});
 	$("#search-result").removeClass("stats");
 	// Unbind hover to highlight the same column and row
-	$("#stats-table").undelegate("td","mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup");
+	$("#stats-table").undelegate("td", "mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup");
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();
@@ -242,8 +236,8 @@ stats.addEntry = function(entry, overwriteNum) {
 		// Append to the end of the table
 		$(htmlContent).appendTo("tbody").addClass("fadein");
 	}
+	stats.hideGraph();
 }
-
 /**
  * Processes an entry to its simplified form (e.g. foo|||||bar goes to foo|bar) and returns it. 
  * This function does not split this string.
@@ -260,7 +254,6 @@ stats.simplifyEntry = function(str) {
 	}
 	return ret.join("|");
 }
-
 /**
  * Gets the summary for this year and update necessary DOM's
  */
@@ -306,7 +299,6 @@ stats.getYearSum = function() {
 	$("#total-video").text(totalVideo);
 	$("#total-voice").text(totalVoice);
 }
-
 /**
  * Gets the result of this entry search, of 12 sizes, which refers to 12 months
  * @param {string} entry - An entry string of keywords separated by `|`
@@ -367,7 +359,6 @@ stats.getDayNumber = function(time) {
 		firstDay = new Date(app.year, 0, 1);
 	return Math.floor((new Date(date) - firstDay) / 86400000);
 }
-
 /**
  * Tests if the passed in created time is in range limited by `stats.options`
  * @param {number} createdTime - The started time of seconds since epoch
@@ -398,35 +389,58 @@ stats.toggleGraph = function() {
 		stats.hideGraph();
 	}
 }
-
 /**
  * Shows the analysis graph
+ * @param {boolean} viewAsMonth - Whether to view the chart as month
  */
-stats.showGraph = function() {
+stats.showGraph = function(viewAsMonth) {
 	stats.isGraphDisplayed = true;
 	var series = [],
-		days = [];
-	for (var i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
-		var name = entries[i];
-		series.push({
-			name: entries[i],
-			data: stats.entries[name]
+		days = [],
+		name;
+	// Choose the way of showing the graph
+	if (viewAsMonth) {
+		days = app.month_array;
+		// Extract the data from the html content
+		$("#stats-table tbody tr").each(function() {
+			var monthData = [];
+			$(this).children("td").each(function(n) {
+				if (n === 0) {
+					// The first element, get the input value
+					name = $(this).children("input").val();
+				} else if (n < 13) {
+					// Gets the data
+					monthData.push($(this).html());
+				}
+			});
+			series.push({
+				name: name,
+				data: monthData
+			});
 		});
-		// Test if `days` has been initialized according to the dates available
-		if (i === 0) {
-			var entry = stats.entries[name];
-			// Only do this check once
-			for (var j = 0; j !== entry.length; ++j) {
-				if (entry[j] != undefined) {
-					// A valid date
-					days.push(stats.eachDay[j]);
+	} else {
+		for (var i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
+			name = entries[i];
+			series.push({
+				name: entries[i],
+				data: stats.entries[name]
+			});
+			// Test if `days` has been initialized according to the dates available
+			if (i === 0) {
+				var entry = stats.entries[name];
+				// Only do this check once
+				for (var j = 0; j !== entry.length; ++j) {
+					if (entry[j] != undefined) {
+						// A valid date
+						days.push(stats.eachDay[j]);
+					}
 				}
 			}
 		}
 	}
 	var data = {
 		chart: {
-		backgroundColor: "#f3f3f3"	
+			backgroundColor: "#f3f3f3"
 		},
 		title: {
 			text: "Stats for this year",
@@ -458,12 +472,14 @@ stats.showGraph = function() {
 		},
 		series: series,
 		exporting: {
+			enabled: false,
 			filename: "Journal Analysis " + app.year
 		}
 	};
 	$("#graph").fadeIn().highcharts(data);
+	$("#action-stats hidden").removeClass("hidden");
+	animation.testSub("#action-stats");
 };
-
 /**
  * Hides the analysis graph
  */
@@ -472,5 +488,15 @@ stats.hideGraph = function() {
 	$("#graph").fadeOut(function() {
 		$(this).html("");
 	});
+	$("#action-stats hidden-icon").addClass("hidden");
+	animation.testSub("#action-stats");
+}
+/**
+ * Toggles the year view between by day and by month (i.e. as the chart shows)
+ */
+stats.toggleYearView = function() {
+	stats.hideGraph();
+	stats.options.viewAsMonth = !stats.options.viewAsMonth;
+	stats.showGraph(stats.options.viewAsMonth);
 }
 

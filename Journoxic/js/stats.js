@@ -161,6 +161,7 @@ stats.init = function() {
 		})
 		// Click to sort
 		.delegate("th", "click", function() {
+			if ($("tbody tr").length !== 0) {
 			var desc = $(this).hasClass("desc"),
 				index = $(this).index(),
 				map = [];
@@ -189,21 +190,37 @@ stats.init = function() {
 			// Reset the map to re-add those entries
 			stats.initTable();
 			// Sort the array
-			if (desc) {
+			if (!desc) {
 				$("th").eq(index).addClass("desc");
+				if (index === 0) {
+					// Sort the string
 				map.sort(function(a, b) {
-					return b["value"] - a["value"];
+					return b["value"].localeCompare(a["value"]);
 				});
+				} else {
+					// Sort the value
+					map.sort(function(a, b) {
+											return b["value"] - a["value"];
+					});
+				}
 			} else {
 				$("th").eq(index).addClass("asce");
+				if (index === 0) {
+					// Sort the string
 				map.sort(function(a, b) {
-					return a["value"] - b["value"];
+			return a["value"].localeCompare(b["value"]);
 				});
+				} else {
+					// Sort the value
+					map.sort(function(a, b) {
+						return a["value"] - b["value"];
+					})
+				}
 			}
 			// Iterate to add the element
-			for (i = 0; i !== Object.keys(map); ++i) {
+			for (i = 0; i !== Object.keys(map).length; ++i) {
 				stats.addEntry(map[i]["key"]);
-			}
+			}}
 		});
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything

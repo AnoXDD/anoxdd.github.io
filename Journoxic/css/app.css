@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -3071,7 +3071,22 @@ body {
 		color: #fff;
 		height: 30px;
 		border-radius: 5px;
+		transition: box-shadow .4s ease;
 	}
+
+	#stats-table th:hover {
+		box-shadow: 0 0 5px #444;
+	}
+
+			#stats-table th::after {
+    animation: fadein 1.5s;
+    font-size: 10px;
+			
+		
+    position: relative;
+    left: 5px;
+    bottom: 8px;
+}
 
 	#stats-table td {
 		background-color: #DBDBDB;
@@ -3104,6 +3119,27 @@ body {
 		#stats-table input:focus, #stats-table input:hover {
 			background-color: #eee;
 			color: #111;
+		}
+
+		#stats-table .asce, #stats-table .desc {
+background-color: #444;
+box-shadow: 0 0 5px #444;
+		}
+
+		#stats-table .asce::after {
+			content: "\f162";
+		}
+
+		#stats-table th:nth-child(1).asce::after {
+			content: "\f15d";
+		}
+
+		#stats-table .desc::after {
+	content :"\f163";
+		}
+
+				#stats-table th:nth-child(1).desc::after {
+			content: "\f15e";
 		}
 
 #graph {

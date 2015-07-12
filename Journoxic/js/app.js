@@ -324,7 +324,7 @@ app.loadScript = function(data, func, isScript) {
 	} else {
 		// Raw data
 		console.log("app.loadScript(): data.length = " + data.length);
-		journal.archive.data[app.year] = app.updateData(JSON.parse(data));
+		journal.archive.data[app.year] = app.updateData(JSON.parse(data), app.version.data);
 		func();
 	}
 };

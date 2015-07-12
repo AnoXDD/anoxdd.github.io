@@ -34,6 +34,8 @@ stats.isGraphDisplayed = false;
  * Initializes the stats panel 
  */
 stats.init = function() {
+	/* Iterator */
+	var i;
 	// Initialize variables
 	stats.result = [];
 	stats.isLeapYear = new Date(app.year, 1, 29).getMonth() === 1;
@@ -45,7 +47,7 @@ stats.init = function() {
 	} else {
 		stats.monthVal = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 	}
-	for (var i = 1; ; ++i) {
+	for (i = 1; ; ++i) {
 		var date = new Date(app.year, 0, i);
 		if (date.getFullYear() !== app.year) {
 			// New day, stop executing
@@ -96,22 +98,23 @@ stats.init = function() {
 	});
 	// Hover to highlight the same column and row
 	$("#stats-table").delegate("td", "mouseover mouseleave contextmenu", function(e) {
-		if (e.type === "mouseover") {
-			$(this).parent().addClass("hover");
-			$("tr td:nth-child(" + ($(this).index() + 1) + ")").addClass("hover");
-		} else if (e.type === "mouseleave") {
-			$(this).parent().removeClass("hover");
-			$("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
-		} else {
-			// Right click
-			var key = stats.oldValue || $(this).parent().children("td").children("input").val();
-			$(this).parent().slideUp(200, function() {
-				$(this).remove();
-			});
-			delete stats.entries[key];
-			return false;
-		}
-	})
+			if (e.type === "mouseover") {
+				$(this).parent().addClass("hover");
+				$("tr td:nth-child(" + ($(this).index() + 1) + ")").addClass("hover");
+			} else if (e.type === "mouseleave") {
+				$(this).parent().removeClass("hover");
+				$("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
+			} else {
+				// Right click
+				var key = stats.oldValue || $(this).parent().children("td").children("input").val();
+				$(this).parent().slideUp(200, function() {
+					$(this).remove();
+				});
+				delete stats.entries[key];
+				return false;
+			}
+		})
+		// Click or leave to edit the input menu
 		.delegate("input", "focusin focusout keyup", function(e) {
 			if (e.type === "focusin") {
 				// Record the old value
@@ -155,6 +158,52 @@ stats.init = function() {
 					this.blur();
 				}
 			}
+		})
+		// Click to sort
+		.delegate("th", "click", function() {
+			var desc = $(this).hasClass("desc"),
+				index = $(this).index(),
+				map = [];
+			// Extract the data
+			$("tbody tr").each(function() {
+				var key, value;
+				$(this).children("td").each(function(n) {
+					if (n === 0) {
+						// Get the index
+						key = $(this).children("input").val();
+					}
+					if (n === index) {
+						// Matched the index of the value to be sorted
+						if (n === 0) {
+							value = key;
+						} else {
+							value = $(this).html();
+						}
+					}
+				});
+				map.push({
+					key: key,
+					value: value
+				});
+			});
+			// Reset the map to re-add those entries
+			stats.initTable();
+			// Sort the array
+			if (desc) {
+				$("th").eq(index).addClass("desc");
+				map.sort(function(a, b) {
+					return b["value"] - a["value"];
+				});
+			} else {
+				$("th").eq(index).addClass("asce");
+				map.sort(function(a, b) {
+					return a["value"] - b["value"];
+				});
+			}
+			// Iterate to add the element
+			for (i = 0; i !== Object.keys(map); ++i) {
+				stats.addEntry(map[i]["key"]);
+			}
 		});
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything
@@ -187,7 +236,7 @@ stats.quit = function() {
 	});
 	$("#search-result").removeClass("stats");
 	// Unbind hover to highlight the same column and row
-	$("#stats-table").undelegate("td", "mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup");
+	$("#stats-table").undelegate("td", "mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup").delegate("th", "contextmenu");
 	// Unbind enter to search for #stats-query
 	$("#stats-pane").fadeOut(400, function() {
 		$("#contents").fadeIn();

@@ -327,18 +327,18 @@ app.loadScript = function(data, func, isScript) {
 	} else {
 		// Raw data
 		console.log("app.loadScript(): data.length = " + data.length);
-		journal.archive.data[app.year] = app.updateData(JSON.parse(data), app.version.data);
+		journal.archive.data[app.year] = app.updateData(JSON.parse(data));
 		func();
 	}
 };
-app.updateData = function(data, toVersion) {
+app.updateData = function(data) {
 	if (!data["version"]) {
 		data["version"] = 1;
 	}
 	if (data["version"] !== app.version.data) {
 		// Let the user know the content is going to be upgraded
 		animation.log(log.CONTENTS_UPGRADING);
-		switch (toVersion) {
+		switch (data["version"]) {
 			case 1:
 				// Up to v2
 				// Integrate textTags and iconTags

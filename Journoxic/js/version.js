@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.25.27 Build 071315_1124";
+﻿﻿app.version.main = "v3.25.28 Build 071315_1149";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -18,6 +18,7 @@ $("#version").html(app.version.main);
  * 
  * v3.25 Data analysis support
  * [Add] Graph and table analysis of keywords for data
+ * [Fix] Data version should update for all the data
  * 
  * v3.24 HTML/CSS update
  * [Chg] Reduce redundant id's and css entries

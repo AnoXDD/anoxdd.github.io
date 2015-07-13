@@ -390,6 +390,7 @@ app.getYears = function() {
 					app.years.push(new Date().getFullYear());
 					// So unnecessary to sort it after push
 				}
+				animation.testYearButton();
 				animation.log(log.GET_YEARS_END);
 			})
 			.fail(function(xhr, status, error) {
@@ -405,7 +406,7 @@ app.getYears = function() {
  */
 app.yearUpdateTry = function(year) {
 	app.year = year;
-	if (app.years.length = []) {
+	if (app.years.length === 0) {
 		app.years.push(app.year);
 	}
 	if (!journal.archive.data[year]) {

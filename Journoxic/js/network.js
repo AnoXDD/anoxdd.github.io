@@ -199,7 +199,7 @@ function downloadFile(url, textOnly) {
 								downloadMedia();
 							})
 							.fail(function(xhr, status, error) {
-								animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+								animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL, error, -1);
 							});
 					}
 				})
@@ -219,7 +219,7 @@ function downloadFile(url, textOnly) {
 							return;
 						}
 					}
-					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL, error, -1);
 					// `app.year` does not change
 					app.year = parseInt($("#year").html());
 					////alert("Cannot download the file. Do you enable CORS?");
@@ -350,7 +350,7 @@ function uploadFile(dataYear) {
 							animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
 						})
 						.fail(function(xhr, status, error) {
-							animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+							animation.error(log.CONTENTS_UPLOAD_FAIL, error, -1);
 							////alert("Cannot upload files");
 						})
 						.always(function() {
@@ -358,7 +358,7 @@ function uploadFile(dataYear) {
 						});
 				})
 				.fail(function(xhr, status, error) {
-					animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+					animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL, error, -1);
 					network.destroy();
 					////alert("Cannot backup the file");
 				})

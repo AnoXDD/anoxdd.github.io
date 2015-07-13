@@ -390,7 +390,8 @@ app.getYears = function() {
 				animation.log(log.GET_YEARS_END);
 			})
 			.fail(function(xhr, status, error) {
-				animation.error(log.GET_YEARS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+				animation.error(log.GET_YEARS_FAIL, error);
+				app.getYears();
 			});
 	});
 }
@@ -401,6 +402,9 @@ app.getYears = function() {
  */
 app.yearUpdateTry = function(year) {
 	app.year = year;
+	if (app.years.length = []) {
+		app.years.push(app.year);
+	}
 	if (!journal.archive.data[year]) {
 		// The data is not loaded yet, download the data
 		downloadFile(undefined, true);
@@ -2267,7 +2271,7 @@ app.cleanResource = function() {
 				}
 			})
 			.fail(function(xhr, status, error) {
-				animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+				animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL, error, -1);
 			});
 		});
 	}

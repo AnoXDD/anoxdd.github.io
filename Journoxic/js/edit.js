@@ -936,7 +936,7 @@ edit.addMediaFromQueue = function() {
 					}
 				})
 				.fail(function(xhr, status, error) {
-					animation.error(log.QUEUE_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END);
+					animation.error(log.QUEUE_FAILED, error);
 				})
 				.always(function() {
 					// Add it back
@@ -1655,7 +1655,7 @@ edit.photo = function(isQueue, callback) {
 						// Test if error is not found
 						if (error === "Not Found" && !addQueue) {
 							// If the error is not found and the user just wants to add the photo from this folder, then report error
-							animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+							animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr, error, -1);
 							animation.deny("#add-photo");
 						} else {
 							// Still have to care about indentation of log
@@ -2595,7 +2595,7 @@ edit.playableSearch = function(typeNum) {
 					animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
 				})
 				.fail(function(xhr, status, error) {
-					animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+					animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED, error, -1);
 					switch (typeNum) {
 						case 1:
 							// Video
@@ -2768,7 +2768,7 @@ edit.playableSave = function(typeNum, callback) {
 							})
 							.fail(function(xhr, status, error) {
 								--pending;
-								animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, false);
+								animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED, error, false);
 								animation.warning("#add-" + edit.mediaName(typeNum));
 							})
 							.always(function() {

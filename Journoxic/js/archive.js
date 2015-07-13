@@ -68,7 +68,7 @@ archive.init = function(selector) {
 				archive.load();
 			})
 			.fail(function(xhr, status, error) {
-				animation.error(log.FILES_NOT_FOUND + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+				animation.error(log.FILES_NOT_FOUND, error, -1);
 			})
 			.always(function() {
 				$(selector).removeClass("spinr");
@@ -244,7 +244,7 @@ archive.detail = function() {
 			});
 			return dataClip;
 		}).fail(function(xhr, status, error) {
-			animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+			animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL, error, -1);
 		});
 	} else {
 		try {

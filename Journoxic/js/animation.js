@@ -130,7 +130,7 @@ window.log = {
 	NETWORK_WORKING: "Please wait until all network activities stop",
 	OVERWRITE_CACHE_WARNING: "You have saved entry data. Either press confirm to overwrite or read it",
 	GET_YEARS_START: "Loading year list ...",
-	GET_YEARS_FAIL: "Cannot load year list. Please refresh this page",
+	GET_YEARS_FAIL: "Cannot load year list. Trying again ..",
 	GET_YEARS_END: "Year list loaded",
 	YEAR_SWITCHED_TO: "Year switched to ",
 	DATA_MOVED_TO_OTHER_YEAR: "Some data migrated to year ",
@@ -467,18 +467,20 @@ animation.log = function(message, indent, type) {
 /**
  * Calls an error message and display it on the screen
  * @param {String} message - The message to be logged
+ * @param {String} error - The error message
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.error = function(message, indent) {
-	animation.log(message, indent, 1);
+animation.error = function(message, error, indent) {
+	animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 1);
 }
 /**
  * Calls a warning message and display it on the screen
  * @param {String} message - The message to be logged
+ * @param {String} error - The error message
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.warn = function(message, indent) {
-	animation.log(message, indent, 2);
+animation.warn = function(message,error, indent) {
+	animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 2);
 }
 /**
  * Logs a debug message on the screen

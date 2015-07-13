@@ -44,6 +44,9 @@ app.isFunction = true;
 /** The variable to track the media that do not belong to any entry */
 app.lostMedia = [];
 
+/** Whether the date of this year is loaded */
+app.dataLoaded = {};
+
 /** The data decoding version of this app, integer decimal only */
 app.version = {
 	data: 2
@@ -253,10 +256,10 @@ app.load = function(filter, newContent) {
 		////console.log("Calling app.list(" + filter + ")");
 		////console.log("\t> lastLoaded = " + app.lastLoaded);
 		new app.list(filter);
-		app.dataLoaded = true;
+		app.dataLoaded[app.year] = true;
 	};
 	// Try to find the new data (if applicable)
-	if (!app.dataLoaded) {
+	if (!app.dataLoaded[app.year]) {
 		// app.loadScript("core/data.js", loadFunction, true);
 		if (newContent) {
 			// New contents available! Refresh the new data

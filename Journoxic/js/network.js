@@ -169,7 +169,7 @@ function downloadFile(url, textOnly) {
 				url: url
 			})
 				.done(function(data, status, xhr) {
-					window.app.dataLoaded = false;
+					window.app.dataLoaded[app.year] = false;
 					window.app.load("", xhr.responseText);
 					////console.log("downloadFile()\tFinish core data");
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);

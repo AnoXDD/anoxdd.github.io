@@ -275,7 +275,6 @@ function removeLoginButton(debug) {
 		refreshToken();
 	}
 	// Show everything app needs
-	animation.log(log.WELCOME);
 	$("#sign-in-prompt").remove();
 	animation.hideIcon("#signin", function() {
 		animation.showMenuOnly();

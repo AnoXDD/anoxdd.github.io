@@ -263,7 +263,7 @@ app.load = function(filter, newContent) {
 		// app.loadScript("core/data.js", loadFunction, true);
 		if (newContent) {
 			// New contents available! Refresh the new data
-			animation.log(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
+			animation.debug(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
 			console.log("app.load(): data.length = " + newContent.length);
 			app.loadScript(newContent, loadFunction, false);
 			edit.saveDataCache();
@@ -273,7 +273,7 @@ app.load = function(filter, newContent) {
 	// Reset animation indentation
 	animation.indent = 0;
 	// Remove all the child elements and always
-	animation.log(log.CONTENTS_RELOADED);
+	animation.debug(log.CONTENTS_RELOADED);
 	console.log("==================Force loaded==================");
 	$("#list").empty();
 	app.lastLoaded = 0;
@@ -337,7 +337,7 @@ app.updateData = function(data) {
 	}
 	if (data["version"] !== app.version.data) {
 		// Let the user know the content is going to be upgraded
-		animation.log(log.CONTENTS_UPGRADING);
+		animation.debug(log.CONTENTS_UPGRADING);
 		switch (data["version"]) {
 			case 1:
 				// Up to v2
@@ -424,7 +424,7 @@ app.yearUpdate = function() {
 	app.refresh();
 	// Test the correctness of the buttons
 	animation.testYearButton();
-	animation.log(log.YEAR_SWITCHED_TO + app.year);
+	animation.debug(log.YEAR_SWITCHED_TO + app.year);
 }
 /**
  * Sets the year to the previous year. 
@@ -2205,7 +2205,7 @@ app.cleanResource = function() {
 	if (app.lostMedia.length === 0) {
 		animation.error(log.MEDIA_CLEAN_NO_DATA);
 	} else {
-		animation.log(log.MEDIA_CLEAN_START, 1);
+		animation.log(log.MEDIA_CLEAN_START);
 		// Move to their folder according to their names
 		getTokenCallback(function(token) {
 			// Finds all the available folder names
@@ -2269,7 +2269,6 @@ app.cleanResource = function() {
 								}
 								// Empty the list
 								app.lostMedia = [];
-								animation.log(log.MEDIA_CLEAN_FINISHED, -1);
 							}
 						});
 				}

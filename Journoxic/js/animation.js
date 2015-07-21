@@ -5,12 +5,11 @@ window.animation = {};
 animation.isDebug = true;
 
 window.log = {
-	WELCOME: "Welcome back",
 	FILE_NOT_FOUND: "Cannot find the file ",
 	FILES_NOT_FOUND: "Cannot find the list of files",
 	FILE_NOT_LOADED: "Cannot load the file ",
 	DOWNLOAD_PROMPT: ". Please make sure it has been downloaded",
-	LOCATION_PIN_FAIL: "Cannot find the current position. Please make sure you have enabled it or the browser does not support geocode",
+	LOCATION_PIN_FAIL: "Cannot find the current location. Please make sure you have enabled it or the browser does not support geocode",
 	LOCATION_NO_RESULTS: "No results found",
 	LOCATION_NO_ADDRESS: "Cannot read the address",
 	NO_ENTRY_SELECTED: "No entry is selected",
@@ -29,7 +28,6 @@ window.log = {
 	MEDIA_CLEAN_UNDEFINED_NOT_FOUND: "No undefined media found",
 	MEDIA_CLEAN_FAIL: " media failed to be moved. Please try again",
 	MEDIA_CLEAN_SUCCESS: "All lost media moved to their original folder",
-	MEDIA_CLEAN_FINISHED: "Finding lost media finished",
 
 	ARCHIVE_START: "Loading archive list ...",
 	ARCHIVE_TOO_MANY: "Too many archive files. Only the latest 500 files will be displayed",
@@ -487,9 +485,12 @@ animation.warn = function(message,error, indent) {
  * Toggles the debug option by setting the variable at the beginning of this file
  * @param {String} message - The message to be logged
  */
-animation.debug = function(message) {
+animation.debug = function(message, indent) {
 	if (animation.isDebug) {
-		animation.log("[DEBUG] " + message);
+		animation.log("[DEBUG] " + message, indent);
+	} else {
+		// Just process the indentation
+		animation.indent += indent;
 	}
 }
 

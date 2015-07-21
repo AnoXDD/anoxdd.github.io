@@ -431,7 +431,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 				animation.invalid(selectorHeader + "input");
 			} else {
 				// Result found
-				animation.log(log.COVER_PHOTO_FOUND);
+				animation.debug(log.COVER_PHOTO_FOUND);
 				var artist = result["artistName"],
 					track = result["trackName"],
 					coverUrl = result["artworkUrl100"];
@@ -473,7 +473,7 @@ function createDateFolder(dateStr, callback) {
 				// Successfully created this directory
 				edit.isFolder = true;
 				edit.folderDate = dateStr;
-				animation.log(log.FOLDER_CREATED);
+				animation.debug(log.FOLDER_CREATED);
 			})
 			.always(function() {
 				// Always try to run the callback function

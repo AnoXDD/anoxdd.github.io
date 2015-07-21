@@ -69,13 +69,13 @@ stats.init = function() {
 		if (newEntry.length === 0) {
 			// Empty string, do nothing
 			$(this).effect("highlight", { color: "#000" });
-			animation.error(log.STATS_ENTRY_EMPTY_STRING);
+			animation.debug(log.STATS_ENTRY_EMPTY_STRING);
 			return;
 		}
 		if (stats.entries[newEntry]) {
 			// Already there
 			$(this).effect("highlight", { color: "#000" });
-			animation.error(log.STATS_ENTRY_ALREADY_EXIST);
+			animation.debug(log.STATS_ENTRY_ALREADY_EXIST);
 		} else {
 			// This is a valid entry
 			$(this).effect("highlight", { color: "#ddd" });

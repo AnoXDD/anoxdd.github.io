@@ -345,7 +345,7 @@ edit.quit = function(selector, save) {
 		// Save to local contents
 		edit.save(selector);
 	} else {
-		animation.log(log.EDIT_PANE_QUIT);
+		animation.debug(log.EDIT_PANE_QUIT);
 	}
 	edit.photos = [];
 	edit.removalList = {};
@@ -383,7 +383,7 @@ edit.save = function(selector) {
 	network.init(3);
 	if (animation.isShown("#action-remove-confirm")) {
 		// Confirm button will be pressed automatically if shown
-		animation.log(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
+		animation.debug(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
 		edit.confirm();
 	}
 	if (selector) {
@@ -929,10 +929,10 @@ edit.addMediaFromQueue = function() {
 					// Right click to select
 					edit.playableSetToggle();
 					if (addedVideo > 0) {
-						animation.log(addedVideo + log.QUEUE_FOUND_VIDEOS);
+						animation.debug(addedVideo + log.QUEUE_FOUND_VIDEOS);
 					}
 					if (addedVoice > 0) {
-						animation.log(addedVoice + log.QUEUE_FOUND_VOICES);
+						animation.debug(addedVoice + log.QUEUE_FOUND_VOICES);
 					}
 				})
 				.fail(function(xhr, status, error) {
@@ -1634,7 +1634,7 @@ edit.photo = function(isQueue, callback) {
 					});
 				});
 				if (isQueue) {
-					animation.log(added + log.QUEUE_FOUND_IMAGES);
+					animation.debug(added + log.QUEUE_FOUND_IMAGES);
 				} else {
 					edit.setRemove(0);
 					// Test if any result was found
@@ -1822,7 +1822,7 @@ edit.photoSave = function(callback) {
 										};
 									}
 								}
-								animation.log((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
+								animation.debug((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
 							})
 							.fail(function(xhr, status, error) {
 								++processingPhoto;
@@ -2199,7 +2199,7 @@ edit.locationWeather = function(pos) {
 		// Weather info exists
 		return;
 	} else {
-		animation.log(log.EDIT_PANE_WEATHER_START, 1);
+		animation.debug(log.EDIT_PANE_WEATHER_START, 1);
 	}
 
 	var apiKey = "6f1ee423e253fba5e40e3276ff3e6d33",

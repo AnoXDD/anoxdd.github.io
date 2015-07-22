@@ -412,27 +412,24 @@ animation.log = function(message, indent, type) {
 			htmlContent = "<p class=\"" + tabClass + " error\" id=" + id + ">" + message + "</p>";
 			break;
 		case 2:
-			htmlContent = "<p class=\"" +
-				tabClass + " warning\" id=" + id + ">" + message + "</p>";
+			htmlContent = "<p class=\"" + tabClass + " warning\" id=" + id + ">" + message + "</p>";
 			break;
 		default:
 			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
 	}
-	$(htmlContent).appendTo("#feedback").fadeTo(400, 1).mousedown(function() {
-		$(this).slideUp(200, function() {
+	$(htmlContent).appendTo("#feedback").mousedown(function() {
+		$(this).fadeOut(200, function() {
 			$(this).remove();
 		});
-	}).hover(function() {
-		$(this).fadeTo(400, 1);
 	}).on("contextmenu", function() {
 		// Right click to dismiss all
-		$("#feedback p").each(function() {
-			$(this).slideUp(200, function() {
-				$(this).remove();
-			});
+		$("#feedback").fadeOut(400, function() {
+			$(this).empty();
+			$(this).fadeIn(0);
 		});
-		return false;
 	});
+
+
 	switch (type) {
 		case 1:
 			message = "[ERR] " + message;
@@ -441,15 +438,9 @@ animation.log = function(message, indent, type) {
 			message = "[!!!] " + message;
 			// Deliberately miss the break token
 		default:
-			// Auto dim itself
-			setTimeout(function() {
-				$("p#" + id).fadeTo(400, .5);
-			}, dimTime);
 			// Auto remove itself
 			setTimeout(function() {
-				if ($("p#" + id).css("opacity") != 1) {
-					$("p#" + id).trigger("mousedown");
-				}
+				$("p#" + id).trigger("mousedown");
 			}, removeTime);
 			break;
 	}
@@ -477,7 +468,7 @@ animation.error = function(message, error, indent) {
  * @param {String} error - The error message
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.warn = function(message,error, indent) {
+animation.warn = function(message, error, indent) {
 	animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 2);
 }
 /**

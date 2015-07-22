@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.26.0 Build 072115_2155";
+﻿﻿app.version.main = "v3.26.1 Build 072215_1536";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -14,8 +14,9 @@ $("#version").html(app.version.main);
  * 
  * Todo add an integrity check before logging in
  * 
- * v3.26 - Log update v2
+ * v3.26 - UI update v2
  * [Chg] Make log more efficient
+ * [Chg] Add more details to fit material design
  * 
  * v3.25 Data analysis support
  * [Add] Graph and table analysis of keywords for data

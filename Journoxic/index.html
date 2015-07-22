@@ -29,9 +29,7 @@
 		</div>
 	</div>
 	<div id="year"></div>
-	<div id="feedback">
-		<div id="feedback-shadow"></div>
-	</div>
+	<div id="feedback"></div>
 	<div class="actions">
 		<div id="action-media">
 			<ul>
@@ -104,7 +102,6 @@
 		</div>
 		<div id="action-menu">
 			<ul>
-				<li><a title="Analyze entries" onclick="stats.init()">&#xf0ce</a></li>
 				<li class="has-sub">
 					<a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a>
 					<ul>
@@ -144,7 +141,6 @@
 				<li class="has-sub">
 					<a title="Refresh" id="refresh-media" onclick="app.refresh()" href="#"><span>&#xf021</span></a>
 					<ul>
-						<li><a title="Revert to archived data" id="undo-data" onclick="archive.init('#undo-data')" href="#">&#xf1da</a></li>
 						<li><a title="Download latest data" id="download" onclick="downloadFile()" href="#">&#xf0ed</a></li>
 						<li class="has-sub">
 							<a title="Upload all changed data" id="upload-all" onclick="uploadAllFiles()" href="#">&#xf0ee<span>&#xf0c2</span></a>
@@ -175,10 +171,43 @@
 						<li><a title="Toggle chart view" onclick="" class="hidden-icon hidden">&#xf133</a></li>
 					</ul>
 				</li>
-				<li><a title="Main menu" onclick="stats.quit()" href="#">&#xf0c9</a></li>
 			</ul>
 		</div>
 		<a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="#">&#xf090</a>
+	</div>
+	<div id="drawer" class="hidden">
+		<div id="drawer-profile">
+			<p>Welcome, <span id="username">Guest</span></p>
+		</div>
+		<hr/>
+		<ul>
+			<li class="drawer-menu display" id="drawer-view">
+				<a onclick="app.reinit()" href="#">
+					<span>&#xf03a</span>View
+				</a>
+			</li>
+			<li class="drawer-menu" id="drawer-archive">
+				<a id="undo-data" onclick="archive.init('#undo-data')" href="#">
+					<span>&#xf1da</span>Archive
+				</a>
+			</li>
+			<li class="drawer-menu" id="drawer-stats">
+				<a onclick="stats.init()" href="#">
+					<span>&#xf201</span>Stats
+				</a>
+			</li>
+		</ul>
+		<hr />
+		<ul>
+			<li class="drawer-option">
+				<span>&#xf013</span>Settings
+			</li>
+			<li class="drawer-option">
+				<a href="mailto:guanrunjie@gmail.com" target="_blank">
+					<span>&#xf003</span>Feedback
+				</a>
+			</li>
+		</ul>
 	</div>
 	<div id="video-fullscreen"></div>
 	<!-- Main frame of the viewer -->

@@ -9,6 +9,8 @@ journal.archive.media = 0;
 /** The map to map the source name to the weblink. Format: {name: {id: xxx, url: xxx, size: xxx}} */
 journal.archive.map = {};
 
+app.name = "Guest";
+
 app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 /** The year to be displayed */
 app.year = new Date().getFullYear();
@@ -153,7 +155,25 @@ app.init = function() {
 	// Test if there is any cache
 	animation.testCacheIcons();
 	animation.testSub("#add");
+	// Show the app drawer
+	$("#drawer").removeClass("hidden");
 };
+/**
+ * Reinitializes the app entry. Called when entered from another view panel
+ */
+app.reinit = function() {
+	$("drawer-menu").each(function() {
+		if ($(this).hasClass("display")) {
+			// This menu is in display
+			var id = $(this).attr("id");
+			if (id === "drawer-archive") {
+				archive.quit();
+			} else if (id === "drawer-stats") {
+				stats.quit();
+			}
+		}
+	});
+}
 /**
  * Simply refreshes and force reload
  */
@@ -370,7 +390,7 @@ app.getYears = function() {
 	getTokenCallback(function(token) {
 		$.ajax({
 			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=name&orderby=name&access_token=" + token
+			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=name,createdBy&orderby=name&access_token=" + token
 		})
 			.done(function(data) {
 				var itemList = data["value"];
@@ -384,6 +404,8 @@ app.getYears = function() {
 						network.yearFolders.push(name);
 					}
 				}
+				app.user = itemList[0]["createdBy"]["user"]["displayName"];
+				$("#username").html(app.user);
 				// If it is the first day of the year and this folder is not created, add this year to `app.years`
 				if (app.years.indexOf(new Date().getFullYear()) === -1) {
 					// It is supposed to the latest year
@@ -2291,4 +2313,4 @@ $(document).ready(function() {
 	archive.itemView = _.template($("#archive-view").html());
 	archive.detailView = _.template($("#archive-detail-view").html());
 });
-//})(window, jQuery);
+

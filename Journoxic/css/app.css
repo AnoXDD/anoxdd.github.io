@@ -100,10 +100,19 @@
 
 @keyframes fadein-feedback {
 	0% {
-		color: rgba(221, 221, 221, 0);
+		color: #777;
 	}
+
+	10% {
+		color: #bababa;
+	}
+
+	90% {
+		opacity: 1;
+	}
+
 	100% {
-		color: rgba(221, 221, 221);
+		opacity: 0;
 	}
 }
 
@@ -1844,8 +1853,6 @@ body {
 			display: initial;
 		}
 
-
-
 	#year {
 		background-color: #555;
 		box-shadow: 0 0 10px #2B2B2B;
@@ -1881,11 +1888,14 @@ body {
 	#feedback {
 		left: 8px;
 		position: absolute;
-		top: 80%;
+		top: 84%;
 		transition: opacity .5s ease;
 		z-index: 9;
 		width: 99%;
 		text-align: center;
+		height: 14%;
+		padding-top: 15px;
+		overflow: hidden;
 	}
 
 		#feedback p {
@@ -1896,22 +1906,43 @@ body {
 			font-size: 10px;
 			margin: auto;
 			padding: 4px 15px;
-			margin-bottom: -30px;
-			width: 8%;
+			margin-bottom: -20px;
+			width: 15%;
 			border-radius: 20px;
 			transition: .4s ease;
 			position: relative;
+			text-overflow: ellipsis;
+			height: 14px;
+			overflow: hidden;
+			white-space: nowrap;
+			display: none;
 		}
 
-			#feedback p:last-child {
-				animation: fadein-feedback 1s ease;
-				width: 25%;
-				font-size: 15px;
+			#feedback p:first-child {
+				animation: fadein-feedback 10s ease;
+				width: 35%;
+				font-size: 11px;
 				padding: 8px;
 				font-weight: bold;
 				background-color: #444;
-				box-shadow: 0 0 20px #000;
+				box-shadow: 0 0 15px #111;
 				z-index: 10;
+				display: inherit;
+			}
+
+			#feedback p:nth-child(2) {
+				z-index: 9;
+				display: inherit;
+			}
+
+			#feedback p:nth-child(3) {
+				z-index: 8;
+				display: inherit;
+			}
+
+			#feedback p:nth-child(4) {
+				z-index: 7;
+				display: inherit;
 			}
 
 			#feedback p::after {
@@ -1919,7 +1950,7 @@ body {
 			}
 
 		#feedback:hover p {
-			margin-bottom: -47px;
+			margin-bottom: 2px;
 		}
 
 		#feedback p.error {

@@ -385,8 +385,9 @@ animation.log = function(message, indent, type) {
 	/** 
 	 * The time of milliseconds since the emergence before the log square is removed
 	 * To make sure the log square is removed, set the value larger than `dimTime` 
+	 * Also, this has to be updated with .css file. Look up for @keyframes fadein-feedback
 	 */
-		removeTime = 15000;
+		removeTime = 10000;
 	var id = new Date().getTime(),
 		htmlContent,
 		tabClass = "";
@@ -417,7 +418,7 @@ animation.log = function(message, indent, type) {
 		default:
 			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
 	}
-	$(htmlContent).appendTo("#feedback").mousedown(function() {
+	$(htmlContent).prependTo("#feedback").mousedown(function() {
 		$(this).fadeOut(200, function() {
 			$(this).remove();
 		});

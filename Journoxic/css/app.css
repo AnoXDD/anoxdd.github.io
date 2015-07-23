@@ -3265,6 +3265,13 @@ body {
 }
 
 
+.drawer-menu a, .drawer-option a {
+    padding: 50px 0;
+	
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .drawer-menu.display {
     background-color: #B6B6B6;
 	

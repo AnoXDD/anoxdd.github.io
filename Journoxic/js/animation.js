@@ -485,5 +485,31 @@ animation.debug = function(message, indent) {
 		animation.indent += indent;
 	}
 }
-
-
+/**
+ * Switches from this panel to another panel, given the name
+ * @param {string} name - The name of the panel to be switched to
+ */
+animation.switch = function(name) {
+	// Gets the panel that is currently displayed
+	var current;
+	$("#drawer li").each(function(parameters) {
+		if ($(this).hasClass("display")) {
+			// This content is currently displayed
+			current = $(this).attr("id");
+			$(this).removeClass("display");
+		}
+	});
+	if (current === "drawer-archive") {
+		archive.quit();
+	} else if (current === "drawer-stats") {
+		stats.quit();
+	}
+	// Go to the menu
+	if (name === "archive") {
+		archive.init();
+	} else if (name === "stats") {
+		stats.init();
+	}
+	// Add display 
+	$("#drawer-" + name).addClass("display");
+}

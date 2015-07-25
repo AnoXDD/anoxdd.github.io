@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v3.26.9 Build 072515_1610";
+﻿﻿app.version.main = "v3.26.10 Build 072515_1637";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -17,6 +17,7 @@ $("#version").html(app.version.main);
  * v3.26 - UI update v2
  * [Chg] Make log more efficient
  * [Chg] Add more details to fit material design
+ * [Fix] Upload all and copy the core data instead of moving 
  * 
  * v3.25 Data analysis support
  * [Add] Graph and table analysis of keywords for data

@@ -1952,6 +1952,7 @@ body {
 
 #errors {
 	top: 10%;
+	height: 5%;
 }
 
 	#feedback p, #errors p {
@@ -2268,7 +2269,7 @@ body {
 			/* background: linear-gradient(to left, #ddd 0%,#ddd 90%,#B7B7B7 90%,#B7B7B7 100%); */
 			background-color: #DDDDDD;
 			box-shadow: 0 0 10px black;
-			color: #717171;
+			color: #333;
 			display: block;
 			margin-bottom: -1px;
 			margin-top: 10px;
@@ -2309,6 +2310,7 @@ body {
 }
 
 .actions ul ul li:hover > a {
+	background-color: #FFF;
 	color: #000000;
 }
 

@@ -221,7 +221,8 @@ animation.showMenu = function(name) {
 }
 /**
  * Shows the root menu given the name. To get the list of the possible names, check the class name under <.actions> in index.html.
- * This function will hide all the other menus else. To add a new menu list, use animation.showMenu
+ * This function will hide all the other menus else. To add a new menu list, use `animation.showMenu`.
+ * To show the main menu, `name` == "menu" returns true
  * @param {String} name - The name of the menu
  * @see animation.showMenu
  */

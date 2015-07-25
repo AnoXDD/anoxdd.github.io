@@ -174,7 +174,7 @@ function downloadFile(url, textOnly) {
 					////console.log("downloadFile()\tFinish core data");
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Now the data is up-to-date
-					app.yearChange[app.year] = false;
+					delete app.yearChange[app.year];
 					$("#year").removeClass("change");
 					app.yearUpdate();
 					if (textOnly) {
@@ -419,7 +419,10 @@ function uploadAllFiles() {
 	} else {
 		var years = Object.keys(app.yearChange);
 		for (var i = 0; i !== years.length; ++i) {
+			var year = years[i];
+			if (app.yearChange[year]){
 			uploadFile(years[i]);
+			}
 		}
 	}
 }

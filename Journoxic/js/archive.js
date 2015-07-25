@@ -502,5 +502,6 @@ archive.quit = function() {
 		// Reshow the menu
 		$("#refresh-media").trigger("click");
 		$("#search-new, #search-result").fadeIn();
+		animation.showMenuOnly("menu");
 	}
 }

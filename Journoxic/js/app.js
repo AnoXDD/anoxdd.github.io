@@ -17,7 +17,7 @@ app.year = new Date().getFullYear();
 app.years = [];
 /** The data to be appended to the year, if this year has not already loaded */
 app.yearQueue = {};
-/** Whether there are any changes for this year (used for remind the user to upload the data */
+/** The years that have unsaved changes (used for remind the user to upload the data) */
 app.yearChange = {};
 /** The resource folder of all the images/video/music covers, etc. */
 app.resource = "resource/";

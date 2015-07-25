@@ -607,7 +607,7 @@
 	</script>
 	<script type="text/x-template" id="archive-detail-view">
 		<div class="head">
-			<p class="title"><%- name %></p>
+			<p class="title"><%= name.replace("_data","data") %></p>
 			<p class="datetime">Created: <%- created %></p>
 			<p class="datetime">Last Modified: <%- modified %></p>
 		</div>

@@ -140,8 +140,8 @@ window.log = {
 	STATS_ENTRY_ALREADY_EXIST: "This entry is already added",
 	STATS_ENTRY_EMPTY_STRING: "Invalid entry input",
 
-	SERVER_RETURNS: ". The server returns error \"",
-	SERVER_RETURNS_END: "\"",
+	SERVER_RETURNS: " [Error ",
+	SERVER_RETURNS_END: "]",
 
 	AUTH_REFRESH_ACCESS_START: "Refreshing access token ...",
 	AUTH_REFRESH_ACCESS_END: "Access token refreshed",
@@ -405,46 +405,55 @@ animation.log = function(message, indent, type) {
 	}
 	// Present it to the website
 	type = type || 0;
+	var parent;
 	switch (type) {
 		case 0:
 			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
+			parent = "#feedback";
 			break;
 		case 1:
-			htmlContent = "<p class=\"" + tabClass + " error\" id=" + id + ">" + message + "</p>";
+			// Clear the data there first
+			htmlContent = "<p id=" + id + ">" + message + "</p>";
+			parent = "#errors";
+			$(parent).empty();
 			break;
 		case 2:
 			htmlContent = "<p class=\"" + tabClass + " warning\" id=" + id + ">" + message + "</p>";
+			parent = "#feedback";
 			break;
 		default:
 			htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
+			parent = "#feedback";
 	}
-	$(htmlContent).prependTo("#feedback").mousedown(function() {
-		$(this).fadeOut(200, function() {
-			$(this).remove();
-		});
-	}).on("contextmenu", function() {
+	$(htmlContent).prependTo(parent).on("contextmenu", function() {
 		// Right click to dismiss all
-		$("#feedback").fadeOut(400, function() {
+		$(parent).fadeOut(200, function() {
 			$(this).empty();
 			$(this).fadeIn(0);
 		});
+		return false;
+	}).mousedown(function() {
+		if (parent === "#errors") {
+			// One click to dismiss all
+			$(this).trigger("contextmenu");
+		} else {
+			$(this).fadeOut(200, function() {
+				$(this).remove();
+			});
+		}
 	});
-
-
 	switch (type) {
 		case 1:
 			message = "[ERR] " + message;
 			break;
 		case 2:
 			message = "[!!!] " + message;
-			// Deliberately miss the break token
-		default:
-			// Auto remove itself
-			setTimeout(function() {
-				$("p#" + id).trigger("mousedown");
-			}, removeTime);
 			break;
 	}
+	// Auto remove itself
+	setTimeout(function() {
+		$("#" + id).trigger("mousedown");
+	}, removeTime);
 	console.log("From user log: \t" + new Date() + ": " + message);
 	if (indent === 1) {
 		++animation.indent;

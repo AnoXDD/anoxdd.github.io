@@ -159,22 +159,6 @@ app.init = function() {
 	$("#drawer").removeClass("hidden");
 };
 /**
- * Reinitializes the app entry. Called when entered from another view panel
- */
-app.reinit = function() {
-	$("drawer-menu").each(function() {
-		if ($(this).hasClass("display")) {
-			// This menu is in display
-			var id = $(this).attr("id");
-			if (id === "drawer-archive") {
-				archive.quit();
-			} else if (id === "drawer-stats") {
-				stats.quit();
-			}
-		}
-	});
-}
-/**
  * Simply refreshes and force reload
  */
 app.refresh = function() {
@@ -2313,4 +2297,5 @@ $(document).ready(function() {
 	archive.itemView = _.template($("#archive-view").html());
 	archive.detailView = _.template($("#archive-detail-view").html());
 });
+
 

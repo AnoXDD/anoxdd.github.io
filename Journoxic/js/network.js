@@ -295,25 +295,23 @@ function downloadMedia(url) {
 }
 
 /**
- * A helper function. Uploads journal.archive.data to OneDrive and creates a backup. If this folder does not exist, this function will create a folder before uploading
- * @param {number} dataYear (Optional) - The year of the data to be uploaded
+ * Creates a backup file for all the files given `app.years`. Should only be called in `app.getYears`
+ * @param {Object} - The list of years to backup
  */
-function uploadFile(dataYear) {
-	dataYear = parseInt(dataYear) || app.year;
-	// Change loading icons and disable click
-	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+function backupAll(years) {
 	getTokenCallback(function(token) {
-		/**
-		 * The function to be called to upload the file. This function assumes that the folder has already been prepared
-		 */
-		var upload = function() {
+		animation.log(log.CONTENTS_BACKUP_START);
+		years = years || app.years;
+		network.init(years.length - 1);
+		for (var i = 0; i !== years.length; ++i) {
 			var d = new Date(),
 				month = d.getMonth() + 1,
 				day = d.getDate(),
 				year = d.getFullYear() % 100,
 				hour = d.getHours(),
 				minute = d.getMinutes(),
-				second = d.getSeconds();
+				second = d.getSeconds(),
+				dataYear = years[i];
 			month = month < 10 ? "0" + month : month;
 			day = day < 10 ? "0" + day : day;
 			year = year < 10 ? "0" + year : year;
@@ -347,44 +345,51 @@ function uploadFile(dataYear) {
 				})
 				.always(function(xhr, status, error) {
 					network.next();
-					// Tests if the file is moved successfully or that the original file does not even exist (error === "Bad Request")
-					if (status === "success" || error === "Bad Request") {
-						// Clean the unnecessary data
-						var tmp = edit.minData();
-						$.ajax({
-							type: "PUT",
-							url: getCoreDataUrlHeader(true) + ":/content?access_token=" + token,
-							contentType: "text/plain",
-							data: JSON.stringify(tmp)
-						})
-							.done(function() {
-								////console.log("uploadFile():\t Done!");
-								// Now the data is up-to-date
-								app.yearChange[app.year] = false;
-								$("#year").removeClass("change");
-								animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
-							})
-							.fail(function(xhr2, status2, error2) {
-								animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
-								////alert("Cannot upload files");
-							})
-							.always(function() {
-								network.next();
-								// Change loading icons and re-enable click
-								$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-									onclick: "uploadSingleFile()",
-									href: "#"
-								});
-							});
-					} else {
-						// Change loading icons and re-enable click
-						$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-							onclick: "uploadSingleFile()",
-							href: "#"
-						});
-
-					}
 					////console.log("uploadFile()\tFinish uploading");
+				});
+		}
+	});
+}
+
+/**
+ * A helper function. Uploads journal.archive.data to OneDrive and creates a backup. If this folder does not exist, this function will create a folder before uploading
+ * @param {number} dataYear (Optional) - The year of the data to be uploaded
+ */
+function uploadFile(dataYear) {
+	dataYear = parseInt(dataYear) || app.year;
+	// Change loading icons and disable click
+	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+	getTokenCallback(function(token) {
+		/**
+		 * The function to be called to upload the file. This function assumes that the folder has already been prepared
+		 */
+		var upload = function() {
+			// Clean the unnecessary data
+			var tmp = edit.minData();
+			$.ajax({
+				type: "PUT",
+				url: getCoreDataUrlHeader(true, dataYear) + ":/content?access_token=" + token,
+				contentType: "text/plain",
+				data: JSON.stringify(tmp)
+			})
+				.done(function() {
+					////console.log("uploadFile():\t Done!");
+					// Now the data is up-to-date
+					app.yearChange[app.year] = false;
+					$("#year").removeClass("change");
+					animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
+				})
+				.fail(function(xhr2, status2, error2) {
+					animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
+					////alert("Cannot upload files");
+				})
+				.always(function() {
+					network.next();
+					// Change loading icons and re-enable click
+					$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
+						onclick: "uploadSingleFile()",
+						href: "#"
+					});
 				});
 		};
 		if (network.yearFolders.indexOf(app.year) === -1) {
@@ -392,7 +397,6 @@ function uploadFile(dataYear) {
 			createFolders(upload, 5);
 		} else {
 			// Just upload it
-			network.init(1);
 			upload();
 		}
 	});
@@ -420,8 +424,8 @@ function uploadAllFiles() {
 		var years = Object.keys(app.yearChange);
 		for (var i = 0; i !== years.length; ++i) {
 			var year = years[i];
-			if (app.yearChange[year]){
-			uploadFile(years[i]);
+			if (app.yearChange[year]) {
+				uploadFile(years[i]);
 			}
 		}
 	}

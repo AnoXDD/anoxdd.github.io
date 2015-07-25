@@ -396,6 +396,7 @@ app.getYears = function() {
 					app.years.push(new Date().getFullYear());
 					// So unnecessary to sort it after push
 				}
+				backupAll();
 				animation.testYearButton();
 				animation.log(log.GET_YEARS_END);
 			})

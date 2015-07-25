@@ -62,6 +62,7 @@ window.log = {
 	CONTENTS_DOWNLOAD_MEDIA_END: "Media data loaded",
 	CONTENTS_DOWNLOAD_END: "Data download finished",
 	CONTENTS_UPLOAD_START: "Start uploading archive data ...",
+	CONTENTS_BACKUP_START: "Start creating backups ...",
 	CONTENTS_UPLOAD_BACKUP: "Data backup finished",
 	CONTENTS_UPLOAD_BACKUP_FAIL: "Cannot backup archive data. Please see if there is any name conflict",
 	CONTENTS_UPLOAD_REGISTER_FAIL: "Cannot register folder for this year. Please try again later",

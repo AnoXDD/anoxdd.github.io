@@ -327,6 +327,7 @@ function uploadFile(dataYear) {
 				type: "POST",
 				url: getCoreDataUrlHeader(false, dataYear) + ":/action.copy?access_token=" + token,
 				contentType: "application/json",
+				async: false,
 				data: JSON.stringify(data)
 			})
 				////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////

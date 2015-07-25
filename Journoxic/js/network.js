@@ -324,15 +324,15 @@ function uploadFile(dataYear) {
 				data = { name: fileName };
 			// Backup the original file
 			$.ajax({
-				type: "PATCH",
-				url: getCoreDataUrlHeader(false, dataYear) + "?access_token=" + token,
+				type: "POST",
+				url: getCoreDataUrlHeader(false, dataYear) + ":/action.copy?access_token=" + token,
 				contentType: "application/json",
 				data: JSON.stringify(data)
 			})
 				////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
 				.done(function() {
 					////console.log("uploadFile():\t Done backup");
-					animation.log(log.CONTENTS_UPLOAD_BACKUP);
+					animation.debug(log.CONTENTS_UPLOAD_BACKUP);
 					network.next();
 				})
 				.fail(function(xhr, status, error) {

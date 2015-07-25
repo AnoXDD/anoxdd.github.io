@@ -327,14 +327,15 @@ function uploadFile(dataYear) {
 				type: "POST",
 				url: getCoreDataUrlHeader(false, dataYear) + ":/action.copy?access_token=" + token,
 				contentType: "application/json",
-				async: false,
-				data: JSON.stringify(data)
+				data: JSON.stringify(data),
+				headers: {
+					Prefer: "respond-async"
+				}
 			})
 				////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
 				.done(function() {
 					////console.log("uploadFile():\t Done backup");
 					animation.debug(log.CONTENTS_UPLOAD_BACKUP);
-					network.next();
 				})
 				.fail(function(xhr, status, error) {
 					// Bad request means the file to be moved is not found
@@ -345,6 +346,7 @@ function uploadFile(dataYear) {
 					////alert("Cannot backup the file");
 				})
 				.always(function(xhr, status, error) {
+					network.next();
 					// Tests if the file is moved successfully or that the original file does not even exist (error === "Bad Request")
 					if (status === "success" || error === "Bad Request") {
 						// Clean the unnecessary data

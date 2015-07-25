@@ -299,7 +299,7 @@ function downloadMedia(url) {
  * @param {number} dataYear (Optional) - The year of the data to be uploaded
  */
 function uploadFile(dataYear) {
-	dataYear = dataYear || app.year;
+	dataYear = parseInt(dataYear) || app.year;
 	// Change loading icons and disable click
 	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
@@ -333,42 +333,54 @@ function uploadFile(dataYear) {
 				.done(function() {
 					////console.log("uploadFile():\t Done backup");
 					animation.log(log.CONTENTS_UPLOAD_BACKUP);
-					// Now the data is up-to-date
-					app.yearChange[app.year] = false;
-					$("#year").removeClass("change");
 					network.next();
-					// Clean the unnecessary data
-					var tmp = edit.minData();
-					$.ajax({
-						type: "PUT",
-						url: getCoreDataUrlHeader(true) + ":/content?access_token=" + token,
-						contentType: "text/plain",
-						data: JSON.stringify(tmp)
-					})
-						.done(function(data, status, xhr) {
-							////console.log("uploadFile():\t Done!");
-							animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
-						})
-						.fail(function(xhr, status, error) {
-							animation.error(log.CONTENTS_UPLOAD_FAIL, error, -1);
-							////alert("Cannot upload files");
-						})
-						.always(function() {
-							network.next();
-						});
 				})
 				.fail(function(xhr, status, error) {
-					animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL, error, -1);
-					network.destroy();
+					// Bad request means the file to be moved is not found
+					if (error !== "Bad Request") {
+						animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL, error, -1);
+						network.destroy();
+					}
 					////alert("Cannot backup the file");
 				})
-				.always(function() {
-					// Change loading icons and re-enable click
-					$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-						onclick: "uploadSingleFile()",
-						href: "#"
-					});
-					animation.finished("#upload");
+				.always(function(xhr, status, error) {
+					// Tests if the file is moved successfully or that the original file does not even exist (error === "Bad Request")
+					if (status === "success" || error === "Bad Request") {
+						// Clean the unnecessary data
+						var tmp = edit.minData();
+						$.ajax({
+							type: "PUT",
+							url: getCoreDataUrlHeader(true) + ":/content?access_token=" + token,
+							contentType: "text/plain",
+							data: JSON.stringify(tmp)
+						})
+							.done(function() {
+								////console.log("uploadFile():\t Done!");
+								// Now the data is up-to-date
+								app.yearChange[app.year] = false;
+								$("#year").removeClass("change");
+								animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
+							})
+							.fail(function(xhr2, status2, error2) {
+								animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
+								////alert("Cannot upload files");
+							})
+							.always(function() {
+								network.next();
+								// Change loading icons and re-enable click
+								$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
+									onclick: "uploadSingleFile()",
+									href: "#"
+								});
+							});
+					} else {
+						// Change loading icons and re-enable click
+						$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
+							onclick: "uploadSingleFile()",
+							href: "#"
+						});
+
+					}
 					////console.log("uploadFile()\tFinish uploading");
 				});
 		};
@@ -402,8 +414,9 @@ function uploadAllFiles() {
 		// No file to be uploaded, upload this year's data instead
 		uploadFile();
 	} else {
-		for (var i = 0; i !== app.yearChange.length; ++i) {
-			uploadFile(app.yearChange[i]);
+		var years = Object.keys(app.yearChange);
+		for (var i = 0; i !== years.length; ++i) {
+			uploadFile(years[i]);
 		}
 	}
 }

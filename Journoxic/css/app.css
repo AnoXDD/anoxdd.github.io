@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -390,9 +390,9 @@ body {
 
 	#list a {
 		background: #fff;
+		box-shadow: 0 1px 2px #555;
 		display: block;
 		height: 60px;
-		box-shadow: 0 1px 2px #555;
 		margin-bottom: 5px;
 		padding: 10px;
 		position: relative;
@@ -1951,8 +1951,8 @@ body {
 }
 
 #errors {
-	top: 10%;
 	height: 5%;
+	top: 10%;
 }
 
 	#feedback p, #errors p {
@@ -2142,16 +2142,16 @@ body {
 }
 
 #errors p {
-	background: #FFF;
-	color: #000;
-	font-weight: bold;
-	display: block;
-	width: 30%;
-	border-style: solid;
-	border-color: rgb(173, 173, 173);
-	border-width: 1px;
-	margin-bottom: -24px;
 	animation: fadein-feedback-error 10.2s ease;
+	background: #FFF;
+	border-color: rgb(173, 173, 173);
+	border-style: solid;
+	border-width: 1px;
+	color: #000;
+	display: block;
+	font-weight: bold;
+	margin-bottom: -24px;
+	width: 30%;
 }
 
 	#errors p:not(:first-child) {
@@ -2304,8 +2304,8 @@ body {
 	}
 
 #upload-all::after {
-	right: 16px;
 	bottom: 39px;
+	right: 16px;
 	text-shadow: initial;
 }
 
@@ -2331,15 +2331,15 @@ body {
 		height: 20px;
 		left: 3px;
 		overflow: hidden;
+		position: relative;
 		text-shadow: 0 0 0;
 		width: 8px;
 		z-index: -1;
-		position: relative;
 	}
 
-			.actions a.hidden {
-			display: none;
-		}
+.actions a.hidden {
+	display: none;
+}
 
 
 
@@ -3292,10 +3292,10 @@ body {
 
 .drawer-menu, .drawer-option {
 	display: block;
+	float: left;
 	left: -20px;
 	margin: 0px;
 	position: relative;
-	float: left;
 	width: 100%;
 }
 
@@ -3303,12 +3303,12 @@ body {
 	.drawer-menu a, .drawer-option a {
 		border-radius: 10px 0 0 10px;
 		display: block;
-		width: 100%;
+		margin: 5px 0;
 		padding: 5px 0px 20px 21px;
 		text-overflow: ellipsis;
-		white-space: nowrap;
 		transition: background-color .2s ease;
-		margin: 5px 0;
+		white-space: nowrap;
+		width: 100%;
 	}
 
 	.drawer-menu.display > a {

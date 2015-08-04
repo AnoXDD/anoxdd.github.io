@@ -2217,10 +2217,6 @@ body {
 			padding: 10px 7px 0px 5px;
 		}
 
-		.actions a.hidden {
-			display: none;
-		}
-
 		.actions a.hidden-icon:not(.hidden) {
 			animation: fadein-inline 1.5s;
 		}
@@ -2269,7 +2265,7 @@ body {
 		}
 
 
-		.actions .has-sub > ul li a {
+		.actions .has-sub > ul li a:not(.hidden) {
 			/* background: linear-gradient(to left, #ddd 0%,#ddd 90%,#B7B7B7 90%,#B7B7B7 100%); */
 			background-color: #DDDDDD;
 			box-shadow: 0 0 10px black;
@@ -2340,6 +2336,12 @@ body {
 		z-index: -1;
 		position: relative;
 	}
+
+			.actions a.hidden {
+			display: none;
+		}
+
+
 
 /*===============================EDIT_PANE============================*/
 

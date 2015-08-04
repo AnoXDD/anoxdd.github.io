@@ -17,6 +17,7 @@ edit.isEditing = -1;
 edit.isFolder = false;
 /** The name of the folder mentioned above */
 edit.folderDate = "";
+edit.isEditPaneDisplayed = false;
 
 edit.removalList = {};
 
@@ -134,6 +135,7 @@ edit.init = function(overwrite, index) {
 	$("#contents").fadeOut(400, function() {
 		// Initialize the pane, this line must be the first one!
 		$("#edit-pane").html(editPane).fadeIn();
+		edit.isEditPaneDisplayed = true;
 		// Hide photo preview panal
 		$("#photo-preview").hide();
 		// Enter to finish entry header
@@ -354,6 +356,7 @@ edit.quit = function(selector, save) {
 	// Content processing
 	$("#search-new, #search-result").fadeIn();
 	$("#edit-pane").fadeOut(400, function() {
+		edit.isEditPaneDisplayed = false;
 		// Remove the edit pane
 		$("#edit-pane").html("");
 		$("#contents").fadeIn();
@@ -388,7 +391,7 @@ edit.save = function(selector) {
 	}
 	if (selector) {
 		html = $(selector).html();
-		$(selector).html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+		$(selector).html("&#xf1ce").removeAttr("onclick").removeAttr("href");
 		id = animation.blink(selector);
 	}
 	edit.processRemovalList();
@@ -548,6 +551,8 @@ edit.exportCacheBody = function(data) {
 		data["text"] = {};
 	}
 	var body = localStorage["body"];
+	// Sometimes the body can be empty
+	body = body || "";
 	data["text"]["body"] = body;
 	data["text"]["chars"] = body.length;
 	data["text"]["lines"] = body.split(/\r*\n/).length;
@@ -1997,6 +2002,8 @@ edit.location = function(index) {
 	edit.mediaIndex["place"] = index;
 	// Spread map-selector
 	$("#map-holder").fadeIn();
+	// Show pin icon
+	$("#pin-point").removeClass("hidden");
 	var selectorHeader = edit.getSelectorHeader("place", index);
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
@@ -2099,6 +2106,7 @@ edit.locationHide = function() {
 	edit.locationSave(edit.mediaIndex["place"]);
 	// Remove the contents
 	$("#map-holder").fadeOut().html("<div id=\"map-selector\"></div>");
+	$("#pin-point").addClass("hidden");
 	$("#edit-pane").off("keyup");
 	// Hide all the options button
 	animation.hideHiddenIcons();

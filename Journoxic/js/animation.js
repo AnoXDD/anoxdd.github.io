@@ -88,6 +88,7 @@ window.log = {
 	TAG_ADDED: "\" added",
 	TAG_ADDED_FAILED: "\" cannot be added",
 	TAG_REMOVED: "\" removed",
+	EDIT_PANE_NOT_SWITCHABLE: "Save or quit editing this entry to switch to another panel",
 	EDIT_PANE_IMAGES_ALREADY_LOADED: "Images have already been loaded",
 	EDIT_PANE_IMAGES_FAIL: "Cannot load images",
 	EDIT_PANE_IMAGES_START: "Start loading images under data/",
@@ -472,7 +473,11 @@ animation.log = function(message, indent, type) {
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
 animation.error = function(message, error, indent) {
-	animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 1);
+	if (error != undefined) {
+		animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 1);
+	} else {
+		animation.log(message, 2);
+	}
 }
 /**
  * Calls a warning message and display it on the screen
@@ -481,7 +486,11 @@ animation.error = function(message, error, indent) {
  * @param {Number} indent - The indent parameter. 1 for indenting by one (effective immediately). -1 for dedenting by one (effective after)
  */
 animation.warn = function(message, error, indent) {
-	animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 2);
+	if (error != undefined) {
+		animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 2);
+	} else {
+		animation.log(message, 2);
+	}
 }
 /**
  * Logs a debug message on the screen
@@ -501,6 +510,12 @@ animation.debug = function(message, indent) {
  * @param {string} name - The name of the panel to be switched to
  */
 animation.switch = function(name) {
+	// Test if edit pane is displayed
+	if (edit.isEditPaneDisplayed) {
+		animation.error(log.EDIT_PANE_NOT_SWITCHABLE);
+		// Content currently being displayed, abort
+		return;
+	}
 	// Gets the panel that is currently displayed
 	var current;
 	$("#drawer li").each(function(parameters) {

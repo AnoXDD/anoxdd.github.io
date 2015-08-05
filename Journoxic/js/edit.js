@@ -1496,6 +1496,10 @@ edit.coverTest = function(type) {
  * @param {function} callback - The callback function after the images are loaded
  */
 edit.photo = function(isQueue, callback) {
+	// Fix callback if not defined
+	if (typeof callback != "function") {
+		callback = function() {};
+	}
 	if (edit.photos.length !== 0 && !isQueue) {
 		// Return if edit.photo is already displayed
 		animation.error(log.EDIT_PANE_IMAGES_ALREADY_LOADED);

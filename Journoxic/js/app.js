@@ -610,18 +610,15 @@ app.list.prototype = {
 					if (element[subkey].charAt(0) === "#") {
 						if (data["tags"]) {
 							subfound = false;
-							var textTagArray = data["tags"].split("|");
-							for (tag in textTagArray) {
-								if (textTagArray.hasOwnProperty(tag)) {
-									if (textTagArray[tag] == element[subkey].substr(1)) {
-										subfound = true;
-										break;
-									}
-								}
+							var textTagArray = data["tags"].split("|"),
+								index  = textTagArray.indexOf(element[subkey].substr(1));
+							if (index !== -1) {
+								subfound = true;
 							}
 							if (subfound) {
 								////console.log("\t- Tags Found!");
 								// Found
+								found = true;
 								break;
 							}
 						}
@@ -1112,7 +1109,7 @@ app.detail = function() {
 	});
 	// Click the icons to search
 	$(".icontags > span").on("click", function() {
-		var tag = app.tag().getValueByHtml(this.className);
+		var tag = app.tag().getNameByHtml(this.className);
 		if (tag != "") {
 			app.load("#" + tag);
 		}
@@ -1550,6 +1547,9 @@ app.tag = function() {
 		},
 		getValueByName: function(name) {
 			return this.translate(name.toLowerCase(), "name", "value");
+		},
+		getValueByHtml: function(name ) {
+			return this.translate(name.toLowerCase(), "html", "value");
 		},
 		getHtmlByName: function(name) {
 			return this.translate(name.toLowerCase(), "name", "html");

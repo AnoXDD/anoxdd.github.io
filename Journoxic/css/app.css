@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -1167,7 +1167,7 @@ body {
 			}
 
 			#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c01,
-			#detail .icontags span.c01, #edit-pane #attach-area .icontags p.c02,
+			#detail .icontags span.c02, #edit-pane #attach-area .icontags p.c02,
 			#detail .icontags span.c05, #edit-pane #attach-area .icontags p.c05,
 			#detail .icontags span.c06, #edit-pane #attach-area .icontags p.c06,
 			#detail .icontags span.c07, #edit-pane #attach-area .icontags p.c07,
@@ -1938,27 +1938,37 @@ body {
 
 
 #feedback, #errors {
-	height: 14%;
+	height: 5%;
 	left: 8px;
 	overflow: hidden;
-	padding-top: 15px;
 	position: absolute;
 	text-align: center;
-	top: 84%;
-	transition: opacity .5s ease;
+	top: 3.5%;
+	transition: opacity .5s ease, top .4s ease, height .4s ease;
 	width: 99%;
-	z-index: 9;
+	z-index: 0;
+}
+
+#feedback {
+	
+    height: 0px;
+    position: relative;
+    margin: 0 auto;
+    width: 52%;
+    top: -6%;
+    padding: 0;
+    overflow: inherit;
 }
 
 #errors {
 	height: 5%;
-	top: 10%;
+	top: 12%;
 }
 
 	#feedback p, #errors p {
-		background: #777;
+		/* background: #777; */
 		border-radius: 20px;
-		box-shadow: 0 0 2px #353535;
+		/* box-shadow: 0 0 2px #353535; */
 		clear: both;
 		color: #BABABA;
 		display: none;
@@ -1978,33 +1988,34 @@ body {
 		#feedback p:first-child {
 			animation: fadein-feedback 10.5s ease;
 			background-color: #444;
-			box-shadow: 0 0 15px #111;
+			/* box-shadow: 0 0 15px #111; */
 			display: inherit;
 			font-size: 11px;
 			font-weight: bold;
-			padding: 8px;
-			width: 35%;
+			width: 96%;
 			z-index: 10;
-		}
+		
+}
 
 		#feedback p:nth-child(2) {
-			display: inherit;
+			/* display: inherit; */
 			z-index: 9;
 		}
 
 		#feedback p:nth-child(3) {
-			display: inherit;
+			/* display: inherit; */
 			z-index: 8;
 		}
 
 		#feedback p:nth-child(4) {
-			display: inherit;
+			/* display: inherit; */
 			z-index: 7;
 		}
 
 		#feedback p::after {
 			font-family: monospace;
 		}
+
 
 #feedback:hover p {
 	margin-bottom: 2px;

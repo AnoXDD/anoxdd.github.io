@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v4.0 Build 080415_2000";
+﻿﻿app.version.main = "v4.0.1 Build 080515_1349";
 
 // Version number show up
 $("#version").html(app.version.main);

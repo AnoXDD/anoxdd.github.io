@@ -476,7 +476,7 @@ animation.error = function(message, error, indent) {
 	if (error != undefined) {
 		animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 1);
 	} else {
-		animation.log(message, 2);
+		animation.log(message, indent, 1);
 	}
 }
 /**

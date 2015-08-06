@@ -1954,7 +1954,7 @@ body {
     height: 0px;
     position: relative;
     margin: 0 auto;
-    width: 52%;
+    width: 40%;
     top: -6%;
     padding: 0;
     overflow: inherit;
@@ -1987,7 +1987,7 @@ body {
 
 		#feedback p:first-child {
 			animation: fadein-feedback 10.5s ease;
-			background-color: #444;
+			/* background-color: #444; */
 			/* box-shadow: 0 0 15px #111; */
 			display: inherit;
 			font-size: 11px;
@@ -2021,24 +2021,6 @@ body {
 	margin-bottom: 2px;
 }
 
-#feedback p.indent-1 {
-	background: #585858;
-}
-
-	#feedback p.indent-1.start::after { /*content: ' \2510';*/
-	}
-
-	#feedback p.indent-1::after {
-		content: ' \2502';
-	}
-
-	#feedback p.indent-1.end::after { /*content: ' \2518';*/
-	}
-
-#feedback p.indent-2 {
-	background: #777;
-}
-
 #feedback p:hover {
 	opacity: 1;
 }
@@ -2053,102 +2035,8 @@ body {
 	font-weight: bold;
 }
 
-#feedback p.indent-1 {
-	background: #585858;
-}
-
-	#feedback p.indent-1.start::after { /*content: ' \2510';*/
-	}
-
-	#feedback p.indent-1::after {
-		content: ' \2502';
-	}
-
-	#feedback p.indent-1.end::after { /*content: ' \2518';*/
-	}
-
-#feedback p.indent-2 {
-	background: #777;
-}
-
-
-	#feedback p.indent-2.start::after { /*content: ' \252C\2524';*/
-	}
-
-	#feedback p.indent-2::after {
-		content: ' \2502\2502';
-	}
-
-	#feedback p.indent-2.end::after { /*content: ' \2534\2518';*/
-	}
-
-#feedback p.indent-3 {
-	background: #888888;
-	color: #ccc;
-}
-
-	#feedback p.indent-3.start::after { /*content: ' \252C\2534\2524';*/
-	}
-
-	#feedback p.indent-3::after {
-		/* Use \A0 for spaces */
-		content: ' \2502\2502\2502';
-	}
-
-	#feedback p.indent-3.end::after { /*content: ' \2534\2500\2518';*/
-	}
-
-#feedback p.indent-4 {
-	background: #aaa;
-	color: #eee;
-}
-
-
-	#feedback p.indent-4.start::after { /*content: ' \252C\2534\2500\2524';*/
-	}
-
-	#feedback p.indent-4::after {
-		content: ' \2502\2502\2502\2502';
-	}
-
-	#feedback p.indent-4.end::after { /*content: ' \2534\2500\2500\2518';*/
-	}
-
-#feedback p.indent-5 {
-	background: #b8b8b8;
-	color: #eee;
-}
-
-
-	#feedback p.indent-5.start::after { /*content: ' \252C\2534\2500\2500\2524';*/
-	}
-
-	#feedback p.indent-5::after {
-		content: ' \2502\2502\2502\2502\2502';
-	}
-
-	#feedback p.indent-5.end::after { /*content: ' \2534\2500\2500\2500\2518';*/
-	}
-
-#feedback p.indent-6 {
-	background: #ddd;
-	color: #222;
-}
-
-
-	#feedback p.indent-6.start::after { /*content: ' \252C\2534\2500\2500\2500\2524';*/
-	}
-
-	#feedback p.indent-6::after {
-		content: ' \2502\2502\2502\2502\2502\2502';
-	}
-
-	#feedback p.indent-6.end::after { /*content: ' \2534\2500\2500\2500\2500\2518';*/
-	}
-
 #feedback p.warning {
-	background-color: #fff;
-	color: #000;
+	/* background-color: #fff; */
 	font-style: italic;
 }
 

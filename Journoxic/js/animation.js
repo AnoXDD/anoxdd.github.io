@@ -189,6 +189,14 @@ animation.toggleIcon = function(selector, callback) {
 };
 
 /**
+ * Hides this menu
+ * @param {string} name - The name of the menu to be hidden
+ */
+animation.hideMenu = function(name) {
+	$("#action-" + name).removeClass("fadein-inline");
+	animation.hideHiddenIcons();
+}
+/**
  * Hides all the icon menus
  */
 animation.hideAllMenus = function() {
@@ -233,14 +241,6 @@ animation.showMenuOnly = function(name) {
 	animation.hideAllMenus();
 	animation.showMenu(name);
 };
-/**
- * Hides this menu
- * @param {string} name - The name of the menu to be hidden
- */
-animation.hideMenu = function(name) {
-	$(".actions > #" + name).removeClass("fadein-inline");
-	animation.hideHiddenIcons();
-}
 /**
  * Shows or hides the icons that ask the user to read or abandon cached data according to if there is any cached data
  */

@@ -375,24 +375,19 @@ edit.quit = function(selector, save) {
  * Saves cache for edit-pane to journal.archive.data
  * @param {string} selector - The selector to show the finished animation
  */
-edit.save = function(selector) {
+edit.save = function() {
 	if (network.isAjaxActive) {
 		// Do not save if network is still working
 		animation.warning(log.NETWORK_WORKING);
 		return;
 	}
-	var id, html;
+	var id;
 	animation.log(log.EDIT_PANE_SAVE_START, 1);
 	network.init(3);
 	if (animation.isShown("#action-remove-confirm")) {
 		// Confirm button will be pressed automatically if shown
 		animation.debug(log.EDIT_PANE_SAVE_PENDING_ATTACHMENTS);
 		edit.confirm();
-	}
-	if (selector) {
-		html = $(selector).html();
-		$(selector).html("&#xf1ce").removeAttr("onclick").removeAttr("href");
-		id = animation.blink(selector);
 	}
 	edit.processRemovalList();
 	// Save photos, voices and videos
@@ -409,12 +404,12 @@ edit.save = function(selector) {
 				edit.removeDuplicate();
 				journal.archive.data[app.year] = edit.minData();
 				edit.saveDataCache();
-				$(selector).html(html).removeClass("spin").attr({
-					onclick: "edit.save('" + selector + "')",
+				$("#add-save-local").html("&#xf0c7").attr({
+					onclick: "edit.save()",
 					href: "#"
 				});
 				// Show finish animation
-				animation.finished(selector);
+				animation.finished("#add-save-local");
 				animation.log(log.EDIT_PANE_SAVE_END, -1);
 				network.destroy();
 				// Upload the file to OneDrive
@@ -1229,6 +1224,8 @@ edit.getMyTime = function(timeNum) {
 edit.addTag = function(tag, mute) {
 	// If a tag is not specified, it will get the value from the input box where user puts a new tag value
 	tag = tag || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
+	// Remove the spaces in `tag`
+	tag = tag.replace(/ /g, "");
 	// Test for duplicate
 	if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
 		// The entry is already added
@@ -1271,7 +1268,8 @@ edit.addTag = function(tag, mute) {
 			// Keep searching for texttags
 			$("#entry-tag").effect("highlight", { color: "#dadada" }, 400);
 			// Marked for a new entry
-			$("#attach-area .texttags .other").append("<p title='Click to remove' onclick=edit.removeTag('" + tag + "')>#" + tag + "</p>");
+			var func = "onclick=edit.removeTag('" + tag + "')";
+			$("#attach-area .texttags .other").append("<p title='Click to remove' "+func+">#" + tag + "</p>");
 			added = true;
 		}
 		// Test if this tag has been successfully added
@@ -1618,7 +1616,7 @@ edit.photo = function(isQueue, callback) {
 					$("#attach-area .images").append(htmlContent);
 				}
 				// Stop throttle 
-				$("#add-photo").html("&#xf03e").removeClass("spin").attr({
+				$("#add-photo").html("&#xf03e").attr({
 					onclick: "edit.addMedia(0)",
 					href: "#"
 				}).fadeIn();
@@ -1657,7 +1655,7 @@ edit.photo = function(isQueue, callback) {
 			})
 				.fail(function(xhr, status, error) {
 					if (!isQueue) {
-						$("#add-photo").html("&#xf03e").removeClass("spin").attr({
+						$("#add-photo").html("&#xf03e").attr({
 							onclick: "edit.addMedia(0)",
 							href: "#"
 						});
@@ -1685,7 +1683,7 @@ edit.photo = function(isQueue, callback) {
 	}
 	if (!isQueue) {
 		// Add throttle
-		$("#add-photo").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+		$("#add-photo").removeAttr("onclick").removeAttr("href");
 		// Empty edit.photos only if the photos are not added from queue
 		edit.photos = [];
 		// Iterate to add all photos of this dataclip to edit.photos
@@ -2088,7 +2086,7 @@ edit.location = function(index) {
 	$(selectorHeader + "a").removeAttr("onclick");
 	// Press esc to save
 	$("#edit-pane").keyup(function(n) {
-		if (n.keyCode == 27) {
+		if (n.keyCode === 27) {
 			edit.locationHide();
 		}
 	});

@@ -178,7 +178,7 @@
 }
 
 .checkbox {
-	transition: .4s ease;
+	transition: .2s ease;
 }
 
 	.checkbox::before {
@@ -413,7 +413,7 @@ body {
 		}
 
 		#list a:hover {
-			background-color: #FAFAFA;
+			background-color: #ddd;
 			box-shadow: 0 1px 10px #555;
 		}
 
@@ -2551,7 +2551,9 @@ body {
 	#edit-pane .images div.data.change span, #edit-pane .images div.queue.change span {
 		background-image: url('../img/add@2x.png');
 		opacity: 1;
-	}
+	
+		pointer-events: none;
+}
 
 #edit-pane .images img {
 	margin: 1px;

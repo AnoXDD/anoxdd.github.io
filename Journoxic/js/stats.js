@@ -150,7 +150,6 @@ stats.init = function() {
 						stats.addEntry(newEntry, index);
 					}
 					// Update the value
-
 					stats.oldValue = newEntry;
 					this.blur();
 				} else if (e.keyCode === 27) {
@@ -236,7 +235,7 @@ stats.initTable = function() {
 	stats.oldValue = "";
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<thead><tr><th>Index</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mar</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
+	$("#stats-table").html("<thead><tr><th>Index</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
 	$("tbody").addClass("fadein");
 }
 /**
@@ -460,6 +459,8 @@ stats.toggleGraph = function() {
  * @param {boolean} viewAsMonth - Whether to view the chart as month
  */
 stats.showGraph = function(viewAsMonth) {
+	/* Iterator */
+	var i, j;
 	stats.isGraphDisplayed = true;
 	var series = [],
 		days = [],
@@ -485,7 +486,8 @@ stats.showGraph = function(viewAsMonth) {
 			});
 		});
 	} else {
-		for (var i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
+		var entries;
+		for (i = 0, entries = Object.keys(stats.entries) ; i !== entries.length; ++i) {
 			name = entries[i];
 			series.push({
 				name: entries[i],
@@ -495,12 +497,24 @@ stats.showGraph = function(viewAsMonth) {
 			if (i === 0) {
 				var entry = stats.entries[name];
 				// Only do this check once
-				for (var j = 0; j !== entry.length; ++j) {
+				for (j = 0; j !== entry.length; ++j) {
 					if (entry[j] != undefined) {
 						// A valid date
 						days.push(stats.eachDay[j]);
 					}
 				}
+			}
+		}
+	}
+	// Clean up the series for incoming days (undefined array element)
+	for (i = 0; i !== Object.keys(series).length; ++i) {
+		var arr = series[i]["data"];
+		// Clean undefined days
+		for (j = 0; j !== arr.length; ++j) {
+			if (arr[j] == undefined) {
+				// Incoming days, remove it
+				series[i]["data"] = arr.splice(j, arr.length - j);
+				break;
 			}
 		}
 	}

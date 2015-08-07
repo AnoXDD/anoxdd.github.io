@@ -251,8 +251,6 @@ edit.init = function(overwrite, index) {
 		// Bind hotkeys to add tags
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "return", function() {
-			// Cache the data
-			localStorage["body"] = $("#entry-body").val();
 			// Command line work
 			var lines = $("#entry-body").val().split(/\r*\n/);
 			for (var i = 0; i < lines.length; ++i) {
@@ -298,6 +296,8 @@ edit.init = function(overwrite, index) {
 			}
 			var newBody = lines.join("\r\n");
 			$("#entry-body").val(newBody);
+			// Cache the data
+			localStorage["body"] = newBody;
 		})
 		.bind("keyup", "space", function() {
 			edit.refreshSummary();
@@ -392,7 +392,7 @@ edit.quit = function(selector, save) {
 edit.save = function() {
 	if (network.isAjaxActive) {
 		// Do not save if network is still working
-		animation.warning(log.NETWORK_WORKING);
+		animation.warn(log.NETWORK_WORKING);
 		return;
 	}
 	var id;
@@ -562,6 +562,10 @@ edit.exportCacheBody = function(data) {
 	var body = localStorage["body"];
 	// Sometimes the body can be empty
 	body = body || "";
+	// Remove last several returns at the end
+	while (body[body.length - 1] === "\n") {
+		body = body.substr(0, body.length - 1);
+	}
 	data["text"]["body"] = body;
 	data["text"]["chars"] = body.length;
 	data["text"]["lines"] = body.split(/\r*\n/).length;

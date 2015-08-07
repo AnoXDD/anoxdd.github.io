@@ -2002,6 +2002,9 @@ body {
 			width: 96%;
 		}
 
+		#feedback p:not(.warning)::before {
+		}
+
 		#feedback p:nth-child(2) {
 			/* display: inherit; */
 			z-index: 9;
@@ -2052,6 +2055,11 @@ body {
 	font-style: italic;
 }
 
+	#feedback p.warning::before {
+		content: "\f06a\A0";
+		font-style: initial;
+	}
+
 #errors p {
 	animation: fadein-feedback-error 10.2s ease;
 	background: #FFF;
@@ -2064,6 +2072,10 @@ body {
 	margin-bottom: -24px;
 	width: 30%;
 }
+
+	#errors p::before {
+		content: "\f071\A0";
+	}
 
 	#errors p:not(:first-child) {
 		opacity: 0;

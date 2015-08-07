@@ -367,12 +367,12 @@ function uploadFile(dataYear) {
 			// Get the version
 			var tmp = app.version[dataYear] || "";
 			// Clean the unnecessary data
-			tmp += edit.minData();
+			tmp += JSON.stringify(edit.minData());
 			$.ajax({
 				type: "PUT",
 				url: getCoreDataUrlHeader(true, dataYear) + ":/content?access_token=" + token,
 				contentType: "text/plain",
-				data: JSON.stringify(tmp)
+				data: tmp
 			})
 				.done(function() {
 					////console.log("uploadFile():\t Done!");

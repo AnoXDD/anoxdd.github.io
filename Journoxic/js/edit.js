@@ -237,10 +237,10 @@ edit.init = function(overwrite, index) {
 			}
 			// Processed existed tags
 			$(parent).append(
-				"<p class='icons " + tagsHtml[i] +
+				"<span class='icons " + tagsHtml[i] +
 				"' title=" + tagsName[i].capitalize() +
 				" onclick=edit.toggleTag('" + tagsName[i] +
-				"',true)></p>");
+				"',true)></span>");
 		}
 		// In this loop, show some icons (so some icons can disappear)
 		for (var i = 0; i !== tagsHtml.length; ++i) {
@@ -302,7 +302,7 @@ edit.init = function(overwrite, index) {
 		.bind("keyup", "space", function() {
 			edit.refreshSummary();
 		})
-		.bind("keyup", "tab", function(e) {
+		.bind("keydown", "tab", function(e) {
 			e.preventDefault();
 			var start = $(this).get(0).selectionStart;
 			var end = $(this).get(0).selectionEnd;
@@ -1262,7 +1262,7 @@ edit.addTag = function(tag, mute) {
 		var found = false,
 			added = false;
 		// Try to convert to iconTag
-		$("#attach-area .icontags p").each(function() {
+		$("#attach-area .icontags span").each(function() {
 			if ($(this).attr("title").toLowerCase() === tag) {
 				// Found
 				found = true;
@@ -1334,7 +1334,7 @@ edit.removeTag = function(tag, mute) {
 			});
 			if (!removed) {
 				// Keep searching in icontags
-				$("#attach-area .icontags p").each(function() {
+				$("#attach-area .icontags span").each(function() {
 					if ($(this).attr("title").toLowerCase() === tag) {
 						if (!mute) {
 							animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_REMOVED);
@@ -1371,7 +1371,7 @@ edit.toggleTag = function(tag, mute) {
  */
 edit.toggleIcon = function(tag) {
 	var htmlName = app.tag().getHtmlByName(tag),
-		selector = "#attach-area .icontags p." + htmlName,
+		selector = "#attach-area .icontags span." + htmlName,
 		parent = $(selector).parent().attr("class");
 	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
 		if (parent == "weather" || parent == "emotion") {

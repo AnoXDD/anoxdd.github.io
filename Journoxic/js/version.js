@@ -1,4 +1,4 @@
-﻿﻿app.version.main = "v4.1.2 Build 080715_1522";
+﻿﻿app.version.main = "v4.1.3 Build 080715_1804";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -14,7 +14,10 @@ $("#version").html(app.version.main);
  * 
  * Todo add an integrity check before logging in
  * 
- * v4.0 - Release build
+ * v4.1 - Patch on release beta
+ * [Fix] Several bugs when using it
+ * 
+ * v4.0 - Release build (Beta)
  * Now all the functionalities for writing the diary has been prepared. This build minifies necessary files. The files are not compressed into one single js file for the convenience of future maintenence
  * 
  * 

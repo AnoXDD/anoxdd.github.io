@@ -1184,13 +1184,15 @@ app.detail.prototype = {
 		rawText = this.htmlSpacialChars(rawText);
 		// Replace all manual lines to a horizontal line
 		rawText = rawText.replace(/\t\t[*]\t[*]\t[*]/g, "<hr>");
+		// Replace all \r\n to \n
+		rawText = rawText.replace(/\r\n/g,"\n");
 		// Replace all manual tabs to real tabs
-		rawText = rawText.replace(/\r\n\t\t/g, "</p><p class=\"t2\">");
-		rawText = rawText.replace(/\r\n\t/g, "</p><p class=\"t1\">");
+		rawText = rawText.replace(/\n\t\t/g, "</p><p class=\"t2\">");
+		rawText = rawText.replace(/\n\t/g, "</p><p class=\"t1\">");
 		// Replace all double lines to a new character
-		rawText = rawText.replace(/\n(|\r)\n(|\r)/ig, "</p></br><p>");
+		rawText = rawText.replace(/\n\n/ig, "</p></br><p>");
 		// Replace all other single lines to a new line
-		rawText = rawText.replace(/\n(|\r)/ig, "</p><p>");
+		rawText = rawText.replace(/\n/ig, "</p><p>");
 		return "<p>" + rawText + "</p>";
 	},
 	// Processes all the spacial characters to html-style characters
@@ -1340,9 +1342,9 @@ app.util = {
 // Use the power of 2 to store multiple data
 app.tag = function() {
 	/************************************************************
-	 * When adding a new element here, please make sure that
-	 * iconVal is also updated.				
-	 * The element added here will be presented as an icon
+	 * When adding a new element here, please make sure that CSS file is also updated.
+	 * The maximum integer allowed for JavaScript is 2^53 - 1. However, since `iconTags` is deprecated since version 2 of the tag, this value should no longer be included in the consideration
+	 * The element added here will be presented as an icon, and	`html` tag means the class of the icon
 	 ************************************************************/
 	var icons = [
 			{
@@ -1421,6 +1423,10 @@ app.tag = function() {
 				name: "handwriting",
 				value: 4194304,
 				html: "c08"
+			}, {
+				name: "wechat",
+				value: 8388608,
+				html: "c09"
 			}, {
 				name: "friendship",
 				value: 16777216,

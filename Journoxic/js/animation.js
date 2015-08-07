@@ -94,7 +94,7 @@ window.log = {
 	EDIT_PANE_IMAGES_START: "Start loading images under data/",
 	EDIT_PANE_IMAGES_START_END: " ...",
 	EDIT_PANE_IMAGES_END: "Images loaded",
-	EDIT_PANE_IMAGES_END_NO_RESULT: "No images found",
+	EDIT_PANE_IMAGES_END_NO_RESULT: "No attached images found",
 	EDIT_PANE_IMAGES_FIND_FAIL: " under data/",
 	EDIT_PANE_IMAGES_SAVE_START: "Start transferring images ...",
 	EDIT_PANE_IMAGES_OF: " of ",
@@ -436,14 +436,11 @@ animation.log = function(message, indent, type) {
 		});
 		return false;
 	}).mousedown(function() {
-		if (parent === "#errors") {
-			// One click to dismiss all
-			$(this).trigger("contextmenu");
-		} else {
-			$(this).fadeOut(200, function() {
-				$(this).remove();
-			});
-		}
+		// One click to dismiss all
+		$(this).trigger("contextmenu");
+		$(this).fadeOut(200, function() {
+			$(this).remove();
+		});
 	});
 	switch (type) {
 		case 1:

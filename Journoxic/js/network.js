@@ -364,8 +364,10 @@ function uploadFile(dataYear) {
 		 * The function to be called to upload the file. This function assumes that the folder has already been prepared
 		 */
 		var upload = function() {
+			// Get the version
+			var tmp = app.version[dataYear] || "";
 			// Clean the unnecessary data
-			var tmp = edit.minData();
+			tmp += edit.minData();
 			$.ajax({
 				type: "PUT",
 				url: getCoreDataUrlHeader(true, dataYear) + ":/content?access_token=" + token,

@@ -98,22 +98,22 @@ stats.init = function() {
 	});
 	// Hover to highlight the same column and row
 	$("#stats-table").delegate("td", "mouseover mouseleave contextmenu", function(e) {
-			if (e.type === "mouseover") {
-				$(this).parent().addClass("hover");
-				$("tr td:nth-child(" + ($(this).index() + 1) + ")").addClass("hover");
-			} else if (e.type === "mouseleave") {
-				$(this).parent().removeClass("hover");
-				$("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
-			} else {
-				// Right click
-				var key = stats.oldValue || $(this).parent().children("td").children("input").val();
-				$(this).parent().slideUp(200, function() {
-					$(this).remove();
-				});
-				delete stats.entries[key];
-				return false;
-			}
-		})
+		if (e.type === "mouseover") {
+			$(this).parent().addClass("hover");
+			$("tr td:nth-child(" + ($(this).index() + 1) + ")").addClass("hover");
+		} else if (e.type === "mouseleave") {
+			$(this).parent().removeClass("hover");
+			$("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
+		} else {
+			// Right click
+			var key = stats.oldValue || $(this).parent().children("td").children("input").val();
+			$(this).parent().slideUp(200, function() {
+				$(this).remove();
+			});
+			delete stats.entries[key];
+			return false;
+		}
+	})
 		// Click or leave to edit the input menu
 		.delegate("input", "focusin focusout keyup", function(e) {
 			if (e.type === "focusin") {
@@ -161,65 +161,66 @@ stats.init = function() {
 		// Click to sort
 		.delegate("th", "click", function() {
 			if ($("tbody tr").length !== 0) {
-			var desc = $(this).hasClass("desc"),
-				index = $(this).index(),
-				map = [];
-			// Extract the data
-			$("tbody tr").each(function() {
-				var key, value;
-				$(this).children("td").each(function(n) {
-					if (n === 0) {
-						// Get the index
-						key = $(this).children("input").val();
-					}
-					if (n === index) {
-						// Matched the index of the value to be sorted
+				var desc = $(this).hasClass("desc"),
+					index = $(this).index(),
+					map = [];
+				// Extract the data
+				$("tbody tr").each(function() {
+					var key, value;
+					$(this).children("td").each(function(n) {
 						if (n === 0) {
-							value = key;
-						} else {
-							value = $(this).html();
+							// Get the index
+							key = $(this).children("input").val();
 						}
-					}
-				});
-				map.push({
-					key: key,
-					value: value
-				});
-			});
-			// Reset the map to re-add those entries
-			stats.initTable();
-			// Sort the array
-			if (!desc) {
-				$("th").eq(index).addClass("desc");
-				if (index === 0) {
-					// Sort the string
-				map.sort(function(a, b) {
-					return b["value"].localeCompare(a["value"]);
-				});
-				} else {
-					// Sort the value
-					map.sort(function(a, b) {
-											return b["value"] - a["value"];
+						if (n === index) {
+							// Matched the index of the value to be sorted
+							if (n === 0) {
+								value = key;
+							} else {
+								value = $(this).html();
+							}
+						}
 					});
-				}
-			} else {
-				$("th").eq(index).addClass("asce");
-				if (index === 0) {
-					// Sort the string
-				map.sort(function(a, b) {
-			return a["value"].localeCompare(b["value"]);
+					map.push({
+						key: key,
+						value: value
+					});
 				});
+				// Reset the map to re-add those entries
+				stats.initTable();
+				// Sort the array
+				if (!desc) {
+					$("th").eq(index).addClass("desc");
+					if (index === 0) {
+						// Sort the string
+						map.sort(function(a, b) {
+							return b["value"].localeCompare(a["value"]);
+						});
+					} else {
+						// Sort the value
+						map.sort(function(a, b) {
+							return b["value"] - a["value"];
+						});
+					}
 				} else {
-					// Sort the value
-					map.sort(function(a, b) {
-						return a["value"] - b["value"];
-					})
+					$("th").eq(index).addClass("asce");
+					if (index === 0) {
+						// Sort the string
+						map.sort(function(a, b) {
+							return a["value"].localeCompare(b["value"]);
+						});
+					} else {
+						// Sort the value
+						map.sort(function(a, b) {
+							return a["value"] - b["value"];
+						})
+					}
+				}
+				// Iterate to add the element
+				for (i = 0; i !== Object.keys(map).length; ++i) {
+					stats.addEntry(map[i]["key"]);
 				}
 			}
-			// Iterate to add the element
-			for (i = 0; i !== Object.keys(map).length; ++i) {
-				stats.addEntry(map[i]["key"]);
-			}}
 		});
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything

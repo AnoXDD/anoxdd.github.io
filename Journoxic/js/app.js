@@ -331,18 +331,27 @@ app.loadScript = function(data, func, isScript) {
 	} else {
 		// Raw data
 		console.log("app.loadScript(): data.length = " + data.length);
+		// Get the version of the data
+		var version;
+		for (var i = 0 ; i !== data.length && data[i] != "["; ++i) {
+			version += data[i];
+		}
+		version = parseInt(version);
+		if (version) {
+			app.version[app.year] = version;
+		}
 		journal.archive.data[app.year] = app.updateData(JSON.parse(data));
 		func();
 	}
 };
 app.updateData = function(data) {
-	if (!data["version"]) {
-		data["version"] = 1;
+	if (!app.version[app.year]) {
+		app.version[app.year] = 1;
 	}
-	if (data["version"] !== app.version.data) {
+	if (app.version[app.year] !== app.version.data) {
 		// Let the user know the content is going to be upgraded
 		animation.debug(log.CONTENTS_UPGRADING);
-		switch (data["version"]) {
+		switch (app.version[app.year]) {
 			case 1:
 				// Up to v2
 				// Integrate textTags and iconTags
@@ -359,10 +368,25 @@ app.updateData = function(data) {
 							textTags += iconTags;
 						}
 					}
-					data[i]["tags"] = textTags;
+					textTags = textTags || "";
+					var tags;
+					if (data[i]["tags"]) {
+						// Append to this
+						tags += "|" + textTags;
+					} else {
+						tags = textTags;
+					}
+					// Delete deprecated tags
+					delete data[i]["icontags"];
+					delete data[i]["textTags"];
 				}
+				app.version[app.year] = 2;
 				// Intentionally omit "break;"
 		}
+	}
+	// Fix the version if something is wrong
+	if (app.version[app.year] > app.version.data) {
+		app.version[app.year] = app.version.data;
 	}
 	return data;
 };
@@ -611,7 +635,7 @@ app.list.prototype = {
 						if (data["tags"]) {
 							subfound = false;
 							var textTagArray = data["tags"].split("|"),
-								index  = textTagArray.indexOf(element[subkey].substr(1));
+								index = textTagArray.indexOf(element[subkey].substr(1));
 							if (index !== -1) {
 								subfound = true;
 							}
@@ -1049,7 +1073,7 @@ app.detail = function() {
 			}
 		}
 		if (dataClip.tags) {
-			// Process icontags if applicable
+			// Process tags if applicable
 			var tags = app.tag().separate(dataClip.tags);
 			dataClip.iconTags = tags.iconTags;
 			dataClip.textTags = tags.textTags;
@@ -1548,7 +1572,7 @@ app.tag = function() {
 		getValueByName: function(name) {
 			return this.translate(name.toLowerCase(), "name", "value");
 		},
-		getValueByHtml: function(name ) {
+		getValueByHtml: function(name) {
 			return this.translate(name.toLowerCase(), "html", "value");
 		},
 		getHtmlByName: function(name) {
@@ -1601,6 +1625,19 @@ app.tag = function() {
 		 * @returns {object} The object with keys of `icontags` and `texttags`
 		 */
 		separate: function(tags) {
+			// Re-process the tags
+			// Remove any empty tags
+			while (tags.indexOf("||") !== -1) {
+				tags = tags.replace(/||/g, "|");
+			}
+			// Remove the first "|"
+			while (tags.length && tags[0] == "|") {
+				tags = tags.substr(1);
+			}
+			// Remove the last "|"
+			while (tags.length && tags[tags.length - 1] == "|") {
+				tags = tags.substr(0, tags.length - 1);
+			}
 			var icontags = [],
 				texttags = tags.split("|");
 			// Iterates from all the icons

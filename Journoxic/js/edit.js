@@ -302,6 +302,20 @@ edit.init = function(overwrite, index) {
 		.bind("keyup", "space", function() {
 			edit.refreshSummary();
 		})
+		.bind("keyup", "tab", function(e) {
+			e.preventDefault();
+			var start = $(this).get(0).selectionStart;
+			var end = $(this).get(0).selectionEnd;
+
+			// set textarea value to: text before caret + tab + text after caret
+			$(this).val($(this).val().substring(0, start)
+						+ "\t"
+						+ $(this).val().substring(end));
+
+			// put caret at right position again
+			$(this).get(0).selectionStart =
+			$(this).get(0).selectionEnd = start + 1;
+		})
 			.bind("keyup", "ctrl+shift+f", function() {
 				edit.toggleTag("friendship");
 			})
@@ -1092,6 +1106,8 @@ edit.fullScreen = function() {
 	});
 	$("#text-area").children().toggleClass("fullscreen");
 	$("#text-area p").toggleClass("fullscreen");
+	// Change feedback position
+	$(".response").addClass("fullscreen");
 };
 edit.windowMode = function() {
 	// Exit dark mode
@@ -1109,6 +1125,8 @@ edit.windowMode = function() {
 		})
 			.children().toggleClass("fullscreen");
 	});
+	// Change feedback position
+	$(".response").removeClass("fullscreen");
 };
 
 /************************** TITLE *********************************/
@@ -1149,9 +1167,13 @@ edit.convertTime = function(time) {
 	var month = parseInt(time.substring(0, 2)),
 		day = parseInt(time.substring(2, 4)),
 		year = parseInt(time.substring(4, 6)),
+		hour = 0,
+		minute = 0;
+	if (time.length > 6) {
 		hour = parseInt(time.substring(7, 9)),
-		minute = parseInt(time.substring(9, 11)),
-		date = new Date(2000 + year, month - 1, day, hour, minute);
+		minute = parseInt(time.substring(9, 11));
+	}
+	date = new Date(2000 + year, month - 1, day, hour, minute);
 	return date.getTime();
 };
 /**
@@ -1269,7 +1291,7 @@ edit.addTag = function(tag, mute) {
 			$("#entry-tag").effect("highlight", { color: "#dadada" }, 400);
 			// Marked for a new entry
 			var func = "onclick=edit.removeTag('" + tag + "')";
-			$("#attach-area .texttags .other").append("<p title='Click to remove' "+func+">#" + tag + "</p>");
+			$("#attach-area .texttags .other").append("<p title='Click to remove' " + func + ">#" + tag + "</p>");
 			added = true;
 		}
 		// Test if this tag has been successfully added
@@ -1496,7 +1518,7 @@ edit.coverTest = function(type) {
 edit.photo = function(isQueue, callback) {
 	// Fix callback if not defined
 	if (typeof callback != "function") {
-		callback = function() {};
+		callback = function() { };
 	}
 	if (edit.photos.length !== 0 && !isQueue) {
 		// Return if edit.photo is already displayed
@@ -1505,7 +1527,7 @@ edit.photo = function(isQueue, callback) {
 	}
 	// Test if this entry really doesn't have any images at all
 	var images = JSON.parse(localStorage["images"]);
-	if (images) {
+	if (images.length) {
 		if (Object.keys(journal.archive.map).length === 0) {
 			// No media in the map, ask for downloading the images
 			animation.error(log.EDIT_PANE_IMAGES_FAIL + log.DOWNLOAD_PROMPT);

@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -1937,7 +1937,7 @@ body {
 	}
 
 
-#feedback, #errors {
+.response {
 	height: 5%;
 	left: 8px;
 	overflow: hidden;
@@ -1946,24 +1946,30 @@ body {
 	top: 3.5%;
 	transition: opacity .5s ease, top .4s ease, height .4s ease;
 	width: 99%;
-	z-index: 0;
+	z-index: 100;
+	pointer-events: none;
 }
 
 #feedback {
-	
-    height: 0px;
-    position: relative;
-    margin: 0 auto;
-    width: 40%;
-    top: -6%;
-    padding: 0;
-    overflow: inherit;
+	height: 0px;
+	position: absolute;
+	top: 4%;
+	padding: 0;
+	overflow: inherit;
 }
+
+	#feedback.fullscreen {
+		top: 9.5%;
+	}
 
 #errors {
 	height: 5%;
 	top: 12%;
 }
+
+	#errors.fullscreen {
+		top: 13%;
+	}
 
 	#feedback p, #errors p {
 		/* background: #777; */
@@ -1985,6 +1991,7 @@ body {
 		width: 15%;
 	}
 
+
 		#feedback p:first-child {
 			animation: fadein-feedback 10.5s ease;
 			/* background-color: #444; */
@@ -1993,9 +2000,7 @@ body {
 			font-size: 11px;
 			font-weight: bold;
 			width: 96%;
-			z-index: 10;
-		
-}
+		}
 
 		#feedback p:nth-child(2) {
 			/* display: inherit; */
@@ -2015,6 +2020,13 @@ body {
 		#feedback p::after {
 			font-family: monospace;
 		}
+
+#feedback.fullscreen p {
+	background-color: #444;
+	box-shadow: 0 0 15px #111;
+	width: 20%;
+	height: 17px;
+}
 
 
 #feedback:hover p {
@@ -2262,7 +2274,7 @@ body {
 }
 
 #entry-elapsed {
-	width: 5ch;
+	width: 6ch;
 }
 
 #edit-pane {
@@ -2375,7 +2387,7 @@ body {
 		margin-top: 5px;
 		overflow: hidden;
 		text-align: center;
-		width: -webkit-calc(100% - 430px);
+		width: -webkit-calc(100% - 470px);
 	}
 
 	#edit-pane #entry-body {
@@ -2390,8 +2402,8 @@ body {
 
 	#edit-pane .fullscreen#entry-body {
 		font-size: 18px;
-		height: -webkit-calc(100% - 173px);
-		padding: 60px;
+		height: -webkit-calc(100% - 414px);
+		padding: 60px 60px 300px 60px;
 		width: -webkit-calc(100% - 129px);
 	}
 
@@ -2551,9 +2563,8 @@ body {
 	#edit-pane .images div.data.change span, #edit-pane .images div.queue.change span {
 		background-image: url('../img/add@2x.png');
 		opacity: 1;
-	
 		pointer-events: none;
-}
+	}
 
 #edit-pane .images img {
 	margin: 1px;
@@ -3199,7 +3210,6 @@ body {
 	position: relative;
 	width: 100%;
 }
-
 
 	.drawer-menu a, .drawer-option a {
 		border-radius: 10px 0 0 10px;

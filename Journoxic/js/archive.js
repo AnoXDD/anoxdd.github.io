@@ -175,7 +175,7 @@ archive.list.prototype = {
 		minute = minute < 10 ? "0" + minute : minute;
 		hour = hour < 10 ? "0" + hour : hour;
 		if (!timeOnly) {
-			return app.month_array[month] + " " + day + ", " + year + " " + hour + ":" + minute;
+			return app.monthArray[month] + " " + day + ", " + year + " " + hour + ":" + minute;
 		} else {
 			return hour + ":" + minute;
 		}
@@ -189,6 +189,8 @@ archive.list.prototype = {
 		// The event when clicking the list
 		item.find(" > a").on("click", function(j) {
 			j.preventDefault();
+			// Hide restore icon
+			animation.hideHiddenIcons();
 			// De-hightlight the data that is displayed
 			////console.log(archive.currentDisplayed);
 			$("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeClass("display");
@@ -234,7 +236,6 @@ archive.detail = function() {
 			// Set the read status of the clip to read
 			dataClip.processed = true;
 			var l = $(archive.detailView(dataClip));
-			// !!!!!HIDE THE CONTENT LISTS!!!!
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
 			$("#detail").fadeIn(500);
@@ -242,9 +243,13 @@ archive.detail = function() {
 			$(".btn-back", app.cDetail).on("click", function() {
 				t.hideDetail();
 			});
+			// Show restore button
+			$("#archive-restore").removeClass("hidden");
 			return dataClip;
 		}).fail(function(xhr, status, error) {
 			animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL, error, -1);
+			// Hide this detail
+			t.hideDetail();
 		});
 	} else {
 		try {
@@ -278,6 +283,7 @@ archive.detail.prototype = {
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");
+		animation.hideHiddenIcons();
 		//// $(window).off("keyup.detail-key");
 	}
 };

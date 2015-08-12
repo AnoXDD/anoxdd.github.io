@@ -11,7 +11,8 @@ journal.archive.map = {};
 
 app.name = "Guest";
 
-app.month_array = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+app.monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+app.weekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 /** The year to be displayed */
 app.year = new Date().getFullYear();
 app.years = [];
@@ -332,7 +333,7 @@ app.loadScript = function(data, func, isScript) {
 		// Raw data
 		console.log("app.loadScript(): data.length = " + data.length);
 		// Get the version of the data
-		var version;
+		var version = "", i;
 		for (var i = 0 ; i !== data.length && data[i] != "["; ++i) {
 			version += data[i];
 		}
@@ -340,7 +341,7 @@ app.loadScript = function(data, func, isScript) {
 		if (version) {
 			app.version[app.year] = version;
 		}
-		journal.archive.data[app.year] = app.updateData(JSON.parse(data));
+		journal.archive.data[app.year] = app.updateData(JSON.parse(data.substr(i)));
 		func();
 	}
 };
@@ -708,20 +709,61 @@ app.list.prototype = {
 		}
 		return true;
 	},
-	/* Returns the date string */
+	/**
+	 * Returns the data string in human-readable format. It will also convert date within the last week
+	 * @param {number} time - The seconds since epoch
+	 * @param {boolean} timeOnly - If only returns the time
+	 * @returns {string} Converted time
+	 */
 	date: function(time, timeOnly) {
 		var date = new Date(time),
-			//// year = date.getFullYear(),
-			month = date.getMonth(),
-			day = date.getDate(),
 			hour = date.getHours(),
 			minute = date.getMinutes();
 		minute = minute < 10 ? "0" + minute : minute;
 		hour = hour < 10 ? "0" + hour : hour;
-		if (!timeOnly) {
-			return app.month_array[month] + " " + day + /*", " + year +*/ " " + hour + ":" + minute;
-		} else {
+		// Test for today and yesterday
+		if (timeOnly) {
 			return hour + ":" + minute;
+		} else {
+			// Gets the day since the first day of this year
+			var year = date.getFullYear(),
+				now = new Date(),
+				nowYear = now.getFullYear(),
+				month = date.getMonth(),
+				day = date.getDate(),
+				dateHeader;
+			if (year === nowYear) {
+				var firstDay = new Date(year, 0, 1),
+					yearDay = Math.floor((date - firstDay) / 86400000),
+					nowYearDay = Math.floor((now - firstDay) / 86400000);
+				// Test for today and yesterday
+				if (yearDay === nowYearDay) {
+					dateHeader = "Today";
+				} else if (yearDay + 1 === nowYearDay) {
+					dateHeader = "Yesterday";
+				} else {
+					// Test for this week
+					var yearWeek = Math.floor(yearDay / 7),
+						nowYearWeek = Math.floor(nowYearDay / 7);
+					dateHeader = "";
+					switch (nowYearWeek - yearWeek) {
+						case 1:
+							// It was the last week
+							dateHeader = "Last ";
+							// Intentionally omit `break`
+						case 0:
+							// It is this week
+							dateHeader += app.weekArray[date.getDay()];
+							break;
+						default:
+							dateHeader = app.monthArray[month] + " " + day;
+							break;
+					}
+				}
+			} else {
+				dateHeader = app.monthArray[month] + " " + day;
+			}
+			return dateHeader + " " + hour + ":" + minute;
 		}
 	},
 	/* Converts the content to html and append to the list of contents */
@@ -1035,11 +1077,11 @@ app.list.prototype = {
 			newMonth = newDate.getMonth();
 		// Just initialized
 		if (oldTime === 0) {
-			return app.month_array[newMonth];
+			return app.monthArray[newMonth];
 		}
 		var oldDate = new Date(oldTime),
 			oldMonth = oldDate.getMonth();
-		return oldMonth === newMonth ? -1 : app.month_array[newMonth];
+		return oldMonth === newMonth ? -1 : app.monthArray[newMonth];
 	}
 };
 /**
@@ -1185,7 +1227,7 @@ app.detail.prototype = {
 		// Replace all manual lines to a horizontal line
 		rawText = rawText.replace(/\t\t[*]\t[*]\t[*]/g, "<hr>");
 		// Replace all \r\n to \n
-		rawText = rawText.replace(/\r\n/g,"\n");
+		rawText = rawText.replace(/\r\n/g, "\n");
 		// Replace all manual tabs to real tabs
 		rawText = rawText.replace(/\n\t\t/g, "</p><p class=\"t2\">");
 		rawText = rawText.replace(/\n\t/g, "</p><p class=\"t1\">");

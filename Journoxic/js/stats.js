@@ -53,7 +53,7 @@ stats.init = function() {
 			// New day, stop executing
 			break;
 		} else {
-			var month = app.month_array[date.getMonth()],
+			var month = app.monthArray[date.getMonth()],
 				day = date.getDate();
 			stats.eachDay.push(month + " " + day);
 		}
@@ -236,7 +236,13 @@ stats.initTable = function() {
 	stats.oldValue = "";
 	stats.removeAll();
 	// The first line
-	$("#stats-table").html("<thead><tr><th>Index</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead><tbody></tbody>");
+	var html = "<thead><tr><th>Index</th>";
+	// Add from existed array
+	for (var i = 0; i !== app.monthArray.length; ++i) {
+		html += "<th>" + app.monthArray[i] + "</th>";
+	}
+	html += "<th>Total</th></tr></thead><tbody></tbody>";
+	$("#stats-table").html(html);
 	$("tbody").addClass("fadein");
 }
 /**
@@ -418,7 +424,7 @@ stats.getResult = function(entry) {
 /**
  * Gets how many days have passed since the first day of `app.year`. The first day should return 0
  * @param {number} time - The time to get the result
- * @returns {number} - How many day have passed
+ * @returns {number} - How many days has passed
  */
 stats.getDayNumber = function(time) {
 	var date = new Date(time),
@@ -468,7 +474,7 @@ stats.showGraph = function(viewAsMonth) {
 		name;
 	// Choose the way of showing the graph
 	if (viewAsMonth) {
-		days = app.month_array;
+		days = app.monthArray;
 		// Extract the data from the html content
 		$("#stats-table tbody tr").each(function() {
 			var monthData = [];

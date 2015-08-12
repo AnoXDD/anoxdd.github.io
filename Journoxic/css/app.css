@@ -1141,6 +1141,7 @@ body {
 			margin-bottom: 1em;
 			word-break: keep-all;
 			word-wrap: break-word;
+			transition: color .4s ease;
 		}
 
 			#detail .text p.t1 {
@@ -1148,9 +1149,14 @@ body {
 				padding-left: 4em;
 			}
 
+
 			#detail .text p.t2 {
 				color: #ddd;
 				padding-left: 8em;
+			}
+
+			#detail .text p:hover {
+				color: initial;
 			}
 
 	#detail .thumb {

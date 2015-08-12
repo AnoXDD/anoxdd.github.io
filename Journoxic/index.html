@@ -82,7 +82,7 @@
 		</div>
 		<div id="action-archive">
 			<ul>
-				<li><a title="Restore" onclick="archive.restore()" href="#">&#xf019</a></li>
+				<li><a class="hidden-icon hidden" id="archive-restore" title="Restore" onclick="archive.restore()" href="#">&#xf019</a></li>
 				<li class="has-sub">
 					<a title="Apply the changes" onclick="archive.apply()" href="#">&#xf058</a>
 					<ul>
@@ -404,7 +404,7 @@
 				<%
 				}
 
-				if( textTags ) {
+				if( textTags.length ) {
 				%>
 				<div class="texttags">
 					<p>

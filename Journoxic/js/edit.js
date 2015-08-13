@@ -139,34 +139,45 @@ edit.init = function(overwrite, index) {
 		// Hide photo preview panal
 		$("#photo-preview").hide();
 		// Enter to finish entry header
-		$("#entry-header").keyup(function(n) {
-			edit.saveTitle();
-			if (n.keyCode == 13) {
+		$("#entry-header").bind("keyup", "return", function() {
+				edit.saveTitle();
 				// Jump to the body
 				$("#entry-body").focus();
-			}
-		})
+			})
+			.bind("keyup", "ctrl+return", function() {
+				// Do so to avoid adding time header
+				edit.saveTitle();
+				// Jump to the body
+				$("#entry-body").focus();
+				edit.notAddHeader = true;
+			})
 			.blur(function() {
-				// This header has lost its focus, test its date string validity
-				var dateStr = $(this).val().substring(0, 6),
-					date;
-				if (!isNaN(parseInt(dateStr))) {
-					var dateNum = edit.convertTime(dateStr);
-					// Re-evaluate the month, day and the year to make sure it IS a true date
-					date = new Date(dateNum);
-					var isMonthMatch = date.getMonth() + 1 == dateStr.substring(0, 2),
-						isDayMatch = date.getDate() == dateStr.substring(2, 4),
-						// Has to match both original year in title and `app.year`
-						isYearMatch = date.getFullYear() % 100 == dateStr.substring(4, 6) && date.getFullYear() === app.year;
-					if (isMonthMatch && isDayMatch && isYearMatch) {
-						// Everything matches, good work user
-						return;
+				// This header has lost its focus. Test if needed to add a date header
+				if (edit.notAddHeader) {
+					// Do not add a header, but set it back to false
+					edit.notAddHeader = false;
+				} else {
+					// Yes, then test its date string validity
+					var dateStr = $(this).val().substring(0, 6),
+						date;
+					if (!isNaN(parseInt(dateStr))) {
+						var dateNum = edit.convertTime(dateStr);
+						// Re-evaluate the month, day and the year to make sure it IS a true date
+						date = new Date(dateNum);
+						var isMonthMatch = date.getMonth() + 1 == dateStr.substring(0, 2),
+							isDayMatch = date.getDate() == dateStr.substring(2, 4),
+							// Has to match both original year in title and `app.year`
+							isYearMatch = date.getFullYear() % 100 == dateStr.substring(4, 6) && date.getFullYear() === app.year;
+						if (isMonthMatch && isDayMatch && isYearMatch) {
+							// Everything matches, good work user
+							return;
+						}
 					}
+					// If this function has not been returned, then the header does not have a valid date header
+					date = new Date().getTime();
+					date = new Date(date - 14400000);
+					$(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
 				}
-				// If this function has not been returned, then the header does not have a valid date header
-				date = new Date().getTime();
-				date = new Date(date - 14400000);
-				$(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
 			});
 		// Enter to add tag
 		$("#entry-tag").keyup(function(n) {
@@ -228,9 +239,9 @@ edit.init = function(overwrite, index) {
 			iconTags = app.tag().separate(localStorage["tags"]).iconTags;
 		for (var i = 0; i !== tagsHtml.length; ++i) {
 			var parent = "#attach-area .icontags";
-			if (tagsHtml[i].charAt(0) == "w") {
+			if (tagsHtml[i].charAt(0) === "w") {
 				parent += " .weather";
-			} else if (tagsHtml[i].charAt(0) == "e") {
+			} else if (tagsHtml[i].charAt(0) === "e") {
 				parent += " .emotion";
 			} else {
 				parent += " .other";
@@ -251,53 +262,7 @@ edit.init = function(overwrite, index) {
 		// Bind hotkeys to add tags
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "return", function() {
-			// Command line work
-			var lines = $("#entry-body").val().split(/\r*\n/);
-			for (var i = 0; i < lines.length; ++i) {
-				var line = lines[i],
-					flag = false,
-					convertedTime;
-				if (line.substring(0, 7) === "Begin @") {
-					convertedTime = edit.convertTime(line.substring(8));
-					if (new Date(convertedTime).getFullYear() === app.year) {
-						// Year in range, overwrite start time
-						data["time"]["start"] = convertedTime;
-						animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
-					} else {
-						// Invalid date
-						animation.error(log.TIME_NOT_IN_RANGE);
-					}
-					flag = true;
-				} else if (line.substring(0, 5) === "End @") {
-					// Overwrite end time
-					data["time"]["end"] = edit.convertTime(line.substring(6));
-					animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(data["time"]["end"]));
-					flag = true;
-				} else if (line.substring(0, 9) === "Created @") {
-					convertedTime = edit.convertTime(line.substring(10));
-					if (new Date(convertedTime).getFullYear() === app.year) {
-						// Year in range, overwrite created time
-						data["time"]["created"] = convertedTime;
-						animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
-					} else {
-						// Invalid date
-						animation.error(log.TIME_NOT_IN_RANGE);
-					}
-					flag = true;
-				} else if (line.length > 2 && line.charAt(0) === "#") {
-					// Add a tag
-					edit.addTag(line.substring(1));
-					flag = true;
-				}
-				if (flag) {
-					// Remove the current line
-					lines.splice(i--, 1);
-				}
-			}
-			var newBody = lines.join("\r\n");
-			$("#entry-body").val(newBody);
-			// Cache the data
-			localStorage["body"] = newBody;
+			edit.processBody();
 		})
 		.bind("keyup", "space", function() {
 			edit.refreshSummary();
@@ -413,6 +378,8 @@ edit.save = function() {
 				network.init();
 				clearInterval(id);
 				var index = edit.find(localStorage["created"]);
+				edit.saveTitle();
+				edit.processBody();
 				edit.exportCache(index);
 				edit.sortArchive();
 				edit.removeDuplicate();
@@ -587,6 +554,7 @@ edit.cleanEditCache = function() {
  */
 edit.saveDataCache = function() {
 	localStorage["archive"] = JSON.stringify(journal.archive.data[new Date().getFullYear()]);
+	localStorage["lastUpdated"] = new Date().getTime();
 };
 /**
  * Cleans the cache for journal.archive.data
@@ -1112,6 +1080,16 @@ edit.fullScreen = function() {
 	$("#text-area p").toggleClass("fullscreen");
 	// Change feedback position
 	$(".response").addClass("fullscreen");
+	// Request the browser to toggle fullscreen
+	if (document.documentElement.requestFullscreen) {
+		document.documentElement.requestFullscreen();
+	} else if (document.documentElement.msRequestFullscreen) {
+		document.documentElement.msRequestFullscreen();
+	} else if (document.documentElement.mozRequestFullScreen) {
+		document.documentElement.mozRequestFullScreen();
+	} else if (document.documentElement.webkitRequestFullscreen) {
+		document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+	}
 };
 edit.windowMode = function() {
 	// Exit dark mode
@@ -1131,16 +1109,27 @@ edit.windowMode = function() {
 	});
 	// Change feedback position
 	$(".response").removeClass("fullscreen");
+	// Request the browser to exit fullscreen
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.msExitFullscreen) {
+		document.msExitFullscreen();
+	} else if (document.mozCancelFullScreen) {
+		document.mozCancelFullScreen();
+	} else if (document.webkitExitFullscreen) {
+		document.webkitExitFullscreen();
+	}
 };
 
-/************************** TITLE *********************************/
+/************************** TITLE & HEADER *********************************/
 
-edit.saveTitle = function() {
+/**
+ * Stores the value in the title textbox into cache
+ * @returns {} 
+ */
+edit.saveeTitle = function() {
 	localStorage["title"] = $("#entry-header").val();
 };
-
-/************************** TITLE HEADER **************************/
-
 edit.refreshSummary = function() {
 	var text = $("#entry-body").val(),
 		len = text.length;
@@ -1239,6 +1228,63 @@ edit.getMyTime = function(timeNum) {
 	}
 	return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
 };
+
+/************************** BODY **************************/
+
+/**
+ * Processes the body to
+ * 1) Do some command line work
+ * 2) Save the after-processed text to the cache
+ */
+edit.processBody = function() {
+	// Command line work
+	var lines = $("#entry-body").val().split(/\r*\n/);
+	for (var i = 0; i < lines.length; ++i) {
+		var line = lines[i],
+			flag = false,
+			convertedTime;
+		if (line.substring(0, 7) === "Begin @") {
+			convertedTime = edit.convertTime(line.substring(8));
+			if (new Date(convertedTime).getFullYear() === app.year) {
+				// Year in range, overwrite start time
+				data["time"]["start"] = convertedTime;
+				animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+			} else {
+				// Invalid date
+				animation.error(log.TIME_NOT_IN_RANGE);
+			}
+			flag = true;
+		} else if (line.substring(0, 5) === "End @") {
+			// Overwrite end time
+			data["time"]["end"] = edit.convertTime(line.substring(6));
+			animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(data["time"]["end"]));
+			flag = true;
+		} else if (line.substring(0, 9) === "Created @") {
+			convertedTime = edit.convertTime(line.substring(10));
+			if (new Date(convertedTime).getFullYear() === app.year) {
+				// Year in range, overwrite created time
+				data["time"]["created"] = convertedTime;
+				animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+			} else {
+				// Invalid date
+				animation.error(log.TIME_NOT_IN_RANGE);
+			}
+			flag = true;
+		} else if (line.length > 2 && line.charAt(0) === "#") {
+			// Add a tag
+			edit.addTag(line.substring(1).toLowerCase());
+			flag = true;
+		}
+		if (flag) {
+			// Remove the current line
+			lines.splice(i--, 1);
+		}
+	}
+	var newBody = lines.join("\r\n");
+	$("#entry-body").val(newBody);
+	// Cache the data
+	localStorage["body"] = newBody;
+}
 
 /************************** TAG *********************************/
 
@@ -1374,14 +1420,16 @@ edit.toggleIcon = function(tag) {
 		selector = "#attach-area .icontags span." + htmlName,
 		parent = $(selector).parent().attr("class");
 	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
-		if (parent == "weather" || parent == "emotion") {
+		if (parent === "weather" || parent === "emotion") {
 			// Now highlighted
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").css("height", "0");
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").addClass("hidden");
+			$(selector).append("#attach-area .icontags .selected");
 		}
 	} else {
-		if (parent == "weather" || parent == "emotion") {
+		if (parent === "weather" || parent === "emotion") {
 			// Dimmed
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeAttr("style");
+			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeClass("hidden");
+			$(selector).append("#attach-area .icontags .other");
 		}
 	}
 }
@@ -1703,6 +1751,7 @@ edit.photo = function(isQueue, callback) {
 					} else {
 						// Finished everything, just call callback 
 						callback();
+						network.destroy();
 					}
 				});
 		});

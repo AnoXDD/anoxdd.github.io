@@ -28,7 +28,11 @@
 			</ul>
 		</div>
 	</div>
-	<div id="year"></div>
+	<div id="header-info">
+		<div id="year"></div>
+		<p class="other-status" id="last-updated"></p>
+		<p class="other-status" id="token-expired-in"></p>
+	</div>
 	<div class="response" id="errors"></div>
 	<div class="response" id="feedback"></div>
 	<div class="actions">
@@ -102,6 +106,7 @@
 		</div>
 		<div id="action-menu">
 			<ul>
+				<li><a class="hidden-icon hidden" title="Show images" id="menu-show-images" onclick="app.showEntryImages()" href="#"></a></li>
 				<li class="has-sub">
 					<a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a>
 					<ul>
@@ -280,9 +285,8 @@
 			<p class="charline"><%- lines %></p>
 			<p class="datetime"><%- datetime %></p>
 		</div>
-		<div class="content">
+		<div class="content loading">
 			<div class="upper photo"></div>
-			<div class="center"></div>
 			<div class="lower">
 				<div class="text"><%= contents %></div>
 
@@ -451,7 +455,9 @@
 			<div class="icontags">
 				<div class="weather"></div>
 				<div class="emotion"></div>
-				<div class="other"></div>
+				<div class="other">
+					<div class="selected"></div>
+				</div>
 			</div>
 			<hr />
 			<div class="texttags">
@@ -611,7 +617,7 @@
 			<p class="datetime">Created: <%- created %></p>
 			<p class="datetime">Last Modified: <%- modified %></p>
 		</div>
-		<div class="content">
+		<div class="content loading">
 			<div class="lower">
 				<div class="text">
 					<table id="archive-preview">

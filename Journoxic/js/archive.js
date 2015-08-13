@@ -157,27 +157,76 @@ archive.list.prototype = {
 		archive.lastLoaded = currentLoaded;
 	},
 	/**
-	 * Returns the date string using the seconds from epoch
-	 * @param {String} time - The seconds from epoch
-	 * @param {Boolean} timeOnly - Display only the time (hh:mm)
-	 * @returns {String} - The formatted string
+	 * Returns the data string in human-readable format. It will also convert date within the last week
+	 * @param {number} time - The seconds since epoch
+	 * @param {boolean} timeOnly - If only returns the time
+	 * @returns {string} Converted time
 	 */
 	date: function(time, timeOnly) {
-		var date = new Date(time);
-		if (isNaN(date.getTime())) {
-			return time;
+		if (typeof time !== "number") {
+			return "";
 		}
-		var year = date.getFullYear(),
-			month = date.getMonth(),
-			day = date.getDate(),
+		var date = new Date(time),
 			hour = date.getHours(),
 			minute = date.getMinutes();
-		minute = minute < 10 ? "0" + minute : minute;
-		hour = hour < 10 ? "0" + hour : hour;
-		if (!timeOnly) {
-			return app.monthArray[month] + " " + day + ", " + year + " " + hour + ":" + minute;
-		} else {
+		// Test for today and yesterday
+		if (timeOnly) {
+			minute = minute < 10 ? "0" + minute : minute;
+			hour = hour < 10 ? "0" + hour : hour;
 			return hour + ":" + minute;
+		} else {
+			// Gets the day since tajhe first day of this year
+			var year = date.getFullYear(),
+				now = new Date(),
+				nowYear = now.getFullYear(),
+				month = date.getMonth(),
+				day = date.getDate(),
+				dateHeader;
+			if (year === nowYear) {
+				var firstDay = new Date(year, 0, 1),
+					yearDay = Math.floor((date - firstDay) / 86400000),
+					nowYearDay = Math.floor((now - firstDay) / 86400000);
+				// Test for today and yesterday
+				if (yearDay === nowYearDay) {
+					// Test for hours
+					var deltaMinutes = Math.floor((now - date) / 60000);
+					if (deltaMinutes === 0) {
+						dateHeader = "Just now";
+					} else if (deltaMinutes < 60) {
+						// Within an hour
+						dateHeader = deltaMinutes + " min";
+					} else {
+						// Within today
+						dateHeader = Math.floor(deltaMinutes / 60) + "hr";
+					}
+				} else if (yearDay + 1 === nowYearDay) {
+					dateHeader = "Yesterday";
+				} else {
+					// Test for this week
+					var firstWeekDay = firstDay.getDay(),
+					 yearWeek = Math.floor((yearDay - firstWeekDay) / 7),
+						nowYearWeek = Math.floor((nowYearDay - firstWeekDay) / 7);
+					dateHeader = "";
+					switch (nowYearWeek - yearWeek) {
+						case 1:
+							// It was the last week
+							dateHeader = "Last ";
+							// Intentionally omit `break`
+						case 0:
+							// It is this week
+							dateHeader += app.weekArray[date.getDay()];
+							break;
+						default:
+							dateHeader = app.monthArray[month] + " " + day;
+							break;
+					}
+				}
+			} else {
+				dateHeader = app.monthArray[month] + " " + day;
+			}
+			minute = minute < 10 ? "0" + minute : minute;
+			hour = hour < 10 ? "0" + hour : hour;
+			return dateHeader + " " + hour + ":" + minute;
 		}
 	},
 	/**
@@ -226,6 +275,8 @@ archive.detail = function() {
 			url: dataClip["url"]
 		}).done(function(data, status, xhr) {
 			animation.log(log.CONTENTS_DOWNLOAD_END, -1);
+			// Stop telling the user it is loading
+			$(".content.loading").removeClass("loading");
 			var contents = JSON.parse(xhr.responseText).slice(0, 50);
 			// Convert date
 			for (var i = 0; i !== contents.length; ++i) {

@@ -720,7 +720,7 @@ body {
 				font-size: 11px;
 			}
 
-			#list div.attached span.photo, #edit-pane #attach-area .types #photo-cover {
+			#list div.attached span.photo, #attach-area .types #photo-cover {
 				background-color: #5670a5;
 			}
 
@@ -728,7 +728,7 @@ body {
 					content: "\f03e";
 				}
 
-			#list div.attached span.video, #edit-pane #attach-area .types #video-cover {
+			#list div.attached span.video, #attach-area .types #video-cover {
 				background-color: #169dae;
 			}
 
@@ -736,7 +736,7 @@ body {
 					content: "\f03d";
 				}
 
-			#list div.attached span.music, #edit-pane #attach-area .types #music-cover {
+			#list div.attached span.music, #attach-area .types #music-cover {
 				background-color: #4188f0;
 				background-position-x: -230px;
 			}
@@ -745,7 +745,7 @@ body {
 					content: "\f001";
 				}
 
-			#list div.attached span.voice, #edit-pane #attach-area .types #voice-cover {
+			#list div.attached span.voice, #attach-area .types #voice-cover {
 				background-color: #ffab19;
 			}
 
@@ -754,7 +754,7 @@ body {
 					left: 4px;
 				}
 
-			#list div.attached span.book, #edit-pane #attach-area .types #book-cover {
+			#list div.attached span.book, #attach-area .types #book-cover {
 				background-color: #86b73c;
 			}
 
@@ -762,7 +762,7 @@ body {
 					content: "\f02d";
 				}
 
-			#list div.attached span.movie, #edit-pane #attach-area .types #movie-cover {
+			#list div.attached span.movie, #attach-area .types #movie-cover {
 				background-color: #a865cd;
 			}
 
@@ -770,7 +770,7 @@ body {
 					content: "\f008";
 				}
 
-			#list div.attached span.place, #edit-pane #attach-area .types #place-cover {
+			#list div.attached span.place, #attach-area .types #place-cover {
 				background-color: #d8513e;
 			}
 
@@ -779,7 +779,7 @@ body {
 					left: 4px;
 				}
 
-			#list div.attached span.weblink, #edit-pane #attach-area .types #weblink-cover {
+			#list div.attached span.weblink, #attach-area .types #weblink-cover {
 				background-color: #3cbaff;
 			}
 
@@ -1068,6 +1068,12 @@ body {
 		z-index: 2;
 	}
 
+		#detail .content.loading:before {
+			content: "\f1ce";
+			-webkit-animation: spin 2s infinite linear;
+			animation: spin 2s infinite linear;
+		}
+
 	#detail .lower {
 		border-right: black;
 		border-right-width: thick;
@@ -1083,6 +1089,10 @@ body {
 		padding: 1% 0;
 		transition: .5s ease;
 	}
+
+		#detail .upper.expand {
+			height: 70%;
+		}
 
 	#detail .video {
 		/* margin-bottom: 24px; */
@@ -2318,164 +2328,170 @@ body {
 			background-color: #444444;
 		}
 
-	#edit-pane #attach-area {
-		display: inline-block;
-		height: 100%;
-		left: 64.5%;
-		overflow-x: hidden;
-		overflow-y: scroll;
-		padding-left: 1%;
-		position: absolute;
-		width: 34%;
-	}
-
-	#edit-pane #entry-summary {
-		display: inline-block;
-		float: right;
-		font-size: 12px;
-		margin-top: 5px;
-		padding-top: 3px;
-	}
-
-	#edit-pane .fullscreen#entry-summary {
-		margin-right: 4ch;
-		margin-top: 2px;
-	}
-
-	#edit-pane #entry-summary .entry-data {
-		background: #dddddd;
-		border-radius: 6px;
-		display: inline-block;
-		font-family: monospace;
-		left: -1em;
-		overflow: hidden;
-		padding: 0 5px 0 5px;
-		position: relative;
-		text-align: right;
-		top: 0.6em;
-		transition: font-size .4s ease;
-	}
-
-	#edit-pane .fullscreen.entry-data {
-		font-size: 20px;
-		margin-right: .5ch;
-		top: .4em !important;
-	}
-
-	#edit-pane #entry-summary .entry-icons {
-		background-color: #dddddd;
-		border-radius: 30px;
-		display: inline-block;
-		font-size: 15px;
-		height: 27px;
-		padding: 7px 0 0 10px;
-		position: relative;
-		width: 24px;
-	}
-
-		#edit-pane #entry-summary .entry-icons#elapsed {
-			padding: 7px 0 0 12px;
-			width: 22px;
-		}
-
-	#edit-pane .entry-icons.fullscreen {
-		display: none !important;
-	}
-
-	#edit-pane #entry-body, #entry-header {
-		background: #F7F7F7;
-		border-color: white;
-		border-radius: 10px;
-		border-width: 0px;
-		margin-left: 5px;
-		outline: 0;
-		padding: 10px 30px;
-		transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease, box-shadow .4s ease;
-	}
-
-		#edit-pane #entry-body:focus, #entry-header:focus { /*outline: #dddddd solid 1px;*/
-		}
-
-	#edit-pane #entry-header.dark, #entry-body.dark {
-		background-color: #1A1A1A !important;
-		border-color: #2b2b2b;
-		color: #dadada;
-	}
-
-		#edit-pane #entry-header.dark:focus, #entry-body.dark:focus {
-			outline: 0;
-		}
-
-	#edit-pane #entry-header {
-		display: inline-block;
-		font-size: 16px;
-		margin-top: 5px;
-		overflow: hidden;
-		text-align: center;
-		width: -webkit-calc(100% - 470px);
-	}
-
-	#edit-pane #entry-body {
-		font-size: 14px;
-		height: -webkit-calc(100% - 110px);
-		line-height: 1.5em;
-		margin-top: 3px;
-		padding: 30px;
-		resize: none;
-		width: -webkit-calc(100% - 65px);
-	}
-
-	#edit-pane .fullscreen#entry-body {
-		font-size: 18px;
-		height: -webkit-calc(100% - 414px);
-		padding: 60px 60px 300px 60px;
-		width: -webkit-calc(100% - 129px);
-	}
-
-	#edit-pane #attach-area .icontags {
-		padding-top: 1em;
-	}
-
-
-		#edit-pane #attach-area .icontags .weather, #edit-pane #attach-area .icontags .emotion {
-			display: inline-block;
-			text-align: center;
-			width: 49%;
-		}
-
-		#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other {
-			height: 35px;
-			margin-top: 5px;
-			overflow-x: hidden;
-			overflow-y: hidden;
-			text-overflow: clip;
-			white-space: nowrap;
-			width: 97%;
-		}
-
-#attach-area .icontags span {
-	-webkit-transition: opacity .4s ease, height .4s ease;
-	color: white;
+#attach-area {
 	display: inline-block;
+	height: 100%;
+	left: 64.5%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	padding-left: 1%;
+	position: absolute;
+	width: 34%;
+}
+
+#edit-pane #entry-summary {
+	display: inline-block;
+	float: right;
 	font-size: 12px;
-	margin-right: 5px;
-	opacity: 0.1;
-	width: 25px;
+	margin-top: 5px;
+	padding-top: 3px;
 }
 
-#edit-pane #attach-area .icontags .icons:hover, #edit-pane #attach-area .types p:hover, #edit-pane #attach-area .images div:hover {
-	opacity: .8 !important;
+#edit-pane .fullscreen#entry-summary {
+	margin-right: 4ch;
+	margin-top: 2px;
 }
 
-#edit-pane #attach-area .icontags .icons:active, #edit-pane #attach-area .types p:active, #edit-pane #attach-area .images div:active {
-	opacity: .5 !important;
+#edit-pane #entry-summary .entry-data {
+	background: #dddddd;
+	border-radius: 6px;
+	display: inline-block;
+	font-family: monospace;
+	left: -1em;
+	overflow: hidden;
+	padding: 0 5px 0 5px;
+	position: relative;
+	text-align: right;
+	top: 0.6em;
+	transition: font-size .4s ease;
 }
 
-#edit-pane #attach-area .icontags .highlight, #edit-pane #attach-area .images div.resource {
-	opacity: 1;
+#edit-pane .fullscreen.entry-data {
+	font-size: 20px;
+	margin-right: .5ch;
+	top: .4em !important;
 }
 
-#edit-pane #attach-area .texttags p {
+#edit-pane #entry-summary .entry-icons {
+	background-color: #dddddd;
+	border-radius: 30px;
+	display: inline-block;
+	font-size: 15px;
+	height: 27px;
+	padding: 7px 0 0 10px;
+	position: relative;
+	width: 24px;
+}
+
+	#edit-pane #entry-summary .entry-icons#elapsed {
+		padding: 7px 0 0 12px;
+		width: 22px;
+	}
+
+#edit-pane .entry-icons.fullscreen {
+	display: none !important;
+}
+
+#edit-pane #entry-body, #entry-header {
+	background: #F7F7F7;
+	border-color: white;
+	border-radius: 10px;
+	border-width: 0px;
+	margin-left: 5px;
+	outline: 0;
+	padding: 10px 30px;
+	transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease, box-shadow .4s ease;
+}
+
+	#edit-pane #entry-body:focus, #entry-header:focus { /*outline: #dddddd solid 1px;*/
+	}
+
+#edit-pane #entry-header.dark, #entry-body.dark {
+	background-color: #1A1A1A !important;
+	border-color: #2b2b2b;
+	color: #dadada;
+}
+
+	#edit-pane #entry-header.dark:focus, #entry-body.dark:focus {
+		outline: 0;
+	}
+
+#edit-pane #entry-header {
+	display: inline-block;
+	font-size: 16px;
+	margin-top: 5px;
+	overflow: hidden;
+	text-align: center;
+	width: -webkit-calc(100% - 470px);
+}
+
+#edit-pane #entry-body {
+	font-size: 14px;
+	height: -webkit-calc(100% - 110px);
+	line-height: 1.5em;
+	margin-top: 3px;
+	padding: 30px;
+	resize: none;
+	width: -webkit-calc(100% - 65px);
+}
+
+#edit-pane .fullscreen#entry-body {
+	font-size: 18px;
+	height: -webkit-calc(100% - 414px);
+	padding: 60px 60px 300px 60px;
+	width: -webkit-calc(100% - 129px);
+}
+
+#attach-area .icontags {
+	padding-top: 1em;
+}
+
+
+	#attach-area .icontags .weather, #attach-area .icontags .emotion {
+		display: inline-block;
+		text-align: center;
+		width: 49%;
+	}
+
+	#attach-area .icontags .other, #attach-area .texttags .other {
+		height: 35px;
+		margin-top: 5px;
+		overflow-x: hidden;
+		overflow-y: hidden;
+		text-overflow: clip;
+		white-space: nowrap;
+		width: 97%;
+		.phot;
+	}
+
+	#attach-area .icontags span {
+		-webkit-transition: opacity .4s ease, height .4s ease;
+		color: white;
+		display: inline-block;
+		font-size: 12px;
+		margin-right: 5px;
+		opacity: 0.1;
+		width: 25px;
+	}
+
+
+	#attach-area .icontags .selected span, #attach-area .images div.resource {
+		opacity: 1;
+	}
+
+	#attach-area .icontags .icons:hover, #attach-area .types p:hover, #attach-area .images div:hover {
+		opacity: .8;
+	}
+
+	#attach-area .icontags .icons:active, #attach-area .types p:active, #attach-area .images div:active {
+		opacity: .5;
+	}
+
+	#attach-area .icontags .hidden {
+		height: 0;
+	}
+
+#attach-area .texttags p {
 	background: #dadada;
 	border-radius: 30px;
 	display: inline-block;
@@ -2485,17 +2501,17 @@ body {
 	padding: 2px 6px;
 }
 
-#edit-pane #attach-area .texttags span {
+#attach-area .texttags span {
 	font-size: 11px;
 	padding: 6px 0 6px 10px;
 	position: absolute;
 }
 
-#edit-pane #attach-area .texttags .other {
+#attach-area .texttags .other {
 	height: 29px;
 }
 
-#edit-pane #attach-area .texttags #entry-tag {
+#attach-area .texttags #entry-tag {
 	background: #f7f7f7;
 	border-radius: 20px;
 	font-size: 12px;
@@ -2503,13 +2519,13 @@ body {
 	width: -webkit-calc(100% - 55px);
 }
 
-#edit-pane #attach-area .types {
+#attach-area .types {
 	display: block;
 	padding: 0;
 	text-align: center;
 }
 
-	#edit-pane #attach-area .types p {
+	#attach-area .types p {
 		background-color: black;
 		border-radius: 7px;
 		color: #fff;
@@ -2524,11 +2540,11 @@ body {
 		width: 25px;
 	}
 
-		#edit-pane #attach-area .types p.selected {
+		#attach-area .types p.selected {
 			opacity: 1;
 		}
 
-		#edit-pane #attach-area .types p.hidden {
+		#attach-area .types p.hidden {
 		}
 
 #edit-pane .images {

@@ -279,6 +279,7 @@ app.load = function(filter, newContent) {
 	animation.indent = 0;
 	// Remove all the child elements and always
 	animation.debug(log.CONTENTS_RELOADED);
+	animation.testYearButton();
 	console.log("==================Force loaded==================");
 	$("#list").empty();
 	app.lastLoaded = 0;
@@ -294,6 +295,7 @@ app.load = function(filter, newContent) {
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);
 	$("#total-time").text(app.displayedTime);
+	$("#last-updated").text(archive.list.prototype.date(parseInt(localStorage["lastUpdated"])) || "N/A");
 	$("#year").effect("slide", { direction: "up" }).html(app.year);
 	// Show the dot for changed stuff
 	if (app.yearChange[app.year]) {
@@ -743,8 +745,9 @@ app.list.prototype = {
 					dateHeader = "Yesterday";
 				} else {
 					// Test for this week
-					var yearWeek = Math.floor(yearDay / 7),
-						nowYearWeek = Math.floor(nowYearDay / 7);
+					var firstWeekDay = firstDay.getDay(),
+					 yearWeek = Math.floor((yearDay - firstWeekDay) / 7),
+						nowYearWeek = Math.floor((nowYearDay - firstWeekDay) / 7);
 					dateHeader = "";
 					switch (nowYearWeek - yearWeek) {
 						case 1:
@@ -1134,44 +1137,14 @@ app.detail = function() {
 	// !!!!!HIDE THE CONTENT LISTS!!!!
 	app.cDetail.css("display", "inline-block").html(l);
 	app.app.addClass("detail-view");
-	// Hide center if no images available
-	if (!dataClip["images"]) {
-		$(".center").hide();
+	$(".content.loading").removeClass("loading");
+	// Show the button if any images available
+	if (dataClip["images"]) {
+		$("#menu-show-images").removeClass("hidden");
 	}
 	// Back button
 	$(".btn-back", app.cDetail).on("click", function() {
 		this.hideDetail();
-	});
-	// Click to load the photos
-	$(".center").on("click", function() {
-		var data = journal.archive.data[app.year][app.currentDisplayed];
-		if (data["images"]) {
-			for (var key = 0; key != data["images"].length; ++key) {
-				var file = data["images"][key].fileName;
-				if (journal.archive.map[file]) {
-					$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><span></span><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
-				} else {
-					animation.error(log.FILE_NOT_LOADED + file + log.DOWNLOAD_PROMPT);
-				}
-			}
-		}
-		$(".center").hide();
-		$(".upper").css("height", "70%").mousewheel(function(event, delta) {
-			// Only scroll horizontally
-			this.scrollLeft -= (delta * 50);
-			event.preventDefault();
-		});;
-		var photos = $(".upper > a", app.cDetail);
-		// Activate the photo viewer on click
-		if (photos.length > 0) {
-			app.photos = new app.PhotoViewer(photos.find(" > img").clone());
-			photos.on("click", function(o) {
-				o.preventDefault();
-				var n = $(this).index();
-				app.photos.open(n);
-				return false;
-			});
-		}
 	});
 	// Click the icons to search
 	$(".icontags > span").on("click", function() {
@@ -1398,7 +1371,7 @@ app.tag = function() {
 				value: 2,
 				html: "w02"
 			}, {
-				name: "raining",
+				name: "raining",loc
 				value: 4,
 				html: "w03"
 			}, {
@@ -1439,6 +1412,10 @@ app.tag = function() {
 				html: "c01"
 			}, {
 				name: "thoughts",
+				value: 65536,
+				html: "c02"
+			}, {
+				name: "thought",
 				value: 65536,
 				html: "c02"
 			}, {
@@ -1732,6 +1709,38 @@ app.tag = function() {
 		}
 	};
 };
+/**
+ * Shows the images of the entry
+ */
+app.showEntryImages = function() {
+	var data = journal.archive.data[app.year][app.currentDisplayed];
+	if (data["images"]) {
+		for (var key = 0; key != data["images"].length; ++key) {
+			var file = data["images"][key].fileName;
+			if (journal.archive.map[file]) {
+				$(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><span></span><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
+			} else {
+				animation.error(log.FILE_NOT_LOADED + file + log.DOWNLOAD_PROMPT);
+			}
+		}
+	}
+	$(".upper").addClass("expand").mousewheel(function(event, delta) {
+		// Only scroll horizontally
+		this.scrollLeft -= (delta * 50);
+		event.preventDefault();
+	});;
+	var photos = $(".upper > a", app.cDetail);
+	// Activate the photo viewer on click
+	if (photos.length > 0) {
+		app.photos = new app.PhotoViewer(photos.find(" > img").clone());
+		photos.on("click", function(o) {
+			o.preventDefault();
+			var n = $(this).index();
+			app.photos.open(n);
+			return false;
+		});
+	}
+}
 app.PhotoViewer = function(c, d) {
 	if (!c && typeof c != "object") {
 		return false;
@@ -2098,7 +2107,7 @@ app.videoPlayer = function(selector, source) {
 		// returns click as decimal (.77) of the total timelineWidth
 		var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
 		video.currentTime = duration * clickPercent;
-	};
+	};p
 	app.videoPlayer.mouseDown = function() {
 		app.videoPlayer.onplayhead = true;
 		window.addEventListener("mousemove", app.videoPlayer.moveplayHead, true);

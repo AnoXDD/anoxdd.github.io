@@ -49,6 +49,8 @@ app.lostMedia = [];
 
 /** Whether the date of this year is loaded */
 app.dataLoaded = {};
+/** When the data of this year is updated */
+app.lastUpdated = {};
 
 /** The data decoding version of this app, integer decimal only */
 app.version = {
@@ -220,6 +222,7 @@ app.load = function(filter, newContent) {
 				// This year has also been changed
 				app.yearChange[app.year] = true;
 				$("#year").addClass("change");
+				$("#last-updated").addClass("change");
 				// Test for uniqueness
 				if (queuedYears.indexOf(createdYear) === -1) {
 					queuedYears.push(createdYear);
@@ -280,6 +283,7 @@ app.load = function(filter, newContent) {
 	// Remove all the child elements and always
 	animation.debug(log.CONTENTS_RELOADED);
 	animation.testYearButton();
+	app.readLastUpdated();
 	console.log("==================Force loaded==================");
 	$("#list").empty();
 	app.lastLoaded = 0;
@@ -295,11 +299,11 @@ app.load = function(filter, newContent) {
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);
 	$("#total-time").text(app.displayedTime);
-	$("#last-updated").text(archive.list.prototype.date(parseInt(localStorage["lastUpdated"])) || "N/A");
 	$("#year").effect("slide", { direction: "up" }).html(app.year);
 	// Show the dot for changed stuff
 	if (app.yearChange[app.year]) {
 		$("#year").addClass("change");
+		$("#last-updated").addClass("change");
 	} else {
 		$("#year").removeClass("change");
 	}
@@ -507,6 +511,45 @@ app.next = function(isToEnd) {
 		++index;
 	}
 	app.yearUpdateTry(app.years[index]);
+}
+/**
+ * Updates the last saved data of `app.year`, given an optioinal timestamp of seconds from epoch. 
+ * @param {number} (Optional) time - The time of the last updated data
+ */
+app.updateLastUpdated =function(time) {
+	time = parseInt(time) || new Date().getTime();
+	app.lastUpdated[app.year] = time;
+	if (app.year === new Date().getFullYear()) {
+		// This year, also save to cache
+		localStorage["lastUpdated"] = new Date().getTime();
+	}
+	app.readLastUpdated();
+}
+/**
+ * Reads the last saved data of `app.year`, or read it from cache if not found (this year only), and displays it on the appropriate area 
+ */
+app.readLastUpdated = function() {
+	var lastUpdated = app.lastUpdated[app.year];
+	if (!lastUpdated) {
+		// Test if it is this year
+		if (app.year === new Date().getFullYear()) {
+			// Try read it from cache
+			if (localStorage["lastUpdated"]) {
+				lastUpdated = parseInt(localStorage["lastUpdated"]);
+				// Also add it to `app.lastUpdated`
+				app.lastUpdated[app.year] = lastUpdated;
+				lastUpdated = archive.list.prototype.date(lastUpdated);
+			} else {
+				lastUpdated = "N/A";
+			}
+		} else {
+			lastUpdated = "N/A";
+		}
+	} else {
+		// Find the last updated time
+		lastUpdated = archive.list.prototype.date(lastUpdated);
+	}
+	$("#last-updated").html(lastUpdated);
 }
 /**
  * Displays a list on the #list

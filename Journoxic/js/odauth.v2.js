@@ -233,7 +233,7 @@ function getAppInfo() {
 	if (!redirectUri) {
 		alert("the odauth script tag needs a redirectUri attribute set to your redirect landing url");
 	}
-	
+
 	var clientSecret = scriptTag.getAttribute("clientSecret");
 	if (!clientSecret) {
 		alert("the odauth script tag needs a clientSecret attribute to refresh the token");
@@ -257,7 +257,7 @@ function getAppInfo() {
 function showLoginButton() {
 	var refresh = getRefreshFromCookie();
 	if (refresh) {
-			removeLoginButton();
+		removeLoginButton();
 	} else {
 		// Prompt the user to re-login
 		animation.hideAllMenus();

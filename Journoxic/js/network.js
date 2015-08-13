@@ -176,6 +176,7 @@ function downloadFile(url, textOnly) {
 					// Now the data is up-to-date
 					delete app.yearChange[app.year];
 					$("#year").removeClass("change");
+					app.updateLastUpdated();
 					app.yearUpdate();
 					if (textOnly) {
 						// Change loading icons and re-enable click
@@ -379,6 +380,7 @@ function uploadFile(dataYear) {
 					// Now the data is up-to-date
 					app.yearChange[app.year] = false;
 					$("#year").removeClass("change");
+					app.updateLastUpdated();
 					animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
 				})
 				.fail(function(xhr2, status2, error2) {

@@ -140,10 +140,10 @@ edit.init = function(overwrite, index) {
 		$("#photo-preview").hide();
 		// Enter to finish entry header
 		$("#entry-header").bind("keyup", "return", function() {
-				edit.saveTitle();
-				// Jump to the body
-				$("#entry-body").focus();
-			})
+			edit.saveTitle();
+			// Jump to the body
+			$("#entry-body").focus();
+		})
 			.bind("keyup", "ctrl+return", function() {
 				// Do so to avoid adding time header
 				edit.saveTitle();
@@ -262,6 +262,25 @@ edit.init = function(overwrite, index) {
 		// Bind hotkeys to add tags
 		// If you want to use more than one modifier (e.g. alt+ctrl+z) you should define them by an alphabetical order e.g. alt+ctrl+shift
 		$("#entry-body").bind("keyup", "return", function() {
+			// Add tab(s) if the previous line has any
+			var start = $(this).get(0).selectionStart,
+				end = $(this).get(0).selectionEnd,
+				body = $(this).val(),
+				lastReturn = body.lastIndexOf("\n", start - 1),
+				lastTab = body.lastIndexOf("\t", start - 1);
+			if (lastReturn < lastTab) {
+				// There is last tab
+				var tabs = lastTab - lastReturn,
+					newBody = body.substring(0, start);
+				// Append tabs
+				for (var i = 0; i !== tabs; ++i) {
+					newBody += "\t";
+				}
+				newBody += body.substring(end);
+				// put caret at right position again
+				$(this).get(0).selectionStart =
+				$(this).get(0).selectionEnd = start + 1;
+			}
 			edit.processBody();
 		})
 		.bind("keyup", "space", function() {
@@ -269,10 +288,10 @@ edit.init = function(overwrite, index) {
 		})
 		.bind("keydown", "tab", function(e) {
 			e.preventDefault();
-			var start = $(this).get(0).selectionStart;
-			var end = $(this).get(0).selectionEnd;
+			var start = $(this).get(0).selectionStart,
+				end = $(this).get(0).selectionEnd;
 
-			// set textarea value to: text before caret + tab + text after caret
+			// Set textarea value to text before caret + tab + text after caret
 			$(this).val($(this).val().substring(0, start)
 						+ "\t"
 						+ $(this).val().substring(end));
@@ -553,8 +572,12 @@ edit.cleanEditCache = function() {
  * Saves only the data in journal.archive.data of this year to cache
  */
 edit.saveDataCache = function() {
-	localStorage["archive"] = JSON.stringify(journal.archive.data[new Date().getFullYear()]);
-	localStorage["lastUpdated"] = new Date().getTime();
+	if (app.year === new Date().getFullYear()) {
+		// Only cache the data of this year
+		localStorage["archive"] = JSON.stringify(journal.archive.data[app.year]);
+		localStorage["lastUpdated"] = new Date().getTime();
+	}
+
 };
 /**
  * Cleans the cache for journal.archive.data

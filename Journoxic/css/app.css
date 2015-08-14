@@ -1974,6 +1974,8 @@ body {
 	width: 60px;
 }
 
+#header-info .other-status {}
+
 	#year::before {
 		content: "\f133\A";
 		display: block;

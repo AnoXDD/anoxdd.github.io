@@ -1767,6 +1767,7 @@ app.showEntryImages = function() {
 			}
 		}
 	}
+	$("#menu-show-images").addClass("hidden");
 	$(".upper").addClass("expand").mousewheel(function(event, delta) {
 		// Only scroll horizontally
 		this.scrollLeft -= (delta * 50);

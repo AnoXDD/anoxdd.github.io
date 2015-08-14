@@ -30,8 +30,10 @@
 	</div>
 	<div id="header-info">
 		<div id="year"></div>
-		<p class="other-status" id="last-updated"></p>
-		<p class="other-status" id="token-expired-in"></p>
+		<div id="other-status">
+			<p id="last-updated"></p>
+			<p id="token-expired-in"></p>
+		</div>
 	</div>
 	<div class="response" id="errors"></div>
 	<div class="response" id="feedback"></div>
@@ -106,7 +108,7 @@
 		</div>
 		<div id="action-menu">
 			<ul>
-				<li><a class="hidden-icon hidden" title="Show images" id="menu-show-images" onclick="app.showEntryImages()" href="#"></a></li>
+				<li><a class="hidden-icon hidden" title="Show images" id="menu-show-images" onclick="app.showEntryImages()" href="#">&#xf03e</a></li>
 				<li class="has-sub">
 					<a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a>
 					<ul>
@@ -429,7 +431,7 @@
 			</div>
 		</div>
 	</script>
-<script type="text/x-template" id="edit-view">
+	<script type="text/x-template" id="edit-view">
 		<div id="text-area">
 			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">

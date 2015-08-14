@@ -1414,7 +1414,7 @@ app.tag = function() {
 				value: 2,
 				html: "w02"
 			}, {
-				name: "raining",
+				name: "raining",loc
 				value: 4,
 				html: "w03"
 			}, {

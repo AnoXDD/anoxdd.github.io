@@ -266,20 +266,26 @@ edit.init = function(overwrite, index) {
 			var start = $(this).get(0).selectionStart,
 				end = $(this).get(0).selectionEnd,
 				body = $(this).val(),
-				lastReturn = body.lastIndexOf("\n", start - 1),
-				lastTab = body.lastIndexOf("\t", start - 1);
+				lastReturn = body.lastIndexOf("\n", start - 2),
+				lastTab = body.lastIndexOf("\t", start - 2);
 			if (lastReturn < lastTab) {
 				// There is last tab
-				var tabs = lastTab - lastReturn,
-					newBody = body.substring(0, start);
+							var tabs = lastTab - lastReturn,
+					newBody;
+					if (lastTab === start - 2) {
+				// The user enters "return" after an empty line prepended with tab(s), assumed to dismiss the tab(s)
+				newBody = body.substring(0, lastReturn + 1);
+			} else {
+ newBody = body.substring(0, start);
 				// Append tabs
 				for (var i = 0; i !== tabs; ++i) {
 					newBody += "\t";
-				}
+				}}
 				newBody += body.substring(end);
 				// put caret at right position again
 				$(this).get(0).selectionStart =
 				$(this).get(0).selectionEnd = start + 1;
+				$(this).val(newBody);
 			}
 			edit.processBody();
 		})

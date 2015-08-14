@@ -19,6 +19,12 @@ edit.isFolder = false;
 edit.folderDate = "";
 edit.isEditPaneDisplayed = false;
 
+/** The list to auto-correct the tag, in the format of [wrong tag]: [correct tag] */
+edit.autoCorrectTags = {
+	"thought": "thoughts",
+	"mc": "minecraft"
+}
+
 edit.removalList = {};
 
 edit.localChange = [];
@@ -1323,6 +1329,8 @@ edit.processBody = function() {
  * @param {boolean} mute - Whether log "xxx is added" or not
  */
 edit.addTag = function(tag, mute) {
+	// Find replacable tags
+	tag = edit.autoCorrectTags[tag] || tag;
 	// If a tag is not specified, it will get the value from the input box where user puts a new tag value
 	tag = tag || $("#entry-tag").val().toLowerCase().replace(/\|/g, "");
 	// Remove the spaces in `tag`

@@ -1458,10 +1458,6 @@ app.tag = function() {
 				value: 65536,
 				html: "c02"
 			}, {
-				name: "thought",
-				value: 65536,
-				html: "c02"
-			}, {
 				name: "ingress",
 				value: 131072,
 				html: "c03"

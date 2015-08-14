@@ -147,9 +147,9 @@ edit.init = function(overwrite, index) {
 			.bind("keyup", "ctrl+return", function() {
 				// Do so to avoid adding time header
 				edit.saveTitle();
+				edit.notAddHeader = true;
 				// Jump to the body
 				$("#entry-body").focus();
-				edit.notAddHeader = true;
 			})
 			.blur(function() {
 				// This header has lost its focus. Test if needed to add a date header
@@ -1156,7 +1156,7 @@ edit.windowMode = function() {
  * Stores the value in the title textbox into cache
  * @returns {} 
  */
-edit.saveeTitle = function() {
+edit.saveTitle = function() {
 	localStorage["title"] = $("#entry-header").val();
 };
 edit.refreshSummary = function() {

@@ -244,7 +244,7 @@ edit.init = function(overwrite, index) {
 			} else if (tagsHtml[i].charAt(0) === "e") {
 				parent += " .emotion";
 			} else {
-				parent += " .other";
+				parent += " .other-icons";
 			}
 			// Processed existed tags
 			$(parent).append(
@@ -1446,14 +1446,14 @@ edit.toggleIcon = function(tag) {
 		if (parent === "weather" || parent === "emotion") {
 			// Now highlighted
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").addClass("hidden");
-			$(selector).append("#attach-area .icontags .selected");
 		}
+			$("#attach-area .icontags .selected").append($(selector));
 	} else {
 		if (parent === "weather" || parent === "emotion") {
 			// Dimmed
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeClass("hidden");
-			$(selector).append("#attach-area .icontags .other");
 		}
+					$("#attach-area .icontags .other").append($(selector));
 	}
 }
 

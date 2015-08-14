@@ -763,7 +763,7 @@ edit.removeEntry = function() {
 	delete journal.archive.data[app.year][app.currentDisplayed];
 	// Clear from the list
 	var $entry = $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ")");
-	if ($entry.next().length === 0 || $entry.next.has("p.separator").length !== 0) {
+	if ($entry.next().length === 0 || $entry.next().has("p.separator").length !== 0) {
 		// Reaches EOF or the beginning of next month (separator)
 		$entry.fadeOut(500, function() {
 			$(this).empty();

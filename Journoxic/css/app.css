@@ -169,7 +169,9 @@
 		background-color: #fff;
 	}
 
-	50% {
+	45% {
+		background-color: #aaa;
+	}55% {
 		background-color: #aaa;
 	}
 
@@ -430,7 +432,7 @@ body {
 	}
 
 #list a.display {
-    /* background-color: #aaa; */
+    background-color: #aaa;
 }
 
 		#list li:not(.archive) a:after {
@@ -462,13 +464,10 @@ body {
 		}
 
 #list.loading .archive a.display {
-    animation: blink 2s infinite ease;
+    animation: blink 3s infinite ease;
     margin-right: 1.5em;
     min-width: 0;
     background-color: initial;
-}
-
-#list.loading .archive a.display {
 }
 
 	#list p.title {
@@ -494,7 +493,7 @@ body {
 		display: inline-block;
 		float: right;
 		font-size: 9px;
-		margin-right: 10px;
+		margin-left: 10px;
 		margin-top: 2px;
 		opacity: 1;
 		padding: 2px 7px;

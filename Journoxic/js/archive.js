@@ -269,6 +269,8 @@ archive.detail = function() {
 	var dataClip = archive.data[archive.currentDisplayed];
 	if (!dataClip.processed) {
 		animation.log(log.CONTENTS_DOWNLOAD_START, 1);
+		// Add loading icon
+		$("#detail").addClass("loading");
 		var t = this;
 		$.ajax({
 			type: "GET",
@@ -277,8 +279,8 @@ archive.detail = function() {
 			animation.log(log.CONTENTS_DOWNLOAD_END, -1);
 			// Stop telling the user it is loading
 			// !!!
-			$(".content.loading").removeClass("loading");
-			var contents = JSON.parse(xhr.responseText).slice(0, 50);
+			$("#detail").removeClass("loading");
+			var contents = JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf("["))).slice(0, 50);
 			// Convert date
 			for (var i = 0; i !== contents.length; ++i) {
 				contents[i]["time"]["created"] = edit.getMyTime(contents[i]["time"]["created"]);
@@ -288,7 +290,7 @@ archive.detail = function() {
 			// Set the read status of the clip to read
 			dataClip.processed = true;
 			var l = $(archive.detailView(dataClip));
-			app.cDetail.css("display", "inline-block").html(l);
+			app.cDetail.html(l);
 			app.app.addClass("detail-view");
 			$("#detail").addClass("show");
 			// Back button
@@ -332,7 +334,7 @@ archive.detail.prototype = {
 	/* Hide the detail-view */
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
-		app.cDetail.css("display", "none").empty();
+		app.cDetail.removeClass("show").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");
 		animation.hideHiddenIcons();

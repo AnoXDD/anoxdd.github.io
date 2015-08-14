@@ -1,4 +1,4 @@
-﻿/* Defines the archive operation */
+/* Defines the archive operation */
 
 window.archive = {};
 
@@ -249,7 +249,7 @@ archive.list.prototype = {
 			var flag = (archive.currentDisplayed == $(this).parent().index());
 			if (!flag) {
 				archive.currentDisplayed = $(this).parent().index();
-				$("#detail").hide();
+				$("#detail").removeClass("show");
 				archive.view = new archive.detail();
 			}
 			return false;
@@ -276,6 +276,7 @@ archive.detail = function() {
 		}).done(function(data, status, xhr) {
 			animation.log(log.CONTENTS_DOWNLOAD_END, -1);
 			// Stop telling the user it is loading
+			// !!!
 			$(".content.loading").removeClass("loading");
 			var contents = JSON.parse(xhr.responseText).slice(0, 50);
 			// Convert date
@@ -289,7 +290,7 @@ archive.detail = function() {
 			var l = $(archive.detailView(dataClip));
 			app.cDetail.css("display", "inline-block").html(l);
 			app.app.addClass("detail-view");
-			$("#detail").fadeIn(500);
+			$("#detail").addClass("show");
 			// Back button
 			$(".btn-back", app.cDetail).on("click", function() {
 				t.hideDetail();
@@ -312,7 +313,7 @@ archive.detail = function() {
 			if (!dataClip["images"]) {
 				$(".center").hide();
 			}
-			$("#detail").fadeIn(500);
+			$("#detail").addClass("show");
 			// Back button
 			$(".btn-back", app.cDetail).on("click", function() {
 				this.hideDetail();

@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -993,12 +993,23 @@ body {
 }
 
 #detail {
-	display: none;
+	display: inline-block;
 	height: 100%;
+	opacity: 0;
 	left: 39%;
 	margin-left: 1%;
 	position: absolute;
+	transition: opacity .4s ease;
 	width: 60%;
+}
+
+#detail.show {
+    opacity: 1;
+}
+
+#detail::before {
+    content: "dfdfd";
+    display: block;
 }
 
 	#detail .head {

@@ -250,7 +250,7 @@ edit.init = function(overwrite, index) {
 			} else if (tagsHtml[i].charAt(0) === "e") {
 				parent += " .emotion";
 			} else {
-				parent += " .other-icons";
+				parent += " .unselected";
 			}
 			// Processed existed tags
 			$(parent).append(
@@ -1417,7 +1417,7 @@ edit.removeTag = function(tag, mute) {
 			});
 			if (!removed) {
 				// Keep searching in icontags
-				$("#attach-area .icontags span").each(function() {
+				$("#attach-area .selected span").each(function() {
 					if ($(this).attr("title").toLowerCase() === tag) {
 						if (!mute) {
 							animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_REMOVED);
@@ -1460,14 +1460,17 @@ edit.toggleIcon = function(tag) {
 		if (parent === "weather" || parent === "emotion") {
 			// Now highlighted
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").addClass("hidden");
+		} else {
+			$("#attach-area .icontags .selected").append($(selector).clone());
 		}
-			$("#attach-area .icontags .selected").append($(selector));
 	} else {
 		if (parent === "weather" || parent === "emotion") {
 			// Dimmed
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeClass("hidden");
-		}
-					$("#attach-area .icontags .other").append($(selector));
+		} else {
+				setTimeout(function() {
+					$("#attach-area .icontags .selected ."+htmlName).remove();
+				}, 400);	}
 	}
 }
 

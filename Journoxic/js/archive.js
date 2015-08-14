@@ -294,7 +294,7 @@ archive.detail = function() {
 			$(".btn-back", app.cDetail).on("click", function() {
 				t.hideDetail();
 			});
-			// Show restore button
+			// Show restore button 
 			$("#archive-restore").removeClass("hidden");
 			return dataClip;
 		}).fail(function(xhr, status, error) {

@@ -294,7 +294,7 @@ app.load = function(filter, newContent) {
 	app.displayedTime = 0;
 	app.currentDisplayed = -1;
 	app.command = filter;
-	$("#query").val(filter);
+	$("#query").val(filter); 
 	$("#total-displayed").text(app.displayedNum);
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);

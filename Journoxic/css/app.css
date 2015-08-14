@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -993,12 +993,18 @@ body {
 }
 
 #detail {
-	display: none;
+	display: inline-block;
 	height: 100%;
+	opacity: 0;
 	left: 39%;
 	margin-left: 1%;
 	position: absolute;
+	transition: opacity .4s ease;
 	width: 60%;
+}
+
+#detail.show {
+    opacity: 1;
 }
 
 	#detail .head {
@@ -1067,12 +1073,6 @@ body {
 		width: 100%;
 		z-index: 2;
 	}
-
-		#detail .content.loading:before {
-			content: "\f1ce";
-			-webkit-animation: spin 2s infinite linear;
-			animation: spin 2s infinite linear;
-		}
 
 	#detail .lower {
 		border-right: black;

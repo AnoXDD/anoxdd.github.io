@@ -1,4 +1,4 @@
-/* Defines the archive operation */
+﻿/* Defines the archive operation */
 
 window.archive = {};
 
@@ -169,58 +169,58 @@ archive.list.prototype = {
 		var date = new Date(time),
 			hour = date.getHours(),
 			minute = date.getMinutes();
-			// Gets the day since tajhe first day of this year
-			var year = date.getFullYear(),
-				now = new Date(),
-				nowYear = now.getFullYear(),
-				month = date.getMonth(),
-				day = date.getDate(),
-				dateHeader;
-			if (year === nowYear) {
-				var firstDay = new Date(year, 0, 1),
-					yearDay = Math.floor((date - firstDay) / 86400000),
-					nowYearDay = Math.floor((now - firstDay) / 86400000);
-				// Test for today and yesterday
-				if (yearDay === nowYearDay) {
-					// Test for hours
-					var deltaMinutes = Math.floor((now - date) / 60000);
-					if (deltaMinutes === 0) {
-						return "Just now";
-					} else if (deltaMinutes < 60) {
-						// Within an hour
-						return deltaMinutes + " min";
-					} else {
-						// Within today
-						return Math.floor(deltaMinutes / 60) + " hr";
-					}
-				} else if (yearDay + 1 === nowYearDay) {
-					dateHeader = "Yesterday";
+		// Gets the day since the first day of this year
+		var year = date.getFullYear(),
+			now = new Date(),
+			nowYear = now.getFullYear(),
+			month = date.getMonth(),
+			day = date.getDate(),
+			dateHeader;
+		if (year === nowYear) {
+			var firstDay = new Date(year, 0, 1),
+				yearDay = Math.floor((date - firstDay) / 86400000),
+				nowYearDay = Math.floor((now - firstDay) / 86400000);
+			// Test for today and yesterday
+			if (yearDay === nowYearDay) {
+				// Test for hours
+				var deltaMinutes = Math.floor((now - date) / 60000);
+				if (deltaMinutes === 0) {
+					return "Just now";
+				} else if (deltaMinutes < 60) {
+					// Within an hour
+					return deltaMinutes + " min";
 				} else {
-					// Test for this week
-					var firstWeekDay = firstDay.getDay(),
-					 yearWeek = Math.floor((yearDay - firstWeekDay) / 7),
-						nowYearWeek = Math.floor((nowYearDay - firstWeekDay) / 7);
-					dateHeader = "";
-					switch (nowYearWeek - yearWeek) {
-						case 1:
-							// It was the last week
-							dateHeader = "Last ";
-							// Intentionally omit `break`
-						case 0:
-							// It is this week
-							dateHeader += app.weekArray[date.getDay()];
-							break;
-						default:
-							dateHeader = app.monthArray[month] + " " + day;
-							break;
-					}
+					// Within today
+					return Math.floor(deltaMinutes / 60) + " hr";
 				}
+			} else if (yearDay + 1 === nowYearDay) {
+				dateHeader = "Yesterday";
 			} else {
-				dateHeader = app.monthArray[month] + " " + day;
+				// Test for this week
+				var firstWeekDay = firstDay.getDay(),
+				 yearWeek = Math.floor((yearDay - firstWeekDay) / 7),
+					nowYearWeek = Math.floor((nowYearDay - firstWeekDay) / 7);
+				dateHeader = "";
+				switch (nowYearWeek - yearWeek) {
+					case 1:
+						// It was the last week
+						dateHeader = "Last ";
+						// Intentionally omit `break`
+					case 0:
+						// It is this week
+						dateHeader += app.weekArray[date.getDay()];
+						break;
+					default:
+						dateHeader = app.monthArray[month] + " " + day;
+						break;
+				}
 			}
-			minute = minute < 10 ? "0" + minute : minute;
-			hour = hour < 10 ? "0" + hour : hour;
-			return dateHeader + " " + hour + ":" + minute;
+		} else {
+			dateHeader = app.monthArray[month] + " " + day;
+		}
+		minute = minute < 10 ? "0" + minute : minute;
+		hour = hour < 10 ? "0" + hour : hour;
+		return dateHeader + " " + hour + ":" + minute;
 	},
 	/**
 	 * Converts the content to html and append to the list of contents

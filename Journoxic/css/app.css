@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -149,6 +149,20 @@
 
 	100% {
 		opacity: 0;
+	}
+}
+
+@keyframes blink {
+	0% {
+		background-color: #fff;
+	}
+
+	50% {
+		background-color: #aaa;
+	}
+
+	100% {
+		background-color: #fff;
 	}
 }
 
@@ -389,46 +403,59 @@ body {
 				}
 
 	#list a {
-		background: #fff;
+		background-color: #fff;
 		box-shadow: 0 1px 2px #555;
-		display: block;
+		display: inline-block;
 		height: 60px;
 		margin-bottom: 5px;
 		padding: 10px;
 		position: relative;
 		text-decoration: none;
-		transition: background-color .4s ease, box-shadow .2s ease;
+		transition: background-color .4s ease, box-shadow .2s ease, width .4s ease;
 		width: 96%;
 	}
 
-		#list a:after {
-			background-position: -176px -445px;
-			bottom: -4px;
-			height: 4px;
-			left: -1px;
-			/* display: block; */
-			/* content: ''; */
-			position: absolute;
-			width: 180px;
+		#list a.display {
+			/* background-color: #aaa; */
 		}
 
-		#list a:hover {
-			background-color: #ddd;
-			box-shadow: 0 1px 10px #555;
-		}
+	#list li:not(.archive) a:after {
+		background-position: -176px -445px;
+		bottom: -4px;
+		height: 4px;
+		left: -1px;
+		/* display: block; */
+		/* content: ''; */
+		position: absolute;
+		width: 180px;
+	}
 
-		#list a div.cover, #list a p.summary {
-			transition: width .3s;
-		}
+	#list a:hover {
+		background-color: #ddd;
+		box-shadow: 0 1px 10px #555;
+	}
 
-		#list a:hover div.cover {
-			width: 60px;
-		}
+	#list a div.cover, #list a p.summary {
+		transition: width .3s;
+	}
 
-		#list a:hover p.summary {
-			width: -webkit-calc(95% - 60px);
-		}
+	#list a:hover div.cover {
+		width: 60px;
+	}
 
+	#list a:hover p.summary {
+		width: -webkit-calc(95% - 60px);
+	}
+
+	#list.loading .archive a.display {
+		animation: blink 2s infinite ease;
+		margin-right: 1.5em;
+		min-width: 0;
+		background-color: initial;
+	}
+
+	#list.loading .archive a.display {
+	}
 
 	#list p.title {
 		color: #4e4e4e;
@@ -459,8 +486,7 @@ body {
 		padding: 2px 7px;
 		position: relative;
 		top: 2px;
-	
-}
+	}
 
 	#list p.datetime {
 		color: #808080;
@@ -470,9 +496,7 @@ body {
 		font-weight: lighter;
 		margin-top: 3px;
 		text-align: right;
-	
-		width: 8em;
-}
+	}
 
 	#list p.summary {
 		color: #5d5d5d;
@@ -1005,9 +1029,9 @@ body {
 	width: 60%;
 }
 
-#detail.show {
-    opacity: 1;
-}
+	#detail.show {
+		opacity: 1;
+	}
 
 	#detail .head {
 		padding: 10px 10px 0 70px;

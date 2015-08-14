@@ -879,9 +879,9 @@ app.list.prototype = {
 			}
 			// De-hightlight the data that is displayed
 			////console.log(app.currentDisplayed);
-			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeAttr("style");
+			$("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeClass("display");
 			// Highlight the data that is now displayed
-			$(this).css("background", "#aaa").css("color", "#fff");
+			$(this).addClass("display");
 			// Update the index of the list to be displayed
 			var flag = (app.currentDisplayed == $(this).parent().index());
 			if (!flag) {

@@ -1,4 +1,4 @@
-﻿/* Defines the archive operation */
+/* Defines the archive operation */
 
 window.archive = {};
 
@@ -137,8 +137,8 @@ archive.list.prototype = {
 		// Test if current entry satisfies the filter
 		while (true) {
 			var data = archive.data[currentLoaded];
-			archive.data[currentLoaded]["created"] = edit.getMyTime(data["created"]);
-			archive.data[currentLoaded]["modified"] = edit.getMyTime(data["modified"]);
+			archive.data[currentLoaded]["created"] = this.date(data["created"]);
+			archive.data[currentLoaded]["modified"] = this.date(data["modified"]);
 			this.html(data);
 			++currentLoaded;
 			// Find the qualified entry, break the loop if scrollbar is not visible yet
@@ -162,19 +162,13 @@ archive.list.prototype = {
 	 * @param {boolean} timeOnly - If only returns the time
 	 * @returns {string} Converted time
 	 */
-	date: function(time, timeOnly) {
+	date: function(time) {
 		if (typeof time !== "number") {
 			return "";
 		}
 		var date = new Date(time),
 			hour = date.getHours(),
 			minute = date.getMinutes();
-		// Test for today and yesterday
-		if (timeOnly) {
-			minute = minute < 10 ? "0" + minute : minute;
-			hour = hour < 10 ? "0" + hour : hour;
-			return hour + ":" + minute;
-		} else {
 			// Gets the day since tajhe first day of this year
 			var year = date.getFullYear(),
 				now = new Date(),
@@ -191,13 +185,13 @@ archive.list.prototype = {
 					// Test for hours
 					var deltaMinutes = Math.floor((now - date) / 60000);
 					if (deltaMinutes === 0) {
-						dateHeader = "Just now";
+						return "Just now";
 					} else if (deltaMinutes < 60) {
 						// Within an hour
-						dateHeader = deltaMinutes + " min";
+						return deltaMinutes + " min";
 					} else {
 						// Within today
-						dateHeader = Math.floor(deltaMinutes / 60) + "hr";
+						return Math.floor(deltaMinutes / 60) + " hr";
 					}
 				} else if (yearDay + 1 === nowYearDay) {
 					dateHeader = "Yesterday";
@@ -227,7 +221,6 @@ archive.list.prototype = {
 			minute = minute < 10 ? "0" + minute : minute;
 			hour = hour < 10 ? "0" + hour : hour;
 			return dateHeader + " " + hour + ":" + minute;
-		}
 	},
 	/**
 	 * Converts the content to html and append to the list of contents

@@ -143,12 +143,10 @@ app.init = function() {
 			expiresIn;
 		if (expiration) {
 			// A valid cookie number
-			if (expiration > new Date().getTime()) {
+			var now = new Date().getTime();
+			if (expiration > now) {
 				// Yet to be expired
-				expiresIn = archive.list.prototype.date(expiration);
-				if (expiresIn) {
-					expiresIn = "Expires in " + expiresIn;
-				}
+				expiresIn = archive.list.prototype.date(now - (expiration - now));
 			}
 		}
 		expiresIn = expiresIn || "Expired";
@@ -313,7 +311,7 @@ app.load = function(filter, newContent) {
 	app.displayedTime = 0;
 	app.currentDisplayed = -1;
 	app.command = filter;
-	$("#query").val(filter); 
+	$("#query").val(filter);
 	$("#total-displayed").text(app.displayedNum);
 	$("#total-char").text(app.displayedChars);
 	$("#total-line").text(app.displayedLines);
@@ -535,7 +533,7 @@ app.next = function(isToEnd) {
  * Updates the last saved data of `app.year`, given an optioinal timestamp of seconds from epoch. 
  * @param {number} (Optional) time - The time of the last updated data
  */
-app.updateLastUpdated =function(time) {
+app.updateLastUpdated = function(time) {
 	time = parseInt(time) || new Date().getTime();
 	app.lastUpdated[app.year] = time;
 	if (app.year === new Date().getFullYear()) {
@@ -1182,7 +1180,7 @@ app.detail = function() {
 		if (dataClip.tags) {
 			// Process tags if applicable
 			var tags = app.tag().separate(dataClip.tags);
-			dataClip.iconTags = tags.iconTags|| [];
+			dataClip.iconTags = tags.iconTags || [];
 			dataClip.textTags = tags.textTags || [];
 		} else {
 			dataClip.iconTags = [];
@@ -2169,7 +2167,7 @@ app.videoPlayer = function(selector, source) {
 		// returns click as decimal (.77) of the total timelineWidth
 		var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
 		video.currentTime = duration * clickPercent;
-	};p
+	}; p
 	app.videoPlayer.mouseDown = function() {
 		app.videoPlayer.onplayhead = true;
 		window.addEventListener("mousemove", app.videoPlayer.moveplayHead, true);

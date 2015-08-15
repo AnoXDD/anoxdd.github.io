@@ -134,6 +134,7 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 	var expiration = new Date();
 	// Expiration set up back 5 minutes
 	expiration.setTime(expiration.getTime() + expiresInSeconds * 1000 - 300000);
+	localStorage["expiration"] = expiration.getTime();
 	// Access token
 	var cookie = "odauth=" + token + "; path=/; expires=" + expiration.toUTCString();
 	console.log("setCookie(): cookie = " + cookie);
@@ -150,7 +151,6 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 		cookie = cookie + ";secure";
 	}
 	document.cookie = cookie;
-	localStorage["expiration"] = expiration.getTime();
 }
 
 /**

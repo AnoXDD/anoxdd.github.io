@@ -666,12 +666,24 @@ edit.minData = function() {
 		delete tmp[key]["summary"];
 		delete tmp[key]["type"];
 		// Remove undefined object
-		for (var i = 0; i < tmp[key].length; ++i) {
+		var i;
+		for (i = 0; i < tmp[key].length; ++i) {
 			if (tmp[key][i] == undefined || tmp[key][i] == "undefined") {
 				// Splice this key and also decrement i
 				tmp[key].splice(i--, 1);
 			}
 		}
+		// Remove thumb data
+		var groups = ["movie", "music"];
+		for (i = 0; i !== groups.length; ++i) {
+			if (tmp[key][groups[i]]) {
+				for (i = 0; i !== tmp[key][groups[i]].length; ++i) {
+					delete tmp[key][groups[i]]["thumb"];
+				}
+			}
+		}
+		// Replace "\r\n" with "\n"
+		tmp[key]["text"]["body"] = tmp[key]["text"]["body"].replace(/\r\n/g, "\n");
 	};
 	return tmp;
 };

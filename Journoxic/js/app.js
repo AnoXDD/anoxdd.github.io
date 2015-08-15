@@ -1163,8 +1163,11 @@ app.detail = function() {
 		if (dataClip.tags) {
 			// Process tags if applicable
 			var tags = app.tag().separate(dataClip.tags);
-			dataClip.iconTags = tags.iconTags;
-			dataClip.textTags = tags.textTags;
+			dataClip.iconTags = tags.iconTags|| [];
+			dataClip.textTags = tags.textTags || [];
+		} else {
+			dataClip.iconTags = [];
+			dataClip.textTags = [];
 		}
 		// To avoid undefined error in _.template
 		var elements = "video weblink book music movie images voice place textTags iconTags".split(" ");

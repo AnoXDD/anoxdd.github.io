@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -171,11 +171,13 @@
 
 	45% {
 		background-color: #aaa;
-	}55% {
+	}
+
+	55% {
 		background-color: #aaa;
 	}
 
-		100% {
+	100% {
 		background-color: #fff;
 	}
 }
@@ -431,44 +433,44 @@ body {
 		width: 96%;
 	}
 
-#list a.display {
-    background-color: #aaa;
-}
-
-		#list li:not(.archive) a:after {
-			background-position: -176px -445px;
-			bottom: -4px;
-			height: 4px;
-			left: -1px;
-			/* display: block; */
-			/* content: ''; */
-			position: absolute;
-			width: 180px;
+		#list a.display {
+			background-color: #aaa;
 		}
 
-		#list a:hover {
-			background-color: #ddd;
-			box-shadow: 0 1px 10px #555;
-		}
+	#list li:not(.archive) a:after {
+		background-position: -176px -445px;
+		bottom: -4px;
+		height: 4px;
+		left: -1px;
+		/* display: block; */
+		/* content: ''; */
+		position: absolute;
+		width: 180px;
+	}
 
-		#list a div.cover, #list a p.summary {
-			transition: width .3s;
-		}
+	#list a:hover {
+		background-color: #ddd;
+		box-shadow: 0 1px 10px #555;
+	}
 
-		#list a:hover div.cover {
-			width: 60px;
-		}
+	#list a div.cover, #list a p.summary {
+		transition: width .3s;
+	}
 
-		#list a:hover p.summary {
-			width: -webkit-calc(95% - 60px);
-		}
+	#list a:hover div.cover {
+		width: 60px;
+	}
 
-#list.loading .archive a.display {
-    animation: blink 3s infinite ease;
-    margin-right: 1.5em;
-    min-width: 0;
-    background-color: initial;
-}
+	#list a:hover p.summary {
+		width: -webkit-calc(95% - 60px);
+	}
+
+	#list.loading .archive a.display {
+		animation: blink 3s infinite ease;
+		margin-right: 1.5em;
+		min-width: 0;
+		background-color: initial;
+	}
 
 	#list p.title {
 		color: #4e4e4e;
@@ -499,8 +501,7 @@ body {
 		padding: 2px 7px;
 		position: relative;
 		top: 2px;
-	
-}
+	}
 
 	#list p.datetime {
 		color: #808080;
@@ -510,8 +511,7 @@ body {
 		font-weight: lighter;
 		margin-top: 3px;
 		text-align: right;
-	
-}
+	}
 
 	#list p.summary {
 		color: #5d5d5d;
@@ -1044,9 +1044,9 @@ body {
 	width: 60%;
 }
 
-#detail.show {
-    opacity: 1;
-}
+	#detail.show {
+		opacity: 1;
+	}
 
 	#detail .head {
 		padding: 10px 10px 0 70px;
@@ -1985,22 +1985,23 @@ body {
 	width: 60px;
 }
 
-#header-info .other-status {}
+#header-info .other-status {
+}
 
-	#year::before {
-		content: "\f133\A";
-		display: block;
-		margin-right: 3px;
-	}
+#year::before {
+	content: "\f133\A";
+	display: block;
+	margin-right: 3px;
+}
 
-	#year.change::after {
-		bottom: 60px;
-		content: "\f14b";
-		display: block;
-		font-size: 12px;
-		left: 21px;
-		position: relative;
-	}
+#year.change::after {
+	bottom: 60px;
+	content: "\f14b";
+	display: block;
+	font-size: 12px;
+	left: 21px;
+	position: relative;
+}
 
 
 .response {
@@ -2506,50 +2507,49 @@ body {
 		width: 97%;
 	}
 
-	#attach-area .other-icons {
-		display: inline-block;
-	}
+#attach-area .other-icons {
+	display: inline-block;
+}
 
-	#attach-area .icontags span {
-		color: white;
-		display: inline-block;
-		font-size: 12px;
-		margin-right: 5px;
-		opacity: 0.1;
-		width: 25px;
-	
-		text-overflow: clip;
+#attach-area .icontags span {
+	color: white;
+	display: inline-block;
+	font-size: 12px;
+	margin-right: 5px;
+	opacity: 0.1;
+	width: 25px;
+	text-overflow: clip;
 }
 
 #attach-area .unselected span:not(.highlight) {
-    animation: fadein-icon .4s ease;
+	animation: fadein-icon .4s ease;
 }
 
-#attach-area .unselected .highlight, #attach-area .selected span:not(.highlight){
-    width: 0px;
-    margin-right: 0px;
-    transition: .4s ease;
+#attach-area .unselected .highlight, #attach-area .selected span:not(.highlight) {
+	width: 0px;
+	margin-right: 0px;
+	transition: .4s ease;
 }
 
 #attach-area .selected span {
 	animation: fadein-icon .4s ease;
 }
 
-	#attach-area .icontags .selected span, #attach-area .images div.resource {
-		opacity: 1;
-	}
+#attach-area .icontags .selected span, #attach-area .images div.resource {
+	opacity: 1;
+}
 
-	#attach-area .icontags .icons:hover, #attach-area .types p:hover, #attach-area .images div:hover {
-		opacity: .8;
-	}
+#attach-area .icontags .icons:hover, #attach-area .types p:hover, #attach-area .images div:hover {
+	opacity: .8;
+}
 
-	#attach-area .icontags .icons:active, #attach-area .types p:active, #attach-area .images div:active {
-		opacity: .5;
-	}
+#attach-area .icontags .icons:active, #attach-area .types p:active, #attach-area .images div:active {
+	opacity: .5;
+}
 
-	#attach-area .icontags .hidden {
-		height: 0;
-	}
+#attach-area .icontags .hidden {
+	height: 0;
+}
 
 #attach-area .texttags p {
 	background: #dadada;

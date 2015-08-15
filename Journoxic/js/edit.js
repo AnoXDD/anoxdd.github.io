@@ -84,7 +84,7 @@ edit.init = function(overwrite, index) {
 		}
 	}
 	// If still no available data to be stored, create a new one
-	data = data || edit.newContent();
+	edit.data = data || edit.newContent();
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;
@@ -1282,7 +1282,7 @@ edit.processBody = function() {
 			convertedTime = edit.convertTime(line.substring(8));
 			if (new Date(convertedTime).getFullYear() === app.year) {
 				// Year in range, overwrite start time
-				data["time"]["start"] = convertedTime;
+				edit.data["time"]["start"] = convertedTime;
 				animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
 			} else {
 				// Invalid date
@@ -1291,14 +1291,14 @@ edit.processBody = function() {
 			flag = true;
 		} else if (line.substring(0, 5) === "End @") {
 			// Overwrite end time
-			data["time"]["end"] = edit.convertTime(line.substring(6));
-			animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(data["time"]["end"]));
+			edit.data["time"]["end"] = edit.convertTime(line.substring(6));
+			animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(edit.data["time"]["end"]));
 			flag = true;
 		} else if (line.substring(0, 9) === "Created @") {
 			convertedTime = edit.convertTime(line.substring(10));
 			if (new Date(convertedTime).getFullYear() === app.year) {
 				// Year in range, overwrite created time
-				data["time"]["created"] = convertedTime;
+				edit.data["time"]["created"] = convertedTime;
 				animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
 			} else {
 				// Invalid date

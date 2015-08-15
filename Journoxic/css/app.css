@@ -1968,41 +1968,79 @@ body {
 		text-align: center;
 	}
 
-#year {
+#header-info {
+	color: #dadada;
+	height: 70px;
+	left: 0px;
+	opacity: 1;
+	position: absolute;
+	top: 0px;
+	margin: 8px 0px 0px 8px;
+	transition: opacity .4s ease, width .4s ease;
+	overflow: hidden;
 	background-color: #555;
 	box-shadow: 0 0 10px #2B2B2B;
-	color: #dadada;
+	z-index: 10;
+	width: 64px;
+}
+
+	#header-info div {
+		display: inline-block;
+	}
+
+	#header-info:not(:hover) #other-status {
+		width: 0px;
+	}
+
+	#header-info:hover {
+		width: 134px;
+	}
+
+
+#year {
 	font-size: 20px;
-	height: 63px;
-	left: 0px;
-	margin: 8px;
-	opacity: 1;
-	padding-top: 7px;
-	position: absolute;
-	text-align: center;
-	top: 0px;
-	transition: opacity .4s ease;
+	margin-bottom: 20px;
 	width: 60px;
+	padding: 8px 2px;
+	margin: 0px;
+	text-align: center;
 }
 
-#header-info .other-status {
+
+	#year::before {
+		content: "\f133\A";
+		display: block;
+		margin-right: 3px;
+	}
+
+	#year.change::after {
+		bottom: 60px;
+		content: "\f14b";
+		display: block;
+		font-size: 12px;
+		left: 21px;
+		position: relative;
+	}
+
+#other-status {
+	text-align: left;
+	height: 38px;
+	overflow: hidden;
 }
 
-#year::before {
-	content: "\f133\A";
-	display: block;
-	margin-right: 3px;
+	#other-status p {
+		font-size: 12px;
+	}
+
+#last-updated::before {
+	content: "\f233";
+	margin-right: 5px;
 }
 
-#year.change::after {
-	bottom: 60px;
-	content: "\f14b";
-	display: block;
-	font-size: 12px;
-	left: 21px;
-	position: relative;
+#token-expires-in::before {
+	content: "\f084";
+	margin-right: 5px;
 }
-
 
 .response {
 	height: 5%;
@@ -3352,5 +3390,3 @@ body {
 		width: 25px;
 	}
 
-.drawer-option {
-}

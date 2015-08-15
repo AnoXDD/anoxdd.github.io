@@ -276,17 +276,18 @@ edit.init = function(overwrite, index) {
 				lastTab = body.lastIndexOf("\t", start - 2);
 			if (lastReturn < lastTab) {
 				// There is last tab
-							var tabs = lastTab - lastReturn,
-					newBody;
-					if (lastTab === start - 2) {
-				// The user enters "return" after an empty line prepended with tab(s), assumed to dismiss the tab(s)
-				newBody = body.substring(0, lastReturn + 1);
-			} else {
- newBody = body.substring(0, start);
-				// Append tabs
-				for (var i = 0; i !== tabs; ++i) {
-					newBody += "\t";
-				}}
+				var tabs = lastTab - lastReturn,
+		newBody;
+				if (lastTab === start - 2) {
+					// The user enters "return" after an empty line prepended with tab(s), assumed to dismiss the tab(s)
+					newBody = body.substring(0, lastReturn + 1);
+				} else {
+					newBody = body.substring(0, start);
+					// Append tabs
+					for (var i = 0; i !== tabs; ++i) {
+						newBody += "\t";
+					}
+				}
 				newBody += body.substring(end);
 				// put caret at right position again
 				$(this).get(0).selectionStart =
@@ -677,8 +678,9 @@ edit.minData = function() {
 		var groups = ["movie", "music"];
 		for (i = 0; i !== groups.length; ++i) {
 			if (tmp[key][groups[i]]) {
-				for (i = 0; i !== tmp[key][groups[i]].length; ++i) {
-					delete tmp[key][groups[i]]["thumb"];
+				var keys = Object.keys(tmp[key][groups[i]]);
+				for (var j = 0; j !== keys.length; ++j) {
+					delete tmp[key][groups[i]][keys[j]]["thumb"];
 				}
 			}
 		}
@@ -1480,9 +1482,10 @@ edit.toggleIcon = function(tag) {
 			// Dimmed
 			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeClass("hidden");
 		} else {
-				setTimeout(function() {
-					$("#attach-area .icontags .selected ."+htmlName).remove();
-				}, 400);	}
+			setTimeout(function() {
+				$("#attach-area .icontags .selected ." + htmlName).remove();
+			}, 400);
+		}
 	}
 }
 

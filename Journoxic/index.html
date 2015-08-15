@@ -125,7 +125,7 @@
 							</ul>
 						</li>
 						<li>
-							<a class="hidden-icon hidden" title="Delete this entry" id="delete" onclick="edit.removeEntry()"href="#"><span>&#xf00d</span></a>
+							<a class="hidden-icon hidden" title="Delete this entry" id="delete" onclick="edit.removeEntry()" href="#"><span>&#xf00d</span></a>
 							<ul>
 								<li><a title="Confirm" onclick="edit.removeEntry()">&#xf00c</a></li>
 							</ul>
@@ -162,8 +162,13 @@
 				<li class="has-sub">
 					<a title="Options" id="options">&#xf013</a>
 					<ul>
-						<li><a class="hidden-icon hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
-						<li><a title="Find lost media" onclick="app.checkResource()" href="#">&#xf002</a></li>
+						<li class="has-sub">
+							<a title="Find lost media" onclick="app.checkResource()" href="#">&#xf002</a>
+							<ul>
+								<li><a class="hidden-icon hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
+							</ul>
+						</li>
+						<li><a title="Toggle sensitive mode" onclick="$('body').toggleClass('sensitive-mode')"></a></li>
 					</ul>
 				</li>
 			</ul>
@@ -273,24 +278,24 @@
 				<div class="cover">
 					<div class="ext"><%= ext %></div>
 				</div>
-				<p class="title"><%= title %></p>
+				<p class="title sensitive"><%= title %></p>
 				<p class="datetime"><%= datetime %></p>
-				<p class="summary"><%= summary %></p>
+				<p class="summary sensitive"><%= summary %></p>
 				<div class="attached"><%= attached %></div>
 			</a>
 		</li>
 	</script>
 	<script type="text/x-template" id="detail-view">
 		<div class="head">
-			<p class="title"><%- title %></p>
+			<p class="title sensitive"><%- title %></p>
 			<p class="charline"><%- chars %></p>
 			<p class="charline"><%- lines %></p>
 			<p class="datetime"><%- datetime %></p>
 		</div>
 		<div class="content loading">
-			<div class="upper photo"></div>
+			<div class="upper photo sensitive"></div>
 			<div class="lower">
-				<div class="text"><%= contents %></div>
+				<div class="text sensitive"><%= contents %></div>
 
 				<%
 				if( video ) {
@@ -302,7 +307,7 @@
 				<div class="video">
 					<a class="<%- video[i].fileName %>" href="#">
 						<div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
-						<p class="title"><%- video[i].title %></p>
+						<p class="title sensitive"><%- video[i].title %></p>
 					</a>
 				</div>
 				<%
@@ -315,7 +320,7 @@
 				<div class="voice">
 					<a class="<%- voice[i].fileName %>" title="Listen to it">
 						<div class="thumb"><span></span></div>
-						<p class="title"><%- voice[i].title %></p>
+						<p class="title sensitive"><%- voice[i].title %></p>
 					</a>
 				</div>
 				<%
@@ -331,7 +336,7 @@
 					%>
 					<a href="https://maps.google.com/maps?z=15&q=<%- place[i].latitude %>,<%- place[i].longitude %>" target="_blank" title="See it in Google Map">
 						<div class="thumb"></div>
-						<p><%- place[i].title %></p>
+						<p class="sensitive"><%- place[i].title %></p>
 					</a>
 				</div>
 				<%
@@ -340,7 +345,7 @@
 				<div class="place">
 					<a href="https://maps.google.com/maps?z=15&q=<%- place[i].title %>" target="_blank" title="See it in Google Map">
 						<div class="thumb"></div>
-						<p><%- place[i].title %></p>
+						<p class="sensitive"><%- place[i].title %></p>
 					</a>
 				</div>
 				<%
@@ -353,8 +358,8 @@
 				%>
 				<div class="book">
 					<img class="thumb <% if( book[i].thumb ) { book[i].thumb; } %>"><span></span>
-					<p class="title"><%- book[i].title %></p>
-					<p class="desc"><%- book[i].author %></p>
+					<p class="title sensitive"><%- book[i].title %></p>
+					<p class="desc sensitive"><%- book[i].author %></p>
 				</div>
 				<%
 				}
@@ -365,8 +370,8 @@
 				%>
 				<div class="music">
 					<img class="thumb <% if( music[i].thumb ) { music[i].thumb; } %>"><span></span>
-					<p class="title"><%- music[i].title %></p>
-					<p class="desc"><%- music[i].author %></p>
+					<p class="title sensitive"><%- music[i].title %></p>
+					<p class="desc sensitive"><%- music[i].author %></p>
 				</div>
 				<%
 				}
@@ -377,8 +382,8 @@
 				%>
 				<div class="movie">
 					<img class="thumb <% if( movie[i].thumb ) { movie[i].thumb; } %>"><span></span>
-					<p class="title"><%- movie[i].title %></p>
-					<p class="desc"><%- movie[i].author %></p>
+					<p class="title sensitive"><%- movie[i].title %></p>
+					<p class="desc sensitive"><%- movie[i].author %></p>
 				</div>
 				<%
 				}
@@ -390,8 +395,8 @@
 				<div class="weblink">
 					<a href="<%- weblink[i].url %>" target="_blank" title="New Window">
 						<div class="thumb"><% if( weblink[i].thumb ) { print( weblink[i].thumb ); } %><span></span></div>
-						<p class="url"><%- weblink[i].url %></p>
-						<p class="desc"><%- weblink[i].title %></p>
+						<p class="url sensitive"><%- weblink[i].url %></p>
+						<p class="desc sensitive"><%- weblink[i].title %></p>
 					</a>
 				</div>
 				<%
@@ -403,7 +408,7 @@
 				<div class="icontags">
 					<%
 					for( i in iconTags ) {
-					print('<span class="' + iconTags[i] + '"></span>');
+					print('<span class="sensitive ' + iconTags[i] + '"></span>');
 					}
 					%>
 				</div>
@@ -414,7 +419,7 @@
 				%>
 				<div class="texttags">
 					<p>
-						<span>&#xf02c</span>
+						<span class="sensitive">&#xf02c</span>
 						<%
 						for( i in textTags ) {
 						if( i != 0 )
@@ -433,18 +438,18 @@
 	</script>
 	<script type="text/x-template" id="edit-view">
 		<div id="text-area">
-			<input type="text" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
+			<input type="text" class="sensitive" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
-				<p class="entry-icons" id="chars" title="Chars">&#xf1dd</p>
-				<p class="entry-data" id="entry-char" title="Chars">0</p>
-				<p class="entry-icons" id="lines" title="Lines">&#xf03a</p>
-				<p class="entry-data" id="entry-line" title="Lines">0</p>
-				<p class="entry-icons" id="time" title="Current time">&#xf017</p>
-				<p class="entry-data" id="entry-time" title="Current time">000000 0000</p>
-				<p class="entry-icons" id="elapsed" title="Time elapsed">&#xf04b</p>
-				<p class="entry-data" id="entry-elapsed" title="Time elapsed">0:00</p>
+				<p class="entry-icons sensitive" id="chars" title="Chars">&#xf1dd</p>
+				<p class="entry-data sensitive" id="entry-char" title="Chars">0</p>
+				<p class="entry-icons sensitive" id="lines" title="Lines">&#xf03a</p>
+				<p class="entry-data sensitive" id="entry-line" title="Lines">0</p>
+				<p class="entry-icons sensitive" id="time" title="Current time">&#xf017</p>
+				<p class="entry-data sensitive" id="entry-time" title="Current time">000000 0000</p>
+				<p class="entry-icons sensitive" id="elapsed" title="Time elapsed">&#xf04b</p>
+				<p class="entry-data sensitive" id="entry-elapsed" title="Time elapsed">0:00</p>
 			</div>
-			<textarea id="entry-body"></textarea>
+			<textarea class="sensitive"id="entry-body"></textarea>
 			<div id="map-holder">
 				<div id="map-selector"></div>
 			</div>
@@ -512,7 +517,7 @@
 			<div class="voice resource">
 				<a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" title="View">
 					<div class="thumb"><span></span></div>
-					<input disabled class="title" value="<%- voice[i].title %>" />
+					<input disabled class="title sensitive" value="<%- voice[i].title %>" />
 				</a>
 			</div>
 			<%
@@ -525,19 +530,19 @@
 			<div class="place">
 				<a title="Edit" onclick="edit.location(<%- i %>)" href="#">
 					<div class="thumb"></div>
-					<input disabled title="Place" class="title place-search" autocomplete="off" onclick="this.select()" value="<%- place[i].title %>" />
+					<input disabled title="Place" class="title place-search sensitive" autocomplete="off" onclick="this.select()" value="<%- place[i].title %>" />
 					<%
 					if (place[i].latitude) {
 					%>
-					<input disabled title="Latitude" class="desc latitude" autocomplete="off" onclick="this.select()" value="<%- place[i].latitude %>" />
+					<input disabled title="Latitude" class="desc latitude sensitive" autocomplete="off" onclick="this.select()" value="<%- place[i].latitude %>" />
 					<p>,</p>
-					<input disabled title="Longitude" class="desc longitude" autocomplete="off" onclick="this.select()" value="<%- place[i].longitude %>" />
+					<input disabled title="Longitude" class="desc longitude sensitive" autocomplete="off" onclick="this.select()" value="<%- place[i].longitude %>" />
 					<%
 					} else {
 					%>
-					<input disabled title="Latitude" class="desc latitude" autocomplete="off" onclick="this.select()" id="latitude" />
+					<input disabled title="Latitude" class="desc latitude sensitive" autocomplete="off" onclick="this.select()" id="latitude" />
 					<p>,</p>
-					<input disabled title="Longitude" class="desc longitude" autocomplete="off" onclick="this.select()" id="longitude" />
+					<input disabled title="Longitude" class="desc longitude sensitive" autocomplete="off" onclick="this.select()" id="longitude" />
 					<%
 					}
 					%>
@@ -553,8 +558,8 @@
 			<div class="book">
 				<a title="Edit" onclick="edit.book(<%- i %>)" href="#">
 					<img class="thumb"><span></span>
-					<input disabled class="title" placeholder="Book title" value="<%- book[i].title %>" autocomplete="off" onclick="this.select()" />
-					<input disabled class="desc" placeholder="Author" value="<%- book[i].author %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="title sensitive" placeholder="Book title" value="<%- book[i].title %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="desc sensitive" placeholder="Author" value="<%- book[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
 			</div>
 			<%
@@ -567,8 +572,8 @@
 			<div class="music">
 				<a title="Edit" onclick="edit.music(<%- i %>)" href="#">
 					<img class="thumb"><span></span>
-					<input disabled class="title" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off" onclick="this.select()" />
-					<input disabled class="desc" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="title sensitive" placeholder="Track name" value="<%- music[i].title %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="desc sensitive" placeholder="Artist" value="<%- music[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
 			</div>
 			<%
@@ -581,8 +586,8 @@
 			<div class="movie">
 				<a title="Edit" onclick="edit.movie(<%- i %>)" href="#">
 					<img class="thumb"><span></span>
-					<input disabled class="title" placeholder="Movie title" value="<%- movie[i].title %>" autocomplete="off" onclick="this.select()" />
-					<input disabled class="desc" placeholder="Director" value="<%- movie[i].author %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="title sensitive" placeholder="Movie title" value="<%- movie[i].title %>" autocomplete="off" onclick="this.select()" />
+					<input disabled class="desc sensitive" placeholder="Director" value="<%- movie[i].author %>" autocomplete="off" onclick="this.select()" />
 				</a>
 			</div>
 			<%
@@ -595,8 +600,8 @@
 			<div class="weblink">
 				<a title="Edit" onclick="edit.weblink(<%- i %>)" href="#">
 					<div class="thumb"><span></span></div>
-					<input disabled class="title" placeholder="Title" value="<%- weblink[i].title %>" />
-					<input disabled class="desc" placeholder="http://" value="<%- weblink[i].url %>" />
+					<input disabled class="title sensitive" placeholder="Title" value="<%- weblink[i].title %>" />
+					<input disabled class="desc sensitive" placeholder="http://" value="<%- weblink[i].url %>" />
 				</a>
 			</div>
 			<%
@@ -635,9 +640,9 @@
 							for (var i = 0; i !== contents.length && i < 50; ++i) {
 							%>
 							<tr>
-								<td class="time"><%- contents[i]["time"]["created"] %></td>
-								<td class="title"><%- contents[i]["title"] %></td>
-								<td class="body" title="<%- contents[i]['text']['body'] %>"><%- contents[i]["text"]["body"] %></td>
+								<td class="time sensitive"><%- contents[i]["time"]["created"] %></td>
+								<td class="title sensitive"><%- contents[i]["title"] %></td>
+								<td class="body sensitive" title="<%- contents[i]['text']['body'] %>"><%- contents[i]["text"]["body"] %></td>
 							</tr>
 							<%
 							}

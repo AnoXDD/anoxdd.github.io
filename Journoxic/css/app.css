@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -291,6 +291,10 @@ body {
 	background-repeat: no-repeat;
 }
 
+body.sensitive-mode .sensitive {
+	opacity: 0 !important;
+}
+
 #version {
 	background-color: #2B2B2B;
 	bottom: 0px;
@@ -457,11 +461,11 @@ body {
 		transition: width .3s;
 	}
 
-	#list a:hover div.cover {
+	#list .photo a:hover div.cover {
 		width: 60px;
 	}
 
-	#list a:hover p.summary {
+	#list .photo a:hover p.summary {
 		width: -webkit-calc(95% - 60px);
 	}
 

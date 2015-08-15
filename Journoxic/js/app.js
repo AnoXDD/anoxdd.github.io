@@ -134,6 +134,26 @@ app.init = function() {
 			$("#search-result").fadeIn(500);
 		}
 	});
+	// Hover to update other-status
+	$("#header-info").mouseover(function() {
+		// Update #last-updated
+		app.readLastUpdated();
+		// Update #token-expired-in
+		var expiration = parseInt(localStorage["expiration"]),
+			expiresIn;
+		if (expiration) {
+			// A valid cookie number
+			if (expiration > new Date().getTime()) {
+				// Yet to be expired
+				expiresIn = archive.list.prototype.date(expiration);
+				if (expiresIn) {
+					expiresIn = "Expires in " + expiresIn;
+				} 
+			} 
+		}
+		expiresIn = expiresIn || "Expired";
+		$("#token-expires-in").html(expiresIn);
+	});
 	// Set the current year
 	$("#year").effect("slide", { direction: "up" });
 	app.getYears();
@@ -283,7 +303,6 @@ app.load = function(filter, newContent) {
 	// Remove all the child elements and always
 	animation.debug(log.CONTENTS_RELOADED);
 	animation.testYearButton();
-	app.readLastUpdated();
 	console.log("==================Force loaded==================");
 	$("#list").empty();
 	app.lastLoaded = 0;

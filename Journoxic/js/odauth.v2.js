@@ -150,6 +150,7 @@ function setCookie(token, expiresInSeconds, refreshToken) {
 		cookie = cookie + ";secure";
 	}
 	document.cookie = cookie;
+	localStorage["expiration"] = expiration;
 }
 
 /**

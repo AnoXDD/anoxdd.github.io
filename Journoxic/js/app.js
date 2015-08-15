@@ -135,7 +135,25 @@ app.init = function() {
 		}
 	});
 	// Hover to update other-status
-
+	$("#header-info").mouseover(function() {
+		// Update #last-updated
+		app.readLastUpdated();
+		// Update #token-expired-in
+		var expiration = parseInt(localStorage["expiration"]),
+			expiresIn;
+		if (expiration) {
+			// A valid cookie number
+			if (expiration > new Date().getTime()) {
+				// Yet to be expired
+				expiresIn = archive.list.prototype.date(expiration);
+				if (expiresIn) {
+					expiresIn = "Expires in " + expiresIn;
+				}
+			}
+		}
+		expiresIn = expiresIn || "Expired";
+		$("#token-expires-in").html(expiresIn);
+	});
 	// Set the current year
 	$("#year").effect("slide", { direction: "up" });
 	app.getYears();

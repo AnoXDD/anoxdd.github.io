@@ -84,7 +84,7 @@ edit.init = function(overwrite, index) {
 		}
 	}
 	// If still no available data to be stored, create a new one
-	edit.data = data || edit.newContent();
+	data = edit.data = data || edit.newContent();
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;
@@ -381,6 +381,7 @@ edit.quit = function(selector, save) {
 	animation.testCacheIcons();
 	// Reset videoplayer's heiht
 	app.videoPlayer.height = undefined;
+	delete localStorage["_cache"];
 };
 /**
  * Saves cache for edit-pane to journal.archive.data
@@ -572,7 +573,7 @@ edit.exportCacheBody = function(data) {
 	return data;
 };
 edit.cleanEditCache = function() {
-	localStorage["_cache"] = 0;
+	delete localStorage["_cache"];
 	var deleteList = ["title", "body", "created", "currentEditing", "tags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
 	for (var i = 0; i != deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
@@ -1120,15 +1121,10 @@ edit.fullScreen = function() {
 	animation.showMenuOnly("fullscreen");
 	// Hide the other part
 	$(".header").fadeOut(400, function() {
-		$("#app").animate({ top: "2%", height: "95%" });
+		$("#attach-area").fadeOut(400, function() {
+			$("body").addClass("fullscreen");
+		});
 	});
-	$("#attach-area").fadeOut(400, function() {
-		$("#text-area").animate({ width: "100%" });
-	});
-	$("#text-area").children().toggleClass("fullscreen");
-	$("#text-area p").toggleClass("fullscreen");
-	// Change feedback position
-	$(".response").addClass("fullscreen");
 	// Request the browser to toggle fullscreen
 	if (document.documentElement.requestFullscreen) {
 		document.documentElement.requestFullscreen();
@@ -1146,18 +1142,12 @@ edit.windowMode = function() {
 	// Change the icon
 	animation.showMenuOnly("add");
 	// Resize
-	$("#app").animate({ top: "8%", height: "76%" });
 	$(".header").fadeIn(400, function() {
-		$("#text-area p").toggleClass("fullscreen");
-		$("#text-area").animate({ width: "64%" }, function() {
-			$("#attach-area").fadeIn();
-			// Re-enable auto-height
-			app.layout();
-		})
-			.children().toggleClass("fullscreen");
+		$("body").removeClass("fullscreen");
+		$("#attach-area").fadeIn();
+		// Re-enable auto-height
+		app.layout();
 	});
-	// Change feedback position
-	$(".response").removeClass("fullscreen");
 	// Request the browser to exit fullscreen
 	if (document.exitFullscreen) {
 		document.exitFullscreen();

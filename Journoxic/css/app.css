@@ -291,9 +291,7 @@ body {
 	background-repeat: no-repeat;
 }
 
-body.sensitive-mode .sensitive {
-	opacity: 0 !important;
-}
+
 
 #version {
 	background-color: #2B2B2B;
@@ -311,12 +309,9 @@ body.sensitive-mode .sensitive {
 	}
 
 #app {
-	/* -webkit-transition: height .2s,top .2s,width .1s; */
-	-moz-transition: height .2s, top .2s, width .1s;
-	-ms-transition: height .2s, top .2s, width .1s;
 	background-color: #f3f3f3;
 	box-shadow: 0 0 5px rgba(0, 0, 0, .4);
-	/* transition: height .3s ease ,top .3s ease,width .3s ease; */
+	transition: .4s ease;
 	display: none;
 	height: 76%;
 	margin-left: auto;
@@ -2070,18 +2065,10 @@ body.sensitive-mode .sensitive {
 	overflow: inherit;
 }
 
-	#feedback.fullscreen {
-		top: 9.5%;
-	}
-
 #errors {
 	height: 5%;
 	top: 12%;
 }
-
-	#errors.fullscreen {
-		top: 13%;
-	}
 
 	#feedback p, #errors p {
 		/* background: #777; */
@@ -2135,14 +2122,6 @@ body.sensitive-mode .sensitive {
 		#feedback p::after {
 			font-family: monospace;
 		}
-
-#feedback.fullscreen p {
-	background-color: #444;
-	box-shadow: 0 0 15px #111;
-	width: 20%;
-	height: 17px;
-}
-
 
 #feedback:hover p {
 	margin-bottom: 2px;
@@ -2389,10 +2368,6 @@ body.sensitive-mode .sensitive {
 	width: 3ch;
 }
 
-	#entry-line.fullscreen {
-		display: none;
-	}
-
 #entry-time {
 	width: 11ch;
 }
@@ -2410,6 +2385,7 @@ body.sensitive-mode .sensitive {
 		display: inline-block;
 		height: 100%;
 		position: absolute;
+		transition: width .4s ease;
 		width: 64%;
 	}
 
@@ -2436,50 +2412,35 @@ body.sensitive-mode .sensitive {
 	padding-top: 3px;
 }
 
-#edit-pane .fullscreen#entry-summary {
-	margin-right: 4ch;
-	margin-top: 2px;
-}
-
-#edit-pane #entry-summary .entry-data {
-	background: #dddddd;
-	border-radius: 6px;
-	display: inline-block;
-	font-family: monospace;
-	left: -1em;
-	overflow: hidden;
-	padding: 0 5px 0 5px;
-	position: relative;
-	text-align: right;
-	top: 0.6em;
-	transition: font-size .4s ease;
-}
-
-#edit-pane .fullscreen.entry-data {
-	font-size: 20px;
-	margin-right: .5ch;
-	top: .4em !important;
-}
-
-#edit-pane #entry-summary .entry-icons {
-	background-color: #dddddd;
-	border-radius: 30px;
-	display: inline-block;
-	font-size: 15px;
-	height: 27px;
-	padding: 7px 0 0 10px;
-	position: relative;
-	width: 24px;
-}
-
-	#edit-pane #entry-summary .entry-icons#elapsed {
-		padding: 7px 0 0 12px;
-		width: 22px;
+	#edit-pane #entry-summary .entry-data {
+		background: #dddddd;
+		border-radius: 6px;
+		display: inline-block;
+		font-family: monospace;
+		left: -1em;
+		overflow: hidden;
+		padding: 0 5px 0 5px;
+		position: relative;
+		text-align: right;
+		top: 0.6em;
+		transition: font-size .4s ease;
 	}
 
-#edit-pane .entry-icons.fullscreen {
-	display: none !important;
-}
+	#edit-pane #entry-summary .entry-icons {
+		background-color: #dddddd;
+		border-radius: 30px;
+		display: inline-block;
+		font-size: 15px;
+		height: 27px;
+		padding: 7px 0 0 10px;
+		position: relative;
+		width: 24px;
+	}
+
+		#edit-pane #entry-summary .entry-icons#elapsed {
+			padding: 7px 0 0 12px;
+			width: 22px;
+		}
 
 #edit-pane #entry-body, #entry-header {
 	background: #F7F7F7;
@@ -2522,13 +2483,6 @@ body.sensitive-mode .sensitive {
 	padding: 30px;
 	resize: none;
 	width: -webkit-calc(100% - 65px);
-}
-
-#edit-pane .fullscreen#entry-body {
-	font-size: 18px;
-	height: -webkit-calc(100% - 414px);
-	padding: 60px 60px 300px 60px;
-	width: -webkit-calc(100% - 129px);
 }
 
 #attach-area .icontags {
@@ -3397,3 +3351,59 @@ body.sensitive-mode .sensitive {
 		width: 25px;
 	}
 
+/************************************* SPECIAL BODY **********************************/
+
+
+body.sensitive-mode .sensitive {
+	opacity: 0 !important;
+}
+
+body.fullscreen #app {
+	top: 2%;
+	height: 95%;
+}
+
+body.fullscreen #text-area {
+	width: 100%;
+}
+
+body.fullscreen #feedback {
+	top: 9.5%;
+}
+
+	body.fullscreen #feedback p {
+		background-color: #444;
+		box-shadow: 0 0 15px #111;
+		width: 20%;
+		height: 17px;
+	}
+
+body.fullscreen #errors {
+	top: 13%;
+}
+
+body.fullscreen #entry-line {
+	display: none;
+}
+
+body.fullscreen #entry-summary {
+	margin-right: 4ch;
+	margin-top: 2px;
+}
+
+body.fullscreen #entry-body {
+	font-size: 18px;
+	height: -webkit-calc(100% - 414px);
+	padding: 60px 60px 300px 60px;
+	width: -webkit-calc(100% - 129px);
+}
+
+body.fullscreen .entry-data {
+	font-size: 20px;
+	margin-right: .5ch;
+	top: .4em !important;
+}
+
+body.fullscreen .entry-icons {
+	display: none !important;
+}

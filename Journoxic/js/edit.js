@@ -24,8 +24,7 @@ edit.autoCorrectTags = {
 	"thought": "thoughts",
 	"mc": "minecraft",
 	"pool": "snooker"
-}
-
+};
 edit.removalList = {};
 
 edit.localChange = [];
@@ -43,6 +42,8 @@ edit.isProcessing = false;
  * @param {number} index - The index of the archive data (optional)
  */
 edit.init = function(overwrite, index) {
+	/* Iterator */
+	var i;
 	// Sometimes the user just presses the edit button without quitting the audioPlayer elsewhere
 	app.audioPlayer.quit();
 	app.videoPlayer.quit();
@@ -120,7 +121,7 @@ edit.init = function(overwrite, index) {
 			break;
 		}
 		if (data[processGroup[h]]) {
-			for (var i = 0; i !== data[processGroup[h]].length; ++i) {
+			for (i = 0; i !== data[processGroup[h]].length; ++i) {
 				var name = data[processGroup[h]][i]["fileName"];
 				if (journal.archive.map[name]) {
 					dataGroup.push({
@@ -142,6 +143,8 @@ edit.init = function(overwrite, index) {
 	$("#search-new, #search-result").fadeOut();
 	// Initialize the contents
 	$("#contents").fadeOut(400, function() {
+		/* Iterator */
+		var i;
 		// Initialize the pane, this line must be the first one!
 		$("#edit-pane").html(editPane).fadeIn();
 		edit.isEditPaneDisplayed = true;
@@ -191,7 +194,7 @@ edit.init = function(overwrite, index) {
 			});
 		// Enter to add tag
 		$("#entry-tag").keyup(function(n) {
-			if (n.keyCode == 13) {
+			if (n.keyCode === 13) {
 				edit.addTag();
 				// Clean the entry
 				$("#entry-tag").val("");
@@ -220,9 +223,9 @@ edit.init = function(overwrite, index) {
 		});
 		// Update cover photo for music, book and movie
 		var elem = ["music", "book", "movie"];
-		for (var i = 0; i != elem.length; ++i) {
+		for (i = 0; i !== elem.length; ++i) {
 			var medium = elem[i];
-			for (var j = 0; j != $("#attach-area ." + medium).length; ++j) {
+			for (var j = 0; j !== $("#attach-area ." + medium).length; ++j) {
 				var selectorHeader = edit.getSelectorHeader(medium, j),
 					term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
 				getCoverPhoto(selectorHeader, term, false, medium);
@@ -264,7 +267,7 @@ edit.init = function(overwrite, index) {
 			tagsName = app.tag().getIconsInName(),
 			/* The array of html names for highlighted icons */
 			iconTags = app.tag().separate(localStorage["tags"]).iconTags;
-		for (var i = 0; i !== tagsHtml.length; ++i) {
+		for (i = 0; i !== tagsHtml.length; ++i) {
 			var parent = "#attach-area .icontags";
 			if (tagsHtml[i].charAt(0) === "w") {
 				parent += " .weather";
@@ -281,7 +284,7 @@ edit.init = function(overwrite, index) {
 				"',true)></span>");
 		}
 		// In this loop, show some icons (so some icons can disappear)
-		for (var i = 0; i !== tagsHtml.length; ++i) {
+		for (i = 0; i !== tagsHtml.length; ++i) {
 			if (iconTags.indexOf(tagsHtml[i]) !== -1) {
 				edit.toggleIcon(tagsName[i]);
 			}
@@ -297,43 +300,39 @@ edit.init = function(overwrite, index) {
 				lastTab = body.lastIndexOf("\t", start - 2);
 			if (lastReturn < lastTab) {
 				// There is last tab
-				var tabs = lastTab - lastReturn,
-		newBody;
+				var newBody;
 				if (lastTab === start - 2) {
 					// The user enters "return" after an empty line prepended with tab(s), assumed to dismiss the tab(s)
 					newBody = body.substring(0, lastReturn + 1);
+					start = lastReturn;
 				} else {
 					newBody = body.substring(0, start);
-					// Append tabs
-					for (var i = 0; i !== tabs; ++i) {
+					// Get the number of valid consecutive tabs and append them
+					for (i = lastReturn + 1; i !== lastTab + 1 && body[i] === "\t"; ++i) {
 						newBody += "\t";
 					}
 				}
 				newBody += body.substring(end);
-				// put caret at right position again
-				$(this).get(0).selectionStart =
-				$(this).get(0).selectionEnd = start + 1;
 				$(this).val(newBody);
+				// Put caret at right position again
+				$(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
 			}
 			edit.processBody();
 		})
-		.bind("keyup", "space", function() {
-			edit.refreshSummary();
-		})
-		.bind("keydown", "tab", function(e) {
-			e.preventDefault();
-			var start = $(this).get(0).selectionStart,
-				end = $(this).get(0).selectionEnd;
+			.bind("keyup", "space", function() {
+				edit.refreshSummary();
+			})
+			.bind("keydown", "tab", function(e) {
+				e.preventDefault();
+				var start = $(this).get(0).selectionStart,
+					end = $(this).get(0).selectionEnd;
 
-			// Set textarea value to text before caret + tab + text after caret
-			$(this).val($(this).val().substring(0, start)
-						+ "\t"
-						+ $(this).val().substring(end));
+				// Set textarea value to text before caret + tab + text after caret
+				$(this).val($(this).val().substring(0, start) + "\t" + $(this).val().substring(end));
 
-			// put caret at right position again
-			$(this).get(0).selectionStart =
-			$(this).get(0).selectionEnd = start + 1;
-		})
+				// Put caret at right position again
+				$(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
+			})
 			.bind("keyup", "ctrl+shift+f", function() {
 				edit.toggleTag("friendship");
 			})
@@ -738,9 +737,7 @@ edit.removeDuplicate = function() {
 			journal.archive.data[app.year].splice(i--, 1);
 		}
 	}
-}
-
-/******************************************************************
+}; /******************************************************************
  ************************ CONTENT CONTROL *************************
  ******************************************************************/
 
@@ -821,8 +818,7 @@ edit.removeEntry = function() {
 	// Save to cache
 	edit.saveDataCache();
 	animation.showMenuOnly("edit");
-}
-/**
+}; /**
  * Adds a medium to the edit pane, given the typeNum
  * @param {Number} typeNum - The number of the type of media, or can be a helper value to video and voice
  * @param {Object} arg - The extra arg to be provided by other helper call to this function. When typeNum == -3 this has to include "url", "fileName", "id" and "title" key
@@ -1008,8 +1004,7 @@ edit.addMediaFromQueue = function() {
 				});
 		});
 	});
-}
-/**
+}; /**
  * Adds media element to pending removal list and make this element fade out from the view. 
  * The list will not be removed until edit.quit() is called
  * @param {string} name - The string of the type of media
@@ -1081,8 +1076,7 @@ edit.mediaValue = function(type) {
 		return 7;
 	// Not applicable
 	return -1;
-}
-/**
+}; /**
  * Sets the medium to be removed and show the remove-confirm button
  * @param {number} typeVal - The type numerical value of the type 
  */
@@ -1092,8 +1086,7 @@ edit.setRemove = function(typeVal) {
 		$("#pin-point").removeClass("hidden");
 	}
 	$("#action-remove-confirm").removeClass("hidden");
-}
-/**
+}; /**
  * Cleans up all the media edit data to get ready for next editing 
  */
 edit.cleanupMediaEdit = function() {
@@ -1229,7 +1222,7 @@ edit.convertTime = function(time) {
 		minute = 0;
 	if (time.length > 6) {
 		hour = parseInt(time.substring(7, 9)),
-		minute = parseInt(time.substring(9, 11));
+			minute = parseInt(time.substring(9, 11));
 	}
 	date = new Date(2000 + year, month - 1, day, hour, minute);
 	return date.getTime();
@@ -1355,9 +1348,7 @@ edit.processBody = function() {
 	$("#entry-body").val(newBody);
 	// Cache the data
 	localStorage["body"] = newBody;
-}
-
-/************************** TAG *********************************/
+}; /************************** TAG *********************************/
 
 /**
  * Adds a tag given a tag value or fetch it from entry tag, providing optional tag value, toggle or force to set true, and the source of this operation
@@ -1492,8 +1483,7 @@ edit.toggleTag = function(tag, mute) {
 		// Add this tag
 		edit.addTag(tag, mute);
 	}
-}
-/**
+}; /**
  * Toggles the icon on the website.
  * This function will only give visual feedback
  * @param {string} tag - The name of the tag to be toggled
@@ -1519,9 +1509,7 @@ edit.toggleIcon = function(tag) {
 			}, 400);
 		}
 	}
-}
-
-/************************** COVER **************************/
+}; /************************** COVER **************************/
 
 /**
  * Sets the cover type of current entry and animates on the edit pane.
@@ -1645,9 +1633,7 @@ edit.coverTest = function(type) {
 		// Imitate a click on that icon
 		$("#attach-area .types #" + type + "-cover").trigger("click");
 	}
-}
-
-/************************** PHOTO 0 ************************/
+}; /************************** PHOTO 0 ************************/
 
 /**
  * Adds the photo on the edit-pane and extend the photo area
@@ -1842,7 +1828,7 @@ edit.photo = function(isQueue, callback) {
 					}
 				});
 		});
-	}
+	};
 	if (!isQueue) {
 		// Add throttle
 		$("#add-photo").removeAttr("onclick").removeAttr("href");

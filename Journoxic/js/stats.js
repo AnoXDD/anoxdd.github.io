@@ -565,7 +565,7 @@ stats.showGraph = function(viewAsMonth) {
 	};
 	$("#graph").fadeIn().highcharts(data);
 	$("#action-stats hidden").removeClass("hidden");
-	animation.testSub("#action-stats");
+	animation.testAllSubs();
 };
 /**
  * Hides the analysis graph
@@ -576,7 +576,7 @@ stats.hideGraph = function() {
 		$(this).html("");
 	});
 	$("#action-stats hidden-icon").addClass("hidden");
-	animation.testSub("#action-stats");
+	animation.testAllSubs();
 }
 /**
  * Toggles the year view between by day and by month (i.e. as the chart shows)

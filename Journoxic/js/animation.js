@@ -246,7 +246,7 @@ animation.showMenuOnly = function(name) {
  * Shows or hides the icons that ask the user to read or abandon cached data according to if there is any cached data
  */
 animation.testCacheIcons = function() {
-	if (localStorage["_cache"] == 1) {
+	if (localStorage["_cache"]) {
 		// There is cache
 		$("#reread").removeClass("hidden");
 		$(".li-add-entry-sub").each(function() {
@@ -301,6 +301,16 @@ animation.testYearButton = function() {
 		$("#next-year, #prev-year").removeClass("hidden");
 	}
 	animation.testSub("#this-year");
+}
+
+/**
+ * Tests the sub-ility of all the menus that should have been tested
+ */
+animation.testAllSubs = function() {
+	animation.testCacheIcons();
+	animation.testSub("#add");
+	animation.testSub("#action-stats");
+	animation.testYearButton();
 }
 
 /* Return undefined if it is not shown */

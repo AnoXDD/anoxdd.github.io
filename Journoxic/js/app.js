@@ -175,7 +175,7 @@ app.init = function() {
 	});
 	// Test if there is any cache
 	animation.testCacheIcons();
-	animation.testSub("#add");
+	animation.testAllSubs();
 	// Show the app drawer
 	$("#drawer").removeClass("hidden");
 };
@@ -274,8 +274,7 @@ app.load = function(filter, newContent) {
 	// Also hide the detail view
 	app.detail.prototype.hideDetail();
 	// Test if #add has sub-menu
-	animation.testCacheIcons();
-	animation.testSub("#add");
+	animation.testAllSubs();
 	/* The function to be called to reload the layout */
 	var loadFunction = function() {
 		$("#total-entry").text(journal.archive.data[app.year].length);
@@ -300,7 +299,7 @@ app.load = function(filter, newContent) {
 	animation.indent = 0;
 	// Remove all the child elements and always
 	animation.debug(log.CONTENTS_RELOADED);
-	animation.testYearButton();
+	animation.testAllSubs();
 	console.log("==================Force loaded==================");
 	$("#list").empty();
 	app.lastLoaded = 0;
@@ -1252,8 +1251,7 @@ app.detail = function() {
 	});
 	// Show edit and delete buttons
 	$("#edit-this, #delete").removeClass("hidden");
-	animation.testCacheIcons();
-	animation.testSub("#add");
+	animation.testAllSubs();
 	return dataClip;
 };
 app.detail.prototype = {
@@ -1308,7 +1306,7 @@ app.detail.prototype = {
 	hideDetail: function() {
 		// !!!!!HIDE THE CONTENT LISTS!!!!
 		$("#edit-this, #delete").addClass("hidden");
-		animation.testSub("#add");
+		animation.testAllSubs();
 		app.cDetail.css("display", "none").empty();
 		app.cList.css("display", "inline-block");
 		app.app.removeClass("detail-view");

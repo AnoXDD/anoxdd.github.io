@@ -53,16 +53,17 @@ edit.init = function(overwrite, index) {
 	var data;
 
 	// Test if there are cached data
-	if (localStorage["_cache"] == 1) {
+	if (localStorage["_cache"]) {
 		// There is cache
-		if (overwrite == true) {
+		if (overwrite === true) {
 			edit.cleanEditCache();
-			if (index != undefined && index != -1) {
-				// Modify an entry
+			if (index != undefined && index !== -1) {
+				// This entry modifies an existing entry
 				data = journal.archive.data[app.year][index];
 				localStorage["created"] = data["time"]["created"];
+				localStorage["start"] = data["time"]["start"];
 			}
-		} else if (overwrite == false) {
+		} else if (overwrite === false) {
 			// Read from available caches
 			if (localStorage["created"]) {
 				index = edit.find(localStorage["created"]);
@@ -86,6 +87,7 @@ edit.init = function(overwrite, index) {
 	}
 	// If still no available data to be stored, create a new one
 	data = edit.data = data || edit.newContent();
+	localStorage["start"] = localStorage["start"] || localStorage["created"];
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;
@@ -151,6 +153,7 @@ edit.init = function(overwrite, index) {
 			// Jump to the body
 			$("#entry-body").focus();
 		})
+			// Ctrl+enter to disable header date check
 			.bind("keyup", "ctrl+return", function() {
 				// Do so to avoid adding time header
 				edit.saveTitle();
@@ -197,6 +200,23 @@ edit.init = function(overwrite, index) {
 		// Click to remove tags
 		$("#attach-area .texttags .other p").click(function() {
 			edit.removeTag($(this).text().substring(1));
+		});
+		// Hover to show the time of created, started and ended
+		$("#entry-time-wrap").mouseover(function() {
+			var created = parseInt(localStorage["created"]) || data["time"]["created"],
+				start = parseInt(localStorage["start"]) || data["time"]["start"],
+				end = parseInt(localStorage["end"]) || data["time"]["end"],
+				convertTime = function(date) {
+					date = new Date(date);
+					if (!isNaN(date.getTime())) {
+						return edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
+					} else {
+						return "-";
+					}
+				};
+			$("#entry-time-created").val(convertTime(created));
+			$("#entry-time-start").val(convertTime(start));
+			$("#entry-time-end").val(convertTime(end));
 		});
 		// Update cover photo for music, book and movie
 		var elem = ["music", "book", "movie"];
@@ -556,6 +576,12 @@ edit.exportCacheBody = function(data) {
 		data["time"] = {};
 	}
 	data["time"]["created"] = parseInt(localStorage["created"]);
+	// Get the result from user-defined data
+	if (edit.data && localStorage) {
+		data["time"]["created"] = localStorage["created"] || data["time"]["created"];
+		data["time"]["start"] = localStorage["start"] || data["time"]["start"];
+		data["time"]["end"] = localStorage["end"] || data["time"]["end"];
+	}
 	// Test if begin and end time is overwritten
 	if (!data["text"]) {
 		data["text"] = {};
@@ -575,8 +601,8 @@ edit.exportCacheBody = function(data) {
 };
 edit.cleanEditCache = function() {
 	delete localStorage["_cache"];
-	var deleteList = ["title", "body", "created", "currentEditing", "tags", "place", "music", "movie", "book", "images", "weblink", "video", "voice"];
-	for (var i = 0; i != deleteList.length; ++i) {
+	var deleteList = ["title", "body", "created", "currentEditing", "tags", "place", "music", "movie", "book", "images", "weblink", "video", "voice", "start", "end"];
+	for (var i = 0; i !== deleteList.length; ++i) {
 		delete localStorage[deleteList[i]];
 	}
 	edit.photos = [];
@@ -1284,9 +1310,9 @@ edit.processBody = function() {
 			convertedTime;
 		if (line.substring(0, 7) === "Begin @") {
 			convertedTime = edit.convertTime(line.substring(8));
-			if (new Date(convertedTime).getFullYear() === app.year) {
+			if (convertedTime && new Date(convertedTime).getFullYear() === app.year) {
 				// Year in range, overwrite start time
-				edit.data["time"]["start"] = convertedTime;
+				localStorage["start"] = convertedTime;
 				animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
 			} else {
 				// Invalid date
@@ -1295,14 +1321,20 @@ edit.processBody = function() {
 			flag = true;
 		} else if (line.substring(0, 5) === "End @") {
 			// Overwrite end time
-			edit.data["time"]["end"] = edit.convertTime(line.substring(6));
-			animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(edit.data["time"]["end"]));
+			convertedTime = edit.convertedTime(line.substring(6));
+			if (convertedTime) {
+				localStorage["end"] = convertedTime;
+				animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(localStorage["end"]));
+			} else {
+				// Invalid date
+				animation.error(log.TIME_INVALID);
+			}
 			flag = true;
 		} else if (line.substring(0, 9) === "Created @") {
 			convertedTime = edit.convertTime(line.substring(10));
 			if (new Date(convertedTime).getFullYear() === app.year) {
 				// Year in range, overwrite created time
-				edit.data["time"]["created"] = convertedTime;
+				localStorage["created"] = convertedTime;
 				animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
 			} else {
 				// Invalid date

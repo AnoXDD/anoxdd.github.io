@@ -436,18 +436,19 @@
 			</div>
 		</div>
 	</script>
-	<script type="text/x-template" id="edit-view">
+<script type="text/x-template" id="edit-view">
 		<div id="text-area">
 			<input type="text" class="sensitive" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">
-				<p class="entry-icons sensitive" id="chars" title="Chars">&#xf1dd</p>
-				<p class="entry-data sensitive" id="entry-char" title="Chars">0</p>
-				<p class="entry-icons sensitive" id="lines" title="Lines">&#xf03a</p>
-				<p class="entry-data sensitive" id="entry-line" title="Lines">0</p>
-				<p class="entry-icons sensitive" id="time" title="Current time">&#xf017</p>
-				<p class="entry-data sensitive" id="entry-time" title="Current time">000000 0000</p>
-				<p class="entry-icons sensitive" id="elapsed" title="Time elapsed">&#xf04b</p>
-				<p class="entry-data sensitive" id="entry-elapsed" title="Time elapsed">0:00</p>
+				<span class="entry-data sensitive" id="entry-char" title="Chars">0</span>
+				<span class="entry-data sensitive" id="entry-line" title="Lines">0</span>
+				<div id="entry-time-wrap">
+					<span class="entry-data entry-time-elem sensitive" id="entry-time" title="Current time">000000 0000</span>
+					<span class="entry-data entry-time-elem sensitive" id="entry-time-created" title="Created time ">000000 0000</span>
+					<span class="entry-data entry-time-elem sensitive" id="entry-time-start" title="Started time">-</span>
+					<span class="entry-data entry-time-elem sensitive" id="entry-time-end" title="Ended time">-</span>
+				</div>
+				<span class="entry-data sensitive" id="entry-elapsed" title="Time elapsed">0:00</span>
 			</div>
 			<textarea class="sensitive"id="entry-body"></textarea>
 			<div id="map-holder">

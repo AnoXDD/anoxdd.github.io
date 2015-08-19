@@ -139,6 +139,7 @@ window.log = {
 	START_TIME_CHANGED_TO: "Start time for this entry changed to ",
 	END_TIME_CHANGED_TO: "End time for this entry changed to ",
 	TIME_NOT_IN_RANGE: "Time does not fit in this year",
+	TIME_INVALID: "Invalid time format",
 	STATS_ENTRY_ALREADY_EXIST: "This entry is already added",
 	STATS_ENTRY_EMPTY_STRING: "Invalid entry input",
 

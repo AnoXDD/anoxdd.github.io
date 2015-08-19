@@ -214,9 +214,9 @@ edit.init = function(overwrite, index) {
 						return "-";
 					}
 				};
-			$("#entry-time-created").val(convertTime(created));
-			$("#entry-time-start").val(convertTime(start));
-			$("#entry-time-end").val(convertTime(end));
+			$("#entry-time-created").html(convertTime(created));
+			$("#entry-time-start").html(convertTime(start));
+			$("#entry-time-end").html(convertTime(end));
 		});
 		// Update cover photo for music, book and movie
 		var elem = ["music", "book", "movie"];

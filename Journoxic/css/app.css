@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -154,13 +154,13 @@
 
 @keyframes fadein-icon {
 	0% {
-		width: 0;
 		margin-right: 0;
+		width: 0;
 	}
 
 	100% {
-		width: 25px;
 		margin-right: 5px;
+		width: 25px;
 	}
 }
 
@@ -311,13 +311,13 @@ body {
 #app {
 	background-color: #f3f3f3;
 	box-shadow: 0 0 5px rgba(0, 0, 0, .4);
-	transition: .4s ease;
 	display: none;
 	height: 76%;
 	margin-left: auto;
 	margin-right: auto;
 	position: relative;
 	top: 8%;
+	transition: .4s ease;
 	width: 90%;
 }
 
@@ -466,9 +466,9 @@ body {
 
 	#list.loading .archive a.display {
 		animation: blink 3s infinite ease;
+		background-color: initial;
 		margin-right: 1.5em;
 		min-width: 0;
-		background-color: initial;
 	}
 
 	#list p.title {
@@ -868,6 +868,8 @@ body {
 	background-position: -215px -370px;
 }
 
+/* Add the tag to the following style if this tag is made of text */
+
 .icontags .c01,
 .icontags .c02,
 .icontags .c05,
@@ -939,6 +941,14 @@ body {
 
 .icontags .c10:before {
 	content: "\f0c0";
+}
+
+.icontags .c11 {
+	background-position: -340px -395px;
+}
+
+.icontags .c12 {
+	background-position: -365px -395px;
 }
 
 .icontags .e01 {
@@ -1189,9 +1199,9 @@ body {
 		#detail .text p {
 			line-height: 1.5em;
 			margin-bottom: 1em;
+			transition: color .4s ease;
 			word-break: keep-all;
 			word-wrap: break-word;
-			transition: color .4s ease;
 		}
 
 			#detail .text p.t1 {
@@ -1968,19 +1978,19 @@ body {
 	}
 
 #header-info {
+	background-color: #555;
+	box-shadow: 0 0 10px #2B2B2B;
 	color: #dadada;
 	height: 70px;
 	left: 0px;
+	margin: 8px 0px 0px 8px;
 	opacity: 1;
+	overflow: hidden;
 	position: absolute;
 	top: 0px;
-	margin: 8px 0px 0px 8px;
 	transition: opacity .4s ease, width .4s ease;
-	overflow: hidden;
-	background-color: #555;
-	box-shadow: 0 0 10px #2B2B2B;
-	z-index: 10;
 	width: 64px;
+	z-index: 10;
 }
 
 	#header-info div {
@@ -1998,11 +2008,11 @@ body {
 
 #year {
 	font-size: 20px;
-	margin-bottom: 20px;
-	width: 60px;
-	padding: 8px 2px;
 	margin: 0px;
+	margin-bottom: 20px;
+	padding: 8px 2px;
 	text-align: center;
+	width: 60px;
 }
 
 
@@ -2022,9 +2032,9 @@ body {
 	}
 
 #other-status {
-	text-align: left;
 	height: 37px;
 	overflow: hidden;
+	text-align: left;
 	text-overflow: clip;
 	white-space: nowrap;
 	width: 56px;
@@ -2048,21 +2058,21 @@ body {
 	height: 5%;
 	left: 8px;
 	overflow: hidden;
+	pointer-events: none;
 	position: absolute;
 	text-align: center;
 	top: 3.5%;
 	transition: opacity .5s ease, top .4s ease, height .4s ease;
 	width: 99%;
 	z-index: 100;
-	pointer-events: none;
 }
 
 #feedback {
 	height: 0px;
+	overflow: inherit;
+	padding: 0;
 	position: absolute;
 	top: 4%;
-	padding: 0;
-	overflow: inherit;
 }
 
 #errors {
@@ -2516,18 +2526,26 @@ body {
 	font-size: 12px;
 	margin-right: 5px;
 	opacity: 0.1;
-	width: 25px;
 	text-overflow: clip;
+	transition: height .4s ease, opacity .4s ease;
+	width: 25px;
 }
 
+#attach-area .icontags .hidden {
+	height: 0;
+}
+
+#attach-area .icontags .highlight {
+	opacity: 1;
+}
 #attach-area .unselected span:not(.highlight) {
 	animation: fadein-icon .4s ease;
 }
 
 #attach-area .unselected .highlight, #attach-area .selected span:not(.highlight) {
-	width: 0px;
 	margin-right: 0px;
 	transition: .4s ease;
+	width: 0px;
 }
 
 #attach-area .selected span {
@@ -3359,8 +3377,8 @@ body.sensitive-mode .sensitive {
 }
 
 body.fullscreen #app {
-	top: 2%;
 	height: 95%;
+	top: 2%;
 }
 
 body.fullscreen #text-area {
@@ -3374,8 +3392,8 @@ body.fullscreen #feedback {
 	body.fullscreen #feedback p {
 		background-color: #444;
 		box-shadow: 0 0 15px #111;
-		width: 20%;
 		height: 17px;
+		width: 20%;
 	}
 
 body.fullscreen #errors {

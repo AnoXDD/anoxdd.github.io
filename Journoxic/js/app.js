@@ -1510,6 +1510,14 @@ app.tag = function() {
 				value: 16777216,
 				html: "c10"
 			}, {
+				name: "snooker",
+				value: -1,
+				html: "c11"
+			}, {
+				name: "skateboard",
+				value: -1,
+				html: "c12"
+			}, {
 				name: "relationship",
 				value: 33554432,
 				html: "s01"

@@ -22,7 +22,8 @@ edit.isEditPaneDisplayed = false;
 /** The list to auto-correct the tag, in the format of [wrong tag]: [correct tag] */
 edit.autoCorrectTags = {
 	"thought": "thoughts",
-	"mc": "minecraft"
+	"mc": "minecraft",
+	"pool": "snooker"
 }
 
 edit.removalList = {};
@@ -1356,10 +1357,13 @@ edit.addTag = function(tag, mute) {
 				var parent = $(this).parent().attr("class");
 				if (parent === "weather" || parent === "emotion") {
 					// Only one weather and emotion is allowed
-					if ($(this).css("height") === "0px") {
+					if ($(this).hasClass("hidden")) {
 						// Hidden div, means another weather/emotion has already been added
 						animation.warn(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
-						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+						// Give effect if the tag is from user input
+						if ($("#entry-tag").val() !== "") {
+							$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+						}
 						return;
 					}
 				}
@@ -1372,7 +1376,10 @@ edit.addTag = function(tag, mute) {
 					added = true;
 				} else {
 					animation.warn(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
-					$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+					// Give effect if the tag is from user input
+					if ($("#entry-tag").val() !== "") {
+						$("#entry-tag").effect("highlight", { color: "#000" }, 400);
+					}
 					// Saved
 				}
 			}
@@ -1420,13 +1427,17 @@ edit.removeTag = function(tag, mute) {
 				}
 			});
 			if (!removed) {
+				var found = false;
 				// Keep searching in icontags
-				$("#attach-area .selected span").each(function() {
+				$("#attach-area .icontags .highlight").each(function() {
+					if (!found) {
 					if ($(this).attr("title").toLowerCase() === tag) {
 						if (!mute) {
 							animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_REMOVED);
 						}
 						edit.toggleIcon(tag);
+						found = true;
+					}
 					}
 				});
 			}
@@ -1463,14 +1474,14 @@ edit.toggleIcon = function(tag) {
 	if ($(selector).toggleClass("highlight").hasClass("highlight")) {
 		if (parent === "weather" || parent === "emotion") {
 			// Now highlighted
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").addClass("hidden");
+			$("#attach-area .icontags ." + parent + " span:not(." + htmlName + ")").addClass("hidden");
 		} else {
-			$("#attach-area .icontags .selected").append($(selector).clone());
+			$("#attach-area .icontags .selected").append($(selector).addClass("highlight").clone());
 		}
 	} else {
 		if (parent === "weather" || parent === "emotion") {
 			// Dimmed
-			$("#attach-area .icontags ." + parent + " p:not(." + htmlName + ")").removeClass("hidden");
+			$("#attach-area .icontags ." + parent + " span").removeClass("hidden");
 		} else {
 			setTimeout(function() {
 				$("#attach-area .icontags .selected ." + htmlName).remove();

@@ -576,10 +576,16 @@ edit.exportCacheBody = function(data) {
 	}
 	data["time"]["created"] = parseInt(localStorage["created"]);
 	// Get the result from user-defined data
+	var timeGroup = ["cretaed", "start", "end"];
+	for (var i = 0; i !== timeGroup.length; ++i) {
+		if (localStorage[timeGroup[i]] === "undefined") {
+			delete localStorage[timeGroup[i]];
+		}
+	}
 	if (edit.data && localStorage) {
-		data["time"]["created"] = localStorage["created"] || data["time"]["created"];
-		data["time"]["start"] = localStorage["start"] || data["time"]["start"];
-		data["time"]["end"] = localStorage["end"] || data["time"]["end"];
+		data["time"]["created"] = parseInt(localStorage["created"]) || data["time"]["created"];
+		data["time"]["start"] = parseInt(localStorage["start"]) || data["time"]["start"];
+		data["time"]["end"] = parseInt(localStorage["end"]) || data["time"]["end"];
 	}
 	// Test if begin and end time is overwritten
 	if (!data["text"]) {
@@ -730,7 +736,7 @@ edit.sortArchive = function() {
  * This function assumes that `journal.archive.data` is sorted
  */
 edit.removeDuplicate = function() {
-	for (var i = 0; i < journal.archive.data[app.year].length - 1; ++i) {
+	for (var i = 0; i < Object.keys(journal.archive.data[app.year]).length - 1; ++i) {
 		if (journal.archive.data[app.year][i]["time"]["created"] === journal.archive.data[app.year][i + 1]["time"]["created"]) {
 			// Same contents, remove this one
 			app.yearChange[app.year] = true;
@@ -1314,7 +1320,7 @@ edit.processBody = function() {
 			flag = true;
 		} else if (line.substring(0, 5) === "End @") {
 			// Overwrite end time
-			convertedTime = edit.convertedTime(line.substring(6));
+			convertedTime = edit.convertTime(line.substring(6));
 			if (convertedTime) {
 				localStorage["end"] = convertedTime;
 				animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(localStorage["end"]));

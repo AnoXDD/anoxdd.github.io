@@ -152,7 +152,6 @@ function downloadFile(url, textOnly) {
 	animation.log(log.CONTENTS_DOWNLOAD_START, 1);
 	////console.log("Start downloadFile()");
 	// Change loading icons and disable click
-	$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 	getTokenCallback(function(token) {
 		if (network.yearFolders.indexOf(app.year) === -1) {
 			// Create a folder instead of searching for it
@@ -161,6 +160,7 @@ function downloadFile(url, textOnly) {
 				app.refresh();
 			}, 3);
 		} else {
+			$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 			// Get text data
 			url = url || getCoreDataUrlHeader(true) +
 				":/content?access_token=" + token;

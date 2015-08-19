@@ -1,4 +1,4 @@
-﻿@charset 'utf-8';
+@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -2445,11 +2445,13 @@ body {
 	height: 35px;
 	overflow: hidden;
 	transition: height .4s ease;
+	background-color: #F3F3F3;
 }
 
 	#entry-time-wrap:hover {
 		height: 200px;
-	}
+	
+}
 
 		#entry-time-wrap:hover .entry-time-elem:not(:first-child) {
 			display: block;
@@ -3478,4 +3480,12 @@ body.fullscreen #entry-summary .entry-data {
 
 body.fullscreen .entry-data::before {
 	display: none !important;
+}
+
+body.fullscreen #entry-time-wrap:not(:hover) {
+	height: 31px;
+}
+
+body.fullscreen #entry-summary .entry-time-elem {
+	margin-bottom: 5px;
 }

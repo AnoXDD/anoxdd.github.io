@@ -266,7 +266,6 @@ app.load = function(filter, newContent) {
 			animation.deny("#refresh-media");
 			return;
 		}
-
 	}
 	// Reset the UI
 	// Hide anyway

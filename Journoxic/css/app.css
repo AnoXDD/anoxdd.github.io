@@ -2391,7 +2391,7 @@ body {
 	height: 100%;
 }
 
-	#edit-pane #text-area {
+	#text-area {
 		display: inline-block;
 		height: 100%;
 		position: absolute;
@@ -2399,7 +2399,7 @@ body {
 		width: 64%;
 	}
 
-		#edit-pane #text-area.dark {
+		#text-area.dark {
 			background-color: #444444;
 		}
 
@@ -2414,7 +2414,7 @@ body {
 	width: 34%;
 }
 
-#edit-pane #entry-summary {
+#entry-summary {
 	display: inline-block;
 	float: right;
 	font-size: 12px;
@@ -2422,7 +2422,7 @@ body {
 	padding-top: 3px;
 }
 
-	#edit-pane #entry-summary .entry-data {
+	#entry-summary .entry-data {
 		background: #dddddd;
 		border-radius: 6px;
 		display: inline-block;
@@ -2436,7 +2436,7 @@ body {
 		transition: font-size .4s ease;
 	}
 
-	#edit-pane #entry-summary .entry-icons {
+	#entry-summary .entry-icons {
 		background-color: #dddddd;
 		border-radius: 30px;
 		display: inline-block;
@@ -2447,12 +2447,12 @@ body {
 		width: 24px;
 	}
 
-		#edit-pane #entry-summary .entry-icons#elapsed {
+		#entry-summary .entry-icons#elapsed {
 			padding: 7px 0 0 12px;
 			width: 22px;
 		}
 
-#edit-pane #entry-body, #entry-header {
+#entry-body, #entry-header {
 	background: #F7F7F7;
 	border-color: white;
 	border-radius: 10px;
@@ -2463,36 +2463,36 @@ body {
 	transition: padding .4s ease, font-size .4s ease, background .4s ease, color .4s ease, box-shadow .4s ease;
 }
 
-	#edit-pane #entry-body:focus, #entry-header:focus { /*outline: #dddddd solid 1px;*/
+	#entry-body:focus, #entry-header:focus { /*outline: #dddddd solid 1px;*/
 	}
 
-#edit-pane #entry-header.dark, #entry-body.dark {
+#entry-header.dark, #entry-body.dark {
 	background-color: #1A1A1A !important;
 	border-color: #2b2b2b;
 	color: #dadada;
 }
 
-	#edit-pane #entry-header.dark:focus, #entry-body.dark:focus {
+	#entry-header.dark:focus, #entry-body.dark:focus {
 		outline: 0;
 	}
 
-#edit-pane #entry-header {
+#entry-header {
 	display: inline-block;
 	font-size: 16px;
 	margin-top: 5px;
 	overflow: hidden;
 	text-align: center;
-	width: -webkit-calc(100% - 470px);
+	width: -webkit-calc(100% - 430px);
 }
 
-#edit-pane #entry-body {
+#entry-body {
 	font-size: 14px;
 	height: -webkit-calc(100% - 110px);
 	line-height: 1.5em;
 	margin-top: 3px;
 	padding: 30px;
 	resize: none;
-	width: -webkit-calc(100% - 65px);
+	width: -webkit-calc(100% - 70px);
 }
 
 #attach-area .icontags {

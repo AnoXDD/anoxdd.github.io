@@ -1118,14 +1118,13 @@ edit.fullScreen = function() {
 	edit.cleanupMediaEdit();
 	// Disable auto-height
 	$(window).off("resize");
+	$("#app").css("height", "inherit");
 	// Change the icon
 	animation.showMenuOnly("fullscreen");
 	// Hide the other part
-	$(".header").fadeOut(400, function() {
-		$("#attach-area").fadeOut(400, function() {
-			$("body").addClass("fullscreen");
-		});
-	});
+	$(".header").fadeOut(400);
+	$("#attach-area").fadeOut(400);
+	$("body").addClass("fullscreen");
 	// Request the browser to toggle fullscreen
 	if (document.documentElement.requestFullscreen) {
 		document.documentElement.requestFullscreen();
@@ -1144,11 +1143,11 @@ edit.windowMode = function() {
 	animation.showMenuOnly("add");
 	// Resize
 	$(".header").fadeIn(400, function() {
-		$("body").removeClass("fullscreen");
-		$("#attach-area").fadeIn();
-		// Re-enable auto-height
-		app.layout();
 	});
+	$("body").removeClass("fullscreen");
+	$("#attach-area").fadeIn();
+	// Re-enable auto-height
+	app.layout();
 	// Request the browser to exit fullscreen
 	if (document.exitFullscreen) {
 		document.exitFullscreen();
@@ -1431,13 +1430,13 @@ edit.removeTag = function(tag, mute) {
 				// Keep searching in icontags
 				$("#attach-area .icontags .highlight").each(function() {
 					if (!found) {
-					if ($(this).attr("title").toLowerCase() === tag) {
-						if (!mute) {
-							animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_REMOVED);
+						if ($(this).attr("title").toLowerCase() === tag) {
+							if (!mute) {
+								animation.log(log.TAG_ICON_ADD_HEADER + tag + log.TAG_REMOVED);
+							}
+							edit.toggleIcon(tag);
+							found = true;
 						}
-						edit.toggleIcon(tag);
-						found = true;
-					}
 					}
 				});
 			}

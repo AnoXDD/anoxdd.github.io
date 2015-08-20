@@ -1,4 +1,4 @@
-﻿/* Defines the archive operation */
+/* Defines the archive operation */
 
 window.archive = {};
 
@@ -301,7 +301,7 @@ archive.detail = function() {
 		try {
 			var l = $(archive.detailView(dataClip));
 			// !!!!!HIDE THE CONTENT LISTS!!!!
-			app.cDetail.css("display", "inline-block").html(l);
+			app.cDetail.html(l);
 			app.app.addClass("detail-view");
 			// Hide center if no images available
 			if (!dataClip["images"]) {

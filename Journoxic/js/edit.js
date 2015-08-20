@@ -62,11 +62,13 @@ edit.init = function(overwrite, index) {
 				// This entry modifies an existing entry
 				data = journal.archive.data[app.year][index];
 				if (data["time"]) {
-				if (data["time"]["created"]) {
-				localStorage["created"] = data["time"]["created"];
+					if (data["time"]["created"]) {
+						localStorage["created"] = data["time"]["created"];
+					}
+					if (data["time"]["start"]) {
+						localStorage["start"] = data["time"]["start"];
+					}
 				}
-				if (data["time"]["start"]) {
-				localStorage["start"] = data["time"]["start"];}}
 			}
 		} else if (overwrite === false) {
 			// Read from available caches
@@ -94,7 +96,8 @@ edit.init = function(overwrite, index) {
 	// If still no available data to be stored, create a new one
 	data = edit.data = data || edit.newContent();
 	if (localStorage["start"] || localStorage["created"]) {
-	localStorage["start"] = localStorage["start"] || localStorage["created"];}
+		localStorage["start"] = localStorage["start"] || localStorage["created"];
+	}
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;

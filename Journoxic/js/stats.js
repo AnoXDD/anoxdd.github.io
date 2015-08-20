@@ -225,6 +225,7 @@ stats.init = function() {
 	$("#contents").fadeOut(400, function() {
 		// Total count for everything
 		$("#search-result").addClass("stats");
+		$(".response").addClass("stats");
 		stats.getYearSum();
 		$("#stats-pane").fadeIn();
 	});
@@ -257,7 +258,7 @@ stats.quit = function() {
 	$("#stats-options li.checkbox").each(function() {
 		$(this).unbind("click");
 	});
-	$("#search-result").removeClass("stats");
+	$(".stats").removeClass("stats");
 	// Unbind hover to highlight the same column and row
 	$("#stats-table").undelegate("td", "mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup").delegate("th", "contextmenu");
 	// Unbind enter to search for #stats-query
@@ -515,15 +516,16 @@ stats.showGraph = function(viewAsMonth) {
 	}
 	// Clean up the series for incoming days (undefined array element)
 	for (i = 0; i !== Object.keys(series).length; ++i) {
-		var arr = series[i]["data"];
+		var arr = series[i]["data"],
+			newArr = [];
 		// Clean undefined days
 		for (j = 0; j !== arr.length; ++j) {
-			if (arr[j] == undefined) {
-				// Incoming days, remove it
-				series[i]["data"] = arr.splice(j, arr.length - j);
-				break;
+			// Add only valid day(s)
+			if (arr[j] != undefined) {
+				newArr.push(arr[j]);
 			}
 		}
+		series[i]["data"] = newArr;
 	}
 	var data = {
 		chart: {

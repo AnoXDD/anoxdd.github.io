@@ -533,6 +533,11 @@ animation.switch = function(name) {
 			$(this).removeClass("display");
 		}
 	});
+	// Directly stop processing if this panel has already been displayed
+	if (current.indexOf(name) !== -1) {
+		// This panel is currently displayed
+		return;
+	}
 	if (current === "drawer-archive") {
 		archive.quit();
 	} else if (current === "drawer-stats") {

@@ -353,6 +353,9 @@ body {
 		display: none;
 	}
 
+	#app.detail-view #detail {
+	}
+
 #contents {
 	-moz-transition: height .2s;
 	-ms-transition: height .2s;
@@ -1074,7 +1077,7 @@ body {
 	left: 39%;
 	margin-left: 1%;
 	position: absolute;
-	transition: opacity .4s ease;
+	/* transition: opacity .4s ease; */
 	width: 60%;
 }
 
@@ -1938,7 +1941,7 @@ body {
 		.header #search-result.stats {
 			background-color: #DDD;
 			height: initial;
-			left: 22.5%;
+			left: 24.5%;
 			padding: 10px 0 10px 30px;
 			top: 145px;
 			width: 40%;
@@ -2052,8 +2055,9 @@ body {
 		content: "\f14b";
 		display: block;
 		font-size: 12px;
-		left: 21px;
-		position: relative;
+		width: 15px;
+		top: 2px;
+		position: absolute;
 	}
 
 #other-status {
@@ -2099,6 +2103,10 @@ body {
 	position: absolute;
 	top: 4%;
 }
+
+	#feedback.stats {
+		top: 6%;
+	}
 
 #errors {
 	height: 5%;
@@ -3206,10 +3214,10 @@ body {
 
 #stats-query {
 	display: none;
-	left: -webkit-calc(39%);
+	left: 41%;
 	margin: 0;
 	position: absolute;
-	top: 22px;
+	top: 10px;
 }
 
 #stats-pane {

@@ -2055,9 +2055,9 @@ body {
 		content: "\f14b";
 		display: block;
 		font-size: 12px;
-		width: 15px;
-		top: 2px;
 		position: absolute;
+		top: 2px;
+		width: 15px;
 	}
 
 #other-status {

@@ -281,6 +281,8 @@ function removeLoginButton(debug) {
 		$("#search-new").fadeIn();
 		$("#search-result").fadeIn();
 		$("#app").fadeIn();
+		// Show the app drawer
+		$("#drawer").removeClass("hidden");
 		edit.tryReadCache();
 	});
 }

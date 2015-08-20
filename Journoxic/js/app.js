@@ -176,8 +176,6 @@ app.init = function() {
 	// Test if there is any cache
 	animation.testCacheIcons();
 	animation.testAllSubs();
-	// Show the app drawer
-	$("#drawer").removeClass("hidden");
 };
 /**
  * Simply refreshes and force reload

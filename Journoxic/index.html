@@ -77,9 +77,9 @@
 					<a title="Save" id="add-save-local" onclick="edit.save()" href="#">&#xf0c7</a>
 					<ul>
 						<li class="has-sub">
-							<a title="Discard and quit" href="#">&#xf014</a>
+							<a title="Discard and quit" onclick="$('edit-quit').removeClass('hidden')" href="#">&#xf014</a>
 							<ul>
-								<li><a title="Confirm" onclick="edit.quit()" href="#">&#xf00c</a></li>
+								<li><a class="hidden-icon hidden" id="edit-quit" title="Confirm" onclick="edit.quit()" href="#">&#xf00c</a></li>
 							</ul>
 						</li>
 					</ul>
@@ -115,7 +115,7 @@
 						<li class="has-sub">
 							<a class="hidden-icon hidden" title="Read the archive" id="reread" onclick="edit.init(false)" href="#">&#xf187</a>
 							<ul>
-								<li><a title="Remove saved data and create a new entry" onclick="edit.init(true)">&#xf05e</a></li>
+								<li><a title="Remove saved data and create a new entry" onclick="edit.init(true)" href="#">&#xf05e</a></li>
 							</ul>
 						</li>
 						<li class="li-add-entry-sub">
@@ -168,7 +168,7 @@
 								<li><a class="hidden-icon hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
 							</ul>
 						</li>
-						<li><a title="Toggle sensitive mode" onclick="$('body').toggleClass('sensitive-mode')"></a></li>
+						<li><a title="Toggle sensitive mode" onclick="$('body').toggleClass('sensitive-mode')">&#xf06e</a></li>
 					</ul>
 				</li>
 			</ul>

@@ -61,8 +61,12 @@ edit.init = function(overwrite, index) {
 			if (index != undefined && index !== -1) {
 				// This entry modifies an existing entry
 				data = journal.archive.data[app.year][index];
+				if (data["time"]) {
+				if (data["time"]["created"]) {
 				localStorage["created"] = data["time"]["created"];
-				localStorage["start"] = data["time"]["start"];
+				}
+				if (data["time"]["start"]) {
+				localStorage["start"] = data["time"]["start"];}}
 			}
 		} else if (overwrite === false) {
 			// Read from available caches
@@ -79,6 +83,7 @@ edit.init = function(overwrite, index) {
 		} else if (overwrite == undefined) {
 			// Do not overwrite or overwrite is undefined
 			animation.warn(log.OVERWRITE_CACHE_WARNING);
+			animation.testAllSubs();
 			return;
 		}
 	} else {
@@ -88,7 +93,8 @@ edit.init = function(overwrite, index) {
 	}
 	// If still no available data to be stored, create a new one
 	data = edit.data = data || edit.newContent();
-	localStorage["start"] = localStorage["start"] || localStorage["created"];
+	if (localStorage["start"] || localStorage["created"]) {
+	localStorage["start"] = localStorage["start"] || localStorage["created"];}
 
 	// Now you have caches anyway
 	localStorage["_cache"] = 1;

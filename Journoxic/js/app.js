@@ -1202,6 +1202,8 @@ app.detail = function() {
 	// Show the button if any images available
 	if (dataClip["images"]) {
 		$("#menu-show-images").removeClass("hidden");
+	} else {
+		$("#menu-show-images").addClass("hidden");
 	}
 	// Back button
 	$(".btn-back", app.cDetail).on("click", function() {

@@ -1,0 +1,192 @@
+@font-face {
+	font-family: 'Segoe UI';
+	font-weight: normal;
+	src: url("Journoxic/fonts/segoeuil.ttf");
+}
+
+@keyframes slide-in {
+	0% {
+		bottom: -100px;
+		opacity: 0;
+	}
+	100% {
+		bottom: 0px;
+		opacity: 1;
+	}
+}
+
+@keyframes slide-out {
+		0% {
+		top: 40%;
+		opacity: 1;
+	}
+	100% {
+		top: 30%;
+		opacity: 0;
+	}
+}
+
+@keyframes blink {
+		0% {
+		height: 16px;
+		bottom: 139px;
+	}
+	44% {
+		height: 16px;
+		bottom: 139px;
+	}
+	50% {
+		height:0px;
+		bottom: 132px;
+	}
+	62% {
+		height: 16px;
+		bottom: 139px;
+	}
+	68% {
+		height:0px;
+		bottom: 132px;
+	}
+}
+
+body {
+	font-family: 'Segoe UI', sans-serif;
+	height: 100%;
+}
+
+span {
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	transition: 1s ease;
+}
+
+#intro {
+}
+
+html {
+    height: 100%;
+}
+
+.wrapper.display {
+    background-color: black;
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.wrapper span {
+	    margin: 0 0 20px 15px;    
+    
+	    font-size: 20px;
+	    padding: 7px;
+    border-radius: 10px;
+    position: relative;
+    background-color: grey;
+    bottom: 2px;
+}
+
+.wrapper.display.hide {
+    height: 30%;
+    padding-top: 0;
+    transition: height 1s ease;
+}
+
+.wrapper.display.hide h2 {
+    font-size: 20px;
+    height: 40px;
+    margin-top: 0;
+}
+
+.wrapper.display.hide h1 {
+    font-size: 100px;
+    height: 120px;
+    margin-bottom: 20px;
+    padding-top: 0;
+}
+
+.wrapper.display.hide span {
+    margin: 0 0 20px 15px;    font-size: 13px;
+    padding: 7px;
+    border-radius: 10px;
+    position: relative;
+    background-color: grey;
+    bottom: 2px;
+}
+
+h1.show, h2.show {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-weight: 100;
+    animation: slide-in 2s ease;
+    position: relative;
+}
+
+h1,h2 {
+}
+
+h2.show {
+    font-size: 35px;
+    height: 50px;
+    margin-top: 50px;
+}
+
+h1.show {
+    font-size: 200px;
+    height: 250px;
+    padding-top: 10%;
+}
+
+.wrapper.display:not(.hide) h1::after {
+    content: ".";
+    font-size: 1px;
+    position: relative;
+    bottom: 132px;
+    right: 29px;
+    width: 17px;
+    height: 0;
+    border-radius: 10px;
+    display: inline-block;
+    background-color: black;
+    animation: blink 4s;
+}
+
+ul, li, h1, h2, span {
+	display: none;
+}
+
+h1.show, h2.show {
+	display:block;} ul.show {
+	display: list-item;
+	top: 40%;
+}
+
+.show span {
+    display: initial;
+}
+
+li.show {
+	animation: slide-in 1s;
+	font-size: 30px;
+	display: inherit;
+}
+
+li.show::before {
+}
+
+ul.hide, li.hide {
+	animation: slide-out 2s;
+	opacity: 0;
+}
+
+ul {
+    position: absolute;
+    list-style-type: none;
+    width: 80%;
+    margin-left: 10%;
+}

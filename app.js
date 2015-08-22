@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Version 1.0
  */
 $(document).ready(function() {
@@ -19,7 +19,7 @@ $(document).ready(function() {
 			$h2.addClass("show");
 		}, 3000 * (index + 1));
 	});
-	setTimeout(replay, ($("h2").length + 2) * 3000);
+	setTimeout(replay, ($("h2").length + 1) * 3000);
 });
 
 function replay() {
@@ -27,11 +27,14 @@ function replay() {
 	setTimeout(function() {
 		$(".wrapper").addClass("hide");
 
+		// Calculate the delay time
+		var delays = [0];
+		$("#intro ul").each(function(index) {
+			delays.push(delays[index] + 3000 * ($(this).children().length + 1));
+		});
 		setTimeout(function() {
 			/* Change the value to adjust the time for changes, 3000*(elem+1) */
-			var delays = [1000, 4000, 12000, 15000],
-				delays = [1000, 10000, 25000, 35000],
-				clear = [0, 0, 0, 0],
+			var clear = [0, 0, 0, 0],
 				currentDisplay = -1;
 			$("#intro ul").each(function(index) {
 				var $this = $(this);

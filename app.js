@@ -11,11 +11,10 @@ $(document).ready(function() {
 		var m = "runjie";
 		m = "guan" + m;
 		m += "@" + "gmail.com";
-		$(this).html(m);
+		$(this).html(m + " This site is made with pure css, no images included");
 	}, function() {
 		$(this).empty();
 	});
-	$(".wrapper").addClass("display");
 	$(".wrapper").addClass("display");
 	$("h1").addClass("show");
 	$("h2").each(function(index) {

@@ -106,9 +106,22 @@
 				<li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a></li>
 			</ul>
 		</div>
+		<div id="action-comment">
+			<ul>
+				<li class="has-sub">
+					<a class="hidden-icon hidden" title="Reply this comment" onclick="comment.reply()">&#xf112</a>
+					<ul>
+						<li><a class="hidden-icon hidden" title="Remove this comment" onclick="comment.remove()">&#xf00d</a></li>
+					</ul>
+				</li>
+				<li><a title="Add a comment" onclick="comment.add()">&#xf067</a></li>
+				<li><a title="Main menu" onclick="comment.quit()">&#xf0c9</a></li>
+			</ul>
+		</div>
 		<div id="action-menu">
 			<ul>
 				<li><a class="hidden-icon hidden" title="Show images" id="menu-show-images" onclick="app.showEntryImages()" href="#">&#xf03e</a></li>
+				<li><a class="hidden-icon hidden" title="Comment" onclick="comment.init()">&#xf086</a></li>
 				<li class="has-sub">
 					<a title="Add an entry" id="add" onclick="edit.init()" href="#"><span>&#xf067</span></a>
 					<ul>

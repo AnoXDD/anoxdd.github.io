@@ -1,4 +1,4 @@
-﻿app.version.main = "v4.2.0 Build 082115_1927";
+﻿app.version.main = "v4.2.1 Build 082415_1556";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -13,6 +13,9 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  * 
  * Todo add an integrity check before logging in
+ * 
+ * v4.2 - Comment update
+ * [Add] Comment any entries!
  * 
  * v4.1 - Patch on release beta
  * [Fix] Several bugs when using it

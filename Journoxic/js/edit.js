@@ -696,17 +696,21 @@ edit.minData = function() {
 	var tmp = journal.archive.data[app.year].filter(function(key) {
 		return key != undefined;
 	});
-	for (var key = 0, len = tmp.length; key != len; ++key) {
+	for (var key = 0, len = tmp.length; key !== len; ++key) {
+		// !!! Please keep the items to be removed sorted !!! //
 		delete tmp[key]["attached"];
 		delete tmp[key]["contents"];
+		delete tmp[key]["chars"];
 		delete tmp[key]["datetime"];
 		delete tmp[key]["endtime"];
 		delete tmp[key]["ext"];
 		delete tmp[key]["index"];
+		delete tmp[key]["iconTags"];
 		delete tmp[key]["lines"];
 		delete tmp[key]["month"];
 		delete tmp[key]["processed"];
 		delete tmp[key]["summary"];
+		delete tmp[key]["textTags"];
 		delete tmp[key]["type"];
 		// Remove undefined object
 		var i;
@@ -929,7 +933,7 @@ edit.addMediaFromQueue = function() {
 	edit.photo(true, function() {
 		network.next();
 		getTokenCallback(function(token) {
-			var url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+			var url = "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 			$.ajax({
 				type: "GET",
 				url: url
@@ -1707,7 +1711,7 @@ edit.photo = function(isQueue, callback) {
 		getTokenCallback(function(token) {
 			var url;
 			if (isQueue) {
-				url = "https://api.onedrive.com/v1.0/drive/special/approot:/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
+				url = "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 			} else {
 				url = getDataUrlHeader() + "/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
 			}

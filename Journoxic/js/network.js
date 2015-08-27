@@ -102,13 +102,8 @@ network.destroy = function() {
  */
 function getResourceUrlHeader(isAbsolute, year) {
 	year = year || app.year;
-	if (isAbsolute) {
-		return "https://api.onedrive.com/v1.0/drive/special/approot:/resource/" +
-			year;
-	} else {
-		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/"
-			+ year;
-	}
+	return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/"
+		+ year;
 }
 
 /**
@@ -119,13 +114,8 @@ function getResourceUrlHeader(isAbsolute, year) {
  */
 function getDataUrlHeader(isAbsolute, year) {
 	year = year || app.year;
-	if (isAbsolute) {
-		return "https://api.onedrive.com/v1.0/drive/special/approot:/data/" +
-			year;
-	} else {
-		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/"
-			+ year;
-	}
+	return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/"
+		+ year;
 }
 
 /**
@@ -136,11 +126,7 @@ function getDataUrlHeader(isAbsolute, year) {
  */
 function getCoreDataUrlHeader(isAbsolute, year) {
 	year = year || app.year;
-	if (isAbsolute) {
-		return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "/data.js";
-	} else {
-		return "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + year + "/data.js";
-	}
+	return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "/data.js";
 }
 
 /**

@@ -418,7 +418,7 @@ app.getYears = function() {
 	getTokenCallback(function(token) {
 		$.ajax({
 			type: "GET",
-			url: "https://api.onedrive.com/v1.0/drive/special/approot:/core:/children?select=name,createdBy&orderby=name&access_token=" + token
+			url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/children?select=name,createdBy&orderby=name&access_token=" + token
 		})
 			.done(function(data) {
 				var itemList = data["value"];

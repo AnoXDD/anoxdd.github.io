@@ -8,7 +8,8 @@ window.comment = {};
  * Initialize the comment panel
  */
 comment.init = function() {
-	
+	$("#app").addClass("comment");
+	animation.showMenuOnly("comment");
 }
 
 /**
@@ -39,5 +40,6 @@ comment.reply  = function() {
  * @returns {} 
  */
 comment.quit = function() {
-	
+	$("#app").removeClass("comment");
+	animation.showMenuOnly();
 }

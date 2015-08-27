@@ -242,6 +242,7 @@
 		<div id="contents">
 			<div id="list"></div>
 			<div id="detail"></div>
+			<div id="comments"></div>
 		</div>
 		<div id="edit-pane"></div>
 		<div id="stats-pane">
@@ -623,6 +624,42 @@
 			}
 			%>
 		</div>
+	</script>
+	<script type="text/x-template" id="comment-view">
+		<%
+		if (comments.length) {
+		%>
+		<ul>
+			<%
+			for (var i = 0; i !== comments.length; ++i) {
+			%>
+			<li class="comment">
+				<div class="comment-time"><%= comments[i].time %></div>
+				<div class="sensitive content"><%= comments[i].content %></div>
+				<ul class="comment-reply">
+					<%
+					for (var j = 0; j !== comments[i].replies.length; ++j) {
+					%>
+					<li class="comment sub-comment">
+						<div class="comment-time"><%= comments[i]["replies"][j].time %></div>
+						<div class="sensitive content"><%= comments[i]["replies"][j].content %></div>
+					</li>
+					<%
+					}
+					%>
+				</ul>
+			</li>
+			<%
+			}
+			%>
+		</ul>
+		<%
+		} else {
+		%>
+		<ul class="comment-empty"></ul>
+		<%
+		}
+		%>
 	</script>
 	<script type="text/x-template" id="archive-view">
 		<li class="archive">

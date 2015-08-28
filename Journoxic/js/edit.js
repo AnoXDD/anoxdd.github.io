@@ -1336,7 +1336,7 @@ edit.processBody = function() {
 			convertedTime = edit.convertTime(line.substring(6));
 			if (convertedTime) {
 				localStorage["end"] = convertedTime;
-				animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(localStorage["end"]));
+				animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
 			} else {
 				// Invalid date
 				animation.error(log.TIME_INVALID);
@@ -2033,16 +2033,23 @@ edit.photoSave = function(callback) {
 											}
 										}
 									});
-									// Process edit.photos
+									// Reset all the data
 									for (j = 0; j !== edit.photos.length; ++j) {
 										edit.photos[j]["change"] = false;
 										edit.photos[j]["success"] = false;
-										if (edit.photos[j]["resource"]) {
-											newImagesData.push({
-												fileName: edit.photos[j]["name"]
-											});
-										}
 									}
+									// Process edit.photos and match the sequence in the div
+									$("#attach-area .images img").each(function() {
+										for (j = 0; j !== edit.photos.length; ++j) {
+											if (edit.photos[j]["url"] === $(this).attr("src")) {
+												if (edit.photos[j]["resource"]) {
+													newImagesData.push({
+														fileName: edit.photos[j]["name"]
+													});
+												}
+											}
+										}
+									});
 									localStorage["images"] = JSON.stringify(newImagesData);
 									animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(0) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
 									callback();

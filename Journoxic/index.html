@@ -52,14 +52,14 @@
 		<div id="action-fullscreen">
 			<ul>
 				<li><a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="#">&#xf0eb</a></li>
-				<li><a title="Back to window" onclick="edit.windowMode()">&#xf066</a></li>
+				<li><a title="Back to window" onclick="edit.windowMode()" href="#">&#xf066</a></li>
 			</ul>
 		</div>
 		<div id="action-add">
 			<ul>
 				<li><a class="hidden-icon hidden" title="Get current location" id="pin-point" onclick="edit.locationPin()" href="#">&#xf124</a></li>
-				<li><a class="hidden-icon hidden" title="Remove" id="action-remove-confirm" onclick="edit.removeMedia(edit.confirmVal)">&#xf00d</a></li>
-				<li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue">&#xf115</a></li>
+				<li><a class="hidden-icon hidden" title="Remove" id="action-remove-confirm" onclick="edit.removeMedia(edit.confirmVal)" href="#">&#xf00d</a></li>
+				<li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue" href="#">&#xf115</a></li>
 				<li><a title="Go fullscreen" onclick="edit.fullScreen()" href="#">&#xf065</a></li>
 				<li class="has-sub">
 					<a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="#">&#xf03e</a>
@@ -103,19 +103,19 @@
 						<li><a title="Toggle protection on this archive file" onclick="archive.toggle('protect')" href="#">&#xf023</a></li>
 					</ul>
 				</li>
-				<li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')">&#xf021</a></li>
+				<li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')" href="#">&#xf021</a></li>
 			</ul>
 		</div>
 		<div id="action-comment">
 			<ul>
 				<li class="has-sub">
-					<a class="hidden-icon hidden" title="Reply this comment" onclick="comment.reply()">&#xf112</a>
+					<a class="hidden-icon hidden" title="Reply this comment" onclick="comment.reply()" href="#">&#xf112</a>
 					<ul>
-						<li><a class="hidden-icon hidden" title="Remove this comment" onclick="comment.remove()">&#xf00d</a></li>
+						<li><a class="hidden-icon hidden" title="Remove this comment" onclick="comment.remove()" href="#">&#xf00d</a></li>
 					</ul>
 				</li>
-				<li><a title="Add a comment" onclick="comment.add()">&#xf067</a></li>
-				<li><a title="Main menu" onclick="comment.quit()">&#xf0c9</a></li>
+				<li><a title="Add a comment" onclick="comment.add()" href="#">&#xf067</a></li>
+				<li><a title="Main menu" onclick="comment.quit()" href="#">&#xf0c9</a></li>
 			</ul>
 		</div>
 		<div id="action-menu">
@@ -134,13 +134,13 @@
 						<li class="li-add-entry-sub">
 							<a class="hidden-icon hidden" title="Edit this entry" id="edit-this" onclick="edit.init(undefined, app.currentDisplayed)" href="#"><span>&#xf044</span></a>
 							<ul>
-								<li><a title="Remove saved data and edit this entry" onclick="edit.init(true, app.currentDisplayed)">&#xf00c</a></li>
+								<li><a title="Remove saved data and edit this entry" onclick="edit.init(true, app.currentDisplayed)" href="#">&#xf00c</a></li>
 							</ul>
 						</li>
 						<li>
 							<a class="hidden-icon hidden" title="Delete this entry" id="delete" onclick="edit.removeEntry()" href="#"><span>&#xf00d</span></a>
 							<ul>
-								<li><a title="Confirm" onclick="edit.removeEntry()">&#xf00c</a></li>
+								<li><a title="Confirm" onclick="edit.removeEntry()" href="#">&#xf00c</a></li>
 							</ul>
 						</li>
 					</ul>
@@ -181,7 +181,7 @@
 								<li><a class="hidden-icon hidden" title="Return lost media" id="return-lost-media" onclick="app.cleanResource()" href="#">&#xf0f2</a></li>
 							</ul>
 						</li>
-						<li><a title="Toggle sensitive mode" onclick="$('body').toggleClass('sensitive-mode')">&#xf06e</a></li>
+						<li><a title="Toggle sensitive mode" onclick="$('body').toggleClass('sensitive-mode')" href="#">&#xf06e</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -193,7 +193,7 @@
 					<a title="Toggle graph" onclick="stats.toggleGraph()" href="#">&#xf080</a>
 					<ul>
 						<li><a title="Download this chart" onclick="Chart.exportChart()" class="hidden-icon hidden" href="#">&#xf019</a></li>
-						<li><a title="Toggle chart view" onclick="" class="hidden-icon hidden">&#xf133</a></li>
+						<li><a title="Toggle chart view" onclick="" class="hidden-icon hidden" href="#">&#xf133</a></li>
 					</ul>
 				</li>
 			</ul>

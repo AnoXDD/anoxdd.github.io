@@ -2058,7 +2058,20 @@ edit.photoSave = function(callback) {
 					}
 				});
 			} else {
-				// Call callback directly
+				// Sort the images again
+				$("#attach-area .images img").each(function() {
+					for (j = 0; j !== edit.photos.length; ++j) {
+						if (edit.photos[j]["url"] === $(this).attr("src")) {
+							if (edit.photos[j]["resource"]) {
+								newImagesData.push({
+									fileName: edit.photos[j]["name"]
+								});
+							}
+						}
+					}
+				});
+				localStorage["images"] = JSON.stringify(newImagesData);
+				// Call callback
 				callback();
 			}
 		});

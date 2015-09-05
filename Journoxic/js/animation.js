@@ -482,6 +482,10 @@ animation.log = function(message, indent, type) {
  */
 animation.error = function(message, error, indent) {
 	if (error != undefined) {
+		// Sometimes the error can be empty, but still it is an error
+		if (error === "") {
+			error = "unknown";
+		}
 		animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 1);
 	} else {
 		animation.log(message, indent, 1);

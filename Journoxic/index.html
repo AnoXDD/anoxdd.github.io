@@ -450,7 +450,61 @@
 			</div>
 		</div>
 	</script>
-	<script type="text/x-template" id="edit-view">
+<script type="text/x-template" id="comment-view">
+	<div id="comment-list">
+		<ul>
+			<%
+			if (comments) {
+			for (var i = 0; i !== comments.length; ++i) {
+			%>
+			<li>
+				<div class="comment-header">
+					<%
+					if (comments[i].replies) {
+					%>
+					<p class="comment-replies-count"><%= comments[i].replies.length %></p>
+					<%
+					}
+					%>
+					<p class="datetime"><%= archive.list.prototype.date(comments[i].time) %></p>
+				</div>
+				<p><%= comments[i].content %></p>
+				<%
+				if (comments[i].replies) {
+				%>
+				<div class="comment-replies">
+					<ul>
+						<%
+						for (var j = 0; j !== comment[i].replies; ++j) {
+						%>
+						<li>
+							<div class="comment-header">
+								<p class="datetime"><%= archive.list.prototype.date(comments[i].replies[j].time) %></p>
+							</div>
+							<p><%= comments[i].replies[j].content %></p>
+						</li>
+						<%
+						}
+						%>
+					</ul>
+				</div>
+				<%
+				}
+				%>
+			</li>
+			<%
+			}
+			}
+			%>
+		</ul>
+	</div>
+	<div id="comment-input-wrapper">
+		<input type="text" autocomplete="off" placeholder="Comment ..." />
+	</div>
+
+
+</script>
+<script type="text/x-template" id="edit-view">
 		<div id="text-area">
 			<input type="text" class="sensitive" id="entry-header" autocomplete="off" onclick="this.select()" placeholder="Title" autofocus />
 			<div id="entry-summary">

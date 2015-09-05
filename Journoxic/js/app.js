@@ -631,7 +631,8 @@ app.list.prototype = {
 				app.displayedChars += contents[currentLoaded].text.chars;
 				app.displayedLines += contents[currentLoaded].text.lines;
 				if (contents[currentLoaded].time.end) {
-					var timeDelta = (contents[currentLoaded].time.end - contents[currentLoaded].time.start) / 60000;
+					// Gets the integer part of timeDelta, measured in second
+					var timeDelta = parseInt((contents[currentLoaded].time.end - contents[currentLoaded].time.start) / 60000);
 					if (!isNaN(timeDelta)) {
 						app.displayedTime += timeDelta;
 					}

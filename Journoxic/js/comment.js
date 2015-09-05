@@ -17,7 +17,7 @@ comment.init = function() {
  * @param {Number} replyTo (Optional) - The timestemp of the comment it replies to
  */
 comment.add = function(replyTo) {
-	
+
 }
 
 /**
@@ -25,14 +25,14 @@ comment.add = function(replyTo) {
  * @param {Number} timestamp - The timestamp of the comment that is to be removed
  */
 comment.remove = function(timestamp) {
-	
+
 }
 
 /**
  * Replies the comment that is currently selected
  */
-comment.reply  = function() {
-	
+comment.reply = function() {
+
 }
 
 /**

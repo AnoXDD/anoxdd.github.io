@@ -2173,7 +2173,7 @@ app.videoPlayer = function(selector, source) {
 		// returns click as decimal (.77) of the total timelineWidth
 		var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
 		video.currentTime = duration * clickPercent;
-	}; p
+	}; 
 	app.videoPlayer.mouseDown = function() {
 		app.videoPlayer.onplayhead = true;
 		window.addEventListener("mousemove", app.videoPlayer.moveplayHead, true);

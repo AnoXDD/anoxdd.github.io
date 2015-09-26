@@ -2640,6 +2640,7 @@ body {
 	margin-right: 0px;
 	transition: .4s ease;
 	width: 0px;
+	opacity: 0;
 }
 
 #attach-area .selected span {

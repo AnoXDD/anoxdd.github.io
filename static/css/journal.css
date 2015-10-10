@@ -1,4 +1,4 @@
-@charset 'utf-8';
+﻿@charset 'utf-8';
 
 ::-webkit-scrollbar {
 	background: #e3e3e3;
@@ -23,25 +23,25 @@
 
 @font-face {
 	font-family: 'FontAwesome';
-	src: url('../fonts/fontawesome-webfont.ttf');
+	src: url('/static/fonts/fontawesome-webfont.ttf');
 }
 
 @font-face {
 	font-family: 'Segoe UI';
 	font-weight: 100, 200, 300;
-	src: url('../fonts/segoeuil.ttf');
+	src: url('/static/fonts/segoeuil.ttf');
 }
 
 @font-face {
 	font-family: 'Segoe UI';
 	font-weight: normal;
-	src: url("../fonts/segoeui.ttf");
+	src: url("/static/fonts/segoeui.ttf");
 }
 
 @font-face {
 	font-family: 'Segoe UI';
 	font-weight: bold;
-	src: url("../fonts/segoeuib.ttf");
+	src: url("/static/fonts/segoeuib.ttf");
 }
 
 @-webkit-keyframes spin {
@@ -316,7 +316,7 @@ body {
 }
 
 .header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #list div.attached span, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .video .thumb, #detail .place .thumb, .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2 {
-	background-image: url('../img/archive.png');
+	background-image: url('/static/img/archive.png');
 	background-repeat: no-repeat;
 }
 
@@ -1397,7 +1397,7 @@ body {
 	}
 
 	#detail .movie a, #detail .book a, #detail .music a, #detail .voice a, #detail .place a {
-		background: url('../img/arrow.png') 100% 50% no-repeat;
+		background: url('/static/img/arrow.png') 100% 50% no-repeat;
 		padding-right: 20px;
 	}
 
@@ -1463,7 +1463,7 @@ body {
 
 	#detail .photo img {
 		background-attachment: fixed;
-		background-image: url('../img/pic.png');
+		background-image: url('/static/img/pic.png');
 		background-position: center;
 		background-repeat: no-repeat;
 		display: inline-block;
@@ -1528,7 +1528,7 @@ body {
 
 @media (-webkit-min-device-pixel-ratio: 1.5) {
 	.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2, #attach-area .video .video-play, #attach-area .weblink .thumb, #attach-area .movie .thumb, #attach-area .music .thumb, #attach-area .book .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
-		background-image: url('../img/archive@2x.png');
+		background-image: url('/static/img/archive@2x.png');
 		background-size: 800px 530px;
 	}
 
@@ -1537,7 +1537,7 @@ body {
 	}
 
 	#detail .movie a, #detail .book a, #detail .music a, #detail .voice a, #detail .place a {
-		background-image: url('../img/arrow@2x.png');
+		background-image: url('/static/img/arrow@2x.png');
 		background-size: 20px 20px;
 	}
 }
@@ -1602,12 +1602,12 @@ body {
 }
 
 	#photoviewer li img {
-		-moz-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
-		-ms-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
-		-o-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
+		-moz-border-image: url('/static/img/photo_mask2.png') 20 20 stretch stretch;
+		-ms-border-image: url('/static/img/photo_mask2.png') 20 20 stretch stretch;
+		-o-border-image: url('/static/img/photo_mask2.png') 20 20 stretch stretch;
 		/* border-style: solid; */
-		-webkit-border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
-		border-image: url('../img/photo_mask2.png') 20 20 stretch stretch;
+		-webkit-border-image: url('/static/img/photo_mask2.png') 20 20 stretch stretch;
+		border-image: url('/static/img/photo_mask2.png') 20 20 stretch stretch;
 		border-width: 10px;
 		left: 50%;
 		position: absolute;
@@ -1628,7 +1628,7 @@ body {
 }
 
 #photoviewer .btn-close {
-	background: url('../img/btn_close.png') 0 0 no-repeat;
+	background: url('/static/img/btn_close.png') 0 0 no-repeat;
 	height: 54px;
 	left: 15px;
 	top: 0;
@@ -1775,12 +1775,12 @@ body {
 
 @media (-webkit-min-device-pixel-ratio: 1.5) {
 	#photoviewer .btn-back {
-		background-image: url('../img/btn_close@2x.png');
+		background-image: url('/static/img/btn_close@2x.png');
 		background-size: 54px 108px;
 	}
 
 	#photoviewer .btn-prev, #photoviewer .btn-next {
-		background-image: url('../img/btn_next_prev@2x.png');
+		background-image: url('/static/img/btn_next_prev@2x.png');
 		background-size: 60px 240px;
 	}
 }
@@ -1801,12 +1801,12 @@ body {
 
 @media (-webkit-min-device-pixel-ratio: 1.5) {
 	.vp-play, .vp-pause, .vp-mute, .vp-unmute, .vp-full-screen, .vp-restore-screen, .vp-current-time {
-		background-image: url('../img/media_controler_btn@2x.png');
+		background-image: url('/static/img/media_controler_btn@2x.png');
 		background-size: 270px 80px;
 	}
 
 	.vp-flava {
-		background-image: url('../img/media_controler_logo@2x.png');
+		background-image: url('/static/img/media_controler_logo@2x.png');
 		background-size: 135px 50px;
 	}
 }
@@ -2734,7 +2734,7 @@ body {
 }
 
 #attach-area .images img {
-	background-image: url("../img/pic.png");
+	background-image: url("/static/img/pic.png");
 	background-position: center;
 	background-repeat: no-repeat;
 	height: 100px;
@@ -2764,7 +2764,7 @@ body {
 }
 
 	#edit-pane .images div.resource.change span {
-		background-image: url('../img/minus@2x.png');
+		background-image: url('/static/img/minus@2x.png');
 		opacity: 1;
 	}
 
@@ -2773,7 +2773,7 @@ body {
 }
 
 	#edit-pane .images div.data.change span, #edit-pane .images div.queue.change span {
-		background-image: url('../img/add@2x.png');
+		background-image: url('/static/img/add@2x.png');
 		opacity: 1;
 		pointer-events: none;
 	}
@@ -3057,11 +3057,11 @@ body {
 }
 
 #attach-area .voice.resource.change span, #attach-area .video.resource.change span {
-	background-image: url('../img/minus@2x.png');
+	background-image: url('/static/img/minus@2x.png');
 }
 
 #attach-area .voice.data.change span, #attach-area .video.data.change span {
-	background-image: url('../img/add@2x.png');
+	background-image: url('/static/img/add@2x.png');
 }
 
 /************************************* MEDIA PLAYER **********************************/

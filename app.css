@@ -1,7 +1,7 @@
 @font-face {
 	font-family: 'Segoe UI';
 	font-weight: normal;
-	src: url("journal/fonts/segoeuil.ttf");
+	src: url("static/fonts/segoeuil.ttf");
 }
 
 @keyframes slide-in {

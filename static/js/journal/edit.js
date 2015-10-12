@@ -1226,7 +1226,7 @@ edit.refreshTime = function() {
  * @returns {string} - The string to make the number at started with an 0 if length is 1
  */
 edit.format = function(n) {
-	return n < 10 ? "0" + n : n;
+	return n < 10 ? "0" + n : "" + n;
 };
 /**
  * Converts my format of time to the milliseconds since epoch

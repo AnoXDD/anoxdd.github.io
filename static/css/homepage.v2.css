@@ -28,6 +28,20 @@
 	}
 }
 
+@keyframes fadein-left {
+	0% {
+		left: -200px;
+		opacity: 0;
+	}
+}
+
+@keyframes fadein-top {
+	0% {
+		top: -200px;
+		opacity: 1;
+	}
+}
+
 * {
 	font-family: 'Raleway',sans-serif;
 }
@@ -47,7 +61,8 @@ ul, li {
 }
 
 header {
-	background-color: #03A9F4;
+	background-color: #67b8de;
+	background: url("../img/homepage.v2.right.png") no-repeat right #67b8de;
 	position: absolute;
 	width: 100%;
 	height: 350px;
@@ -90,6 +105,9 @@ header {
 		padding: 5px 0;
 		z-index: 2;
 		border: 1px solid transparent;
+		top: 0;
+		opacity: 0;
+		transition: .4s ease;
 	}
 
 		header a.selected {
@@ -181,7 +199,7 @@ a {
 .name {
 	font-size: 70px;
 	font-weight: bold;
-	color: #03A9F4;
+	color: #39c;
 }
 
 .console {
@@ -203,6 +221,7 @@ a {
 	}
 
 	.console.finished {
+		pointer-events: none;
 	}
 
 		.console.finished p {
@@ -252,6 +271,8 @@ a {
 	box-shadow: 0 7px 10px #888;
 	padding: 40px;
 	height: 610px;
+	background: url("../img/homepage.v2.left.png") right #fff;
+	background-size: cover;
 }
 
 	.center-wrapper .main-span {
@@ -273,4 +294,7 @@ a {
 	.center-wrapper li {
 		font-size: 20px;
 		line-height: 3em;
+		position: relative;
+		left: 0;
+		opacity: 0;
 	}

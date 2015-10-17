@@ -44,17 +44,21 @@
 
 * {
 	font-family: 'Raleway',sans-serif;
+	margin: 0;
 }
 
 .open-sans {
 	font-family: 'Open Sans', sans-serif;
 }
+html,body{
+	height: 100%;
+	width: calc(100% + 30px);
+	overflow:hidden;
+}
 
 body {
 	font-weight: 300;
-	margin-top: 60px;
 	background: #f5f5f5;
-	overflow: hidden;
 }
 
 ul, li {
@@ -62,12 +66,11 @@ ul, li {
 
 header {
 	background-color: #67b8de;
-	background: url("../img/homepage.v2.right.png") no-repeat right #67b8de;
-	position: absolute;
+	background: url("../img/homepage.v2.right.png") no-repeat right top #67b8de;
 	width: 100%;
 	height: 350px;
-	top: 0;
-	z-index: -1;
+	position: absolute;
+	right: 0;
 }
 
 	header:after {
@@ -80,8 +83,18 @@ header {
 
 	header ul {
 		text-align: right;
-		margin: 15px 100px 0 0;
+		padding: 15px 100px 15px 0;
+		z-index: 100;
+		position: absolute;
+		top: -200px;
+		right: 0;
+		width: 110%;
 	}
+
+header ul.show {
+    animation: fadein-top .4s ease;
+    top: 0;
+}
 
 	header li {
 		display: inline-block;
@@ -150,6 +163,18 @@ a {
 	color: white;
 	transition: color .4s ease;
 	position: relative;
+}
+
+#no-scroll-wrapper {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+
+#no-scroll-wrapper-inner {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
 }
 
 .separator {
@@ -261,7 +286,8 @@ a {
 
 
 #main-frame {
-	margin-top: 150px;
+	position: relative;
+	margin-top: 130px;
 }
 
 .center-wrapper {
@@ -273,6 +299,7 @@ a {
 	height: 610px;
 	background: url("../img/homepage.v2.left.png") right #fff;
 	background-size: cover;
+	margin-bottom: 70px;
 }
 
 	.center-wrapper .main-span {

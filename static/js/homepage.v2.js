@@ -1,9 +1,10 @@
-﻿/**
+/**
  * Shows the content, including emulating the UNIX console input
  */
 function showContent() {
 	// Add something before
-	var header = "<p>(C) 2015 Runjie Guan. All rights reserved.<br/>This website only supports modern browser. </p>"
+	var header = "<p>(C) 2015 Runjie Guan. All rights reserved.<br/>This website only supports modern browser. </p>";
+
 	setTimeout(function() {
 		// Add to header
 		$(header).prependTo(".console");
@@ -39,6 +40,9 @@ function showContent() {
  * Animates the elements
  */
 function animateElems() {
+	// Show the link
+	$("header ul").addClass("show");
+
 	// The link on the header
 	$("header a").each(function(i) {
 		var $this = $(this);
@@ -63,6 +67,35 @@ function animateElems() {
 }
 
 /**
+ * Enables the scroll of header
+ */
+function enableResponsiveHeader() {
+	// Store the previous scroll
+	var prevScroll = 0;
+
+	$("#no-scroll-wrapper-inner").scroll(function() {
+		var scrollTop = $("#no-scroll-wrapper-inner").scrollTop();
+
+		if (scrollTop > $("header ul").height()) {
+			// Only do this when the header is out of the window
+			if (prevScroll > scrollTop) {
+				// Scrolled up
+				$("header").removeClass("float");
+			} else {
+				// Scrolled down
+				$("header").addClass("float");
+			}
+
+			prevScroll = scrollTop;
+		} else {
+			// Just remove the class
+			$("header").removeClass("float");
+		}
+
+	});
+}
+
+/**
  * Initializes the separator
  * @returns {} 
  */
@@ -72,3 +105,7 @@ function initSeparator() {
 
 // You can start with the documents ready
 showContent();
+
+$(document).ready(function() {
+	enableResponsiveHeader();
+})

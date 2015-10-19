@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Shows the content, including emulating the UNIX console input
  */
 function showContent() {
@@ -73,25 +73,48 @@ function enableResponsiveHeader() {
 	// Store the previous scroll
 	var prevScroll = 0;
 
-	$("#no-scroll-wrapper-inner").scroll(function() {
-		var scrollTop = $("#no-scroll-wrapper-inner").scrollTop();
+	$(window).scroll(function() {
+		var scrollTop = $(window).scrollTop();
 
-		if (scrollTop > $("header ul").height()) {
+		if (scrollTop > $("header").height()) {
+			$("header").addClass("independent");
+
 			// Only do this when the header is out of the window
 			if (prevScroll > scrollTop) {
 				// Scrolled up
-				$("header").removeClass("float");
+				$("header").addClass("float");
 			} else {
 				// Scrolled down
-				$("header").addClass("float");
+				$("header").removeClass("float");
 			}
 
 			prevScroll = scrollTop;
 		} else {
 			// Just remove the class
-			$("header").removeClass("float");
+			$("header").removeClass("float independent");
 		}
 
+	});
+}
+
+/**
+ * Enables the smooth scroll
+ */
+function enableSmoothScroll() {
+	$(document).delegate("a[href*=#]:not([href=#])", "click", function() {
+		if (location.pathname.replace(/^\//, "") === this.pathname.replace(/^\//, "") &&
+			location.hostname === this.hostname) {
+			var target = $(this.hash);
+
+			target = target.length ? target : $("[name=" + this.hash.slice(1) + "]");
+
+			if (target.length) {
+				$("html, body").animate({
+					scrollTop: target.offset().top
+				}, 400);
+				return false;
+			}
+		}
 	});
 }
 
@@ -105,6 +128,7 @@ function initSeparator() {
 
 // You can start with the documents ready
 showContent();
+enableSmoothScroll();
 
 $(document).ready(function() {
 	enableResponsiveHeader();

@@ -85,7 +85,7 @@ header {
 
 	header:after {
 		content: "Be. Unique. Simplisitic";
-		top: 255px;
+		top: 245px;
 		color: #fff;
 		position: relative;
 		float: right;
@@ -184,6 +184,7 @@ header {
 a {
 	transition: color .4s ease;
 	position: relative;
+	overflow: hidden;
 }
 
 h2 {
@@ -401,7 +402,7 @@ span {
 	box-shadow: 0 7px 10px #888;
 	padding: 40px;
 	background: url("../img/homepage.v2.right.png") right top repeat-y #fff;
-	margin-bottom: 70px;
+	margin-bottom: 50px;
 	overflow: hidden;
 	height: auto;
 }
@@ -474,6 +475,8 @@ span {
 		width: 100%;
 		height: 100%;
 		position: absolute;
+		top: 0;
+		left: 0;
 	}
 
 .project-wrapper {
@@ -486,18 +489,20 @@ span {
 
 		.project-wrapper .toggle:before {
 			content: "";
-			left: -20px;
 			top: 32px;
+			left: 0;
 			position: absolute;
 			width: 11px;
 			background: #000;
 			height: 1px;
+			pointer-events: none;
 		}
 
 		.project-wrapper .toggle:after {
 			opacity: 0;
+			pointer-events: none;
 			content: "";
-			left: -15px;
+			left: 5px;
 			top: 27px;
 			position: absolute;
 			height: 11px;
@@ -510,6 +515,43 @@ span {
 			opacity: 1;
 		}
 
+
+.contact-wrapper {
+
+text-align: center;
+
+padding: 10px 0 0 0;
+}
+
+.contact-wrapper a {
+    width: 70px;
+    height: 70px;
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.contact-wrapper a:hover svg {
+    fill: #03A9F4;
+}
+
+.contact-wrapper svg {
+fill: #000;transition: fill .4s ease;}
+.resume-wrapper {
+	text-align:center;
+	height: 70px;
+}
+
+.resume-download {
+padding: 20px;
+background: #03A9F4;
+
+
+display: block;width: 150px;margin: 15px auto 5px;font-size: 18px;color: white;font-weight: 500;border-radius: 2px;transition: box-shadow .4s ease;}
+
+.resume-download:hover {
+    box-shadow: 0 4px 5px #888;
+    color: #fff;
+}
 
 @media only screen and (max-width: 800px) {
 
@@ -549,10 +591,14 @@ span {
 			padding: 10px 10px 30px;
 		}
 
-		header li:hover:after {
-			height: 42px;
+		header li:after {
 			width: 100%;
 		}
+
+header li:hover:after {
+    height: 42px;
+    width: 100%;
+}
 
 	#main-frame {
 		width: 100%;
@@ -597,8 +643,9 @@ span {
 	}
 
 		.center-wrapper h1 {
-			margin: 0 0 0 20px;
+			margin: 0;
 			font-size: 25px;
+			text-align: center;
 		}
 
 		.center-wrapper h2 {
@@ -638,4 +685,13 @@ span {
 		.img-wrapper img {
 			margin: 0 auto;
 		}
+		.contact-wrapper {
+			
+		}
+
+.contact-wrapper a {
+    width: 50px;
+    height: 50px;
+    margin: 0;
+}
 }

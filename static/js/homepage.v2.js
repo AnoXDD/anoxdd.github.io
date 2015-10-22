@@ -88,12 +88,12 @@ function enableResponsiveHeader() {
 				$("header").removeClass("float");
 			}
 
-			prevScroll = scrollTop;
 		} else {
 			// Just remove the class
 			$("header").removeClass("float independent");
 		}
 
+		prevScroll = scrollTop;
 	});
 }
 
@@ -104,7 +104,7 @@ function enableResponsiveHeader() {
 function animateHeightToAuto(element) {
 	$(element).each(function() {
 		var curHeight = $(this).height(),
-			autoHeight = $(this).css("height", "auto").height();
+			autoHeight = $(this).css("height", "auto").outerHeight();
 
 		$(this).height(curHeight).animate({ height: autoHeight }, 0);
 	});
@@ -178,7 +178,7 @@ function enableSmoothScroll() {
  * @returns {} 
  */
 function enableToggleProjectDetail() {
-	$(".project-wrapper").each(function() {
+	$(".project-wrapper, #bio").each(function() {
 		// Prepend a toggle to each one
 		var $this = $(this),
 			$toggle = $("<a class='toggle'></a>"),

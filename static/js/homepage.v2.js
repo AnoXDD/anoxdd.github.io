@@ -212,9 +212,9 @@ function initSeparator() {
 
 // You can start with the documents ready
 showContent();
-enableSmoothScroll();
 
 $(document).ready(function() {
+	enableSmoothScroll();
 	enableResponsiveHeader();
 	enableToggleProjectDetail();
 	enableRippleEffect();

@@ -396,3 +396,6 @@ FakesAssemblies/
 # Testing content
 test.html
 test/
+
+#Phpstorm
+.idea/

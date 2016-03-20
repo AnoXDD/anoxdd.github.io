@@ -1,5 +1,6 @@
 /*
  V2 odauth for code flow so that the user does not have to log out to get access token 
+ V3 adds CORS support for the website. Now this website should be able to work everywhere (even on your phone!)
  Based on OneDrive API from github
  Embed odauth.js in your app like this:
 	<script id="odauth" src="odauth.js" clientsecret="YourClientSecret"
@@ -7,6 +8,7 @@
 		redirectUri="YourUrlForCallback.html"></script>
 
  Created 050415
+ Modified 032016
  Author Anoxic
  */
 
@@ -113,7 +115,6 @@ function getFromCookie(name) {
         var end = cookies.indexOf(";", start);
         if (end < 0) {
             end = cookies.length;
-            end = cookies.length;
         } else {
             postCookie = cookies.substring(end);
         }
@@ -196,9 +197,7 @@ function refreshToken(callback) {
 				"&redirect_uri=" + appinfo.redirectUri +
 				"&client_secret=" + appinfo.clientSecret +
 				"&refresh_token=" + refresh +
-				"&grant_type=refresh_token",
-            // The following line is added to support CORS
-            crossDomain: true
+				"&grant_type=refresh_token"
         }).done(function(data, status, xhr) {
             var token = data["access_token"],
 				refresh = data["refresh_token"],

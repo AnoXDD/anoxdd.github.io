@@ -399,3 +399,4 @@ test/
 
 #Phpstorm
 .idea/
+*.sh

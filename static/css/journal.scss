@@ -1,4 +1,4 @@
-@charset 'utf-8';
+@charset "utf-8";
 
 ::-webkit-scrollbar {
   background: #e3e3e3;
@@ -287,8 +287,10 @@ input, textarea {
 
   &:active, &:focus, &:hover {
     box-shadow: 0 0 5px #AAA;
+  }
 
-    &.dark {
+  &.dark {
+    &:active, &:focus, &:hover {
       box-shadow: 0 0 5px #DDD;
     }
   }
@@ -409,13 +411,15 @@ body {
           }
         }
 
+        &.delete {
+          &:not(.change)::before {
+            content: "\f0c8\A0\f1f8";
+          }
+        }
+
         &:not(.change) {
           &::before {
             content: "\f0c8";
-          }
-
-          &:not(.change)::before {
-            content: "\f0c8\A0\f1f8";
           }
         }
 
@@ -465,15 +469,15 @@ body {
     div.cover, p.summary {
       transition: width .3s;
     }
+  }
 
-    .photo a:hover {
-      div.cover {
-        width: 60px;
-      }
+  .photo a:hover {
+    div.cover {
+      width: 60px;
+    }
 
-      p.summary {
-        width: -webkit-calc(95% - 60px);
-      }
+    p.summary {
+      width: -webkit-calc(95% - 60px);
     }
   }
 
@@ -3520,4 +3524,4 @@ body.fullscreen #entry-summary .entry-time-elem {
   margin-bottom: 5px;
 }
 
-}
+

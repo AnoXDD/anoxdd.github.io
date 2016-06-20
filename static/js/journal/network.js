@@ -20,35 +20,35 @@ network.timeOut = 15000;
  * @param {number} breakpoint - The number of breakpoints
  */
 network.init = function(breakpoint) {
-	// Remove all the network activity bar
-	$("#network-bar").remove();
-	$(".header").append("<div id=\"network-bar\" ><div id=\"network-progress\"><div id=\"network-followup\"></div></div></div>");
-	if (!breakpoint || breakpoint < 0) {
-		breakpoint = 0;
-	}
-	network.current = 0;
-	network.breakpoint = breakpoint || 0;
-	network.setPercent(0);
-	// Increment by a little automatically
-	clearInterval(network.interval);
-	var toDestroy = false;
-	network.interval = setInterval(function() {
-		// Test if the network bar needs destroyed 
-		if (toDestroy) {
-			network.destroy();
-			return;
-		}
-		// The network bar will not exceed half-way
-		if (network.percent < (network.current + .5) / (network.breakpoint + 1)) {
-			network.percent += .05;
-		}
-		if (network.percent >= 1) {
-			network.percent = 1;
-			toDestroy = true;
-		}
-		// Render the network progress bar given `network.percent`
-		$("#network-progress").css("width", network.percent * 100 + "%");
-	}, 1000);
+    // Remove all the network activity bar
+    $("#network-bar").remove();
+    $(".header").append("<div id=\"network-bar\" ><div id=\"network-progress\"><div id=\"network-followup\"></div></div></div>");
+    if (!breakpoint || breakpoint < 0) {
+        breakpoint = 0;
+    }
+    network.current = 0;
+    network.breakpoint = breakpoint || 0;
+    network.setPercent(0);
+    // Increment by a little automatically
+    clearInterval(network.interval);
+    var toDestroy = false;
+    network.interval = setInterval(function() {
+        // Test if the network bar needs destroyed
+        if (toDestroy) {
+            network.destroy();
+            return;
+        }
+        // The network bar will not exceed half-way
+        if (network.percent < (network.current + .5) / (network.breakpoint + 1)) {
+            network.percent += .05;
+        }
+        if (network.percent >= 1) {
+            network.percent = 1;
+            toDestroy = true;
+        }
+        // Render the network progress bar given `network.percent`
+        $("#network-progress").css("width", network.percent * 100 + "%");
+    }, 1000);
 }
 
 /**
@@ -56,13 +56,13 @@ network.init = function(breakpoint) {
  * @param {number} percent - The percent of the network bar. A number between 0 and 1
  */
 network.setPercent = function(percent) {
-	network.percent = percent;
+    network.percent = percent;
 }
 
 /**
  * Sets the status of the network bar and tell the user what is happening
  * @param {string} status - The status string to be shown on the bar
- * @returns {} 
+ * @returns {}
  */
 network.setStatus = function(status) {
 
@@ -70,24 +70,24 @@ network.setStatus = function(status) {
 
 /**
  * Pushes network bar to the next breakpoint
- * @returns {} 
+ * @returns {}
  */
 network.next = function() {
-	network.setPercent(++network.current / (network.breakpoint + 1));
+    network.setPercent(++network.current / (network.breakpoint + 1));
 }
 
 /**
  * Destroies the network bar and hide it. This function will set the percent to 1 then hide it
  */
 network.destroy = function() {
-	if (network.percent < 1) {
-		// Set to a larger value to make the slide bar go faster
-		network.percent = 2;
-		// Use the interval function to destroy this one
-	} else {
-		clearInterval(network.interval);
-		$("#network-bar").remove();
-	}
+    if (network.percent < 1) {
+        // Set to a larger value to make the slide bar go faster
+        network.percent = 2;
+        // Use the interval function to destroy this one
+    } else {
+        clearInterval(network.interval);
+        $("#network-bar").remove();
+    }
 }
 
 /**
@@ -101,9 +101,9 @@ network.destroy = function() {
  * @returns {string} - The correct url given `app.year` (the year displayed) or specified year
  */
 function getResourceUrlHeader(isAbsolute, year) {
-	year = year || app.year;
-	return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/"
-		+ year;
+    year = year || app.year;
+    return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/"
+        + year;
 }
 
 /**
@@ -113,9 +113,9 @@ function getResourceUrlHeader(isAbsolute, year) {
  * @returns {string} - The correct url given `app.year` (the year displayed) or specified year
  */
 function getDataUrlHeader(isAbsolute, year) {
-	year = year || app.year;
-	return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/"
-		+ year;
+    year = year || app.year;
+    return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/"
+        + year;
 }
 
 /**
@@ -125,9 +125,17 @@ function getDataUrlHeader(isAbsolute, year) {
  * @returns {string} - The correct url given `app.year` (the year displayed) or `app.year` to the core data .js
  */
 function getCoreDataUrlHeader(isAbsolute, year) {
-	year = year || app.year;
-	return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "/data.js";
+    year = year || app.year;
+    return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/" + year + "/data.js";
 }
+
+/**
+ * Returns the url of bulb folder
+ */
+function getBulbUrlHeader() {
+    return "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/bulb/";
+}
+
 
 /**
  * Downloads the file (including the text file and the media file) from OneDrive. If even the folders are not created, this function will also make sure necessary folders exist
@@ -135,150 +143,151 @@ function getCoreDataUrlHeader(isAbsolute, year) {
  * @param {Boolean} textOnly - whether to download text file or not
  */
 function downloadFile(url, textOnly) {
-	animation.log(log.CONTENTS_DOWNLOAD_START, 1);
-	////console.log("Start downloadFile()");
-	// Change loading icons and disable click
-	getTokenCallback(function(token) {
-		if (network.yearFolders.indexOf(app.year) === -1) {
-			// Create a folder instead of searching for it
-			createFolders(function() {
-				// Simply refresh the list-view
-				app.refresh();
-			}, 3);
-		} else {
-			$("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
-			// Get text data
-			url = url || getCoreDataUrlHeader(true) +
-				":/content?access_token=" + token;
-			$.ajax({
-				type: "GET",
-				url: url
-			})
-				.done(function(data, status, xhr) {
-					window.app.dataLoaded[app.year] = false;
-					window.app.load("", xhr.responseText);
-					////console.log("downloadFile()\tFinish core data");
-					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
-					// Now the data is up-to-date
-					delete app.yearChange[app.year];
-					$("#year").removeClass("change");
-					app.updateLastUpdated();
-					app.yearUpdate();
-					if (textOnly) {
-						// Change loading icons and re-enable click
-						$("#download").html("&#xf0ed").removeClass("spin").attr({
-							onclick: "downloadFile()",
-							href: "#"
-						});
-						animation.finished("#download");
-					} else {
-						// Get metadata
-						$.ajax({
-							type: "GET",
-							url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
-						})
-							.done(function(data, status, xhr) {
-								// Get the data number
-								journal.archive.media = data["folder"]["childCount"];
-								app.refresh();
-								animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
-								network.init(journal.archive.media);
-								downloadMedia();
-							})
-							.fail(function(xhr, status, error) {
-								animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL, error, -1);
-							});
-					}
-				})
-				.fail(function(xhr, status, error) {
-					// Change loading icons and re-enable click
-					$("#download").html("&#xf0ed").removeClass("spin").attr({
-						onclick: "downloadFile()",
-						href: "#"
-					});
-					animation.finished("#download");
-					if (xhr.status == 404) {
-						// Not found, but the folder is there, guess the data should be in `app.yearQueue`
-						if (app.yearQueue[app.year]) {
-							// It IS in `app.yearQueue`, pretend it is a successful load
-							app.yearUpdate();
-							app.refresh();
-							return;
-						}
-					}
-					animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL, error, -1);
-					// `app.year` does not change
-					app.year = parseInt($("#year").html());
-					////alert("Cannot download the file. Do you enable CORS?");
-				})
-				.always(function() {
-					animation.log(log.CONTENTS_DOWNLOAD_END, -1);
-					////console.log("downloadFile()\tFinish downloading");
-				});
-		}
-	});
+    animation.log(log.CONTENTS_DOWNLOAD_START, 1);
+    ////console.log("Start downloadFile()");
+    // Change loading icons and disable click
+    getTokenCallback(function(token) {
+        if (network.yearFolders.indexOf(app.year) === -1) {
+            // Create a folder instead of searching for it
+            createFolders(function() {
+                // Simply refresh the list-view
+                app.refresh();
+            }, 3);
+        } else {
+            $("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+            // Get text data
+            url = url || getCoreDataUrlHeader(true) +
+                ":/content?access_token=" + token;
+            $.ajax({
+                    type: "GET",
+                    url: url
+                })
+                .done(function(data, status, xhr) {
+                    window.app.dataLoaded[app.year] = false;
+                    window.app.load("", xhr.responseText);
+                    ////console.log("downloadFile()\tFinish core data");
+                    animation.log(log.CONTENTS_DOWNLOAD_TEXT);
+                    // Now the data is up-to-date
+                    delete app.yearChange[app.year];
+                    $("#year").removeClass("change");
+                    app.updateLastUpdated();
+                    app.yearUpdate();
+                    if (textOnly) {
+                        // Change loading icons and re-enable click
+                        $("#download").html("&#xf0ed").removeClass("spin").attr({
+                            onclick: "downloadFile()",
+                            href: "#"
+                        });
+                        animation.finished("#download");
+                    } else {
+                        // Get metadata
+                        $.ajax({
+                                type: "GET",
+                                url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
+                            })
+                            .done(function(data, status, xhr) {
+                                // Get the data number
+                                journal.archive.media = data["folder"]["childCount"];
+                                app.refresh();
+                                animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
+                                network.init(journal.archive.media);
+                                downloadMedia();
+                            })
+                            .fail(function(xhr, status, error) {
+                                animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL, error, -1);
+                            });
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    // Change loading icons and re-enable click
+                    $("#download").html("&#xf0ed").removeClass("spin").attr({
+                        onclick: "downloadFile()",
+                        href: "#"
+                    });
+                    animation.finished("#download");
+                    if (xhr.status == 404) {
+                        // Not found, but the folder is there, guess the data should be in `app.yearQueue`
+                        if (app.yearQueue[app.year]) {
+                            // It IS in `app.yearQueue`, pretend it is a successful load
+                            app.yearUpdate();
+                            app.refresh();
+                            return;
+                        }
+                    }
+                    animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL, error, -1);
+                    // `app.year` does not change
+                    app.year = parseInt($("#year").html());
+                    ////alert("Cannot download the file. Do you enable CORS?");
+                })
+                .always(function() {
+                    animation.log(log.CONTENTS_DOWNLOAD_END, -1);
+                    ////console.log("downloadFile()\tFinish downloading");
+                });
+        }
+    });
 }
 
 /**
- * Recusively reads all the children under resource folder and read them as media. 
+ * Recusively reads all the children under resource folder and read them as media.
  * This function will not refresh the token because it assumes that it will be only called after downloadFile()
  * @param {string} url - The address of "nextLink", should be empty at the first call. Used for recursion
  */
 function downloadMedia(url) {
-	// Reset map
-	if (url == undefined) {
-		// Initial call
-		var token = getTokenFromCookie();
-		journal.archive.map = {};
-		url = getResourceUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
-	}
-	$.ajax({
-		type: "GET",
-		url: url
-	})
-		.done(function(data, status, xhr) {
-			if (data["@odata.nextLink"]) {
-				// More contents available!
-				var nextUrl = data["@odata.nextLink"];
-				var groups = nextUrl.split("&");
-				// Manually to ask server return downloadUrl
-				for (var i = 0; i !== groups.length; ++i) {
-					if (groups[i].startsWith("$select")) {
-						groups[i] = "$select=id,name,size,@content.downloadUrl";
-						break;
-					}
-				}
-				nextUrl = groups.join("&");
-				downloadMedia(nextUrl);
-			}
-			var itemList = data["value"];
-			for (var key = 0, len = itemList.length; key != len; ++key) {
-				var dataElement = {
-					id: itemList[key]["id"],
-					url: itemList[key]["@content.downloadUrl"],
-					size: itemList[key]["size"]
-				};
-				journal.archive.map[itemList[key]["name"]] = dataElement;
-				network.next();
-			}
-			// Show progress
-			var finished = _.size(journal.archive.map);
-			animation.log(log.CONTENTS_DOWNLOAD_MEDIA_LOADED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
-			if (finished == journal.archive.media) {
-				animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
-				network.destroy();
-				// Change loading icons and re-enable click
-				$("#download").html("&#xf0ed").removeClass("spin").attr({
-					onclick: "downloadFile()",
-					href: "#"
-				});
-				animation.finished("#download");
-			}
-			////console.log("downloadFile()\tFinish media data");
-		})
-		.fail(function() {
-			network.destroy();
-		});
+    // Reset map
+    if (url == undefined) {
+        // Initial call
+        var token = getTokenFromCookie();
+        journal.archive.map = {};
+        url = getResourceUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
+    }
+    $.ajax({
+            type: "GET",
+            url: url
+        })
+        .done(function(data, status, xhr) {
+            if (data["@odata.nextLink"]) {
+                // More contents available!
+                var nextUrl = data["@odata.nextLink"];
+                var groups = nextUrl.split("&");
+
+                // Manually to ask server return downloadUrl
+                for (var i = 0; i !== groups.length; ++i) {
+                    if (groups[i].startsWith("$select")) {
+                        groups[i] = "$select=id,name,size,@content.downloadUrl";
+                        break;
+                    }
+                }
+                nextUrl = groups.join("&");
+                downloadMedia(nextUrl);
+            }
+            var itemList = data["value"];
+            for (var key = 0, len = itemList.length; key != len; ++key) {
+                var dataElement = {
+                    id: itemList[key]["id"],
+                    url: itemList[key]["@content.downloadUrl"],
+                    size: itemList[key]["size"]
+                };
+                journal.archive.map[itemList[key]["name"]] = dataElement;
+                network.next();
+            }
+            // Show progress
+            var finished = _.size(journal.archive.map);
+            animation.log(log.CONTENTS_DOWNLOAD_MEDIA_LOADED + finished + log.CONTENTS_DOWNLOAD_MEDIA_OF + journal.archive.media);
+            if (finished == journal.archive.media) {
+                animation.log(log.CONTENTS_DOWNLOAD_MEDIA_END, -1);
+                network.destroy();
+                // Change loading icons and re-enable click
+                $("#download").html("&#xf0ed").removeClass("spin").attr({
+                    onclick: "downloadFile()",
+                    href: "#"
+                });
+                animation.finished("#download");
+            }
+            ////console.log("downloadFile()\tFinish media data");
+        })
+        .fail(function() {
+            network.destroy();
+        });
 }
 
 /**
@@ -286,56 +295,56 @@ function downloadMedia(url) {
  * @param {Object} - The list of years to backup
  */
 function backupAll(years) {
-	getTokenCallback(function(token) {
-		animation.log(log.CONTENTS_BACKUP_START);
-		years = years || app.years;
-		network.init(years.length - 1);
-		for (var i = 0; i !== years.length; ++i) {
-			var d = new Date(),
-				month = d.getMonth() + 1,
-				day = d.getDate(),
-				year = d.getFullYear() % 100,
-				hour = d.getHours(),
-				minute = d.getMinutes(),
-				second = d.getSeconds(),
-				dataYear = years[i];
-			month = month < 10 ? "0" + month : month;
-			day = day < 10 ? "0" + day : day;
-			year = year < 10 ? "0" + year : year;
-			hour = hour < 10 ? "0" + hour : hour;
-			minute = minute < 10 ? "0" + minute : minute;
-			second = second < 10 ? "0" + second : second;
-			var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
-				data = { name: fileName };
-			// Backup the original file
-			$.ajax({
-				type: "POST",
-				url: getCoreDataUrlHeader(false, dataYear) + ":/action.copy?access_token=" + token,
-				contentType: "application/json",
-				data: JSON.stringify(data),
-				headers: {
-					Prefer: "respond-async"
-				}
-			})
-				////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
-				.done(function() {
-					////console.log("uploadFile():\t Done backup");
-					animation.debug(log.CONTENTS_UPLOAD_BACKUP);
-				})
-				.fail(function(xhr, status, error) {
-					// Bad request means the file to be moved is not found
-					if (error !== "Bad Request") {
-						animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL, error, -1);
-						network.destroy();
-					}
-					////alert("Cannot backup the file");
-				})
-				.always(function(xhr, status, error) {
-					network.next();
-					////console.log("uploadFile()\tFinish uploading");
-				});
-		}
-	});
+    getTokenCallback(function(token) {
+        animation.log(log.CONTENTS_BACKUP_START);
+        years = years || app.years;
+        network.init(years.length - 1);
+        for (var i = 0; i !== years.length; ++i) {
+            var d = new Date(),
+                month = d.getMonth() + 1,
+                day = d.getDate(),
+                year = d.getFullYear() % 100,
+                hour = d.getHours(),
+                minute = d.getMinutes(),
+                second = d.getSeconds(),
+                dataYear = years[i];
+            month = month < 10 ? "0" + month : month;
+            day = day < 10 ? "0" + day : day;
+            year = year < 10 ? "0" + year : year;
+            hour = hour < 10 ? "0" + hour : hour;
+            minute = minute < 10 ? "0" + minute : minute;
+            second = second < 10 ? "0" + second : second;
+            var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
+                data = {name: fileName};
+            // Backup the original file
+            $.ajax({
+                    type: "POST",
+                    url: getCoreDataUrlHeader(false, dataYear) + ":/action.copy?access_token=" + token,
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    headers: {
+                        Prefer: "respond-async"
+                    }
+                })
+                ////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
+                .done(function() {
+                    ////console.log("uploadFile():\t Done backup");
+                    animation.debug(log.CONTENTS_UPLOAD_BACKUP);
+                })
+                .fail(function(xhr, status, error) {
+                    // Bad request means the file to be moved is not found
+                    if (error !== "Bad Request") {
+                        animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL, error, -1);
+                        network.destroy();
+                    }
+                    ////alert("Cannot backup the file");
+                })
+                .always(function(xhr, status, error) {
+                    network.next();
+                    ////console.log("uploadFile()\tFinish uploading");
+                });
+        }
+    });
 }
 
 /**
@@ -343,53 +352,53 @@ function backupAll(years) {
  * @param {number} dataYear (Optional) - The year of the data to be uploaded
  */
 function uploadFile(dataYear) {
-	dataYear = parseInt(dataYear) || app.year;
-	// Change loading icons and disable click
-	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
-	getTokenCallback(function(token) {
-		/**
-		 * The function to be called to upload the file. This function assumes that the folder has already been prepared
-		 */
-		var upload = function() {
-			// Get the version
-			var tmp = app.version[dataYear] || "";
-			// Clean the unnecessary data
-			tmp += JSON.stringify(edit.minData());
-			$.ajax({
-				type: "PUT",
-				url: getCoreDataUrlHeader(true, dataYear) + ":/content?access_token=" + token,
-				contentType: "text/plain",
-				data: tmp
-			})
-				.done(function() {
-					////console.log("uploadFile():\t Done!");
-					// Now the data is up-to-date
-					app.yearChange[app.year] = false;
-					$("#year").removeClass("change");
-					app.updateLastUpdated();
-					animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
-				})
-				.fail(function(xhr2, status2, error2) {
-					animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
-					////alert("Cannot upload files");
-				})
-				.always(function() {
-					network.next();
-					// Change loading icons and re-enable click
-					$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-						onclick: "uploadSingleFile()",
-						href: "#"
-					});
-				});
-		};
-		if (network.yearFolders.indexOf(app.year) === -1) {
-			// This `app.year` has not already registered on the website
-			createFolders(upload, 5);
-		} else {
-			// Just upload it
-			upload();
-		}
-	});
+    dataYear = parseInt(dataYear) || app.year;
+    // Change loading icons and disable click
+    $("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+    getTokenCallback(function(token) {
+        /**
+         * The function to be called to upload the file. This function assumes that the folder has already been prepared
+         */
+        var upload = function() {
+            // Get the version
+            var tmp = app.version[dataYear] || "";
+            // Clean the unnecessary data
+            tmp += JSON.stringify(edit.minData());
+            $.ajax({
+                    type: "PUT",
+                    url: getCoreDataUrlHeader(true, dataYear) + ":/content?access_token=" + token,
+                    contentType: "text/plain",
+                    data: tmp
+                })
+                .done(function() {
+                    ////console.log("uploadFile():\t Done!");
+                    // Now the data is up-to-date
+                    app.yearChange[app.year] = false;
+                    $("#year").removeClass("change");
+                    app.updateLastUpdated();
+                    animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
+                })
+                .fail(function(xhr2, status2, error2) {
+                    animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
+                    ////alert("Cannot upload files");
+                })
+                .always(function() {
+                    network.next();
+                    // Change loading icons and re-enable click
+                    $("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
+                        onclick: "uploadSingleFile()",
+                        href: "#"
+                    });
+                });
+        };
+        if (network.yearFolders.indexOf(app.year) === -1) {
+            // This `app.year` has not already registered on the website
+            createFolders(upload, 5);
+        } else {
+            // Just upload it
+            upload();
+        }
+    });
 }
 
 /**
@@ -397,8 +406,8 @@ function uploadFile(dataYear) {
  * @see uploadFile()
  */
 function uploadSingleFile() {
-	animation.log(log.CONTENTS_UPLOAD_START, 1);
-	uploadFile();
+    animation.log(log.CONTENTS_UPLOAD_START, 1);
+    uploadFile();
 }
 
 /**
@@ -406,56 +415,56 @@ function uploadSingleFile() {
  * @see uploadFile()
  */
 function uploadAllFiles() {
-	animation.log(log.CONTENTS_UPLOAD_START, 1);
-	if (app.yearChange.length === 0) {
-		// No file to be uploaded, upload this year's data instead
-		uploadFile();
-	} else {
-		var years = Object.keys(app.yearChange);
-		for (var i = 0; i !== years.length; ++i) {
-			var year = years[i];
-			if (app.yearChange[year]) {
-				uploadFile(years[i]);
-			}
-		}
-	}
+    animation.log(log.CONTENTS_UPLOAD_START, 1);
+    if (app.yearChange.length === 0) {
+        // No file to be uploaded, upload this year's data instead
+        uploadFile();
+    } else {
+        var years = Object.keys(app.yearChange);
+        for (var i = 0; i !== years.length; ++i) {
+            var year = years[i];
+            if (app.yearChange[year]) {
+                uploadFile(years[i]);
+            }
+        }
+    }
 }
 
 /* Download the cover photo from iTunes. type can be either number or string*/
 function getCoverPhoto(selectorHeader, term, more, type) {
-	var url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
-	if (typeof (type) == "number") {
-		type = edit.mediaName(type);
-	}
-	if (type == "movie") {
-		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=movie&entity=movieArtist,movie&term=";
-	} else if (type == "book") {
-		url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=ebook&entity=ebook&term=";
-	}
-	$.ajax({
-		url: url + term,
-		dataType: "jsonp",
-		// Work with the response
-		success: function(response) {
-			var result = response.results[0];
-			if (result == undefined) {
-				// Not found
-				animation.warn(log.COVER_PHOTO_FAIL);
-				animation.invalid(selectorHeader + "input");
-			} else {
-				// Result found
-				animation.debug(log.COVER_PHOTO_FOUND);
-				var artist = result["artistName"],
-					track = result["trackName"],
-					coverUrl = result["artworkUrl100"];
-				if (more) {
-					$(selectorHeader + ".title").val(track);
-					$(selectorHeader + ".desc").val(artist);
-				}
-				$(selectorHeader + ".thumb").attr("src", coverUrl);
-			}
-		}
-	});
+    var url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=music&entity=song,album,musicArtist&term=";
+    if (typeof (type) == "number") {
+        type = edit.mediaName(type);
+    }
+    if (type == "movie") {
+        url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=movie&entity=movieArtist,movie&term=";
+    } else if (type == "book") {
+        url = "https://itunes.apple.com/search?output=json&lang=1&limit=1&media=ebook&entity=ebook&term=";
+    }
+    $.ajax({
+        url: url + term,
+        dataType: "jsonp",
+        // Work with the response
+        success: function(response) {
+            var result = response.results[0];
+            if (result == undefined) {
+                // Not found
+                animation.warn(log.COVER_PHOTO_FAIL);
+                animation.invalid(selectorHeader + "input");
+            } else {
+                // Result found
+                animation.debug(log.COVER_PHOTO_FOUND);
+                var artist = result["artistName"],
+                    track = result["trackName"],
+                    coverUrl = result["artworkUrl100"];
+                if (more) {
+                    $(selectorHeader + ".title").val(track);
+                    $(selectorHeader + ".desc").val(artist);
+                }
+                $(selectorHeader + ".thumb").attr("src", coverUrl);
+            }
+        }
+    });
 }
 
 /**
@@ -464,35 +473,35 @@ function getCoverPhoto(selectorHeader, term, more, type) {
  * @param {function} callback - The callback function after completion of creating
  */
 function createDateFolder(dateStr, callback) {
-	getTokenCallback(function(token) {
-		var requestJson = {
-			name: dateStr,
-			folder: {}
-		};
-		$.ajax({
-			type: "POST",
-			url: getDataUrlHeader(true) + ":/children?access_token=" + token,
-			contentType: "application/json",
-			data: JSON.stringify(requestJson),
-			statusCode: {
-				// Conflict, considered this folder is created successfully
-				409: function() {
-					edit.isFolder = true;
-					edit.folderDate = dateStr;
-				}
-			}
-		})
-			.done(function() {
-				// Successfully created this directory
-				edit.isFolder = true;
-				edit.folderDate = dateStr;
-				animation.debug(log.FOLDER_CREATED);
-			})
-			.always(function() {
-				// Always try to run the callback function
-				callback(dateStr);
-			});
-	});
+    getTokenCallback(function(token) {
+        var requestJson = {
+            name: dateStr,
+            folder: {}
+        };
+        $.ajax({
+                type: "POST",
+                url: getDataUrlHeader(true) + ":/children?access_token=" + token,
+                contentType: "application/json",
+                data: JSON.stringify(requestJson),
+                statusCode: {
+                    // Conflict, considered this folder is created successfully
+                    409: function() {
+                        edit.isFolder = true;
+                        edit.folderDate = dateStr;
+                    }
+                }
+            })
+            .done(function() {
+                // Successfully created this directory
+                edit.isFolder = true;
+                edit.folderDate = dateStr;
+                animation.debug(log.FOLDER_CREATED);
+            })
+            .always(function() {
+                // Always try to run the callback function
+                callback(dateStr);
+            });
+    });
 }
 
 /**
@@ -501,53 +510,156 @@ function createDateFolder(dateStr, callback) {
  * @param {number} breakpoints - The number of breakpoints for network progress bar
  */
 function createFolders(callback, breakpoints) {
-	getTokenCallback(function(token) {
-		var created = 0,
-			abort = false,
-			urls = ["https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
-				"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
-				"https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"],
-			requestJson = {
-				name: app.year.toString(),
-				folder: {}
-			};
-		// Start create all the folder needed
-		network.init(breakpoints);
-		for (var i = 0; i !== urls.length; ++i) {
-			$.ajax({
-				type: "POST",
-				url: urls[i] + "children?access_token=" + token,
-				contentType: "application/json",
-				data: JSON.stringify(requestJson)
-			})
-				.done(function() {
-					network.next();
-					if (++created === urls.length) {
-						// All have been created
-						network.yearFolders.push(app.year);
-						// Upload the data
-						callback(token);
-					}
-				})
-				.fail(function(xhr) {
-					if (xhr.status == 409) {
-						// Conflict, considered this folder is created successfully
-						network.next();
-						if (++created === urls.length) {
-							// All have been created
-							network.yearFolders.push(app.year);
-							// Upload the data
-							callback(token);
-						}
-					} else {
-						network.destroy();
-						if (!abort) {
-							animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
-						}
-						// Abort everything, to prevent multiple prompt of the error
-						abort = true;
-					}
-				});
-		}
-	})
+    getTokenCallback(function(token) {
+        var created = 0,
+            abort = false,
+            urls = ["https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
+                "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data:/",
+                "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource:/"],
+            requestJson = {
+                name: app.year.toString(),
+                folder: {}
+            };
+        // Start create all the folder needed
+        network.init(breakpoints);
+        for (var i = 0; i !== urls.length; ++i) {
+            $.ajax({
+                    type: "POST",
+                    url: urls[i] + "children?access_token=" + token,
+                    contentType: "application/json",
+                    data: JSON.stringify(requestJson)
+                })
+                .done(function() {
+                    network.next();
+                    if (++created === urls.length) {
+                        // All have been created
+                        network.yearFolders.push(app.year);
+                        // Upload the data
+                        callback(token);
+                    }
+                })
+                .fail(function(xhr) {
+                    if (xhr.status == 409) {
+                        // Conflict, considered this folder is created successfully
+                        network.next();
+                        if (++created === urls.length) {
+                            // All have been created
+                            network.yearFolders.push(app.year);
+                            // Upload the data
+                            callback(token);
+                        }
+                    } else {
+                        network.destroy();
+                        if (!abort) {
+                            animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
+                        }
+                        // Abort everything, to prevent multiple prompt of the error
+                        abort = true;
+                    }
+                });
+        }
+    })
+}
+
+/**
+ * Processes the bulbs from OneDrive
+ * @param {string} url (Optional) - The url to process the bulb
+ */
+function fetchBulbLinks(url) {
+    if (bulb.isProcessing) {
+        animation.error(log.BULB_STILL_BUSY);
+        return;
+    }
+
+    bulb.isProcessing = true;
+
+    if (url == undefined) {
+        // Initial call
+        var token = getTokenFromCookie();
+        url = getBulbUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
+
+        bulb.totalBulbs = 0;
+    }
+
+    $.ajax({
+            type: "GET",
+            url: url
+        })
+        .done(function(data) {
+            // Test if there is more bulbs available
+            if (data["@odata.nextLink"]) {
+                // More bulbs available!
+                var nextUrl = data["@odata.nextLink"];
+
+                var groups = nextUrl.split("&");
+                // Manually ask server return downloadUrl
+                for (var i = 0; i !== groups.length; ++i) {
+                    if (groups[i].startsWith("$select")) {
+                        groups[i] = "$select=id,name,size,@content.downloadUrl";
+                        break;
+                    }
+                }
+                nextUrl = groups.join("&");
+
+                fetchBulbLinks(nextUrl);
+            }
+
+            // Add these bulbs to the queue to process them
+            var itemList = data["value"];
+            bulb.totalBulbs += itemList.length;
+
+            for (var key = 0, len = itemList.length; key != len; ++key) {
+                var dataElement = {
+                    id: itemList[key]["id"],
+                    url: itemList[key]["@content.downloadUrl"],
+                };
+                var filename = itemList[key]["name"];
+                var timestamp = bulb.getTimeFromEpoch(filename);
+
+                bulb.data[timestamp] = dataElement;
+
+                bulb.extractRawContent(timestamp);
+
+                fetchBulbContent(timestamp);
+            }
+        });
+}
+
+/**
+ * Fetch the bulb content given a timestamp to be used as an index to search data from `bulb.data`
+ * @param {string} timestamp The timestamp
+ */
+function fetchBulbContent(timestamp) {
+    // TODO use ajax to fetch the data from server
+    getTokenCallback(function(token) {
+        var id = data.bulb[timestamp]["id"];
+        var url = "https://api.onedrive.com/v1.0/drive/" + id + "/content?access_token=" + token;
+
+        $.ajax({
+            type: "GET",
+            url: url
+        }).done(function(data, status, xhr) {
+            // Get the content of bulb
+            var content = xhr.responseText;
+            data.bulb[timestamp]["contentRaw"] = content;
+            // Process the raw content
+            bulb.extractRawContent(timestamp);
+            // Merge into journal archive data
+            bulb.mergeIntoArchive(timestamp);
+        });
+    })
+}
+
+/**
+ * Removes the file on OneDrive by an id
+ * This method will only ATTEMPT to remove the file. It doesn't handle any exceptions should the removal fail
+ * @param id - the id of the file to be removed
+ */
+function removeFileById(id) {
+    getTokenCallback(function(token) {
+        $.ajax({
+            type: "DELETE",
+            url: "https://api.onedrive.com/v1.0/drive/" + id + "?access_token=" + token
+        });
+    });
 }

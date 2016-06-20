@@ -38,7 +38,7 @@ function downloadFile(url) {
 				})
 				.done(function(data, status, xhr) {
 					window.app.dataLoaded = false;
-					window.app.load("", true, xhr.responseText);
+					window.addLoadDataWithFilter("", true, xhr.responseText);
 					////console.log("downloadFile()\tFinish core data");
 					animation.log(log.CONTENTS_DOWNLOAD_TEXT);
 					// Get metadata

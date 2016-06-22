@@ -69,7 +69,7 @@ window.bulb = function() {
          * Whether there is any merging in progress
          * This prevents the archive being uploaded
          */
-        isMergingInProgress: false,
+        isProcessing: false,
 
         setdata: function(timestamp, data) {
             _data[timestamp] = data;
@@ -153,6 +153,18 @@ window.bulb = function() {
                     }
                 }
             }
+        },
+
+        getBulbData: function() {
+            return _data;
+        },
+
+        getID: function(timestamp) {
+            return _data[timestamp]["id"];
+        },
+
+        setRawContent: function(timestamp, contentRaw) {
+            _data[timestamp]["contentRaw"] = contentRaw;
         }
     }
 }();

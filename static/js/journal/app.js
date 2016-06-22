@@ -740,6 +740,7 @@ window.app = function() {
         finishMergingBulbs: function() {
             // Refresh the data and display it
             app.refresh();
+            bulb.isProcessing = false;
 
             // Upload the file
             // TODO remove the bulb after

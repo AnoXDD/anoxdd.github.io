@@ -617,6 +617,8 @@ function createFolders(callback, breakpoints) {
 
 /**
  * Processes the bulbs from OneDrive
+ * Call this function to initialize fetching data from the server
+ *
  * @param {string} url (Optional) - The url to process the bulb
  */
 function fetchBulbLinks(url) {
@@ -687,7 +689,7 @@ function fetchBulbLinks(url) {
 function fetchBulbContent(timestamp) {
     // TODO use ajax to fetch the data from server
     getTokenCallback(function(token) {
-        var id = data.bulb[timestamp]["id"];
+        var id = bulb.getID(timestamp);
         var url = "https://api.onedrive.com/v1.0/drive/" + id + "/content?access_token=" + token;
 
         $.ajax({
@@ -696,7 +698,7 @@ function fetchBulbContent(timestamp) {
         }).done(function(data, status, xhr) {
             // Get the content of bulb
             var content = xhr.responseText;
-            data.bulb[timestamp]["contentRaw"] = content;
+            bulb.setRawContent(timestamp, content);
             // Process the raw content
             bulb.extractRawContent(timestamp);
             // Merge into journal archive data

@@ -24,12 +24,13 @@ window.bulb = function() {
      * @private
      */
     function _extractWebsiteFromContent(timestamp) {
-        var data = _data[timestamp]["content"];
+        var data = _data[timestamp]["contentRaw"];
         var websitePattern = /@https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
         var result = data.match(websitePattern);
-        _data[timestamp]["website"] = result[0];
+        if (result) 
+        {_data[timestamp]["website"] = result[0];}
         // Remove the website
-        data.replaceAll(websitePattern, "");
+        data.replace(websitePattern, "");
     };
 
     /**
@@ -40,15 +41,18 @@ window.bulb = function() {
     function _extractLocationFromContent(timestamp) {
         // Location, without name
         var locationPattern = /#\[-?[0-9]+\.[0-9]+,-?[0-9]+\.[0-9]+\]/g;
-        var result = _data[timestamp]["content"].match(locationPattern);
+        var data = _data[timestamp]["contentRaw"];
+        var result = data.match(locationPattern);
+        
         if (result) {
             result = result[0].split(',');
             _data[timestamp]["location"] = {
                 lat: result[0],
                 long: result[1]
             };
+
             // Remove the location
-            data.replaceAll(locationPattern, "");
+            _data[timestamp]["contentRaw"] = data.replace(locationPattern, "");
         } else {
             // Location, with name
             locationPattern = /#\[.+,-?[0-9]+\.[0-9]+,-?[0-9]+\.[0-9]+\]/g;
@@ -60,6 +64,9 @@ window.bulb = function() {
                     lat: result[1],
                     long: result[2]
                 };
+
+                // Remove the location
+                _data[timestamp]["contentRaw"] = data.replace(locationPattern, "");
             }
         }
     };
@@ -119,19 +126,19 @@ window.bulb = function() {
                 _data[timestamp]["isUploaded"] = true;
             } else {
                 // Merge it into archive
-                app.addBulb(_data[timestamp]);
+                app.addBulb(_data[timestamp], timestamp);
             }
         },
 
         setIsMerged: function(timestamp) {
-            _bulb[timestamp]["isMerged"] = true;
+            _data[timestamp]["isMerged"] = true;
         },
 
         setTotalBulbs: function(num) {
             _totalBulbs = num;
         },
 
-        decrementTotalbulbs: function() {
+        decrementTotalBulbs: function() {
             --_totalBulbs;
         },
 

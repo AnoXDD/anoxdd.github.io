@@ -674,8 +674,6 @@ function fetchBulbLinks(url) {
 
                 bulb.setData(timestamp, dataElement);
 
-                bulb.extractRawContent(timestamp);
-
                 fetchBulbContent(timestamp);
             }
         });
@@ -690,7 +688,7 @@ function fetchBulbContent(timestamp) {
     // TODO use ajax to fetch the data from server
     getTokenCallback(function(token) {
         var id = bulb.getID(timestamp);
-        var url = "https://api.onedrive.com/v1.0/drive/" + id + "/content?access_token=" + token;
+        var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "/content?access_token=" + token;
 
         $.ajax({
             type: "GET",
@@ -703,9 +701,9 @@ function fetchBulbContent(timestamp) {
             bulb.extractRawContent(timestamp);
             // Merge into journal archive data
             bulb.mergeIntoArchive(timestamp);
-        }).finally(function() {
+        }).always(function() {
             // Decrement the total bulbs to be processed
-            bulb.decrementBulbNumber();
+            bulb.decrementTotalBulbs();
             if (bulb.getTotalbulbs() <= 0) {
                 // None bulbs left
                 app.finishMergingBulbs();

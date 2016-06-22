@@ -127,7 +127,7 @@ window.bulb = function() {
             _bulb[timestamp]["isMerged"] = true;
         },
 
-        setTotalbulbs: function(num) {
+        setTotalBulbs: function(num) {
             _totalBulbs = num;
         },
 

@@ -10,11 +10,15 @@
 <body>
 <!-- Search bar -->
 <div class="header">
-    <p id="sign-in-prompt">This is a website designed for keeping a journal, and is strongly customized to satisify the
-        author's own need. For more information, visit the author's homepage for (possibly) more details. </p>
+    <p id="sign-in-prompt">This is a website designed for keeping a journal, and
+        is strongly customized to satisify the
+        author's own need. For more information, visit the author's homepage for
+        (possibly) more details. </p>
     <div id="search-new">
-        <input type="text" id="query" class="search-text" autocomplete="off" onclick="this.select()"/>
-        <input type="text" id="stats-query" class="search-text" autocomplete="off" onclick="this.select()"/>
+        <input type="text" id="query" class="search-text" autocomplete="off"
+               onclick="this.select()"/>
+        <input type="text" id="stats-query" class="search-text"
+               autocomplete="off" onclick="this.select()"/>
     </div>
     <div id="search-result">
         <ul>
@@ -42,58 +46,82 @@
     <div id="action-media">
         <ul>
             <li class="has-sub">
-                <a title="Play" id="play-media" onclick="app.audioPlayer.play()" href="javascript:;">&#xf04b</a>
+                <a title="Play" id="play-media" onclick="app.audioPlayer.play()"
+                   href="javascript:;">&#xf04b</a>
                 <ul>
-                    <li><a title="Stop" id="stop-media" onclick="app.audioPlayer.quit()" href="javascript:;">&#xf04d</a>
+                    <li><a title="Stop" id="stop-media"
+                           onclick="app.audioPlayer.quit()" href="javascript:;">&#xf04d</a>
                     </li>
-                    <li><a class="hidden-icon hidden" title="Toggle fullscreen" id="toggle-media"
-                           onclick="app.videoPlayer.toggle()" href="javascript:;">&#xf065</a></li>
+                    <li><a class="hidden-icon hidden" title="Toggle fullscreen"
+                           id="toggle-media"
+                           onclick="app.videoPlayer.toggle()"
+                           href="javascript:;">&#xf065</a></li>
                 </ul>
             </li>
         </ul>
     </div>
     <div id="action-fullscreen">
         <ul>
-            <li><a title="Toggle Light" id="toggle-light" onclick="edit.toggleLight()" href="javascript:;">&#xf0eb</a>
+            <li><a title="Toggle Light" id="toggle-light"
+                   onclick="edit.toggleLight()" href="javascript:;">&#xf0eb</a>
             </li>
-            <li><a title="Back to window" onclick="edit.windowMode()" href="javascript:;">&#xf066</a></li>
+            <li><a title="Back to window" onclick="edit.windowMode()"
+                   href="javascript:;">&#xf066</a></li>
         </ul>
     </div>
     <div id="action-add">
         <ul>
-            <li><a class="hidden-icon hidden" title="Get current location" id="pin-point" onclick="edit.locationPin()"
+            <li><a class="hidden-icon hidden" title="Get current location"
+                   id="pin-point" onclick="edit.locationPin()"
                    href="javascript:;">&#xf124</a></li>
-            <li><a class="hidden-icon hidden" title="Remove" id="action-remove-confirm"
-                   onclick="edit.removeMedia(edit.confirmVal)" href="javascript:;">&#xf00d</a></li>
-            <li><a title="Add media from queue" onclick="edit.addMediaFromQueue()" id="add-queue" href="javascript:;">&#xf115</a>
+            <li><a class="hidden-icon hidden" title="Remove"
+                   id="action-remove-confirm"
+                   onclick="edit.removeMedia(edit.confirmVal)"
+                   href="javascript:;">&#xf00d</a></li>
+            <li><a title="Add media from queue"
+                   onclick="edit.addMediaFromQueue()" id="add-queue"
+                   href="javascript:;">&#xf115</a>
             </li>
-            <li><a title="Go fullscreen" onclick="edit.fullScreen()" href="javascript:;">&#xf065</a></li>
+            <li><a title="Go fullscreen" onclick="edit.fullScreen()"
+                   href="javascript:;">&#xf065</a></li>
             <li class="has-sub">
-                <a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo" href="javascript:;">&#xf03e</a>
+                <a title="Add Photos" onclick="edit.addMedia(0)" id="add-photo"
+                   href="javascript:;">&#xf03e</a>
                 <ul>
-                    <li><a title="Add Video" onclick="edit.addMedia(1)" id="add-video" href="javascript:;">&#xf03d</a>
+                    <li><a title="Add Video" onclick="edit.addMedia(1)"
+                           id="add-video" href="javascript:;">&#xf03d</a>
                     </li>
-                    <li><a title="Add Voice" onclick="edit.addMedia(3)" id="add-voice" href="javascript:;">&#xf130</a>
+                    <li><a title="Add Voice" onclick="edit.addMedia(3)"
+                           id="add-voice" href="javascript:;">&#xf130</a>
                     </li>
-                    <li><a title="Add Place" onclick="edit.addMedia(2)" id="add-place" href="javascript:;">&#xf041</a>
+                    <li><a title="Add Place" onclick="edit.addMedia(2)"
+                           id="add-place" href="javascript:;">&#xf041</a>
                     </li>
-                    <li><a title="Add Music" onclick="edit.addMedia(4)" id="add-music" href="javascript:;">&#xf001</a>
+                    <li><a title="Add Music" onclick="edit.addMedia(4)"
+                           id="add-music" href="javascript:;">&#xf001</a>
                     </li>
-                    <li><a title="Add Movie" onclick="edit.addMedia(5)" id="add-movie" href="javascript:;">&#xf008</a>
+                    <li><a title="Add Movie" onclick="edit.addMedia(5)"
+                           id="add-movie" href="javascript:;">&#xf008</a>
                     </li>
-                    <li><a title="Add Book" onclick="edit.addMedia(6)" id="add-book" href="javascript:;">&#xf02d</a>
+                    <li><a title="Add Book" onclick="edit.addMedia(6)"
+                           id="add-book" href="javascript:;">&#xf02d</a>
                     </li>
-                    <li><a title="Add Link" onclick="edit.addMedia(7)" id="add-link" href="javascript:;">&#xf0c1</a>
+                    <li><a title="Add Link" onclick="edit.addMedia(7)"
+                           id="add-link" href="javascript:;">&#xf0c1</a>
                     </li>
                 </ul>
             </li>
             <li class="has-sub">
-                <a title="Save" id="add-save-local" onclick="edit.save()" href="javascript:;">&#xf0c7</a>
+                <a title="Save" id="add-save-local" onclick="edit.save()"
+                   href="javascript:;">&#xf0c7</a>
                 <ul>
                     <li class="has-sub">
-                        <a title="Discard and quit" onclick="$('#edit-quit').removeClass('hidden')" href="javascript:;">&#xf014</a>
+                        <a title="Discard and quit"
+                           onclick="$('#edit-quit').removeClass('hidden')"
+                           href="javascript:;">&#xf014</a>
                         <ul>
-                            <li><a class="hidden-icon hidden" id="edit-quit" title="Confirm" onclick="edit.quit()"
+                            <li><a class="hidden-icon hidden" id="edit-quit"
+                                   title="Confirm" onclick="edit.quit()"
                                    href="javascript:;">&#xf00c</a></li>
                         </ul>
                     </li>
@@ -103,86 +131,117 @@
     </div>
     <div id="action-archive">
         <ul>
-            <li><a class="hidden-icon hidden" id="archive-restore" title="Restore" onclick="archive.restore()"
+            <li><a class="hidden-icon hidden" id="archive-restore"
+                   title="Restore" onclick="archive.restore()"
                    href="javascript:;">&#xf019</a></li>
             <li class="has-sub">
-                <a title="Apply the changes" onclick="archive.apply()" href="javascript:;">&#xf058</a>
+                <a title="Apply the changes" onclick="archive.apply()"
+                   href="javascript:;">&#xf058</a>
                 <ul>
-                    <li><a title="Reverse selection" onclick="archive.reverse()" href="javascript:;">&#xf056</a></li>
-                    <li><a title="Select archives below" onclick="archive.selectBelow()" href="javascript:;">&#xf13a</a>
+                    <li><a title="Reverse selection" onclick="archive.reverse()"
+                           href="javascript:;">&#xf056</a></li>
+                    <li><a title="Select archives below"
+                           onclick="archive.selectBelow()" href="javascript:;">&#xf13a</a>
                     </li>
-                    <li><a title="Remove all the attributes" onclick="archive.clear()" href="javascript:;">&#xf057</a>
+                    <li><a title="Remove all the attributes"
+                           onclick="archive.clear()"
+                           href="javascript:;">&#xf057</a>
                     </li>
                 </ul>
             </li>
             <li class="has-sub">
-                <a title="Delete this archive" onclick="archive.toggle('delete')" href="javascript:;">&#xf1f8</a>
+                <a title="Delete this archive"
+                   onclick="archive.toggle('delete')" href="javascript:;">&#xf1f8</a>
                 <ul>
-                    <li><a title="Toggle protection on this archive file" onclick="archive.toggle('protect')"
+                    <li><a title="Toggle protection on this archive file"
+                           onclick="archive.toggle('protect')"
                            href="javascript:;">&#xf023</a></li>
                 </ul>
             </li>
-            <li><a title="Refresh" id="archive-refresh" onclick="archive.init('#archive-refresh')" href="javascript:;">&#xf021</a>
+            <li><a title="Refresh" id="archive-refresh"
+                   onclick="archive.init('#archive-refresh')"
+                   href="javascript:;">&#xf021</a>
             </li>
         </ul>
     </div>
     <div id="action-comment">
         <ul>
             <li class="has-sub">
-                <a class="hidden-icon hidden" title="Reply this comment" onclick="comment.reply()" href="javascript:;">&#xf112</a>
+                <a class="hidden-icon hidden" title="Reply this comment"
+                   onclick="comment.reply()" href="javascript:;">&#xf112</a>
                 <ul>
-                    <li><a class="hidden-icon hidden" title="Remove this comment" onclick="comment.remove()"
+                    <li><a class="hidden-icon hidden"
+                           title="Remove this comment"
+                           onclick="comment.remove()"
                            href="javascript:;">&#xf00d</a></li>
                 </ul>
             </li>
-            <li><a title="Add a comment" onclick="comment.add()" href="javascript:;">&#xf067</a></li>
-            <li><a title="Main menu" onclick="comment.quit()" href="javascript:;">&#xf0c9</a></li>
+            <li><a title="Add a comment" onclick="comment.add()"
+                   href="javascript:;">&#xf067</a></li>
+            <li><a title="Main menu" onclick="comment.quit()"
+                   href="javascript:;">&#xf0c9</a></li>
         </ul>
     </div>
     <div id="action-menu">
         <ul>
-            <li><a class="hidden-icon hidden" title="Show images" id="menu-show-images" onclick="app.showEntryImages()"
+            <li><a class="hidden-icon hidden" title="Show images"
+                   id="menu-show-images" onclick="app.showEntryImages()"
                    href="javascript:;">&#xf03e</a></li>
-            <li><a class="hidden-icon hidden" title="Comment" onclick="comment.init()">&#xf086</a></li>
+            <li><a class="hidden-icon hidden" title="Comment"
+                   onclick="comment.init()">&#xf086</a></li>
             <li class="has-sub">
-                <a title="Add an entry" id="add" onclick="edit.init()" href="javascript:;"><span>&#xf067</span></a>
+                <a title="Add an entry" id="add" onclick="edit.init()"
+                   href="javascript:;"><span>&#xf067</span></a>
                 <ul>
                     <li class="has-sub">
-                        <a class="hidden-icon hidden" title="Read the archive" id="reread" onclick="edit.init(false)"
+                        <a class="hidden-icon hidden" title="Read the archive"
+                           id="reread" onclick="edit.init(false)"
                            href="javascript:;">&#xf187</a>
                         <ul>
-                            <li><a title="Remove saved data and create a new entry" onclick="edit.init(true)"
+                            <li>
+                                <a title="Remove saved data and create a new entry"
+                                   onclick="edit.init(true)"
                                    href="javascript:;">&#xf05e</a></li>
                         </ul>
                     </li>
                     <li class="li-add-entry-sub">
-                        <a class="hidden-icon hidden" title="Edit this entry" id="edit-this"
-                           onclick="edit.init(undefined, app.currentDisplayed)" href="javascript:;"><span>&#xf044</span></a>
+                        <a class="hidden-icon hidden" title="Edit this entry"
+                           id="edit-this"
+                           onclick="edit.init(undefined, app.currentDisplayed)"
+                           href="javascript:;"><span>&#xf044</span></a>
                         <ul>
                             <li><a title="Remove saved data and edit this entry"
-                                   onclick="edit.init(true, app.currentDisplayed)" href="javascript:;">&#xf00c</a></li>
+                                   onclick="edit.init(true, app.currentDisplayed)"
+                                   href="javascript:;">&#xf00c</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a class="hidden-icon hidden" title="Delete this entry" id="delete" onclick="edit.removeEntry()"
+                        <a class="hidden-icon hidden" title="Delete this entry"
+                           id="delete" onclick="edit.removeEntry()"
                            href="javascript:;"><span>&#xf00d</span></a>
                         <ul>
-                            <li><a title="Confirm" onclick="edit.removeEntry()" href="javascript:;">&#xf00c</a></li>
+                            <li><a title="Confirm" onclick="edit.removeEntry()"
+                                   href="javascript:;">&#xf00c</a></li>
                         </ul>
                     </li>
                 </ul>
             </li>
             <li>
-                <a title="This year" id="this-year" onclick="app.next(true)" href="javascript:;">&#xf015</a>
+                <a title="This year" id="this-year" onclick="app.next(true)"
+                   href="javascript:;">&#xf015</a>
                 <ul>
                     <li class="has-sub">
-                        <a title="Previous year" id="prev-year" class="hidden-icon hidden" onclick="app.prev()"
+                        <a title="Previous year" id="prev-year"
+                           class="hidden-icon hidden" onclick="app.prev()"
                            href="javascript:;">&#xf104</a>
                         <ul>
-                            <li><a title="Earliest year" onclick="app.prev(true)" href="javascript:;">&#xf100</a></li>
+                            <li><a title="Earliest year"
+                                   onclick="app.prev(true)" href="javascript:;">&#xf100</a>
+                            </li>
                         </ul>
                     </li>
-                    <li><a title="Next year" id="next-year" class="hidden-icon hidden" onclick="app.next()"
+                    <li><a title="Next year" id="next-year"
+                           class="hidden-icon hidden" onclick="app.next()"
                            href="javascript:;">&#xf105</a></li>
                 </ul>
                 <ul></ul>
@@ -191,32 +250,45 @@
                 <a title="Refresh" id="refresh-media" onclick="app.refresh()"
                    href="javascript:;"><span>&#xf021</span></a>
                 <ul>
-                    <li><a title="Download latest data" id="download" onclick="downloadFile()" href="javascript:;">&#xf0ed</a>
+                    <li><a title="Download latest data" id="download"
+                           onclick="downloadFile()"
+                           href="javascript:;">&#xf0ed</a>
                     </li>
                     <li class="has-sub">
-                        <a title="Upload all changed data" id="upload-all" onclick="uploadAllFiles()"
+                        <a title="Upload all changed data" id="upload-all"
+                           onclick="uploadAllFiles()"
                            href="javascript:;">&#xf0ee<span>&#xf0c2</span></a>
                         <ul>
-                            <li><a title="Update data" id="upload" onclick="uploadSingleFile()" href="javascript:;">&#xf0ee</a>
+                            <li><a title="Update data" id="upload"
+                                   onclick="uploadSingleFile()"
+                                   href="javascript:;">&#xf0ee</a>
                             </li>
                         </ul>
                     </li>
-                    <li><a title="Refresh token" onclick="refreshToken()" href="javascript:;">&#xf084</a></li>
-                    <li><a title="Toggle auto-refresh token" id="toggle-refresh-token"
-                           onclick="toggleAutoRefreshToken()" href="javascript:;">&#xf204</a></li>
+                    <li><a title="Refresh token" onclick="refreshToken()"
+                           href="javascript:;">&#xf084</a></li>
+                    <li><a title="Toggle auto-refresh token"
+                           id="toggle-refresh-token"
+                           onclick="toggleAutoRefreshToken()"
+                           href="javascript:;">&#xf204</a></li>
                 </ul>
             </li>
             <li class="has-sub">
                 <a title="Options" id="options">&#xf013</a>
                 <ul>
                     <li class="has-sub">
-                        <a title="Find lost media" onclick="app.checkResource()" href="javascript:;">&#xf002</a>
+                        <a title="Find lost media" onclick="app.checkResource()"
+                           href="javascript:;">&#xf002</a>
                         <ul>
-                            <li><a class="hidden-icon hidden" title="Return lost media" id="return-lost-media"
-                                   onclick="app.cleanResource()" href="javascript:;">&#xf0f2</a></li>
+                            <li><a class="hidden-icon hidden"
+                                   title="Return lost media"
+                                   id="return-lost-media"
+                                   onclick="app.cleanResource()"
+                                   href="javascript:;">&#xf0f2</a></li>
                         </ul>
                     </li>
-                    <li><a title="Toggle sensitive mode" onclick="$('body').toggleClass('sensitive-mode')"
+                    <li><a title="Toggle sensitive mode"
+                           onclick="$('body').toggleClass('sensitive-mode')"
                            href="javascript:;">&#xf06e</a></li>
                 </ul>
             </li>
@@ -224,19 +296,25 @@
     </div>
     <div id="action-stats">
         <ul>
-            <li><a title="Reset the map" onclick="stats.initTable()" href="javascript:;">&#xf014</a></li>
+            <li><a title="Reset the map" onclick="stats.initTable()"
+                   href="javascript:;">&#xf014</a></li>
             <li>
-                <a title="Toggle graph" onclick="stats.toggleGraph()" href="javascript:;">&#xf080</a>
+                <a title="Toggle graph" onclick="stats.toggleGraph()"
+                   href="javascript:;">&#xf080</a>
                 <ul>
-                    <li><a title="Download this chart" onclick="Chart.exportChart()" class="hidden-icon hidden"
+                    <li><a title="Download this chart"
+                           onclick="Chart.exportChart()"
+                           class="hidden-icon hidden"
                            href="javascript:;">&#xf019</a></li>
-                    <li><a title="Toggle chart view" onclick="" class="hidden-icon hidden"
+                    <li><a title="Toggle chart view" onclick=""
+                           class="hidden-icon hidden"
                            href="javascript:;">&#xf133</a></li>
                 </ul>
             </li>
         </ul>
     </div>
-    <a title="Sign in via OneDrive" id="signin" onclick="odauth(true)" href="javascript:;">&#xf090</a>
+    <a title="Sign in via OneDrive" id="signin" onclick="odauth(true)"
+       href="javascript:;">&#xf090</a>
 </div>
 <div id="drawer" class="hidden">
     <div id="drawer-profile">
@@ -250,7 +328,8 @@
             </a>
         </li>
         <li class="drawer-menu" id="drawer-archive">
-            <a id="undo-data" onclick="animation.switch('archive')" href="javascript:;">
+            <a id="undo-data" onclick="animation.switch('archive')"
+               href="javascript:;">
                 <span>&#xf1da</span>Archive
             </a>
         </li>
@@ -285,8 +364,11 @@
     <div id="stats-pane">
         <div id="stats-options">
             <ul>
-                <li class="checkbox checked" encode="isIncludingTitles">Including titles</li>
-                <li class="checkbox" encode="isIncludingTags">Including tags</li>
+                <li class="checkbox checked" encode="isIncludingTitles">
+                    Including titles
+                </li>
+                <li class="checkbox" encode="isIncludingTags">Including tags
+                </li>
             </ul>
         </div>
         <table id="stats-table"></table>
@@ -294,11 +376,12 @@
     </div>
 </div>
 <div id="version"></div>
-<script id="odauth" src="/static/js/journal/odauth.v2.js" clientid="000000004C14D0D9"
+<script id="odauth" src="/static/js/journal/odauth.v2.js"
+        clientid="000000004C14D0D9"
         clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf"
         scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder"
         redirecturi="https://anoxdd.github.io/journal/callback.html"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYzTk0IOxZg2Od4kGjBPrqmk6UjdJx9OI&v=3.exp&libraries=places"></script>
 <script src="/static/js/lib/jquery.min.js"></script>
 <script src="/static/js/lib/modernizr.min.js"></script>
 <script src="/static/js/lib/jquery.grab.min.js"></script>
@@ -361,7 +444,8 @@
             %>
             <div class="video">
                 <a class="<%- video[i].fileName %>" href="javascript:;">
-                    <div class="thumb "><% if (video[i].thumb) { print(video[i].thumb); } %><span></span></div>
+                    <div class="thumb "><% if (video[i].thumb) {
+                        print(video[i].thumb); } %><span></span></div>
                     <p class="title sensitive"><%- video[i].title %></p>
                 </a>
             </div>
@@ -399,7 +483,8 @@
             } else {
             %>
             <div class="place">
-                <a href="https://maps.google.com/maps?z=15&q=<%- place[i].title %>" target="_blank"
+                <a href="https://maps.google.com/maps?z=15&q=<%- place[i].title %>"
+                   target="_blank"
                    title="See it in Google Map">
                     <div class="thumb"></div>
                     <p class="sensitive"><%- place[i].title %></p>
@@ -450,8 +535,10 @@
             for( i in weblink ) {
             %>
             <div class="weblink">
-                <a href="<%- weblink[i].url %>" target="_blank" title="New Window">
-                    <div class="thumb"><% if( weblink[i].thumb ) { print( weblink[i].thumb ); } %><span></span></div>
+                <a href="<%- weblink[i].url %>" target="_blank"
+                   title="New Window">
+                    <div class="thumb"><% if( weblink[i].thumb ) { print(
+                        weblink[i].thumb ); } %><span></span></div>
                     <p class="url sensitive"><%- weblink[i].url %></p>
                     <p class="desc sensitive"><%- weblink[i].title %></p>
                 </a>
@@ -495,19 +582,28 @@
 </script>
 <script type="text/x-template" id="edit-view">
     <div id="text-area">
-        <input type="text" class="sensitive" id="entry-header" autocomplete="off" onclick="this.select()"
+        <input type="text" class="sensitive" id="entry-header"
+               autocomplete="off" onclick="this.select()"
                placeholder="Title" autofocus/>
         <div id="entry-summary">
-            <span class="entry-data sensitive" id="entry-char" title="Chars">0</span>
-            <span class="entry-data sensitive" id="entry-line" title="Lines">0</span>
+            <span class="entry-data sensitive" id="entry-char"
+                  title="Chars">0</span>
+            <span class="entry-data sensitive" id="entry-line"
+                  title="Lines">0</span>
             <div id="entry-time-wrap">
-                <span class="entry-data entry-time-elem sensitive" id="entry-time"
+                <span class="entry-data entry-time-elem sensitive"
+                      id="entry-time"
                       title="Current time">000000 0000</span>
-                <span class="entry-data entry-time-elem sensitive" id="entry-time-created" title="Created time ">000000 0000</span>
-                <span class="entry-data entry-time-elem sensitive" id="entry-time-start" title="Started time">-</span>
-                <span class="entry-data entry-time-elem sensitive" id="entry-time-end" title="Ended time">-</span>
+                <span class="entry-data entry-time-elem sensitive"
+                      id="entry-time-created"
+                      title="Created time ">000000 0000</span>
+                <span class="entry-data entry-time-elem sensitive"
+                      id="entry-time-start" title="Started time">-</span>
+                <span class="entry-data entry-time-elem sensitive"
+                      id="entry-time-end" title="Ended time">-</span>
             </div>
-            <span class="entry-data sensitive" id="entry-elapsed" title="Time elapsed">0:00</span>
+            <span class="entry-data sensitive" id="entry-elapsed"
+                  title="Time elapsed">0:00</span>
         </div>
         <textarea class="sensitive" id="entry-body"></textarea>
         <div id="map-holder">
@@ -530,7 +626,8 @@
         <hr/>
         <div class="texttags">
             <span>&#xf02b</span>
-            <input type="text" id="entry-tag" placeholder="Tags" autocomplete="off" onclick="this.select()"/>
+            <input type="text" id="entry-tag" placeholder="Tags"
+                   autocomplete="off" onclick="this.select()"/>
             <div class="other">
                 <%
                 if( textTags ) {
@@ -545,7 +642,8 @@
         </div>
         <hr/>
         <div class="types">
-            <p id="no-cover" onclick="edit.coverSet(-1, true)" class="selected">&#xf016</p>
+            <p id="no-cover" onclick="edit.coverSet(-1, true)" class="selected">
+                &#xf016</p>
             <p id="photo-cover" onclick="edit.coverSet(0, true)">&#xf1c5</p>
             <p id="video-cover" onclick="edit.coverSet(1, true)">&#xf1c8</p>
             <p id="voice-cover" onclick="edit.coverSet(3, true)">&#xf1c7</p>
@@ -562,7 +660,8 @@
         for( i in video ) {
         %>
         <div class="video resource">
-            <a class="<%- video[i].fileName %>" onclick="edit.video(<%- i %>)" title="View">
+            <a class="<%- video[i].fileName %>" onclick="edit.video(<%- i %>)"
+               title="View">
                 <div class="thumb"><span></span></div>
                 <input disabled class="title" value="<%- video[i].title %>"/>
             </a>
@@ -575,9 +674,11 @@
         for( i in voice ) {
         %>
         <div class="voice resource">
-            <a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)" title="View">
+            <a class="<%- voice[i].fileName %>" onclick="edit.voice(<%- i %>)"
+               title="View">
                 <div class="thumb"><span></span></div>
-                <input disabled class="title sensitive" value="<%- voice[i].title %>"/>
+                <input disabled class="title sensitive"
+                       value="<%- voice[i].title %>"/>
             </a>
         </div>
         <%
@@ -588,25 +689,33 @@
         for( i in place ) {
         %>
         <div class="place">
-            <a title="Edit" onclick="edit.location(<%- i %>)" href="javascript:;">
+            <a title="Edit" onclick="edit.location(<%- i %>)"
+               href="javascript:;">
                 <div class="thumb"></div>
-                <input disabled title="Place" class="title place-search sensitive" autocomplete="off"
+                <input disabled title="Place"
+                       class="title place-search sensitive" autocomplete="off"
                        onclick="this.select()" value="<%- place[i].title %>"/>
                 <%
                 if (place[i].latitude) {
                 %>
-                <input disabled title="Latitude" class="desc latitude sensitive" autocomplete="off"
-                       onclick="this.select()" value="<%- place[i].latitude %>"/>
+                <input disabled title="Latitude" class="desc latitude sensitive"
+                       autocomplete="off"
+                       onclick="this.select()"
+                       value="<%- place[i].latitude %>"/>
                 <p>,</p>
-                <input disabled title="Longitude" class="desc longitude sensitive" autocomplete="off"
-                       onclick="this.select()" value="<%- place[i].longitude %>"/>
+                <input disabled title="Longitude"
+                       class="desc longitude sensitive" autocomplete="off"
+                       onclick="this.select()"
+                       value="<%- place[i].longitude %>"/>
                 <%
                 } else {
                 %>
-                <input disabled title="Latitude" class="desc latitude sensitive" autocomplete="off"
+                <input disabled title="Latitude" class="desc latitude sensitive"
+                       autocomplete="off"
                        onclick="this.select()" id="latitude"/>
                 <p>,</p>
-                <input disabled title="Longitude" class="desc longitude sensitive" autocomplete="off"
+                <input disabled title="Longitude"
+                       class="desc longitude sensitive" autocomplete="off"
                        onclick="this.select()" id="longitude"/>
                 <%
                 }
@@ -623,9 +732,11 @@
         <div class="book">
             <a title="Edit" onclick="edit.book(<%- i %>)" href="javascript:;">
                 <img class="thumb"><span></span>
-                <input disabled class="title sensitive" placeholder="Book title" value="<%- book[i].title %>"
+                <input disabled class="title sensitive" placeholder="Book title"
+                       value="<%- book[i].title %>"
                        autocomplete="off" onclick="this.select()"/>
-                <input disabled class="desc sensitive" placeholder="Author" value="<%- book[i].author %>"
+                <input disabled class="desc sensitive" placeholder="Author"
+                       value="<%- book[i].author %>"
                        autocomplete="off" onclick="this.select()"/>
             </a>
         </div>
@@ -639,9 +750,11 @@
         <div class="music">
             <a title="Edit" onclick="edit.music(<%- i %>)" href="javascript:;">
                 <img class="thumb"><span></span>
-                <input disabled class="title sensitive" placeholder="Track name" value="<%- music[i].title %>"
+                <input disabled class="title sensitive" placeholder="Track name"
+                       value="<%- music[i].title %>"
                        autocomplete="off" onclick="this.select()"/>
-                <input disabled class="desc sensitive" placeholder="Artist" value="<%- music[i].author %>"
+                <input disabled class="desc sensitive" placeholder="Artist"
+                       value="<%- music[i].author %>"
                        autocomplete="off" onclick="this.select()"/>
             </a>
         </div>
@@ -655,9 +768,11 @@
         <div class="movie">
             <a title="Edit" onclick="edit.movie(<%- i %>)" href="javascript:;">
                 <img class="thumb"><span></span>
-                <input disabled class="title sensitive" placeholder="Movie title" value="<%- movie[i].title %>"
+                <input disabled class="title sensitive"
+                       placeholder="Movie title" value="<%- movie[i].title %>"
                        autocomplete="off" onclick="this.select()"/>
-                <input disabled class="desc sensitive" placeholder="Director" value="<%- movie[i].author %>"
+                <input disabled class="desc sensitive" placeholder="Director"
+                       value="<%- movie[i].author %>"
                        autocomplete="off" onclick="this.select()"/>
             </a>
         </div>
@@ -669,10 +784,13 @@
         for( i in weblink ) {
         %>
         <div class="weblink">
-            <a title="Edit" onclick="edit.weblink(<%- i %>)" href="javascript:;">
+            <a title="Edit" onclick="edit.weblink(<%- i %>)"
+               href="javascript:;">
                 <div class="thumb"><span></span></div>
-                <input disabled class="title sensitive" placeholder="Title" value="<%- weblink[i].title %>"/>
-                <input disabled class="desc sensitive" placeholder="http://" value="<%- weblink[i].url %>"/>
+                <input disabled class="title sensitive" placeholder="Title"
+                       value="<%- weblink[i].title %>"/>
+                <input disabled class="desc sensitive" placeholder="http://"
+                       value="<%- weblink[i].url %>"/>
             </a>
         </div>
         <%
@@ -711,9 +829,14 @@
                     for (var i = 0; i !== contents.length && i < 50; ++i) {
                     %>
                     <tr>
-                        <td class="time sensitive"><%- contents[i]["time"]["created"] %></td>
-                        <td class="title sensitive"><%- contents[i]["title"] %></td>
-                        <td class="body sensitive" title="<%- contents[i]['text']['body'] %>"><%-
+                        <td class="time sensitive"><%-
+                            contents[i]["time"]["created"] %>
+                        </td>
+                        <td class="title sensitive"><%- contents[i]["title"]
+                            %>
+                        </td>
+                        <td class="body sensitive"
+                            title="<%- contents[i]['text']['body'] %>"><%-
                             contents[i]["text"]["body"] %>
                         </td>
                     </tr>

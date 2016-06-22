@@ -2411,8 +2411,7 @@ edit.locationWeather = function(pos) {
         animation.debug(log.EDIT_PANE_WEATHER_START, 1);
     }
 
-    //var apiKey = "6f1ee423e253fba5e40e3276ff3e6d33",
-    var apiKey = "AIzaSyAYzTk0IOxZg2Od4kGjBPrqmk6UjdJx9OI",
+    var apiKey = "6f1ee423e253fba5e40e3276ff3e6d33",
         url = "https://api.forecast.io/forecast/" + apiKey + "/" + pos.lat() + "," + pos.lng() + "," + parseInt(new Date().getTime() / 1000) + "?units=si";
     $.ajax({
         type: "GET",

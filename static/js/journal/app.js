@@ -294,8 +294,13 @@ window.app = function() {
     }
     //endregion
 
-    /* The function to be called to reload the layout */
-    var _displayDataInList = function() {
+    /**
+     * The function to be called to reload the layout
+     *
+     * @param filter - the filter to filter out the data
+     * @private
+     */
+    var _displayDataInList = function(filter) {
         $("#total-entry").text(journal.archive.data[app.year].length);
         ////console.log("Calling app.list(" + filter + ")");
         ////console.log("\t> lastLoaded = " + app.lastLoaded);
@@ -431,14 +436,14 @@ window.app = function() {
                     // New contents available! Refresh the new data
                     animation.debug(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
                     console.log("addLoadDataWithFilter(): data.length = " + newContent.length);
-                    _loadData(newContent, _displayDataInList);
+                    _loadData(newContent, _displayDataInList(filter));
                     edit.saveDataCache();
                 }
             }
 
             // Start to reload, HERE GOES ALL THE DATA RESET
             _resetDataAndLayout(filter);
-            _displayDataInList();
+            _displayDataInList(filter);
 
             // Show the final result anyway
             $search.fadeIn(500);
@@ -733,7 +738,7 @@ window.app = function() {
          * @require called after all the bulbs are downloaded and merged
          */
         finishMergingBulbs: function() {
-             // Refresh the data and display it
+            // Refresh the data and display it
             app.refresh();
 
             // Upload the file

@@ -2676,7 +2676,7 @@ $(document).ready(function() {
     app.itemView = _.template($("#list-view").html());
     app.detailView = _.template($("#detail-view").html());
     app.layout();
-    initializeApp();
+    app.initializeApp();
     archive.itemView = _.template($("#archive-view").html());
     archive.detailView = _.template($("#archive-detail-view").html());
 });

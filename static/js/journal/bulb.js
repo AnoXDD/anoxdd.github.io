@@ -139,6 +139,10 @@ window.bulb = function() {
             return _totalBulbs;
         },
 
+        setData: function(timestamp, data) {
+            _data[timestamp] = data;
+        },
+
         /**
          * Call the server to remove merged and uploaded bulbs
          * @require called after all the bulbs are downloaded

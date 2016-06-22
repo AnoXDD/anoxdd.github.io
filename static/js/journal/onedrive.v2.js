@@ -127,76 +127,76 @@ function downloadMedia(url) {
 		////console.log("downloadFile()\tFinish media data");
 	});
 }
-
-/**
- * Uploads journal.archive.data to OneDrive and creates a backup
- * @returns {} 
- */
-function uploadFile() {
-	////console.log("Starting uploadFile()");
-	animation.log(log.CONTENTS_UPLOAD_START, 1);
-	// Change loading icons and disable click
-	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
-	getTokenCallback(function(token) {
-		var d = new Date(),
-			month = d.getMonth() + 1,
-			day = d.getDate(),
-			year = d.getFullYear() % 100,
-			hour = d.getHours(),
-			minute = d.getMinutes(),
-			second = d.getSeconds();
-		month = month < 10 ? "0" + month : month;
-		day = day < 10 ? "0" + day : day;
-		year = year < 10 ? "0" + year : year;
-		hour = hour < 10 ? "0" + hour : hour;
-		minute = minute < 10 ? "0" + minute : minute;
-		second = second < 10 ? "0" + second : second;
-		var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
-			data = { name: fileName };
-		// Backup the original file
-		$.ajax({
-				type: "PATCH",
-				url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/data.js?access_token=" + token,
-				contentType: "application/json",
-				data: JSON.stringify(data)
-			})
-			////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
-			.done(function() {
-				$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%, #3f3f3f 50%, #343434 0%, #343434 100%)");
-				////console.log("uploadFile():\t Done backup");
-				animation.log(log.CONTENTS_UPLOAD_BACKUP);
-				// Clean the unnecessary data
-				var tmp = edit.minData();
-				$.ajax({
-						type: "PUT",
-						url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
-						contentType: "text/plain",
-						data: JSON.stringify(tmp)
-					})
-					.done(function(data, status, xhr) {
-						////console.log("uploadFile():\t Done!");
-						animation.log(log.CONTENTS_UPLOAD_END, -1);
-					})
-					.fail(function(xhr, status, error) {
-						animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-						////alert("Cannot upload files");
-					});
-			})
-			.fail(function(xhr, status, error) {
-				animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
-				////alert("Cannot backup the file");
-			})
-			.always(function() {
-				// Change loading icons and re-enable click
-				$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-					onclick: "uploadFile()",
-					href: "#"
-				});
-				animation.finished("#upload");
-				////console.log("uploadFile()\tFinish uploading");
-			});
-	});
-}
+//
+///**
+// * Uploads journal.archive.data to OneDrive and creates a backup
+// * @returns {}
+// */
+//function uploadFile() {
+//	////console.log("Starting uploadFile()");
+//	animation.log(log.CONTENTS_UPLOAD_START, 1);
+//	// Change loading icons and disable click
+//	$("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+//	getTokenCallback(function(token) {
+//		var d = new Date(),
+//			month = d.getMonth() + 1,
+//			day = d.getDate(),
+//			year = d.getFullYear() % 100,
+//			hour = d.getHours(),
+//			minute = d.getMinutes(),
+//			second = d.getSeconds();
+//		month = month < 10 ? "0" + month : month;
+//		day = day < 10 ? "0" + day : day;
+//		year = year < 10 ? "0" + year : year;
+//		hour = hour < 10 ? "0" + hour : hour;
+//		minute = minute < 10 ? "0" + minute : minute;
+//		second = second < 10 ? "0" + second : second;
+//		var fileName = "data_" + month + day + year + "_" + hour + minute + second + ".js",
+//			data = { name: fileName };
+//		// Backup the original file
+//		$.ajax({
+//				type: "PATCH",
+//				url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/data.js?access_token=" + token,
+//				contentType: "application/json",
+//				data: JSON.stringify(data)
+//			})
+//			////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
+//			.done(function() {
+//				$("#upload").css("background", "-webkit-linear-gradient(top, #3f3f3f 0%, #3f3f3f 50%, #343434 0%, #343434 100%)");
+//				////console.log("uploadFile():\t Done backup");
+//				animation.log(log.CONTENTS_UPLOAD_BACKUP);
+//				// Clean the unnecessary data
+//				var tmp = edit.minData();
+//				$.ajax({
+//						type: "PUT",
+//						url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/data.js:/content?access_token=" + token,
+//						contentType: "text/plain",
+//						data: JSON.stringify(tmp)
+//					})
+//					.done(function(data, status, xhr) {
+//						////console.log("uploadFile():\t Done!");
+//						animation.log(log.CONTENTS_UPLOAD_END, -1);
+//					})
+//					.fail(function(xhr, status, error) {
+//						animation.error(log.CONTENTS_UPLOAD_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+//						////alert("Cannot upload files");
+//					});
+//			})
+//			.fail(function(xhr, status, error) {
+//				animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, -1);
+//				////alert("Cannot backup the file");
+//			})
+//			.always(function() {
+//				// Change loading icons and re-enable click
+//				$("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
+//					onclick: "uploadFile()",
+//					href: "#"
+//				});
+//				animation.finished("#upload");
+//				////console.log("uploadFile()\tFinish uploading");
+//			});
+//	});
+//}
 
 /* Download the cover photo from iTunes. type can be either number or string*/
 function getCoverPhoto(selectorHeader, term, more, type) {

@@ -1,5 +1,4 @@
 window.journal = {};
-window.app = {};
 
 //(function(window, $) {
 journal.archive = {};
@@ -9,653 +8,743 @@ journal.archive.media = 0;
 /** The map to map the source name to the weblink. Format: {name: {id: xxx, url: xxx, size: xxx}} */
 journal.archive.map = {};
 
-app.name = "Guest";
+window.app = function() {
 
-app.monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-app.weekArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-/** The year to be displayed */
-app.year = new Date().getFullYear();
-app.years = [];
-/** The data to be appended to the year, if this year has not already loaded */
-app.yearQueue = {};
-/** The years that have unsaved changes (used for remind the user to upload the data) */
-app.yearChange = {};
-/** The resource folder of all the images/video/music covers, etc. */
-app.resource = "resource/";
-/** The number of the pages already loaded */
-app.lastLoaded = 0;
-/** The index of the page that is currently being displayed */
-app.currentDisplayed = -1;
-/** The number of entry displayed */
-app.displayedNum = 0;
-/** The number of lines displayed */
-app.displayedLines = 0;
-/** The number of characters displayed */
-app.displayedChars = 0;
-/** The total of time used on writing all the displayed entries (if appliable), in seconds */
-app.displayedTime = 0.0;
-/** The index of the page that last loaded. Set to -1 so that no entry is loaded at the beginning */
-app.lastQualified = -1;
-/** The number of pages to be loaded each time */
-app.pageLoaded = 1;
-/** Available tags to be searched */
-app.preloadedTags = [];
-/** The keyword to be searched */
-app.command = "";
-/** The boolean indicates if some mutually exclusive functions should be running if any others are */
-app.isFunction = true;
-/** The variable to track the media that do not belong to any entry */
-app.lostMedia = [];
+    //region Private variables
+    /** The resource folder of all the images/video/music covers, etc. */
+    var _resource = "resource/";
+    //endregion
 
-/** Whether the date of this year is loaded */
-app.dataLoaded = {};
-/** When the data of this year is updated */
-app.lastUpdated = {};
+    //region Private functions
 
-/** The data decoding version of this app, integer decimal only */
-app.version = {
-    data: 2
-};
-
-
-/**
- * Initializes this app
- */
-function initializeApp() {
-    // Enter to search
-    var thisApp = this;
-    // Header fix
-    showLoginButton();
-    // Initialize preloaded tags
-    _initializePreloadedTags();
-
-    // Clear the field of search input every time on focus
-    _initializeQueryTextbox(thisApp);
-    // Change the format of time on hover
-    _initializeReformatSummaryTimeOnHover();
-    // Hover to update other-status
-    _initializeHeaderInfoUpdateOnHover();
-    // Set the current year
-    $("#year").effect("slide", {direction: "up"});
-    app.getYears();
-    // Network setup
-    _initializeNetworkSetup();
-    _initializeIconsAppearance();
-}
-
-function _initializePreloadedTags() {
-    app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
-    var tagsArray = app.tag().getIconsInName();
-    for (var key = 0; key != tagsArray.length; ++key) {
-        app.preloadedTags.push("#" + tagsArray[key]);
+    //region Initialilzing data
+    var _initializePreloadedTags = function() {
+        app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
+        var tagsArray = app.tag().getIconsInName();
+        for (var key = 0; key != tagsArray.length; ++key) {
+            app.preloadedTags.push("#" + tagsArray[key]);
+        }
     }
-}
-
-function _initializeQueryTextbox(thisApp) {
-    var $query = $("#query");
-    $query.keyup(function(n) {
-            if (n.keyCode == 13) {
-                app.command = $query.val();
-                $query.effect("highlight", {color: "#dddddd"});
-                thisApp.load(app.command, true);
-            }
-        })
-        // Autocomplete for preloaded tags
-        .bind("keydown", function(event) {
-            // Don't navigate away from the field on tab when selecting an item
-            if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
-                event.preventDefault();
-            }
-        })
-        .autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function(request, response) {
-                // Remove elements that are already there
-                var terms = $("#query").val().split(" "),
-                    availableTags = app.preloadedTags.sort();
-                for (var i = 0; i < availableTags.length; ++i) {
-                    for (var j = 0; j < terms.length; ++j) {
-                        if (availableTags[i] == terms[j]) {
-                            // Same element found, remove it
-                            terms.splice(j, 1);
-                            availableTags.splice(i, 1);
-                            break;
+    var _initializeQueryTextbox = function(thisApp) {
+        var $query = $("#query");
+        $query.keyup(function(n) {
+                if (n.keyCode == 13) {
+                    app.command = $query.val();
+                    $query.effect("highlight", {color: "#dddddd"});
+                    thisApp.load(app.command, true);
+                }
+            })
+            // Autocomplete for preloaded tags
+            .bind("keydown", function(event) {
+                // Don't navigate away from the field on tab when selecting an
+                // item
+                if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                minLength: 1,
+                autoFocus: true,
+                source: function(request, response) {
+                    // Remove elements that are already there
+                    var terms = $("#query").val().split(" "),
+                        availableTags = app.preloadedTags.sort();
+                    for (var i = 0; i < availableTags.length; ++i) {
+                        for (var j = 0; j < terms.length; ++j) {
+                            if (availableTags[i] == terms[j]) {
+                                // Same element found, remove it
+                                terms.splice(j, 1);
+                                availableTags.splice(i, 1);
+                                break;
+                            }
                         }
                     }
+                    // Delegate back to autocomplete, but extract the last term
+                    response($.ui.autocomplete.filter(availableTags, request.term.split(/ \s*/).pop()));
+                },
+                focus: function() {
+                    // Prevent value inserted on focus
+                    return false;
+                },
+                select: function(event, ui) {
+                    var terms = this.value.split(/ \s*/);
+                    // Remove the current input
+                    terms.pop();
+                    // Add the selected item
+                    terms.push(ui.item.value);
+                    // Add placeholder to get the comma-and-space at the end
+                    terms.push("");
+                    this.value = terms.join(" ");
+                    return false;
                 }
-                // Delegate back to autocomplete, but extract the last term
-                response($.ui.autocomplete.filter(availableTags, request.term.split(/ \s*/).pop()));
-            },
-            focus: function() {
-                // Prevent value inserted on focus
+            });
+    }
+    var _initializeReformatSummaryTimeOnHover = function() {
+        $(document).delegate("#search-result:not(.stats)", "mouseover mouseleave", function(e) {
+            var $search = $("#search-result");
+            var $total = $("#total-time");
+
+            if (e.type === "mouseover") {
+                $search.hide();
+                $total.text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
+                $search.fadeIn(500);
+            } else {
+                $search.hide();
+                $total.text(app.displayedTime);
+                $search.fadeIn(500);
+            }
+        });
+    }
+    /**
+     * Initialize header info (which refers to the div that displays current
+     * year and last updated time of token and journal data
+     */
+    var _initializeHeaderInfoUpdateOnHover = function() {
+        $("#header-info").mouseover(function() {
+            // Update #last-updated
+            app.readLastUpdated();
+            // Update #token-expired-in
+            var expiration = parseInt(localStorage["expiration"]),
+                expiresIn;
+            if (expiration) {
+                // A valid cookie number
+                var now = new Date().getTime();
+                if (expiration > now) {
+                    // Yet to be expired
+                    expiresIn = archive.list.prototype.date(now - (expiration - now));
+                }
+            }
+            expiresIn = expiresIn || "Expired";
+            $("#token-expires-in").html(expiresIn);
+        });
+    }
+    var _initializeNetworkSetup = function() {
+// Setup timeout time
+        $.ajaxSetup({
+            timeout: network.timeOut
+        });
+        // Setup network monitor
+        $(document).ajaxStart(function() {
+            network.isAjaxActive = true;
+            // By default, just initialize the network bar
+            network.init();
+        });
+        $(document).ajaxStop(function() {
+            network.isAjaxActive = false;
+            if (network.breakpoint === 0) {
+                // Do not destroy it if there are breakpoints
+                network.destroy();
+            }
+        });
+    }
+    var _initializeIconsAppearance = function() {
+// Test if there is any cache
+        animation.testCacheIcons();
+        animation.testAllSubs();
+    }
+    //endregion
+
+    //region Load data
+    /**
+     * Gets the entires that are not in this year and remove invalid entries
+     * @returns {Array} - an array of entries not in this year
+     */
+    var _getEntriesNotInThisYear = function() {
+        var queuedYears = [];
+
+        journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
+            if (entry == undefined) {
+                app.yearChange[app.year] = true;
+                // Do not need this one
                 return false;
-            },
-            select: function(event, ui) {
-                var terms = this.value.split(/ \s*/);
-                // Remove the current input
-                terms.pop();
-                // Add the selected item
-                terms.push(ui.item.value);
-                // Add placeholder to get the comma-and-space at the end
-                terms.push("");
-                this.value = terms.join(" ");
+            }
+            // Test if the data is in current `app.year`
+            var time = entry["time"],
+                createdYear = new Date(time["created"]).getFullYear(),
+                startYear = new Date(time["created"]).getFullYear();
+            // Either the created time or the start time of the entry
+            if (createdYear == app.year || startYear == app.year) {
+                return true;
+            } else {
+                // Move this entry to a new year, given the created time
+                if (!app.yearQueue[createdYear]) {
+                    app.yearQueue[createdYear] = [];
+                }
+                // Add to this year
+                app.yearQueue[createdYear].push(entry);
+                app.yearChange[createdYear] = true;
+                // This year has also been changed
+                app.yearChange[app.year] = true;
+                $("#year").addClass("change");
+                $("#last-updated").addClass("change");
+                // Test for uniqueness
+                if (queuedYears.indexOf(createdYear) === -1) {
+                    queuedYears.push(createdYear);
+                }
                 return false;
             }
         });
-}
 
-function _initializeReformatSummaryTimeOnHover() {
-    $(document).delegate("#search-result:not(.stats)", "mouseover mouseleave", function(e) {
-        var $search = $("#search-result");
-        var $total = $("#total-time");
-
-        if (e.type === "mouseover") {
-            $search.hide();
-            $total.text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
-            $search.fadeIn(500);
-        } else {
-            $search.hide();
-            $total.text(app.displayedTime);
-            $search.fadeIn(500);
-        }
-    });
-}
-
-/**
- * Initialize header info (which refers to the div that displays current year
- * and last updated time of token and journal data
- */
-function _initializeHeaderInfoUpdateOnHover() {
-    $("#header-info").mouseover(function() {
-        // Update #last-updated
-        app.readLastUpdated();
-        // Update #token-expired-in
-        var expiration = parseInt(localStorage["expiration"]),
-            expiresIn;
-        if (expiration) {
-            // A valid cookie number
-            var now = new Date().getTime();
-            if (expiration > now) {
-                // Yet to be expired
-                expiresIn = archive.list.prototype.date(now - (expiration - now));
+        return queuedYears;
+    };
+    /**
+     * Add processed years into the archive
+     * @param {Array} queuedYears - the queued year to be processed
+     */
+    var _processQueuedYears = function(queuedYears) {
+        animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
+        // Add to `app.years`
+        for (var i = 0; i !== queuedYears.length; ++i) {
+            if (app.years.indexOf(queuedYears[i]) === -1) {
+                // This year does not exist in `app.years`
+                app.years.push(queuedYears[i]);
             }
         }
-        expiresIn = expiresIn || "Expired";
-        $("#token-expires-in").html(expiresIn);
-    });
-}
+        // Sort the years
+        app.years.sort();
+    }
+    /**
+     * Resets the data and layout to regenerate the layout
+     * @param (string} filter - to filter the element that is supposed to be in
+     *     the result
+     */
+    var _resetDataAndLayout = function(filter) {
+// Reset animation indentation
+        animation.indent = 0;
+        // Remove all the child elements and always
+        animation.debug(log.CONTENTS_RELOADED);
+        animation.testAllSubs();
+        console.log("==================Force loaded==================");
+        $("#list").empty();
+        app.lastLoaded = 0;
+        app.lastQualified = -1;
+        app.displayedChars = 0;
+        app.displayedLines = 0;
+        app.displayedNum = 0;
+        app.displayedTime = 0;
+        app.currentDisplayed = -1;
 
-function _initializeNetworkSetup() {
-// Setup timeout time
-    $.ajaxSetup({
-        timeout: network.timeOut
-    });
-    // Setup network monitor
-    $(document).ajaxStart(function() {
-        network.isAjaxActive = true;
-        // By default, just initialize the network bar
-        network.init();
-    });
-    $(document).ajaxStop(function() {
-        network.isAjaxActive = false;
-        if (network.breakpoint === 0) {
-            // Do not destroy it if there are breakpoints
-            network.destroy();
-        }
-    });
-}
+        app.command = filter;
 
-function _initializeIconsAppearance() {
-// Test if there is any cache
-    animation.testCacheIcons();
-    animation.testAllSubs();
-}
-
-
-/**
- * Simply refreshes and force reload
- */
-app.refresh = function() {
-    addLoadDataWithFilter("");
-};
-
-/**
- * Gets the entires that are not in this year and remove invalid entries
- * @returns {Array} - an array of entries not in this year
- */
-function _appGetEntriesNotInThisYear() {
-    var queuedYears = [];
-
-    journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
-        if (entry == undefined) {
-            app.yearChange[app.year] = true;
-            // Do not need this one
-            return false;
-        }
-        // Test if the data is in current `app.year`
-        var time = entry["time"],
-            createdYear = new Date(time["created"]).getFullYear(),
-            startYear = new Date(time["created"]).getFullYear();
-        // Either the created time or the start time of the entry
-        if (createdYear == app.year || startYear == app.year) {
-            return true;
-        } else {
-            // Move this entry to a new year, given the created time
-            if (!app.yearQueue[createdYear]) {
-                app.yearQueue[createdYear] = [];
-            }
-            // Add to this year
-            app.yearQueue[createdYear].push(entry);
-            app.yearChange[createdYear] = true;
-            // This year has also been changed
-            app.yearChange[app.year] = true;
+        $("#query").val(filter);
+        $("#total-displayed").text(app.displayedNum);
+        $("#total-char").text(app.displayedChars);
+        $("#total-line").text(app.displayedLines);
+        $("#total-time").text(app.displayedTime);
+        $("#year").effect("slide", {direction: "up"}).html(app.year);
+        // Show the dot for changed stuff
+        if (app.yearChange[app.year]) {
             $("#year").addClass("change");
             $("#last-updated").addClass("change");
-            // Test for uniqueness
-            if (queuedYears.indexOf(createdYear) === -1) {
-                queuedYears.push(createdYear);
-            }
-            return false;
-        }
-    });
-
-    return queuedYears;
-};
-
-/**
- * Add processed years into the archive
- * @param {Array} queuedYears - the queued year to be processed
- */
-function _appProcessQueuedYears(queuedYears) {
-    animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
-    // Add to `app.years`
-    for (var i = 0; i !== queuedYears.length; ++i) {
-        if (app.years.indexOf(queuedYears[i]) === -1) {
-            // This year does not exist in `app.years`
-            app.years.push(queuedYears[i]);
-        }
-    }
-    // Sort the years
-    app.years.sort();
-}
-
-/**
- * Resets the data and layout to regenerate the layout
- * @param (string} filter - to filter the element that is supposed to be in the
- *     result
- */
-function _appResetDataAndLayout(filter) {
-// Reset animation indentation
-    animation.indent = 0;
-    // Remove all the child elements and always
-    animation.debug(log.CONTENTS_RELOADED);
-    animation.testAllSubs();
-    console.log("==================Force loaded==================");
-    $("#list").empty();
-    app.lastLoaded = 0;
-    app.lastQualified = -1;
-    app.displayedChars = 0;
-    app.displayedLines = 0;
-    app.displayedNum = 0;
-    app.displayedTime = 0;
-    app.currentDisplayed = -1;
-
-    app.command = filter;
-
-    $("#query").val(filter);
-    $("#total-displayed").text(app.displayedNum);
-    $("#total-char").text(app.displayedChars);
-    $("#total-line").text(app.displayedLines);
-    $("#total-time").text(app.displayedTime);
-    $("#year").effect("slide", {direction: "up"}).html(app.year);
-    // Show the dot for changed stuff
-    if (app.yearChange[app.year]) {
-        $("#year").addClass("change");
-        $("#last-updated").addClass("change");
-    } else {
-        $("#year").removeClass("change");
-    }
-
-    // Refresh every stuff
-    for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
-        journal.archive.data[app.year][key]["processed"] = 0;
-    }
-}
-
-function _appAttemptLoadDataFromQueue() {
-    if (app.yearQueue[app.year]) {
-        app.yearChange[app.year] = true;
-        // Push to the new data
-        journal.archive.data[app.year].push.apply(journal.archive.data[app.year], app.yearQueue[app.year]);
-        // Then sort it to remove the duplicate
-        edit.sortArchive();
-        edit.removeDuplicate();
-        // Remove the data from the queue
-        delete app.yearQueue[app.year];
-    }
-}
-
-function _appProcessQueuedData() {
-// Test if there are any data in the queue
-    _appAttemptLoadDataFromQueue();
-
-    // Filter out undefined element and entries not belong to this year
-    var queuedYears = _appGetEntriesNotInThisYear();
-
-    if (queuedYears.length > 0) {
-        _appProcessQueuedYears(queuedYears);
-    }
-}
-/**
- * Reloads the content view of the journal.
- * @param {String} filter - The string representing the filter of display
- * @param {String} newContent - The string representing the new content of
- *     journal archive
- * @version 2.0 - Removes param `forceReload` as every call to this function
- *     needs a force reload
- */
-function addLoadDataWithFilter(filter, newContent) {
-    // Test the validity of `newContent`
-    if (newContent == "") {
-        // Try to add nothing
-        ////console.log("addLoadDataWithFilter()\tNo new content!");
-        animation.error(log.LOAD_DATA_FAIL + log.NO_CONTENT);
-        animation.deny("#refresh-media");
-        return;
-    } else if (newContent == undefined) {
-        // Process the data on this year. Return if this year has nothing at
-        // all even after reading data from the queue
-        if (!journal.archive.data[app.year]) {
-            journal.archive.data[app.year] = [];
-        }
-
-        _appProcessQueuedData();
-
-        if (journal.archive.data[app.year].length === 0) {
-            ////console.log("addLoadDataWithFilter()\tNo archive data!");
-            animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
-            animation.deny("#refresh-media");
-            return;
-        }
-    }
-
-    // Reset the UI
-    // Hide anyway
-    var $search = $("#search-result");
-    $search.hide();
-    // Also hide the detail view
-    app.detail.prototype.hideDetail();
-    // Test if #add has sub-menu
-    animation.testAllSubs();
-
-    // Try to find the new data (if applicable)
-    if (!app.dataLoaded[app.year]) {
-        if (newContent) {
-            // New contents available! Refresh the new data
-            animation.debug(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
-            console.log("addLoadDataWithFilter(): data.length = " + newContent.length);
-            _appLoadData(newContent, appDisplayDataInList);
-            edit.saveDataCache();
-        }
-    }
-
-    // Start to reload, HERE GOES ALL THE DATA RESET
-    _appResetDataAndLayout(filter);
-    appDisplayDataInList();
-    // Show the final result anyway
-    $search.fadeIn(500);
-};
-
-/* The function to be called to reload the layout */
-function appDisplayDataInList() {
-    $("#total-entry").text(journal.archive.data[app.year].length);
-    ////console.log("Calling app.list(" + filter + ")");
-    ////console.log("\t> lastLoaded = " + app.lastLoaded);
-    new app.list(filter);
-    app.dataLoaded[app.year] = true;
-}
-
-/**
- * Load a script and passed in a function
- * @param {object} data - the data to be loaded
- * @param {function} callback - the callback function after the data is loaded
- * @private
- */
-function _appLoadData(data, callback) {
-    // Raw data
-    console.log("app.loadScript(): data.length = " + data.length);
-
-    // Get the version of the data
-    var version = "", i;
-    for (var i = 0; i !== data.length && data[i] != "["; ++i) {
-        version += data[i];
-    }
-    version = parseInt(version);
-    if (version) {
-        app.version[app.year] = version;
-    }
-
-    journal.archive.data[app.year] = app.updateData(JSON.parse(data.substr(i)));
-    callback();
-}
-
-app.updateData = function(data) {
-    if (!app.version[app.year]) {
-        app.version[app.year] = 1;
-    }
-    if (app.version[app.year] !== app.version.data) {
-        // Let the user know the content is going to be upgraded
-        animation.debug(log.CONTENTS_UPGRADING);
-        switch (app.version[app.year]) {
-            case 1:
-                // Up to v2
-                // Integrate textTags and iconTags
-                for (var i = 0; i !== data.length; ++i) {
-                    var iconTags = data[i]["iconTags"],
-                        textTags = data[i]["textTags"];
-                    if (iconTags) {
-                        // There are iconTags
-                        iconTags = app.tag().getIconsInNameByVal(iconTags).join("|");
-                        // Add icon tags to texttags
-                        if (textTags) {
-                            textTags += "|" + iconTags;
-                        } else {
-                            textTags += iconTags;
-                        }
-                    }
-                    textTags = textTags || "";
-                    var tags;
-                    if (data[i]["tags"]) {
-                        // Append to this
-                        tags += "|" + textTags;
-                    } else {
-                        tags = textTags;
-                    }
-                    // Delete deprecated tags
-                    delete data[i]["icontags"];
-                    delete data[i]["textTags"];
-                }
-                app.version[app.year] = 2;
-            // Intentionally omit "break;"
-        }
-    }
-    // Fix the version if something is wrong
-    if (app.version[app.year] > app.version.data) {
-        app.version[app.year] = app.version.data;
-    }
-    return data;
-};
-/**
- * Gets all the available year by the folder name under /core/ and stores them
- * in `app.years`, in ascending order (earliest year first)
- */
-app.getYears = function() {
-    animation.log(log.GET_YEARS_START);
-    getTokenCallback(function(token) {
-        $.ajax({
-                type: "GET",
-                url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/children?select=name,createdBy&orderby=name&access_token=" + token
-            })
-            .done(function(data) {
-                var itemList = data["value"];
-                app.years = [];
-                for (var i = 0; i !== itemList.length; ++i) {
-                    var name = itemList[i]["name"];
-                    // Deliberately not force equal them to test if `name` is
-                    // an integer
-                    if (parseInt(name) == name) {
-                        name = parseInt(name);
-                        app.years.push(name);
-                        network.yearFolders.push(name);
-                    }
-                }
-                app.user = itemList[0]["createdBy"]["user"]["displayName"];
-                $("#username").html(app.user);
-                // If it is the first day of the year and this folder is not
-                // created, add this year to `app.years`
-                if (app.years.indexOf(new Date().getFullYear()) === -1) {
-                    // It is supposed to the latest year
-                    app.years.push(new Date().getFullYear());
-                    // So unnecessary to sort it after push
-                }
-                backupAll();
-                animation.testYearButton();
-                animation.log(log.GET_YEARS_END);
-            })
-            .fail(function(xhr, status, error) {
-                animation.error(log.GET_YEARS_FAIL, error);
-                app.getYears();
-            });
-    });
-}
-/**
- * Calls the program to start changing the year, and if the change succeeds, it
- * will call `app.yearUpdate` for further updating. However, this This function
- * will check the correctness of the year passed in, and will automatically
- * download the contents of the data if no data found for this year in the
- * memory.
- * @param {number} year - The year to go
- */
-app.yearUpdateTry = function(year) {
-    app.year = year;
-    if (app.years.length === 0) {
-        app.years.push(app.year);
-    }
-    if (!journal.archive.data[year]) {
-        // The data is not loaded yet, download the data
-        downloadFile(undefined, true);
-    } else {
-        app.yearUpdate(year);
-    }
-}
-/**
- * Change the year of the contents to be displayed, and refreshes the display
- * view (by calling `app.refresh()`). This function does not accept any
- * parameters by using `app.year` to update everything with it. It does NOT
- * check the validness of `app.year`, and will assume that it is a valid one
- * (e.g. the data is already loaded). However, if `app.year` is invalid that
- * `(app.years.indexOf(app.year))` yields -1, `app.year` will be set to this
- * year and it will call `app.yearUpdateTry()`. This function will also correct
- * the buttons for switching between years.
- */
-app.yearUpdate = function() {
-    app.refresh();
-    // Test the correctness of the buttons
-    animation.testYearButton();
-    animation.debug(log.YEAR_SWITCHED_TO + app.year);
-}
-/**
- * Sets the year to the previous year.
- * This function will guarantee the correctness of `app.year`, and will correct
- * it if `app.year` is invalid.
- * @param {boolean} isToEnd - If year goes to the earliest possible year
- */
-app.prev = function(isToEnd) {
-    if (network.isAjaxActive) {
-        // Do not switch if network is still working
-        animation.warn(log.NETWORK_WORKING);
-        return;
-    }
-    var index = app.years.indexOf(app.year);
-    if (index === -1) {
-        // Current year is invalid, sets to this year
-        app.yearUpdateTry(new Date().getFullYear());
-        return;
-    }
-    if (isToEnd) {
-        index = 0;
-    } else {
-        --index;
-    }
-    app.yearUpdateTry(app.years[index]);
-}
-/**
- * Sets the year to the next year
- * This function will guarantee the correctless of `app.year`, and will correct
- * it if `app.year` is invalid.
- * @param {boolean} isToEnd - If year goes to the latest year (i.e. this year)
- */
-app.next = function(isToEnd) {
-    if (network.isAjaxActive) {
-        // Do not switch if network is still working
-        animation.warn(log.NETWORK_WORKING);
-        return;
-    }
-    var index = app.years.indexOf(app.year);
-    if (index === -1) {
-        // Current year is invalid, sets to this year
-        app.yearUpdateTry(new Date().getFullYear());
-        return;
-    }
-    if (isToEnd) {
-        index = app.years.length - 1;
-    } else {
-        ++index;
-    }
-    app.yearUpdateTry(app.years[index]);
-}
-/**
- * Updates the last saved data of `app.year`, given an optioinal timestamp of
- * seconds from epoch.
- * @param {number} (Optional) time - The time of the last updated data
- */
-app.updateLastUpdated = function(time) {
-    time = parseInt(time) || new Date().getTime();
-    app.lastUpdated[app.year] = time;
-    if (app.year === new Date().getFullYear()) {
-        // This year, also save to cache
-        localStorage["lastUpdated"] = new Date().getTime();
-    }
-    app.readLastUpdated();
-}
-/**
- * Reads the last saved data of `app.year`, or read it from cache if not found
- * (this year only), and displays it on the appropriate area
- */
-app.readLastUpdated = function() {
-    var lastUpdated = app.lastUpdated[app.year];
-    if (!lastUpdated) {
-        // Test if it is this year
-        if (app.year === new Date().getFullYear()) {
-            // Try read it from cache
-            if (localStorage["lastUpdated"]) {
-                lastUpdated = parseInt(localStorage["lastUpdated"]);
-                // Also add it to `app.lastUpdated`
-                app.lastUpdated[app.year] = lastUpdated;
-                lastUpdated = archive.list.prototype.date(lastUpdated);
-            } else {
-                lastUpdated = "N/A";
-            }
         } else {
-            lastUpdated = "N/A";
+            $("#year").removeClass("change");
         }
-    } else {
-        // Find the last updated time
-        lastUpdated = archive.list.prototype.date(lastUpdated);
+
+        // Refresh every stuff
+        for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+            journal.archive.data[app.year][key]["processed"] = 0;
+        }
     }
-    $("#last-updated").html(lastUpdated);
-}
+    var _attemptLoadDataFromQueue = function() {
+        if (app.yearQueue[app.year]) {
+            app.yearChange[app.year] = true;
+            // Push to the new data
+            journal.archive.data[app.year].push.apply(journal.archive.data[app.year], app.yearQueue[app.year]);
+            // Then sort it to remove the duplicate
+            edit.sortArchive();
+            edit.removeDuplicate();
+            // Remove the data from the queue
+            delete app.yearQueue[app.year];
+        }
+    }
+    var _processQueuedData = function() {
+// Test if there are any data in the queue
+        _attemptLoadDataFromQueue();
+
+        // Filter out undefined element and entries not belong to this year
+        var queuedYears = _getEntriesNotInThisYear();
+
+        if (queuedYears.length > 0) {
+            _processQueuedYears(queuedYears);
+        }
+    }
+    /**
+     * Load a script and passed in a function
+     * @param {object} data - the data to be loaded
+     * @param {function} callback - the callback function after the data is
+     *     loaded
+     * @private
+     */
+    var _loadData = function(data, callback) {
+        // Raw data
+        console.log("app.loadScript(): data.length = " + data.length);
+
+        // Get the version of the data
+        var version = "", i;
+        for (var i = 0; i !== data.length && data[i] != "["; ++i) {
+            version += data[i];
+        }
+        version = parseInt(version);
+        if (version) {
+            app.version[app.year] = version;
+        }
+
+        journal.archive.data[app.year] = app.updateData(JSON.parse(data.substr(i)));
+        callback();
+    }
+    //endregion
+
+    /* The function to be called to reload the layout */
+    var _displayDataInList = function() {
+        $("#total-entry").text(journal.archive.data[app.year].length);
+        ////console.log("Calling app.list(" + filter + ")");
+        ////console.log("\t> lastLoaded = " + app.lastLoaded);
+        new app.list(filter);
+        app.dataLoaded[app.year] = true;
+    }
+
+    //endregion
+
+    return {
+        //region Public variables
+        monthArray: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        weekArray: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        /** The year to be displayed */
+        year: new Date().getFullYear(),
+        years: [],
+        /** The data to be appended to the year, if this year has not already loaded */
+        yearQueue: {},
+        /** The years that have unsaved changes (used for remind the user to upload the data) */
+        yearChange: {},
+        /** The number of the pages already loaded */
+        lastLoaded: 0,
+        /** The index of the page that is currently being displayed */
+        currentDisplayed: -1,
+        /** The number of entry displayed */
+        displayedNum: 0,
+        /** The number of lines displayed */
+        displayedLines: 0,
+        /** The number of characters displayed */
+        displayedChars: 0,
+        /** The total of time used on writing all the displayed entries (if appliable), in seconds */
+        displayedTime: 0.0,
+        /** The index of the page that last loaded. Set to -1 so that no entry is loaded at the beginning */
+        lastQualified: -1,
+        /** The number of pages to be loaded each time */
+        pageLoaded: 1,
+        /** Available tags to be searched */
+        preloadedTags: [],
+        /** The keyword to be searched */
+        command: "",
+        /** The boolean indicates if some mutually exclusive functions should be running if any others are */
+        isFunction: true,
+        /** The variable to track the media that do not belong to any entry */
+        lostMedia: [],
+
+        /** Whether the date of this year is loaded */
+        dataLoaded: {},
+        /** When the data of this year is updated */
+        lastUpdated: {},
+
+        /** The data decoding version of this app, integer decimal only */
+        version: {
+            data: 2
+        },
+
+        contentType: {
+            BULB: 1
+        },
+        //endregion
+
+        /**
+         * Initializes this app
+         */
+        initializeApp: function() {
+            // Enter to search
+            var thisApp = this;
+            // Header fix
+            showLoginButton();
+            // Initialize preloaded tags
+            _initializePreloadedTags();
+
+            // Clear the field of search input every time on focus
+            _initializeQueryTextbox(thisApp);
+            // Change the format of time on hover
+            _initializeReformatSummaryTimeOnHover();
+            // Hover to update other-status
+            _initializeHeaderInfoUpdateOnHover();
+            // Set the current year
+            $("#year").effect("slide", {direction: "up"});
+            app.getYears();
+            // Network setup
+            _initializeNetworkSetup();
+            _initializeIconsAppearance();
+        },
+
+        /**
+         * Reloads the content view of the journal.
+         * @param {String} filter - The string representing the filter of
+         *     display
+         * @param {String} newContent - The string representing the new content
+         *     of journal archive
+         * @version 2.0 - Removes param `forceReload` as every call to this
+         *     function needs a force reload
+         */
+        addLoadDataWithFilter: function(filter, newContent) {
+            // Test the validity of `newContent`
+            if (newContent == "") {
+                // Try to add nothing
+                ////console.log("addLoadDataWithFilter()\tNo new content!");
+                animation.error(log.LOAD_DATA_FAIL + log.NO_CONTENT);
+                animation.deny("#refresh-media");
+                return;
+            } else if (newContent == undefined) {
+                // Process the data on this year. Return if this year has
+                // nothing at all even after reading data from the queue
+                if (!journal.archive.data[app.year]) {
+                    journal.archive.data[app.year] = [];
+                }
+
+                _processQueuedData();
+
+                if (journal.archive.data[app.year].length === 0) {
+                    ////console.log("addLoadDataWithFilter()\tNo archive
+                    // data!");
+                    animation.warn(log.LOAD_DATA_FAIL + log.NO_ARCHIVE);
+                    animation.deny("#refresh-media");
+                    return;
+                }
+            }
+
+            // Reset the UI
+            // Hide anyway
+            var $search = $("#search-result");
+            $search.hide();
+            // Also hide the detail view
+            app.detail.prototype.hideDetail();
+            // Test if #add has sub-menu
+            animation.testAllSubs();
+
+            // Try to find the new data (if applicable)
+            if (!app.dataLoaded[app.year]) {
+                if (newContent) {
+                    // New contents available! Refresh the new data
+                    animation.debug(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
+                    console.log("addLoadDataWithFilter(): data.length = " + newContent.length);
+                    _loadData(newContent, _displayDataInList);
+                    edit.saveDataCache();
+                }
+            }
+
+            // Start to reload, HERE GOES ALL THE DATA RESET
+            _resetDataAndLayout(filter);
+            _displayDataInList();
+
+            // Show the final result anyway
+            $search.fadeIn(500);
+        },
+
+        /**
+         * Simply refreshes and force reloads the app
+         */
+        refresh: function() {
+            app.addLoadDataWithFilter("");
+        },
+
+        updateData: function(data) {
+            if (!app.version[app.year]) {
+                app.version[app.year] = 1;
+            }
+            if (app.version[app.year] !== app.version.data) {
+                // Let the user know the content is going to be upgraded
+                animation.debug(log.CONTENTS_UPGRADING);
+                switch (app.version[app.year]) {
+                    case 1:
+                        // Up to v2
+                        // Integrate textTags and iconTags
+                        for (var i = 0; i !== data.length; ++i) {
+                            var iconTags = data[i]["iconTags"],
+                                textTags = data[i]["textTags"];
+                            if (iconTags) {
+                                // There are iconTags
+                                iconTags = app.tag().getIconsInNameByVal(iconTags).join("|");
+                                // Add icon tags to texttags
+                                if (textTags) {
+                                    textTags += "|" + iconTags;
+                                } else {
+                                    textTags += iconTags;
+                                }
+                            }
+                            textTags = textTags || "";
+                            var tags;
+                            if (data[i]["tags"]) {
+                                // Append to this
+                                tags += "|" + textTags;
+                            } else {
+                                tags = textTags;
+                            }
+                            // Delete deprecated tags
+                            delete data[i]["icontags"];
+                            delete data[i]["textTags"];
+                        }
+                        app.version[app.year] = 2;
+                    // Intentionally omit "break;"
+                }
+            }
+            // Fix the version if something is wrong
+            if (app.version[app.year] > app.version.data) {
+                app.version[app.year] = app.version.data;
+            }
+            return data;
+        },
+
+        /**
+         * Gets all the available year by the folder name under /core/ and
+         * stores them in `app.years`, in ascending order (earliest year first)
+         */
+        getYears: function() {
+            animation.log(log.GET_YEARS_START);
+            getTokenCallback(function(token) {
+                $.ajax({
+                        type: "GET",
+                        url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/children?select=name,createdBy&orderby=name&access_token=" + token
+                    })
+                    .done(function(data) {
+                        var itemList = data["value"];
+                        app.years = [];
+                        for (var i = 0; i !== itemList.length; ++i) {
+                            var name = itemList[i]["name"];
+                            // Deliberately not force equal them to test if
+                            // `name` is an integer
+                            if (parseInt(name) == name) {
+                                name = parseInt(name);
+                                app.years.push(name);
+                                network.yearFolders.push(name);
+                            }
+                        }
+                        app.user = itemList[0]["createdBy"]["user"]["displayName"];
+                        $("#username").html(app.user);
+                        // If it is the first day of the year and this folder
+                        // is not created, add this year to `app.years`
+                        if (app.years.indexOf(new Date().getFullYear()) === -1) {
+                            // It is supposed to the latest year
+                            app.years.push(new Date().getFullYear());
+                            // So unnecessary to sort it after push
+                        }
+                        backupAll();
+                        animation.testYearButton();
+                        animation.log(log.GET_YEARS_END);
+                    })
+                    .fail(function(xhr, status, error) {
+                        animation.error(log.GET_YEARS_FAIL, error);
+                        app.getYears();
+                    });
+            });
+        },
+
+        /**
+         * Calls the program to start changing the year, and if the change
+         * succeeds, it will call `app.yearUpdate` for further updating.
+         * However, this This function will check the correctness of the year
+         * passed in, and will automatically download the contents of the data
+         * if no data found for this year in the memory.
+         * @param {number} year - The year to go
+         */
+        yearUpdateTry: function(year) {
+            app.year = year;
+            if (app.years.length === 0) {
+                app.years.push(app.year);
+            }
+            if (!journal.archive.data[year]) {
+                // The data is not loaded yet, download the data
+                downloadFile(undefined, true);
+            } else {
+                app.yearUpdate(year);
+            }
+        },
+
+        /**
+         * Change the year of the contents to be displayed, and refreshes the
+         * display view (by calling `app.refresh()`). This function does not
+         * accept any parameters by using `app.year` to update everything with
+         * it. It does NOT check the validness of `app.year`, and will assume
+         * that it is a valid one
+         * (e.g. the data is already loaded). However, if `app.year` is invalid
+         * that
+         * `(app.years.indexOf(app.year))` yields -1, `app.year` will be set to
+         * this
+         * year and it will call `app.yearUpdateTry()`. This function will also
+         * correct the buttons for switching between years.
+         */
+        yearUpdate: function() {
+            app.refresh();
+            // Test the correctness of the buttons
+            animation.testYearButton();
+            animation.debug(log.YEAR_SWITCHED_TO + app.year);
+        },
+
+        /**
+         * Sets the year to the previous year.
+         * This function will guarantee the correctness of `app.year`, and will
+         * correct it if `app.year` is invalid.
+         * @param {boolean} isToEnd - If year goes to the earliest possible year
+         */
+        prev: function(isToEnd) {
+            if (network.isAjaxActive) {
+                // Do not switch if network is still working
+                animation.warn(log.NETWORK_WORKING);
+                return;
+            }
+            var index = app.years.indexOf(app.year);
+            if (index === -1) {
+                // Current year is invalid, sets to this year
+                app.yearUpdateTry(new Date().getFullYear());
+                return;
+            }
+            if (isToEnd) {
+                index = 0;
+            } else {
+                --index;
+            }
+            app.yearUpdateTry(app.years[index]);
+        },
+
+        /**
+         * Sets the year to the next year
+         * This function will guarantee the correctless of `app.year`, and will
+         * correct it if `app.year` is invalid.
+         * @param {boolean} isToEnd - If year goes to the latest year (i.e. this
+         *     year)
+         */
+        next: function(isToEnd) {
+            if (network.isAjaxActive) {
+                // Do not switch if network is still working
+                animation.warn(log.NETWORK_WORKING);
+                return;
+            }
+            var index = app.years.indexOf(app.year);
+            if (index === -1) {
+                // Current year is invalid, sets to this year
+                app.yearUpdateTry(new Date().getFullYear());
+                return;
+            }
+            if (isToEnd) {
+                index = app.years.length - 1;
+            } else {
+                ++index;
+            }
+            app.yearUpdateTry(app.years[index]);
+        },
+
+        /**
+         * Updates when the last saved data of `app.year` is updated, given an
+         * optioinal timestamp of seconds from epoch
+         * @param {number} time (Optional) - the time that marks when the data
+         *     is last updated, or set to current time
+         */
+        updateLastUpdated: function(time) {
+            time = parseInt(time) || new Date().getTime();
+            app.lastUpdated[app.year] = time;
+            if (app.year === new Date().getFullYear()) {
+                // This year, also save to cache
+                localStorage["lastUpdated"] = new Date().getTime();
+            }
+            app.readLastUpdated();
+        },
+
+        /**
+         * Reads the last saved data of `app.year`, or read it from cache if not
+         * found
+         * (this year only), and displays it on the appropriate area
+         */
+        readLastUpdated: function() {
+            var lastUpdated = app.lastUpdated[app.year];
+            if (!lastUpdated) {
+                // Test if it is this year
+                if (app.year === new Date().getFullYear()) {
+                    // Try read it from cache
+                    if (localStorage["lastUpdated"]) {
+                        lastUpdated = parseInt(localStorage["lastUpdated"]);
+                        // Also add it to `app.lastUpdated`
+                        app.lastUpdated[app.year] = lastUpdated;
+                        lastUpdated = archive.list.prototype.date(lastUpdated);
+                    } else {
+                        lastUpdated = "N/A";
+                    }
+                } else {
+                    lastUpdated = "N/A";
+                }
+            } else {
+                // Find the last updated time
+                lastUpdated = archive.list.prototype.date(lastUpdated);
+            }
+            $("#last-updated").html(lastUpdated);
+        },
+
+        /**
+         * Test if the bulb with this timestamp has already been merged into
+         * the archive
+         * @param timestamp - the timestamp of the bulb
+         * @return true if this bulb is already in the journal
+         */
+        isBulbExist: function(timestamp) {
+            // TODO implement it
+        },
+
+        /**
+         * Adds a bulb into the archive
+         * @require content is a valid bulb content
+         * @param content - the content of a bulb in bulb._data
+         * @param timestamp - the timestamp of the bulb
+         */
+        addBulb: function(content, timestamp) {
+            var newData = {
+                type: app.contentType.BULB,
+                time: {
+                    created: timestamp
+                },
+                text: {
+                    body: content["content"]
+                }
+            };
+
+            if (content["location"]) {
+                newData["place"] = {
+                    latitude: content["location"]["lat"],
+                    longitude: content["location"]["long"]
+                };
+                newData["place"]["title"] = content["location"]["name"] || "";
+            }
+
+            if (content["website"]) {
+                newData["weblink"] = {
+                    url: content["website"]
+                };
+            }
+
+            journal.archive.data[app.year].push(newData);
+
+            $("#year").addClass("change");
+            bulb.setIsMerged(timestamp);
+        },
+
+        /**
+         * Wraps up the integration of bulbs
+         * @require called after all the bulbs are downloaded and merged
+         */
+        finishMergingBulbs: function() {
+             // Refresh the data and display it
+            app.refresh();
+
+            // Upload the file
+            // TODO remove the bulb after
+            //uploadFile();
+        }
+    }
+
+}();
+
+
 /**
  * Displays a list on the #list
  * @param {String} filter - The request string to display certain filter
@@ -1396,7 +1485,7 @@ app.detail.prototype = {
             var styleArray = app.util.crop(1024, 720, width, height),
                 styleHtml = app.util.style(styleArray),
             // !!!!!IMPORTANT!!!!! THE DIRECTORY OF THE FILE
-                fileDir = app.resource + thumbClip.thumb;
+                fileDir = _resource + thumbClip.thumb;
             if (!fileDir.match(/.(jpg|png)$/)) {
                 fileDir = fileDir + ".jpg";
             }
@@ -2578,14 +2667,6 @@ app.cleanResource = function() {
     }
 }
 
-/**
- * Test if the bulb with this timestamp has already been merged into the archive
- * @param timestamp - the timestamp of the bulb
- * @return true if this bulb is already in the journal
- */
-app.isBulbExist = function(timestamp) {
-    // TODO implement it
-}
 
 $(document).ready(function() {
     app.app = $("div#app");

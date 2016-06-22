@@ -53,7 +53,8 @@ network.init = function(breakpoint) {
 
 /**
  * Sets the percent of the network bar to show the progress of the network
- * @param {number} percent - The percent of the network bar. A number between 0 and 1
+ * @param {number} percent - The percent of the network bar. A number between 0
+ *     and 1
  */
 network.setPercent = function(percent) {
     network.percent = percent;
@@ -77,7 +78,8 @@ network.next = function() {
 }
 
 /**
- * Destroies the network bar and hide it. This function will set the percent to 1 then hide it
+ * Destroies the network bar and hide it. This function will set the percent to
+ * 1 then hide it
  */
 network.destroy = function() {
     if (network.percent < 1) {
@@ -95,10 +97,16 @@ network.destroy = function() {
  */
 
 /**
- * Returns the url of resource folder (where the media in the entry are located) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/resource/`year`". The returned string should be appended with ":/" if necessary
- * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/`year`"
- * @param {number} year (Optional) - The year of the resource folder. Default value is `app.year`
- * @returns {string} - The correct url given `app.year` (the year displayed) or specified year
+ * Returns the url of resource folder (where the media in the entry are
+ * located) in the format of
+ * "https://api.onedrive.com/v1.0/drive/special/approot:/resource/`year`". The
+ * returned string should be appended with ":/" if necessary
+ * @param {boolean} isAbsolute (Optional) - if set to true the format will be
+ *     "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/resource/`year`"
+ * @param {number} year (Optional) - The year of the resource folder. Default
+ *     value is `app.year`
+ * @returns {string} - The correct url given `app.year` (the year displayed) or
+ *     specified year
  */
 function getResourceUrlHeader(isAbsolute, year) {
     year = year || app.year;
@@ -107,10 +115,16 @@ function getResourceUrlHeader(isAbsolute, year) {
 }
 
 /**
- * Returns the url of data folder (where media that are not in the entries are located) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/data/`year`". The returned string should be appended with ":/" if necessary
- * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/`year`"
- * @param {number} year (Optional) - The year of the resource folder. Default value is `app.year`
- * @returns {string} - The correct url given `app.year` (the year displayed) or specified year
+ * Returns the url of data folder (where media that are not in the entries are
+ * located) in the format of
+ * "https://api.onedrive.com/v1.0/drive/special/approot:/data/`year`". The
+ * returned string should be appended with ":/" if necessary
+ * @param {boolean} isAbsolute (Optional) - if set to true the format will be
+ *     "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/data/`year`"
+ * @param {number} year (Optional) - The year of the resource folder. Default
+ *     value is `app.year`
+ * @returns {string} - The correct url given `app.year` (the year displayed) or
+ *     specified year
  */
 function getDataUrlHeader(isAbsolute, year) {
     year = year || app.year;
@@ -119,10 +133,15 @@ function getDataUrlHeader(isAbsolute, year) {
 }
 
 /**
- * Returns the url of core data (.js file) in the format of "https://api.onedrive.com/v1.0/drive/special/approot:/core/`year`/data.js". The returned string should be appended with ":/" if necessary
- * @param {boolean} isAbsolute (Optional) - if set to true the format will be "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/`year`/data.js"
- * @param {number} year (Optional) - The year of the core data. Default value is `app.year`
- * @returns {string} - The correct url given `app.year` (the year displayed) or `app.year` to the core data .js
+ * Returns the url of core data (.js file) in the format of
+ * "https://api.onedrive.com/v1.0/drive/special/approot:/core/`year`/data.js".
+ * The returned string should be appended with ":/" if necessary
+ * @param {boolean} isAbsolute (Optional) - if set to true the format will be
+ *     "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core/`year`/data.js"
+ * @param {number} year (Optional) - The year of the core data. Default value
+ *     is `app.year`
+ * @returns {string} - The correct url given `app.year` (the year displayed) or
+ *     `app.year` to the core data .js
  */
 function getCoreDataUrlHeader(isAbsolute, year) {
     year = year || app.year;
@@ -138,8 +157,11 @@ function getBulbUrlHeader() {
 
 
 /**
- * Downloads the file (including the text file and the media file) from OneDrive. If even the folders are not created, this function will also make sure necessary folders exist
- * @param {String} url - The direct url of the file. Default is from core/data.js
+ * Downloads the file (including the text file and the media file) from
+ * OneDrive. If even the folders are not created, this function will also make
+ * sure necessary folders exist
+ * @param {String} url - The direct url of the file. Default is from
+ *     core/data.js
  * @param {Boolean} textOnly - whether to download text file or not
  */
 function downloadFile(url, textOnly) {
@@ -206,9 +228,11 @@ function downloadFile(url, textOnly) {
                     });
                     animation.finished("#download");
                     if (xhr.status == 404) {
-                        // Not found, but the folder is there, guess the data should be in `app.yearQueue`
+                        // Not found, but the folder is there, guess the data
+                        // should be in `app.yearQueue`
                         if (app.yearQueue[app.year]) {
-                            // It IS in `app.yearQueue`, pretend it is a successful load
+                            // It IS in `app.yearQueue`, pretend it is a
+                            // successful load
                             app.yearUpdate();
                             app.refresh();
                             return;
@@ -228,9 +252,11 @@ function downloadFile(url, textOnly) {
 }
 
 /**
- * Recusively reads all the children under resource folder and read them as media.
- * This function will not refresh the token because it assumes that it will be only called after downloadFile()
- * @param {string} url - The address of "nextLink", should be empty at the first call. Used for recursion
+ * Recusively reads all the children under resource folder and read them as
+ * media. This function will not refresh the token because it assumes that it
+ * will be only called after downloadFile()
+ * @param {string} url - The address of "nextLink", should be empty at the
+ *     first call. Used for recursion
  */
 function downloadMedia(url) {
     // Reset map
@@ -291,7 +317,8 @@ function downloadMedia(url) {
 }
 
 /**
- * Creates a backup file for all the files given `app.years`. Should only be called in `app.getYears`
+ * Creates a backup file for all the files given `app.years`. Should only be
+ * called in `app.getYears`
  * @param {Object} - The list of years to backup
  */
 function backupAll(years) {
@@ -326,7 +353,8 @@ function backupAll(years) {
                         Prefer: "respond-async"
                     }
                 })
-                ////////////////////////////// ADD PROGRESS BAR SOMEWHERE BETWEEN !!!!!!!!  //////////////
+                ////////////////////////////// ADD PROGRESS BAR SOMEWHERE
+                // BETWEEN !!!!!!!!  //////////////
                 .done(function() {
                     ////console.log("uploadFile():\t Done backup");
                     animation.debug(log.CONTENTS_UPLOAD_BACKUP);
@@ -348,16 +376,28 @@ function backupAll(years) {
 }
 
 /**
- * A helper function. Uploads journal.archive.data to OneDrive and creates a backup. If this folder does not exist, this function will create a folder before uploading
+ * A helper function. Uploads journal.archive.data to OneDrive and creates a
+ * backup. If this folder does not exist, this function will create a folder
+ * before uploading
  * @param {number} dataYear (Optional) - The year of the data to be uploaded
+ * @param {function} callbackOnSuccess (Optional) - the callback function after
+ *     uploading is successful
  */
-function uploadFile(dataYear) {
+function uploadFile(dataYear, callbackOnSuccess) {
     dataYear = parseInt(dataYear) || app.year;
     // Change loading icons and disable click
     $("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+
+    // Test if bulb(s) are still being processed
+    if (!bulb.isProcessing) {
+        animation.error(log.BULB_STILL_BUSY);
+        return;
+    }
+
     getTokenCallback(function(token) {
         /**
-         * The function to be called to upload the file. This function assumes that the folder has already been prepared
+         * The function to be called to upload the file. This function assumes
+         * that the folder has already been prepared
          */
         var upload = function() {
             // Get the version
@@ -377,6 +417,9 @@ function uploadFile(dataYear) {
                     $("#year").removeClass("change");
                     app.updateLastUpdated();
                     animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
+
+                    if (typeof callbackOnSuccess === "function")
+                        callbackOnSuccess();
                 })
                 .fail(function(xhr2, status2, error2) {
                     animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
@@ -402,7 +445,9 @@ function uploadFile(dataYear) {
 }
 
 /**
- * Uploads `journal.archive.data` of this year as a single file to OneDrive and creates a backup. If this folder does not exist, this function will create a folder before uploading by calling `uploadFile()`
+ * Uploads `journal.archive.data` of this year as a single file to OneDrive and
+ * creates a backup. If this folder does not exist, this function will create a
+ * folder before uploading by calling `uploadFile()`
  * @see uploadFile()
  */
 function uploadSingleFile() {
@@ -411,7 +456,9 @@ function uploadSingleFile() {
 }
 
 /**
- * Uploads all `journal.archive.data` of the years that have "edit" tracked in `app.yearChange`. This function will call `uploadFile()` separately for each year and create backup files for each function
+ * Uploads all `journal.archive.data` of the years that have "edit" tracked in
+ * `app.yearChange`. This function will call `uploadFile()` separately for each
+ * year and create backup files for each function
  * @see uploadFile()
  */
 function uploadAllFiles() {
@@ -470,7 +517,8 @@ function getCoverPhoto(selectorHeader, term, more, type) {
 /**
  * Creates a folder under data/
  * @param {string} dateStr - The name of the folder to be created
- * @param {function} callback - The callback function after completion of creating
+ * @param {function} callback - The callback function after completion of
+ *     creating
  */
 function createDateFolder(dateStr, callback) {
     getTokenCallback(function(token) {
@@ -505,9 +553,13 @@ function createDateFolder(dateStr, callback) {
 }
 
 /**
- * Creates the necessary folders (/core/, /resource/, /data/) for this `app.year`
- * @param {function} callback(token) - The callback function after all the folders exist (already existed or newly created), can have a parameter for access_token
- * @param {number} breakpoints - The number of breakpoints for network progress bar
+ * Creates the necessary folders (/core/, /resource/, /data/) for this
+ * `app.year`
+ * @param {function} callback(token) - The callback function after all the
+ *     folders exist (already existed or newly created), can have a parameter
+ *     for access_token
+ * @param {number} breakpoints - The number of breakpoints for network progress
+ *     bar
  */
 function createFolders(callback, breakpoints) {
     getTokenCallback(function(token) {
@@ -540,7 +592,8 @@ function createFolders(callback, breakpoints) {
                 })
                 .fail(function(xhr) {
                     if (xhr.status == 409) {
-                        // Conflict, considered this folder is created successfully
+                        // Conflict, considered this folder is created
+                        // successfully
                         network.next();
                         if (++created === urls.length) {
                             // All have been created
@@ -553,7 +606,8 @@ function createFolders(callback, breakpoints) {
                         if (!abort) {
                             animation.error(log.CONTENTS_UPLOAD_REGISTER_FAIL);
                         }
-                        // Abort everything, to prevent multiple prompt of the error
+                        // Abort everything, to prevent multiple prompt of the
+                        // error
                         abort = true;
                     }
                 });
@@ -587,7 +641,7 @@ function fetchBulbLinks(url) {
         })
         .done(function(data) {
             // Test if there is more bulbs available
-            if (data["@odata.nextLink"]) {
+            if (data["@odata.nextLink"] && false) { // never go into the loop (intended)
                 // More bulbs available!
                 var nextUrl = data["@odata.nextLink"];
 
@@ -606,7 +660,7 @@ function fetchBulbLinks(url) {
 
             // Add these bulbs to the queue to process them
             var itemList = data["value"];
-            bulb.totalBulbs += itemList.length;
+            bulb.setTotalBulbs(itemList.length);
 
             for (var key = 0, len = itemList.length; key != len; ++key) {
                 var dataElement = {
@@ -616,7 +670,7 @@ function fetchBulbLinks(url) {
                 var filename = itemList[key]["name"];
                 var timestamp = bulb.getTimeFromEpoch(filename);
 
-                bulb.data[timestamp] = dataElement;
+                bulb.setData(timestamp, dataElement);
 
                 bulb.extractRawContent(timestamp);
 
@@ -626,7 +680,8 @@ function fetchBulbLinks(url) {
 }
 
 /**
- * Fetch the bulb content given a timestamp to be used as an index to search data from `bulb.data`
+ * Fetch the bulb content given a timestamp to be used as an index to search
+ * data from `bulb.data`
  * @param {string} timestamp The timestamp
  */
 function fetchBulbContent(timestamp) {
@@ -646,13 +701,21 @@ function fetchBulbContent(timestamp) {
             bulb.extractRawContent(timestamp);
             // Merge into journal archive data
             bulb.mergeIntoArchive(timestamp);
+        }).finally(function() {
+            // Decrement the total bulbs to be processed
+            bulb.decrementBulbNumber();
+            if (bulb.getTotalbulbs() <= 0) {
+                // None bulbs left
+                app.finishMergingBulbs();
+            }
         });
     })
 }
 
 /**
  * Removes the file on OneDrive by an id
- * This method will only ATTEMPT to remove the file. It doesn't handle any exceptions should the removal fail
+ * This method will only ATTEMPT to remove the file. It doesn't handle any
+ * exceptions should the removal fail
  * @param id - the id of the file to be removed
  */
 function removeFileById(id) {

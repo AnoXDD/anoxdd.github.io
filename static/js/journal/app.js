@@ -244,7 +244,8 @@ window.app = function() {
         for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
             journal.archive.data[app.year][key]["processed"] = 0;
         }
-    }
+    };
+
     var _attemptLoadDataFromQueue = function() {
         if (app.yearQueue[app.year]) {
             app.yearChange[app.year] = true;
@@ -704,7 +705,7 @@ window.app = function() {
          */
         addBulb: function(content, timestamp) {
             var newData = {
-                type: app.contentType.BULB,
+                contentType: app.contentType.BULB,
                 time: {
                     created: timestamp
                 },
@@ -739,6 +740,9 @@ window.app = function() {
          */
         finishMergingBulbs: function() {
             // Refresh the data and display it
+            // TODO: the app seems to remove those bulbs on refresh, find a way
+            // to solve it
+            // TODO by the way "bullhorn" seems to be a good icon for bulb
             app.refresh();
             bulb.isProcessing = false;
 

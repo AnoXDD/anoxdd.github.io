@@ -389,7 +389,7 @@ function uploadFile(dataYear, callbackOnSuccess) {
     $("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
 
     // Test if bulb(s) are still being processed
-    if (!bulb.isProcessing) {
+    if (bulb.isProcessing) {
         animation.error(log.BULB_STILL_BUSY);
         return;
     }

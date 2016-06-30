@@ -31,7 +31,7 @@ window.app = function() {
                 if (n.keyCode == 13) {
                     app.command = $query.val();
                     $query.effect("highlight", {color: "#dddddd"});
-                    app.addLoadDataWithFilter(app.command);
+                    app.addLoadDataWithFilter(app.command, true);
                 }
             })
             // Autocomplete for preloaded tags
@@ -774,9 +774,9 @@ app.list = function(filter) {
         this.loadmore = d.children("div.loadmore");
         this.loadmore.on("click", function() {
             ////console.log("> Loadmore clicked");
-            app.addLoadDataWithFilter(filter);
+            f.load(filter);
         });
-        app.addLoadDataWithFilter(filter);
+        this.load(filter);
         // Scroll to load more
         d.off("scroll").on("scroll", function() {
             ////console.log("scrollTop() = " + $(this).scrollTop() + ";\t
@@ -785,7 +785,7 @@ app.list = function(filter) {
             if ($(this).scrollTop() > (f.contents.height() - d.height())) {
                 if ($(".loadmore").length != 0) {
                     ////console.log("> Loadmore scrolled");
-                    app.addLoadDataWithFilter(app.command);
+                    f.load(app.command);
                 }
             }
         });

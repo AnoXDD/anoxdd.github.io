@@ -189,7 +189,7 @@ edit.init = function(overwrite, index) {
                         var isMonthMatch = date.getMonth() + 1 == dateStr.substring(0, 2),
                             isDayMatch = date.getDate() == dateStr.substring(2, 4),
                         // Has to match both original year in title and `app.year`
-                            isYearMatch = date.getFullYear() % 100 == dateStr.substring(4, 6) && date.getFullYear() === app.year;
+                            isYearMatch = date.getFullYear() % 100 == dateStr.substring(4, 6) || date.getFullYear() === app.year;
                         if (isMonthMatch && isDayMatch && isYearMatch) {
                             // Everything matches, good work user
                             return;

@@ -31,7 +31,7 @@ window.app = function() {
                 if (n.keyCode == 13) {
                     app.command = $query.val();
                     $query.effect("highlight", {color: "#dddddd"});
-                    thisApp.load(app.command, true);
+                    app.load(app.command, true);
                 }
             })
             // Autocomplete for preloaded tags

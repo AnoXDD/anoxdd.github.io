@@ -437,7 +437,9 @@ window.app = function() {
                     // New contents available! Refresh the new data
                     animation.debug(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
                     console.log("addLoadDataWithFilter(): data.length = " + newContent.length);
-                    _loadData(newContent, _displayDataInList(filter));
+                    _loadData(newContent, function() {
+                        _displayDataInList(filter)
+                    });
                     edit.saveDataCache();
                 }
             }

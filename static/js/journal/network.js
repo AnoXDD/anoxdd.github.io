@@ -186,7 +186,7 @@ function downloadFile(url, textOnly) {
                 })
                 .done(function(data, status, xhr) {
                     window.app.dataLoaded[app.year] = false;
-                    window.addLoadDataWithFilter("", xhr.responseText);
+                    app.addLoadDataWithFilter("", xhr.responseText);
                     ////console.log("downloadFile()\tFinish core data");
                     animation.log(log.CONTENTS_DOWNLOAD_TEXT);
                     // Now the data is up-to-date

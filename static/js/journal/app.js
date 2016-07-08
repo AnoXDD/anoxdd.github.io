@@ -11,8 +11,7 @@ journal.archive.map = {};
 window.app = function() {
 
     //region Private variables
-    /** The resource folder of all the images/video/music covers, etc. */
-    var _resource = "resource/";
+    
     //endregion
 
     //region Private functions
@@ -313,6 +312,8 @@ window.app = function() {
 
     return {
         //region Public variables
+        /** The resource folder of all the images/video/music covers, etc. */
+        resource : "resource/",
         monthArray: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         weekArray: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
         /** The year to be displayed */
@@ -1497,7 +1498,7 @@ app.detail.prototype = {
             var styleArray = app.util.crop(1024, 720, width, height),
                 styleHtml = app.util.style(styleArray),
             // !!!!!IMPORTANT!!!!! THE DIRECTORY OF THE FILE
-                fileDir = _resource + thumbClip.thumb;
+                fileDir = app.resource + thumbClip.thumb;
             if (!fileDir.match(/.(jpg|png)$/)) {
                 fileDir = fileDir + ".jpg";
             }

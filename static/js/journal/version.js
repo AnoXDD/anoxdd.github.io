@@ -1,4 +1,4 @@
-﻿app.version.main = "v4.3.1 Build 101215_0936";
+﻿app.version.main = "v4.5.2 Build 071016_2049";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -13,7 +13,15 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  * 
  * Todo add an integrity check before logging in
- * 
+ *
+ * v4.5 - Bulb update
+ * [Chg] Refactor the code to make it easier to organize
+ * [Chg] Put all .js into a single file to speed to load speed in China
+ * [Add] Add Bulb functionality
+ *
+ * v4.4 - SCSS update
+ * [Chg] Start using SCSS to organize .css file
+ *
  * v4.2 - Comment update
  * [Add] Comment any entries!
  * 

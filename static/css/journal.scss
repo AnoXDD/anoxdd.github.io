@@ -335,7 +335,7 @@ body {
   margin-left: auto;
   margin-right: auto;
   position: relative;
-  top: 8%;
+  top: 20px;
   transition: .4s ease;
   width: 90%;
 
@@ -346,6 +346,7 @@ body {
 
 #contents {
   transition: height .2s;
+  height: 100%;
 
   &::before {
     background-color: rgba(146, 146, 146, 0.5);
@@ -1833,12 +1834,6 @@ body {
 
 .no-rgba .vp-progress, .no-rgba .vp-volume-bar {
   background: #000;
-}
-
-@media (max-height: 750px) {
-  #app {
-    top: 0;
-  }
 }
 
 @media (-webkit-min-device-pixel-ratio: 1.5) {
@@ -3513,64 +3508,67 @@ body.sensitive-mode .sensitive {
   opacity: 0 !important;
 }
 
-body.fullscreen #app {
-  height: 95%;
-  top: 2%;
-}
+body.fullscreen {
+  #app {
+    height: 95%;
+    top: 2%;
+  }
 
-body.fullscreen #text-area {
-  width: 100%;
-}
+  #text-area {
+    width: 100%;
+  }
 
-body.fullscreen #feedback {
-  top: 9.5%;
-}
+  #feedback {
+    top: 9.5%;
+  }
 
-body.fullscreen #feedback p {
-  background-color: #444;
-  box-shadow: 0 0 15px #111;
-  height: 17px;
-  width: 20%;
-}
+  #feedback p {
+    background-color: #444;
+    box-shadow: 0 0 15px #111;
+    height: 17px;
+    width: 20%;
+  }
 
-body.fullscreen #errors {
-  top: 13%;
-}
+  #errors {
+    top: 13%;
+  }
 
-body.fullscreen #entry-line {
-  display: none;
-}
+  #entry-line {
+    display: none;
+  }
 
-body.fullscreen #entry-summary {
-  margin-right: 4ch;
-  margin-top: 2px;
-}
+  #entry-summary {
+    margin-right: 4ch;
+    margin-top: 2px;
 
-body.fullscreen #entry-body {
-  font-size: 18px;
-  height: -webkit-calc(100% - 414px);
-  padding: 60px 60px 300px 60px;
-  width: -webkit-calc(100% - 129px);
-}
+    .entry-data {
+      font-size: 20px;
+      height: 23px;
+      margin: initial;
+      margin-right: .5ch;
+      top: .4em;
+    }
 
-body.fullscreen #entry-summary .entry-data {
-  font-size: 20px;
-  height: 23px;
-  margin: initial;
-  margin-right: .5ch;
-  top: .4em;
-}
+    .entry-time-elem {
+      margin-bottom: 5px;
+    }
+  }
 
-body.fullscreen .entry-data::before {
-  display: none !important;
-}
+  #entry-body {
+    font-size: 18px;
+    height: -webkit-calc(100% - 414px);
+    padding: 60px 60px 300px 60px;
+    width: -webkit-calc(100% - 129px);
+  }
 
-body.fullscreen #entry-time-wrap:not(:hover) {
-  height: 31px;
-}
+  .entry-data::before {
+    display: none !important;
+  }
 
-body.fullscreen #entry-summary .entry-time-elem {
-  margin-bottom: 5px;
+  #entry-time-wrap:not(:hover) {
+    height: 31px;
+  }
+
 }
 
 

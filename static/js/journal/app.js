@@ -5305,7 +5305,8 @@ app.detail.prototype = {
 app.layout = function() {
     var activeWindow = $(window), // Current active window
         changeWindowSize = function() {
-            var newHeight = activeWindow.height() < 750 ? activeWindow.height() : activeWindow.height() - 200; // Tests the width of current window to enable spaces on the top and the buttom to disappear
+            // Tests the width of current window to enable spaces on the top and the buttom to disappear
+            var newHeight = activeWindow.height() - 110;
             app.app.height(newHeight);
             app.contents.height(newHeight);
         };

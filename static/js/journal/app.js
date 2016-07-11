@@ -8051,7 +8051,7 @@ window.bulb = function() {
 
         getMergedBulbCounter: function() {
             return _mergedBulbCounter;
-        }
+        },
 
         setData: function(timestamp, data) {
             _data[timestamp] = data;

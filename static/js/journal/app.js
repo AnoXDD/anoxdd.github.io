@@ -7881,7 +7881,7 @@ window.bulb = function() {
             _data[timestamp]["website"] = result[2];
 
             // Remove the website
-            _data[timestamp]["contentRaw"] = result[1] + result[result.length - 1];
+            _data[timestamp]["content"] = result[1] + result[result.length - 1];
         }
     };
 
@@ -7903,7 +7903,7 @@ window.bulb = function() {
             };
 
             // Remove the location
-            _data[timestamp]["contentRaw"] = result[1] + result[result.length - 1];
+            _data[timestamp]["content"] = result[1] + result[result.length - 1];
         } else {
             // Location, with name
             locationPattern = /(.+)#\[(.+),(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)\](.*)/g;
@@ -7916,7 +7916,7 @@ window.bulb = function() {
                 };
 
                 // Remove the location
-                _data[timestamp]["contentRaw"] = result[1] + result[result.length - 1];
+                _data[timestamp]["content"] = result[1] + result[result.length - 1];
             }
         }
     }

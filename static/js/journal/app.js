@@ -8026,6 +8026,10 @@ window.bulb = function() {
          * @param {number} timestamp - The timestamp of the data
          */
         extractRawContent: function(timestamp) {
+            // Add placeholder for each property
+            _data[timestamp]["location"] = undefined;
+            _data[timestamp]["website"] = undefined;
+
             // Website
             _extractWebsiteFromContent(timestamp);
 

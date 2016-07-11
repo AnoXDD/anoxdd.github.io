@@ -8093,7 +8093,7 @@ function removeFileById(id, done, fail, always) {
     getTokenCallback(function(token) {
         $.ajax({
             type: "DELETE",
-            url: "https://api.onedrive.com/v1.0/drive/" + id + "?access_token=" + token
+            url: "https://api.onedrive.com/v1.0/drive/items/" + id + "?access_token=" + token
         }).done(function() {
             if (typeof done === "function") {
                 done();

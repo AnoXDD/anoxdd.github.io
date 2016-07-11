@@ -1335,6 +1335,7 @@ edit.minData = function() {
         delete tmp[key]["ext"];
         delete tmp[key]["index"];
         delete tmp[key]["iconTags"];
+        delete tmp[key]["isBulb"];
         delete tmp[key]["lines"];
         delete tmp[key]["month"];
         delete tmp[key]["processed"];
@@ -4829,6 +4830,8 @@ app.list.prototype = {
     html: function(data, lastTime) { // [d]
         // All the summary
         data.summary = data.text.ext || data.text.body.substr(0, 50);
+
+        data.isBulb = 0;
 
         if (!data.contentType) {
             // Find the cover type

@@ -7870,6 +7870,7 @@ window.bulb = function() {
 
         if (result) {
             _data[timestamp]["location"] = {
+                title: result[2] + "," + result[3],
                 lat: result[2],
                 long: result[3]
             };
@@ -7882,7 +7883,7 @@ window.bulb = function() {
             result = locationPattern.exec(data);
             if (result) {
                 _data[timestamp]["location"] = {
-                    name: result[2],
+                    title: result[2],
                     lat: result[3],
                     long: result[4]
                 };
@@ -7909,6 +7910,9 @@ window.bulb = function() {
             }).done(function(data, status, xhr) {
                 // Get the content of bulb
                 var content = xhr.responseText;
+                // Remove illegal characters
+                content = content.replace(/\r*\n/g, "");
+
                 bulb.setRawContent(timestamp, content);
                 // Process the raw content
                 bulb.extractRawContent(timestamp);

@@ -458,6 +458,34 @@
     <div class="content loading">
         <div class="lower">
             <div class="text sensitive"><%= contents %></div>
+
+            <%
+            if( place ) {
+            %>
+            <div class="place">
+                <%
+                %>
+                <a href="https://maps.google.com/maps?z=15&q=<%- place[i].lat %>,<%- place[i].long %>"
+                   target="_blank" title="See it in Google Map">
+                    <div class="thumb"></div>
+                    <p class="sensitive"><%- place[i].title %></p>
+                </a>
+            </div>
+            <%
+            }
+
+            if( weblink ) {
+            %>
+            <div class="weblink">
+                <a href="<%- weblink[i].url %>" target="_blank"
+                   title="New Window">
+                    <div class="thumb"><span></span></div>
+                    <p class="url sensitive"><%- weblink[i].url %></p>
+                </a>
+            </div>
+            <%
+            }
+            %>
         </div>
     </div>
     <%

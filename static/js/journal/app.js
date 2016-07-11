@@ -157,8 +157,9 @@ window.log = {
 
     BULB_STILL_BUSY: "Still processing the bulbs",
     BULB_FETCH_START: "Loading bulbs ...",
-    BULB_FETCH_END: "Bulbs loaded",
-    BULB_FETCH_CONTENT_START: "Fetching bulb contents ..."
+    BULB_FETCH_END: "Bulbs loaded. Failed: ",
+    BULB_FETCH_CONTENT_START: "Fetching bulb contents ...",
+    BULB_PROCESSED_LEFT: " bulbs processed. Left: ",
 };
 
 animation.degree = 0;
@@ -4534,7 +4535,7 @@ window.app = function() {
          * @require called after all the bulbs are downloaded and merged
          */
         finishMergingBulbs: function() {
-            animation.log(log.BULB_FETCH_END);
+            animation.log(log.BULB_FETCH_END + (bulb.getTotalAvailableBulbs() - bulb.getMergedBulbCounter() ));
 
             // Refresh the data and display it
             // TODO: the app seems to remove those bulbs on refresh, find a way
@@ -4873,6 +4874,8 @@ app.list.prototype = {
 
             // Get the attached data
             data.attached = this.attached(data.attachments);
+        } else if (data.contentType === app.contentType.BULB) {
+            data.ext = "";
         }
 
         // Get the created time
@@ -7745,104 +7748,6 @@ function createFolders(callback, breakpoints) {
 }
 
 /**
- * Processes the bulbs from OneDrive
- *
- * @param {string} url (Optional) - The url to process the bulb
- */
-function fetchBulbLinks(url) {
-    if (bulb.isProcessing) {
-        animation.error(log.BULB_STILL_BUSY);
-        return;
-    }
-
-    bulb.isProcessing = true;
-
-    if (url == undefined) {
-        // Initial call
-        var token = getTokenFromCookie();
-        url = getBulbUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
-
-        bulb.totalBulbs = 0;
-    }
-
-    $.ajax({
-            type: "GET",
-            url: url
-        })
-        .done(function(data) {
-            // Test if there is more bulbs available
-            if (data["@odata.nextLink"] && false) { // never go into the loop (intended)
-                // More bulbs available!
-                var nextUrl = data["@odata.nextLink"];
-
-                var groups = nextUrl.split("&");
-                // Manually ask server return downloadUrl
-                for (var i = 0; i !== groups.length; ++i) {
-                    if (groups[i].startsWith("$select")) {
-                        groups[i] = "$select=id,name,size,@content.downloadUrl";
-                        break;
-                    }
-                }
-                nextUrl = groups.join("&");
-
-                fetchBulbLinks(nextUrl);
-            }
-
-            // Add these bulbs to the queue to process them
-            var itemList = data["value"];
-            bulb.setTotalBulbs(itemList.length);
-
-            animation.log(log.BULB_FETCH_CONTENT_START);
-
-            for (var key = 0, len = itemList.length; key != len; ++key) {
-                var dataElement = {
-                    id: itemList[key]["id"],
-                    url: itemList[key]["@content.downloadUrl"],
-                };
-                var filename = itemList[key]["name"];
-                var timestamp = bulb.getTimeFromEpoch(filename);
-
-                bulb.setData(timestamp, dataElement);
-
-                _fetchBulbContent(timestamp);
-            }
-        });
-}
-
-/**
- * Fetch the bulb content given a timestamp to be used as an index to search
- * data from `bulb.data`
- * @param {string} timestamp The timestamp
- */
-function _fetchBulbContent(timestamp) {
-    // TODO use ajax to fetch the data from server
-    getTokenCallback(function(token) {
-        var id = bulb.getID(timestamp);
-        var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "/content?access_token=" + token;
-
-        $.ajax({
-            type: "GET",
-            url: url
-        }).done(function(data, status, xhr) {
-            // Get the content of bulb
-            var content = xhr.responseText;
-            bulb.setRawContent(timestamp, content);
-            // Process the raw content
-            bulb.extractRawContent(timestamp);
-            // Merge into journal archive data
-            bulb.mergeIntoArchive(timestamp);
-        }).always(function() {
-            // Decrement the total bulbs to be processed
-            bulb.decrementTotalBulbs();
-            if (bulb.getTotalbulbs() <= 0) {
-                // None bulbs left
-                app.finishMergingBulbs();
-            }
-        });
-    })
-}
-
-/**
  * Removes the file on OneDrive by an id
  * This method will only ATTEMPT to remove the file. It doesn't handle any
  * exceptions should the removal fail
@@ -7898,10 +7803,25 @@ window.bulb = function() {
      */
     var _data = {};
     /**
-     * The number of bulbs fetched from the bulb folder, in total
+     * The number of bulbs that were fetched from the bulb folder and to be
+     * processed
      * @type {number}
      */
     var _totalBulbs = 0;
+    /**
+     * The size of the total bulbs that can be processed based on what was
+     * fetched from the server
+     * @type {number}
+     * @private
+     */
+    var _totalAvailableBulbs = 0;
+    /**
+     * The counter of how many bulbs have been fetched and merged into the
+     * archive data
+     * @type {number}
+     * @private
+     */
+    var _mergedBulbCounter = 0;
 
     /**
      * Extracts the website in a timestamp
@@ -7918,7 +7838,7 @@ window.bulb = function() {
             // Remove the website
             _data[timestamp]["content"] = result[1] + result[result.length - 1];
         }
-    };
+    }
 
     /**
      * Extracts the location in a timestamp
@@ -7956,6 +7876,40 @@ window.bulb = function() {
         }
     }
 
+    /**
+     * Fetch the bulb content given a timestamp to be used as an index to search
+     * data from `bulb.data`
+     * @param {string} timestamp The timestamp
+     */
+    function _fetchBulbContent(timestamp) {
+        getTokenCallback(function(token) {
+            var id = bulb.getID(timestamp);
+            var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "/content?access_token=" + token;
+
+            $.ajax({
+                type: "GET",
+                url: url
+            }).done(function(data, status, xhr) {
+                // Get the content of bulb
+                var content = xhr.responseText;
+                bulb.setRawContent(timestamp, content);
+                // Process the raw content
+                bulb.extractRawContent(timestamp);
+                // Merge into journal archive data
+                bulb.mergeIntoArchive(timestamp);
+
+                animation.log(_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalAvailableBulbs);
+            }).always(function() {
+                // Decrement the total bulbs to be processed
+                bulb.decrementTotalBulbs();
+                if (bulb.getTotalBulbs() <= 0) {
+                    // None bulbs left
+                    app.finishMergingBulbs();
+                }
+            });
+        })
+    }
+
     return {
         /**
          * Whether there is any merging in progress
@@ -7967,9 +7921,60 @@ window.bulb = function() {
          * Start fetching the bulb data from the server.
          * The first function to call to get started
          */
-        initFetchData: function() {
+        initFetchData: function(url) {
+            if (bulb.isProcessing) {
+                animation.error(log.BULB_STILL_BUSY);
+                return;
+            }
+
             animation.log(log.BULB_FETCH_START);
-            fetchBulbLinks();
+
+            bulb.isProcessing = true;
+
+            if (url == undefined) {
+                // Initial call
+                var token = getTokenFromCookie();
+                url = getBulbUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
+
+                bulb.totalBulbs = 0;
+            }
+
+            $.ajax({
+                    type: "GET",
+                    url: url
+                })
+                .done(function(data) {
+                    // Test if there is more bulbs available
+                    //if (data["@odata.nextLink"] && false) { // never go into
+                    // the loop (intended) // More bulbs available! var nextUrl
+                    // = data["@odata.nextLink"];  var groups =
+                    // nextUrl.split("&"); // Manually ask server return
+                    // downloadUrl for (var i = 0; i !== groups.length; ++i) {
+                    // if (groups[i].startsWith("$select")) { groups[i] =
+                    // "$select=id,name,size,@content.downloadUrl"; break; } }
+                    // nextUrl = groups.join("&");
+                    // bulb.initFetchData(nextUrl); }
+
+                    // Add these bulbs to the queue to process them
+                    var itemList = data["value"];
+                    bulb.clearData();
+                    bulb.setTotalBulbs(itemList.length);
+
+                    animation.log(log.BULB_FETCH_CONTENT_START);
+
+                    for (var key = 0, len = itemList.length; key != len; ++key) {
+                        var dataElement = {
+                            id: itemList[key]["id"],
+                            url: itemList[key]["@content.downloadUrl"],
+                        };
+                        var filename = itemList[key]["name"];
+                        var timestamp = bulb.getTimeFromEpoch(filename);
+
+                        bulb.setData(timestamp, dataElement);
+
+                        _fetchBulbContent(timestamp);
+                    }
+                });
         },
 
         setdata: function(timestamp, data) {
@@ -7992,7 +7997,6 @@ window.bulb = function() {
 
             return new Date(year, month - 1, day, hour, minute, second).getTime();
         },
-
 
         /**
          * TODO test this method
@@ -8030,18 +8034,31 @@ window.bulb = function() {
 
         setTotalBulbs: function(num) {
             _totalBulbs = num;
+            _totalAvailableBulbs = num;
         },
 
         decrementTotalBulbs: function() {
             --_totalBulbs;
         },
 
-        getTotalbulbs: function() {
+        getTotalBulbs: function() {
             return _totalBulbs;
         },
 
+        getTotalAvailableBulbs: function() {
+            return _totalAvailableBulbs;
+        },
+
+        getMergedBulbCounter: function() {
+            return _mergedBulbCounter;
+        }
+
         setData: function(timestamp, data) {
             _data[timestamp] = data;
+        },
+
+        clearData: function() {
+            _data = {};
         },
 
         /**
@@ -8073,40 +8090,6 @@ window.bulb = function() {
         }
     }
 }();
-
-
-/**
- * Several flags that needs to satisfy before the next step can be processed
- * The bulb folder will only be cleared when:
- *   1. All links are fetched, AND
- *   2. The contents are fetched from the link, AND
- *   3. Those contents have been integrated into the archive, AND
- *   4. The updated archive has been SUCCESSFULLY uploaded
- * No later flag can be set to true unless the previous flags are all true
- *
- * @type {{LINKS_FETCHED: boolean, CONTENT_FETCHED: boolean,
- *     CONTENT_INTEGRATED: boolean, CONTENT_UPLOADED: boolean}}
- */
-bulb.isProcessingReady = {
-    LINKS_FETCHED: false,
-    CONTENT_FETCHED: false,
-    CONTENT_INTEGRATED: false,
-    CONTENT_UPLOADED: false
-};
-/**
- * The flag to tell the user if the app is processing the bulb to avoid
- * spamming the icon
- * @type {boolean}
- */
-bulb.isProcessing = false;
-
-/**
- * Process the bulbs in _data and add it to the journal map
- */
-bulb.process = function() {
-
-}
-
 
 //endregion
 

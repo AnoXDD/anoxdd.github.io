@@ -155,7 +155,10 @@ window.log = {
     AUTH_REFRESH_AUTO_OFF: "The access token will now stop refreshing",
     AUTH_REFRESH_EXPIRED: "Previous session expired",
 
-    BULB_STILL_BUSY: "Still processing the bulbs"
+    BULB_STILL_BUSY: "Still processing the bulbs",
+    BULB_FETCH_START: "Loading bulbs ...",
+    BULB_FETCH_END: "Bulbs loaded",
+    BULB_FETCH_CONTENT_START: "Fetching bulb contents ..."
 };
 
 animation.degree = 0;
@@ -4531,6 +4534,8 @@ window.app = function() {
          * @require called after all the bulbs are downloaded and merged
          */
         finishMergingBulbs: function() {
+            animation.log(log.BULB_FETCH_END);
+
             // Refresh the data and display it
             // TODO: the app seems to remove those bulbs on refresh, find a way
             // to solve it
@@ -4822,7 +4827,7 @@ app.list.prototype = {
     /* Converts the content to html and append to the list of contents */
     html: function(data, lastTime) { // [d]
         // All the summary
-        data.summary = data.text.ext || data.text.substr(0, 50);
+        data.summary = data.text.ext || data.text.body.substr(0, 50);
 
         if (!data.contentType) {
             // Find the cover type
@@ -7787,6 +7792,8 @@ function fetchBulbLinks(url) {
             var itemList = data["value"];
             bulb.setTotalBulbs(itemList.length);
 
+            animation.log(log.BULB_FETCH_CONTENT_START);
+
             for (var key = 0, len = itemList.length; key != len; ++key) {
                 var dataElement = {
                     id: itemList[key]["id"],
@@ -7961,6 +7968,7 @@ window.bulb = function() {
          * The first function to call to get started
          */
         initFetchData: function() {
+            animation.log(log.BULB_FETCH_START);
             fetchBulbLinks();
         },
 

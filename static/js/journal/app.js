@@ -8338,7 +8338,9 @@ window.bulb = function() {
 
                         _fetchBulbContent(timestamp);
                     }
-                });
+                }).fail(function() {
+                bulb.isProcessing = false;
+            });
         },
 
         setdata: function(timestamp, data) {

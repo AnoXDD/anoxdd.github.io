@@ -7855,6 +7855,7 @@ function removeFileById(id) {
  */
 
 window.bulb = function() {
+    "use strict";
     /**
      * These are the data to be processed
      * @type {{}} Format: {time: {content, location: [longitude, latitude],
@@ -7874,13 +7875,14 @@ window.bulb = function() {
      */
     function _extractWebsiteFromContent(timestamp) {
         var data = _data[timestamp]["contentRaw"];
-        var websitePattern = /@https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-        var result = data.match(websitePattern);
+        var websitePattern = /(.+)@(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))(.*)/g;
+        var result = websitePattern.exec(data);
         if (result) {
-            _data[timestamp]["website"] = result[0];
+            _data[timestamp]["website"] = result[2];
+
+            // Remove the website
+            _data[timestamp]["contentRaw"] = result[1] + result[result.length - 1];
         }
-        // Remove the website
-        data.replace(websitePattern, "");
     };
 
     /**
@@ -7890,36 +7892,34 @@ window.bulb = function() {
      */
     function _extractLocationFromContent(timestamp) {
         // Location, without name
-        var locationPattern = /#\[-?[0-9]+\.[0-9]+,-?[0-9]+\.[0-9]+\]/g;
+        var locationPattern = /(.+)#\[(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)\](.*)/;
         var data = _data[timestamp]["contentRaw"];
-        var result = data.match(locationPattern);
+        var result = locationPattern.exec(data);
 
         if (result) {
-            result = result[0].split(',');
             _data[timestamp]["location"] = {
-                lat: result[0],
-                long: result[1]
+                lat: result[2],
+                long: result[3]
             };
 
             // Remove the location
-            _data[timestamp]["contentRaw"] = data.replace(locationPattern, "");
+            _data[timestamp]["contentRaw"] = result[1] + result[result.length - 1];
         } else {
             // Location, with name
-            locationPattern = /#\[.+,-?[0-9]+\.[0-9]+,-?[0-9]+\.[0-9]+\]/g;
-            result = data.match(locationPattern);
+            locationPattern = /(.+)#\[(.+),(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)\](.*)/g;
+            result = locationPattern.exec(data);
             if (result) {
-                result = result[0].split(",");
                 _data[timestamp]["location"] = {
-                    name: result[0],
-                    lat: result[1],
-                    long: result[2]
+                    name: result[2],
+                    lat: result[3],
+                    long: result[4]
                 };
 
                 // Remove the location
-                _data[timestamp]["contentRaw"] = data.replace(locationPattern, "");
+                _data[timestamp]["contentRaw"] = result[1] + result[result.length - 1];
             }
         }
-    };
+    }
 
     return {
         /**

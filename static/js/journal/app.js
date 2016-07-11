@@ -5305,7 +5305,8 @@ app.detail.prototype = {
 app.layout = function() {
     var activeWindow = $(window), // Current active window
         changeWindowSize = function() {
-            // Tests the width of current window to enable spaces on the top and the buttom to disappear
+            // Tests the width of current window to enable spaces on the top
+            // and the buttom to disappear
             var newHeight = activeWindow.height() - 110;
             app.app.height(newHeight);
             app.contents.height(newHeight);
@@ -7712,7 +7713,6 @@ function createFolders(callback, breakpoints) {
 
 /**
  * Processes the bulbs from OneDrive
- * Call this function to initialize fetching data from the server
  *
  * @param {string} url (Optional) - The url to process the bulb
  */
@@ -7769,7 +7769,7 @@ function fetchBulbLinks(url) {
 
                 bulb.setData(timestamp, dataElement);
 
-                fetchBulbContent(timestamp);
+                _fetchBulbContent(timestamp);
             }
         });
 }
@@ -7779,7 +7779,7 @@ function fetchBulbLinks(url) {
  * data from `bulb.data`
  * @param {string} timestamp The timestamp
  */
-function fetchBulbContent(timestamp) {
+function _fetchBulbContent(timestamp) {
     // TODO use ajax to fetch the data from server
     getTokenCallback(function(token) {
         var id = bulb.getID(timestamp);
@@ -7927,6 +7927,14 @@ window.bulb = function() {
          * This prevents the archive being uploaded
          */
         isProcessing: false,
+
+        /**
+         * Start fetching the bulb data from the server.
+         * The first function to call to get started
+         */
+        initFetchData: function() {
+            fetchBulbLinks();
+        },
 
         setdata: function(timestamp, data) {
             _data[timestamp] = data;

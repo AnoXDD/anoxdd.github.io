@@ -1387,7 +1387,7 @@ edit.removeDuplicate = function() {
 
         var thisEntry = journal.archive.data[app.year][i];
         var nextEntry = journal.archive.data[app.year][i + 1];
-        if (thisEntry["time"]["created"] === nextEntry["time"]["created"] && thisEntry.contentType !== nextEntry.contentType) {
+        if (thisEntry["time"]["created"] === nextEntry["time"]["created"] && thisEntry.contentType === nextEntry.contentType) {
             // Same contents, remove this one
             app.yearChange[app.year] = true;
             journal.archive.data[app.year].splice(i--, 1);
@@ -7913,7 +7913,7 @@ window.bulb = function() {
                 // Get the content of bulb
                 var content = xhr.responseText;
                 // Remove illegal characters
-                content = content.replace(/\r*\n/g, "");
+                content = content.replace(/\r*\n/g, " ");
 
                 bulb.setRawContent(timestamp, content);
                 // Process the raw content

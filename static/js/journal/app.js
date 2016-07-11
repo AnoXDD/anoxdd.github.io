@@ -5182,6 +5182,8 @@ app.detail = function() {
             dataClip.title = "";
             dataClip.chars = dataClip.text.chars + "Chars";
             dataClip.contents = this.text(dataClip.text.body);
+            dataClip.weblink = dataClip.weblink || undefined;
+            dataClip.place = dataClip.place || undefined;
         } else {
             dataClip.chars = dataClip.text.chars + " Chars";
             dataClip.lines = dataClip.text.lines + " Lines";
@@ -8026,10 +8028,6 @@ window.bulb = function() {
          * @param {number} timestamp - The timestamp of the data
          */
         extractRawContent: function(timestamp) {
-            // Add placeholder for each property
-            _data[timestamp]["location"] = undefined;
-            _data[timestamp]["website"] = undefined;
-
             // Website
             _extractWebsiteFromContent(timestamp);
 

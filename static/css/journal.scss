@@ -372,6 +372,25 @@ body {
   position: absolute;
   width: 38%;
 
+  &.bulb {
+    a {
+      height: 10px;
+      padding: 5px 10px;
+
+      p.datetime {
+        margin: 0;
+        font-size:8px;
+      }
+
+      p.summary {
+        position: absolute;
+        top: 3px;
+        font-size: 10px;
+        width: 80%;
+      }
+    }
+  }
+
   ul {
     padding: 1% .5% 0;
 

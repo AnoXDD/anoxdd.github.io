@@ -4501,13 +4501,15 @@ window.app = function() {
          * @param timestamp - the timestamp of the bulb
          */
         addBulb: function(content, timestamp) {
+            var body = content["content"] || content["contentRaw"];
             var newData = {
                 contentType: app.contentType.BULB,
                 time: {
                     created: timestamp
                 },
                 text: {
-                    body: content["content"] || content["contentRaw"]
+                    body: body,
+                    chars: content.length
                 }
             };
 
@@ -4897,32 +4899,34 @@ app.list.prototype = {
 
         var item = $(app.itemView(data));
 
+        // Bind the click event of this data clip
+        item.find(" > a").on("click", function(j) {
+            j.preventDefault();
+            // Show edit panel
+            animation.showMenuOnly("edit");
+            // Remove all the photos that have already been loaded
+            if (app.photos) {
+                app.photos.remove();
+            }
+            // De-hightlight the data that is displayed
+            ////console.log(app.currentDisplayed);
+            $("#list").find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeClass("display");
+            // Highlight the data that is now displayed
+            $(this).addClass("display");
+            // Update the index of the list to be displayed
+            var flag = (app.currentDisplayed == $(this).parent().index());
+            if (!flag) {
+                app.currentDisplayed = $(this).parent().index();
+                $("#detail").hide().fadeIn(500);
+                app.view = new app.detail();
+            }
+            return false;
+        });
+
         // The event when clicking the list
         if (data.contentType === app.contentType.BULB) {
 
         } else {
-            item.find(" > a").on("click", function(j) {
-                j.preventDefault();
-                // Show edit panel
-                animation.showMenuOnly("edit");
-                // Remove all the photos that have already been loaded
-                if (app.photos) {
-                    app.photos.remove();
-                }
-                // De-hightlight the data that is displayed
-                ////console.log(app.currentDisplayed);
-                $("#list").find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeClass("display");
-                // Highlight the data that is now displayed
-                $(this).addClass("display");
-                // Update the index of the list to be displayed
-                var flag = (app.currentDisplayed == $(this).parent().index());
-                if (!flag) {
-                    app.currentDisplayed = $(this).parent().index();
-                    $("#detail").hide().fadeIn(500);
-                    app.view = new app.detail();
-                }
-                return false;
-            });
             $(".thumb > img:not([style])", item).on("load", function() {
                 var h = this.naturalWidth || this.width,
                     f = this.naturalHeight || this.height,
@@ -5174,49 +5178,55 @@ app.list.prototype = {
 app.detail = function() {
     var dataClip = journal.archive.data[app.year][app.currentDisplayed];
     if (!dataClip.processed) {
-        dataClip.chars = dataClip.text.chars + " Chars";
-        dataClip.lines = dataClip.text.lines + " Lines";
-        dataClip.contents = this.text(dataClip.text.body);
-        if (dataClip.weblink) {
-            this.thumb(dataClip, "weblink", 50, 50);
-        }
-        if (dataClip.book) {
-            this.thumb(dataClip, "book", 50, 70);
-            for (var i = 0; i !== dataClip["book"].length; ++i) {
-                getCoverPhoto("#detail .book:eq(" + i + ") ", dataClip.book[i].author + " " + dataClip.book[i].title, false, "book");
-            }
-        }
-        if (dataClip.music) {
-            this.thumb(dataClip, "music", 50, 50);
-            for (var i = 0; i !== dataClip["music"].length; ++i) {
-                getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music[i].author + " " + dataClip.music[i].title);
-            }
-        }
-        if (dataClip.movie) {
-            this.thumb(dataClip, "movie", 50, 70);
-            for (var i = 0; i !== dataClip["movie"].length; ++i) {
-                getCoverPhoto("#detail .movie:eq(" + i + ") ", dataClip.movie[i].author + " " + dataClip.movie[i].title, false, "movie");
-            }
-        }
-        if (dataClip.tags) {
-            // Process tags if applicable
-            var tags = app.tag().separate(dataClip.tags);
-            dataClip.iconTags = tags.iconTags || [];
-            dataClip.textTags = tags.textTags || [];
+        if (dataClip.contentType === app.contentType.BULB) {
+            dataClip.chars = dataClip.text.chars + "Chars";
+            dataClip.contents = this.text(dataClip.text.body);
         } else {
-            dataClip.iconTags = [];
-            dataClip.textTags = [];
-        }
-        // To avoid undefined error in _.template
-        var elements = "video weblink book music movie images voice place textTags iconTags".split(" ");
-        for (var i = 0, len = elements.length; i < len; ++i) {
-            if (dataClip[elements[i]] == undefined) {
-                dataClip[elements[i]] = undefined;
+            dataClip.chars = dataClip.text.chars + " Chars";
+            dataClip.lines = dataClip.text.lines + " Lines";
+            dataClip.contents = this.text(dataClip.text.body);
+            if (dataClip.weblink) {
+                this.thumb(dataClip, "weblink", 50, 50);
+            }
+            if (dataClip.book) {
+                this.thumb(dataClip, "book", 50, 70);
+                for (var i = 0; i !== dataClip["book"].length; ++i) {
+                    getCoverPhoto("#detail .book:eq(" + i + ") ", dataClip.book[i].author + " " + dataClip.book[i].title, false, "book");
+                }
+            }
+            if (dataClip.music) {
+                this.thumb(dataClip, "music", 50, 50);
+                for (var i = 0; i !== dataClip["music"].length; ++i) {
+                    getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music[i].author + " " + dataClip.music[i].title);
+                }
+            }
+            if (dataClip.movie) {
+                this.thumb(dataClip, "movie", 50, 70);
+                for (var i = 0; i !== dataClip["movie"].length; ++i) {
+                    getCoverPhoto("#detail .movie:eq(" + i + ") ", dataClip.movie[i].author + " " + dataClip.movie[i].title, false, "movie");
+                }
+            }
+            if (dataClip.tags) {
+                // Process tags if applicable
+                var tags = app.tag().separate(dataClip.tags);
+                dataClip.iconTags = tags.iconTags || [];
+                dataClip.textTags = tags.textTags || [];
+            } else {
+                dataClip.iconTags = [];
+                dataClip.textTags = [];
+            }
+            // To avoid undefined error in _.template
+            var elements = "video weblink book music movie images voice place textTags iconTags".split(" ");
+            for (var i = 0, len = elements.length; i < len; ++i) {
+                if (dataClip[elements[i]] == undefined) {
+                    dataClip[elements[i]] = undefined;
+                }
             }
         }
         // Set the read status of the clip to read
         dataClip.processed = 1;
     }
+
     var l = $(app.detailView(dataClip));
     // !!!!!HIDE THE CONTENT LISTS!!!!
     app.cDetail.css("display", "inline-block").html(l);

@@ -243,6 +243,17 @@ body {
   overflow-y: auto;
   position: absolute;
   width: 38%; }
+  #list.bulb a {
+    height: 10px;
+    padding: 5px 10px; }
+    #list.bulb a p.datetime {
+      margin: 0;
+      font-size: 8px; }
+    #list.bulb a p.summary {
+      position: absolute;
+      top: 3px;
+      font-size: 10px;
+      width: 80%; }
   #list ul {
     padding: 1% .5% 0; }
     #list ul:after {

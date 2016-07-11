@@ -7872,7 +7872,7 @@ window.bulb = function() {
 
         if (result) {
             _data[timestamp]["location"] = {
-                title: result[2] + "," + result[3],
+                name: result[2] + "," + result[3],
                 lat: result[2],
                 long: result[3]
             };
@@ -7885,7 +7885,7 @@ window.bulb = function() {
             result = locationPattern.exec(data);
             if (result) {
                 _data[timestamp]["location"] = {
-                    title: result[2],
+                    name: result[2],
                     lat: result[3],
                     long: result[4]
                 };

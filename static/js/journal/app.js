@@ -1452,8 +1452,8 @@ edit.removeEntry = function() {
     // Change the data displayed
     --app.displayedNum;
     var data = journal.archive.data[app.year][app.currentDisplayed];
-    app.displayedChars -= data["text"]["chars"];
-    app.displayedLines -= data["text"]["lines"];
+    app.displayedChars -= data["text"]["chars"] || 0;
+    app.displayedLines -= data["text"]["lines"] || 0;
     app.displayedTime -= (data["time"]["end"] - data["time"]["start"]) / 60000;
     // Remove from the map
     delete journal.archive.data[app.year][app.currentDisplayed];
@@ -4509,7 +4509,7 @@ window.app = function() {
                 },
                 text: {
                     body: body,
-                    chars: content.length
+                    chars: body.length
                 }
             };
 
@@ -4625,8 +4625,8 @@ app.list.prototype = {
                 lastQualifiedLoaded = currentLoaded;
                 // Update other information
                 ++app.displayedNum;
-                app.displayedChars += contents[currentLoaded].text.chars;
-                app.displayedLines += contents[currentLoaded].text.lines;
+                app.displayedChars += contents[currentLoaded].text.chars || 0;
+                app.displayedLines += contents[currentLoaded].text.lines || 0;
                 if (contents[currentLoaded].time.end) {
                     // Gets the integer part of timeDelta, measured in second
                     var timeDelta = parseInt((contents[currentLoaded].time.end - contents[currentLoaded].time.start) / 60000);
@@ -8485,8 +8485,8 @@ stats.getYearSum = function() {
     for (var i = 0; i !== journal.archive.data[app.year].length; ++i) {
         var data = journal.archive.data[app.year][i];
         if (stats.isInTimeRange(data["time"]["created"])) {
-            totalChar += data["text"]["chars"];
-            totalLine += data["text"]["lines"];
+            totalChar += data["text"]["chars"] || 0;
+            totalLine += data["text"]["lines"] || 0;
             if (data["time"]["end"]) {
                 var timeDelta = (data["time"]["end"] - data["time"]["start"]) / 60000;
                 if (!isNaN(timeDelta)) {

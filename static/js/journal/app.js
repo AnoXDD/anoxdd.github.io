@@ -5179,6 +5179,7 @@ app.detail = function() {
     var dataClip = journal.archive.data[app.year][app.currentDisplayed];
     if (!dataClip.processed) {
         if (dataClip.contentType === app.contentType.BULB) {
+            dataClip.title = "";
             dataClip.chars = dataClip.text.chars + "Chars";
             dataClip.contents = this.text(dataClip.text.body);
         } else {

@@ -448,6 +448,21 @@
     %>
 </script>
 <script type="text/x-template" id="detail-view">
+    <%
+    if (isBulb) {
+    %>
+    <div class="head">
+        <p class="charline"><%- chars %></p>
+        <p class="datetime"><%- datetime %></p>
+    </div>
+    <div class="content loading">
+        <div class="lower">
+            <div class="text sensitive"><%= contents %></div>
+        </div>
+    </div>
+    <%
+    } else {
+    %>
     <div class="head">
         <p class="title sensitive"><%- title %></p>
         <p class="charline"><%- chars %></p>
@@ -603,6 +618,9 @@
             %>
         </div>
     </div>
+    <%
+    }
+    %>
 </script>
 <script type="text/x-template" id="edit-view">
     <div id="text-area">

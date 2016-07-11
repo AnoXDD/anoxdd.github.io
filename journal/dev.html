@@ -460,27 +460,27 @@
             <div class="text sensitive"><%= contents %></div>
 
             <%
-            if( place ) {
+            if( location ) {
             %>
             <div class="place">
                 <%
                 %>
-                <a href="https://maps.google.com/maps?z=15&q=<%- place[i].lat %>,<%- place[i].long %>"
+                <a href="https://maps.google.com/maps?z=15&q=<%- location.lat %>,<%- location.long %>"
                    target="_blank" title="See it in Google Map">
                     <div class="thumb"></div>
-                    <p class="sensitive"><%- place[i].title %></p>
+                    <p class="sensitive"><%- location.title %></p>
                 </a>
             </div>
             <%
             }
 
-            if( weblink ) {
+            if( website ) {
             %>
             <div class="weblink">
-                <a href="<%- weblink[i].url %>" target="_blank"
+                <a href="<%- website %>" target="_blank"
                    title="New Window">
                     <div class="thumb"><span></span></div>
-                    <p class="url sensitive"><%- weblink[i].url %></p>
+                    <p class="url sensitive"><%- website %></p>
                 </a>
             </div>
             <%

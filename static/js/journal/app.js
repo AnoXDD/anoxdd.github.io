@@ -186,7 +186,8 @@ animation.hideIcon = function(selector, callback) {
     });
 };
 animation.isShown = function(selector) {
-    return $(selector).css("top") === "10px" && $(selector).css("display") !== "none";
+    return $(selector).css("top") === "10px" && $(selector)
+            .css("display") !== "none";
 };
 animation.toggleIcon = function(selector, callback) {
     callback = callback || function() {
@@ -506,7 +507,9 @@ animation.error = function(message, error, indent) {
         if (error === "") {
             error = "unknown";
         }
-        animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 1);
+        animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END,
+            indent,
+            1);
     } else {
         animation.log(message, indent, 1);
     }
@@ -520,7 +523,9 @@ animation.error = function(message, error, indent) {
  */
 animation.warn = function(message, error, indent) {
     if (error != undefined) {
-        animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END, indent, 2);
+        animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END,
+            indent,
+            2);
     } else {
         animation.log(message, indent, 2);
     }
@@ -801,11 +806,16 @@ edit.init = function(overwrite, index) {
                         // Re-evaluate the month, day and the year to make sure
                         // it IS a true date
                         date = new Date(dateNum);
-                        var isMonthMatch = date.getMonth() + 1 == dateStr.substring(0, 2),
-                            isDayMatch = date.getDate() == dateStr.substring(2, 4),
+                        var isMonthMatch = date.getMonth() + 1 == dateStr.substring(
+                                0,
+                                2),
+                            isDayMatch = date.getDate() == dateStr.substring(2,
+                                    4),
                         // Has to match both original year in title and
                         // `app.year`
-                            isYearMatch = date.getFullYear() % 100 == dateStr.substring(4, 6) || date.getFullYear() === app.year;
+                            isYearMatch = date.getFullYear() % 100 == dateStr.substring(
+                                    4,
+                                    6) || date.getFullYear() === app.year;
                         if (isMonthMatch && isDayMatch && isYearMatch) {
                             // Everything matches, good work user
                             return;
@@ -815,7 +825,10 @@ edit.init = function(overwrite, index) {
                     // does not have a valid date header
                     date = new Date().getTime();
                     date = new Date(date - 14400000);
-                    $(this).val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + $(this).val());
+                    $(this)
+                        .val(edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(
+                                date.getFullYear() % 100) + " " + $(this)
+                                .val());
                 }
             });
         // Enter to add tag
@@ -838,7 +851,9 @@ edit.init = function(overwrite, index) {
                 convertTime = function(date) {
                     date = new Date(date);
                     if (!isNaN(date.getTime())) {
-                        return edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
+                        return edit.format(date.getMonth() + 1) + edit.format(
+                                date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(
+                                date.getHours()) + edit.format(date.getMinutes());
                     } else {
                         return "-";
                     }
@@ -853,7 +868,8 @@ edit.init = function(overwrite, index) {
             var medium = elem[i];
             for (var j = 0; j !== $("#attach-area ." + medium).length; ++j) {
                 var selectorHeader = edit.getSelectorHeader(medium, j),
-                    term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
+                    term = $(selectorHeader + ".title").val() + "%20" + $(
+                            selectorHeader + ".desc").val();
                 getCoverPhoto(selectorHeader, term, false, medium);
             }
         }
@@ -937,14 +953,17 @@ edit.init = function(overwrite, index) {
                         newBody = body.substring(0, start);
                         // Get the number of valid consecutive tabs and append
                         // them
-                        for (i = lastReturn + 1; i !== lastTab + 1 && body[i] === "\t"; ++i) {
+                        for (i = lastReturn + 1;
+                             i !== lastTab + 1 && body[i] === "\t";
+                             ++i) {
                             newBody += "\t";
                         }
                     }
                     newBody += body.substring(end);
                     $(this).val(newBody);
                     // Put caret at right position again
-                    $(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
+                    $(this).get(0).selectionStart = $(this)
+                        .get(0).selectionEnd = start + 1;
                 }
                 edit.processBody();
             })
@@ -958,10 +977,14 @@ edit.init = function(overwrite, index) {
 
                 // Set textarea value to text before caret + tab + text after
                 // caret
-                $(this).val($(this).val().substring(0, start) + "\t" + $(this).val().substring(end));
+                $(this)
+                    .val($(this).val().substring(0, start) + "\t" + $(this)
+                            .val()
+                            .substring(end));
 
                 // Put caret at right position again
-                $(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
+                $(this).get(0).selectionStart = $(this)
+                    .get(0).selectionEnd = start + 1;
             })
             .bind("keyup", "ctrl+shift+f", function() {
                 edit.toggleTag("friendship");
@@ -982,11 +1005,12 @@ edit.init = function(overwrite, index) {
                 edit.toggleTag("minecraft");
             });
         // Let the tags to scroll horizontally
-        $("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images").mousewheel(function(event, delta) {
-            // Only scroll horizontally
-            this.scrollLeft -= (delta * 50);
-            event.preventDefault();
-        });
+        $("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images")
+            .mousewheel(function(event, delta) {
+                // Only scroll horizontally
+                this.scrollLeft -= (delta * 50);
+                event.preventDefault();
+            });
         // Right click to select videos and voices
         edit.playableSetToggle();
         edit.refreshSummary();
@@ -1290,7 +1314,9 @@ edit.tryReadCache = function() {
  * @returns {number} - The index of data, -1 if not found
  */
 edit.find = function(created) {
-    for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+    for (var key = 0, len = journal.archive.data[app.year].length;
+         key != len;
+         ++key) {
         if (journal.archive.data[app.year][key]) {
             if (journal.archive.data[app.year][key]["time"]) {
                 if (journal.archive.data[app.year][key]["time"]["created"] == created) {
@@ -1361,7 +1387,8 @@ edit.minData = function() {
             }
         }
         // Replace "\r\n" with "\n"
-        tmp[key]["text"]["body"] = tmp[key]["text"]["body"].replace(/\r\n/g, "\n");
+        tmp[key]["text"]["body"] = tmp[key]["text"]["body"].replace(/\r\n/g,
+            "\n");
     }
 
     return tmp;
@@ -1383,7 +1410,9 @@ edit.sortArchive = function() {
  * This function assumes that `journal.archive.data` is sorted
  */
 edit.removeDuplicate = function() {
-    for (var i = 0; i < Object.keys(journal.archive.data[app.year]).length - 1; ++i) {
+    for (var i = 0;
+         i < Object.keys(journal.archive.data[app.year]).length - 1;
+         ++i) {
 
         var thisEntry = journal.archive.data[app.year][i];
         var nextEntry = journal.archive.data[app.year][i + 1];
@@ -1459,7 +1488,8 @@ edit.removeEntry = function() {
     delete journal.archive.data[app.year][app.currentDisplayed];
     // Clear from the list
     var $entry = $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ")");
-    if ($entry.next().length === 0 || $entry.next().has("p.separator").length !== 0) {
+    if ($entry.next().length === 0 || $entry.next()
+            .has("p.separator").length !== 0) {
         // Reaches EOF or the beginning of next month (separator)
         $entry.fadeOut(500, function() {
             $(this).empty();
@@ -1535,7 +1565,8 @@ edit.addMedia = function(typeNum, arg) {
     }
     if (length > 0) {
         // Elements already exist
-        $(htmlContent).insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
+        $(htmlContent)
+            .insertAfter($(selectorHeader + ":eq(" + (length - 1) + ")"));
     } else {
         // Have to create a new one
         $(htmlContent).appendTo("#attach-area");
@@ -1591,12 +1622,15 @@ edit.addMediaFromQueue = function() {
                         addedVoice = 0,
                         addedVideo = 0;
                     // Iterate to find all the results on the server
-                    for (var key = 0, len = itemList.length; key !== len; ++key) {
+                    for (var key = 0, len = itemList.length;
+                         key !== len;
+                         ++key) {
                         var id = itemList[key]["id"],
                             size = itemList[key]["size"],
                             name = itemList[key]["name"],
                             contentUrl = itemList[key]["@content.downloadUrl"],
-                            suffix = name.substring(name.length - 4).toLowerCase(),
+                            suffix = name.substring(name.length - 4)
+                                .toLowerCase(),
                             elementData = {
                                 id: id,
                                 name: name,
@@ -1665,7 +1699,8 @@ edit.addMediaFromQueue = function() {
                 })
                 .always(function() {
                     // Add it back
-                    $("#return-lost-media").attr("onclick", "app.cleanResource()");
+                    $("#return-lost-media")
+                        .attr("onclick", "app.cleanResource()");
                     animation.log(log.QUEUE_END, -1);
                 });
         });
@@ -1726,22 +1761,30 @@ edit.mediaName = function(typeNum) {
  * @returns {number} - The num value of the media. -1 if not applicable
  */
 edit.mediaValue = function(type) {
-    if (type === "photo")
+    if (type === "photo") {
         return 0;
-    if (type === "video")
+    }
+    if (type === "video") {
         return 1;
-    if (type === "place")
+    }
+    if (type === "place") {
         return 2;
-    if (type === "voice")
+    }
+    if (type === "voice") {
         return 3;
-    if (type === "music")
+    }
+    if (type === "music") {
         return 4;
-    if (type === "movie")
+    }
+    if (type === "movie") {
         return 5;
-    if (type === "book")
+    }
+    if (type === "book") {
         return 6;
-    if (type === "weblink")
+    }
+    if (type === "weblink") {
         return 7;
+    }
     // Not applicable
     return -1;
 };
@@ -1868,9 +1911,12 @@ edit.refreshSummary = function() {
 edit.refreshTime = function() {
     ++edit.time;
     var date = new Date();
-    var timeString = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
+    var timeString = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(
+            date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(
+            date.getMinutes());
     $("#entry-time").text(timeString);
-    $("#entry-elapsed").text(parseInt(edit.time / 60) + ":" + edit.format(edit.time % 60));
+    $("#entry-elapsed")
+        .text(parseInt(edit.time / 60) + ":" + edit.format(edit.time % 60));
 };
 /**
  * Returns a formatted string of a number. Equivalent to String.format("%2d",
@@ -1938,7 +1984,8 @@ edit.getDate = function(callback) {
             date = new Date().getTime();
             date = new Date(date - 14400000);
         }
-        dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100);
+        dateStr = "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(
+                date.getFullYear() % 100);
     }
     // Test server folder validity
     if (dateStr != edit.folderDate) {
@@ -1959,7 +2006,9 @@ edit.getMyTime = function(timeNum) {
     if (isNaN(date.getTime())) {
         return timeNum;
     }
-    return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(date.getMinutes());
+    return "" + edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(
+            date.getFullYear() % 100) + " " + edit.format(date.getHours()) + edit.format(
+            date.getMinutes());
 };
 
 /************************** BODY **************************/
@@ -1981,7 +2030,8 @@ edit.processBody = function() {
             if (convertedTime && new Date(convertedTime).getFullYear() === app.year) {
                 // Year in range, overwrite start time
                 localStorage["start"] = convertedTime;
-                animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+                animation.log(log.START_TIME_CHANGED_TO + app.list.prototype.date(
+                        convertedTime));
             } else {
                 // Invalid date
                 animation.error(log.TIME_NOT_IN_RANGE);
@@ -1992,7 +2042,8 @@ edit.processBody = function() {
             convertedTime = edit.convertTime(line.substring(6));
             if (convertedTime) {
                 localStorage["end"] = convertedTime;
-                animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+                animation.log(log.END_TIME_CHANGED_TO + app.list.prototype.date(
+                        convertedTime));
             } else {
                 // Invalid date
                 animation.error(log.TIME_INVALID);
@@ -2003,7 +2054,8 @@ edit.processBody = function() {
             if (new Date(convertedTime).getFullYear() === app.year) {
                 // Year in range, overwrite created time
                 localStorage["created"] = convertedTime;
-                animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(convertedTime));
+                animation.log(log.CREATED_TIME_CHANGED_TO + app.list.prototype.date(
+                        convertedTime));
             } else {
                 // Invalid date
                 animation.error(log.TIME_NOT_IN_RANGE);
@@ -2063,7 +2115,8 @@ edit.addTag = function(tag, mute) {
                         animation.warn(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_FAILED);
                         // Give effect if the tag is from user input
                         if ($("#entry-tag").val() !== "") {
-                            $("#entry-tag").effect("highlight", {color: "#000"}, 400);
+                            $("#entry-tag")
+                                .effect("highlight", {color: "#000"}, 400);
                         }
                         return;
                     }
@@ -2079,7 +2132,8 @@ edit.addTag = function(tag, mute) {
                     animation.warn(log.TAG_ICON_ADD_HEADER + tag + log.TAG_ADDED_ALREADY);
                     // Give effect if the tag is from user input
                     if ($("#entry-tag").val() !== "") {
-                        $("#entry-tag").effect("highlight", {color: "#000"}, 400);
+                        $("#entry-tag")
+                            .effect("highlight", {color: "#000"}, 400);
                     }
                     // Saved
                 }
@@ -2090,7 +2144,8 @@ edit.addTag = function(tag, mute) {
             $("#entry-tag").effect("highlight", {color: "#dadada"}, 400);
             // Marked for a new entry
             var func = "onclick=edit.removeTag('" + tag + "')";
-            $("#attach-area .texttags .other").append("<p title='Click to remove' " + func + ">#" + tag + "</p>");
+            $("#attach-area .texttags .other")
+                .append("<p title='Click to remove' " + func + ">#" + tag + "</p>");
             added = true;
         }
         // Test if this tag has been successfully added
@@ -2175,14 +2230,17 @@ edit.toggleIcon = function(tag) {
     if ($(selector).toggleClass("highlight").hasClass("highlight")) {
         if (parent === "weather" || parent === "emotion") {
             // Now highlighted
-            $("#attach-area .icontags ." + parent + " span:not(." + htmlName + ")").addClass("hidden");
+            $("#attach-area .icontags ." + parent + " span:not(." + htmlName + ")")
+                .addClass("hidden");
         } else {
-            $("#attach-area .icontags .selected").append($(selector).addClass("highlight").clone());
+            $("#attach-area .icontags .selected")
+                .append($(selector).addClass("highlight").clone());
         }
     } else {
         if (parent === "weather" || parent === "emotion") {
             // Dimmed
-            $("#attach-area .icontags ." + parent + " span").removeClass("hidden");
+            $("#attach-area .icontags ." + parent + " span")
+                .removeClass("hidden");
         } else {
             setTimeout(function() {
                 $("#attach-area .icontags .selected ." + htmlName).remove();
@@ -2245,9 +2303,11 @@ edit.coverSet = function(type, isToggle) {
     } else {
         localStorage["coverType"] = coverType;
         var name = edit.mediaName(typeNum);
-        $(".types p:not(#" + edit.mediaName(typeNum) + "-cover)").addClass("hidden");
+        $(".types p:not(#" + edit.mediaName(typeNum) + "-cover)")
+            .addClass("hidden");
         if (name) {
-            $(".types #" + edit.mediaName(typeNum) + "-cover").addClass("selected");
+            $(".types #" + edit.mediaName(typeNum) + "-cover")
+                .addClass("selected");
         } else {
             // Do not display cover
             $(".types #no-cover").addClass("selected");
@@ -2475,7 +2535,9 @@ edit.photo = function(isQueue, callback) {
                     $("#attach-area .images img").each(function() {
                         $(this).unbind("mouseenter mouseleave").hover(function() {
                             // Mouseover
-                            $("#photo-preview img").animate({opacity: 1}, 200).attr("src", $(this).attr("src"));
+                            $("#photo-preview img")
+                                .animate({opacity: 1}, 200)
+                                .attr("src", $(this).attr("src"));
                         }, function() {
                             // Mouseout
                             $("#photo-preview img").animate({opacity: 0}, 0);
@@ -2505,7 +2567,9 @@ edit.photo = function(isQueue, callback) {
                             // If the error is not found and the user just
                             // wants to add the photo from this folder, then
                             // report error
-                            animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr, error, -1);
+                            animation.error(log.EDIT_PANE_IMAGES_FAIL + log.EDIT_PANE_IMAGES_FIND_FAIL + dateStr,
+                                error,
+                                -1);
                             animation.deny("#add-photo");
                         } else {
                             // Still have to care about indentation of log
@@ -2554,7 +2618,8 @@ edit.photo = function(isQueue, callback) {
         }
         edit.getDate(function(dateStr) {
             // Get resource photos from user content folder
-            animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END, 1);
+            animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END,
+                1);
             // Get correct date folder
             processFunc(dateStr);
         });
@@ -2597,7 +2662,9 @@ edit.photoSave = function(callback) {
             // Change the `change` of edit.photos according to html contents
             $("#attach-area .images div").each(function() {
                 for (var i = 0; i !== edit.photos.length; ++i) {
-                    if ($(this).children("img").attr("src") === edit.photos[i]["url"]) {
+                    if ($(this)
+                            .children("img")
+                            .attr("src") === edit.photos[i]["url"]) {
                         // Matched, update from the html elements
                         edit.photos[i]["change"] = $(this).hasClass("change");
                         break;
@@ -2639,7 +2706,8 @@ edit.photoSave = function(callback) {
                         if (isToResource) {
                             // Would like to be added to entry, originally at
                             // data folder
-                            newName = timeHeader + (new Date().getTime() + i) + name.substring(name.length - 4);
+                            newName = timeHeader + (new Date().getTime() + i) + name.substring(
+                                    name.length - 4);
                             requestJson = {
                                 // New name of the file
                                 name: newName,
@@ -2696,28 +2764,43 @@ edit.photoSave = function(callback) {
                                     // Process all the html elements
                                     // Find the correct img to add or remove
                                     // highlight class on it
-                                    $("#attach-area .images div").each(function() {
-                                        $(this).removeClass("change");
-                                        // Try to match images with edit.photos
-                                        for (j = 0; j !== edit.photos.length; ++j) {
-                                            if ($(this).children("img").attr("src") === edit.photos[j]["url"]) {
-                                                if (edit.photos[j]["success"]) {
-                                                    if (edit.photos[j]["resource"]) {
-                                                        // Originally at
-                                                        // /resource
-                                                        $(this).addClass("data").removeClass("resource");
-                                                        // Remove from the map
-                                                        delete journal.archive.map[edit.photos[j]["name"]];
-                                                    } else {
-                                                        // Originally at /data
-                                                        $(this).addClass("resource").removeClass("queue data");
+                                    $("#attach-area .images div")
+                                        .each(function() {
+                                            $(this).removeClass("change");
+                                            // Try to match images with
+                                            // edit.photos
+                                            for (j = 0;
+                                                 j !== edit.photos.length;
+                                                 ++j) {
+                                                if ($(this)
+                                                        .children("img")
+                                                        .attr("src") === edit.photos[j]["url"]) {
+                                                    if (edit.photos[j]["success"]) {
+                                                        if (edit.photos[j]["resource"]) {
+                                                            // Originally at
+                                                            // /resource
+                                                            $(this)
+                                                                .addClass("data")
+                                                                .removeClass(
+                                                                    "resource");
+                                                            // Remove from the
+                                                            // map
+                                                            delete journal.archive.map[edit.photos[j]["name"]];
+                                                        } else {
+                                                            // Originally at
+                                                            // /data
+                                                            $(this)
+                                                                .addClass(
+                                                                    "resource")
+                                                                .removeClass(
+                                                                    "queue data");
+                                                        }
+                                                        edit.photos[j]["resource"] = !edit.photos[j]["resource"];
                                                     }
-                                                    edit.photos[j]["resource"] = !edit.photos[j]["resource"];
+                                                    break;
                                                 }
-                                                break;
                                             }
-                                        }
-                                    });
+                                        });
                                     // Reset all the data
                                     for (j = 0; j !== edit.photos.length; ++j) {
                                         edit.photos[j]["change"] = false;
@@ -2725,19 +2808,26 @@ edit.photoSave = function(callback) {
                                     }
                                     // Process edit.photos and match the
                                     // sequence in the div
-                                    $("#attach-area .images img").each(function() {
-                                        for (j = 0; j !== edit.photos.length; ++j) {
-                                            if (edit.photos[j]["url"] === $(this).attr("src")) {
-                                                if (edit.photos[j]["resource"]) {
-                                                    newImagesData.push({
-                                                        fileName: edit.photos[j]["name"]
-                                                    });
+                                    $("#attach-area .images img")
+                                        .each(function() {
+                                            for (j = 0;
+                                                 j !== edit.photos.length;
+                                                 ++j) {
+                                                if (edit.photos[j]["url"] === $(
+                                                        this).attr("src")) {
+                                                    if (edit.photos[j]["resource"]) {
+                                                        newImagesData.push({
+                                                            fileName: edit.photos[j]["name"]
+                                                        });
+                                                    }
                                                 }
                                             }
-                                        }
-                                    });
-                                    localStorage["images"] = JSON.stringify(newImagesData);
-                                    animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(0) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
+                                        });
+                                    localStorage["images"] = JSON.stringify(
+                                        newImagesData);
+                                    animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(
+                                            0) + log.EDIT_PANE_FINISHED_TRANSFER_END,
+                                        -1);
                                     callback();
                                 }
                             });
@@ -2808,7 +2898,8 @@ edit.video = function(index, link) {
         if (journal.archive.map[fileName]) {
             source = journal.archive.map[fileName]["url"];
             if (source == undefined) {
-                animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title").val());
+                animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title")
+                        .val());
                 return;
             }
             $("#text-area #video-preview").fadeIn();
@@ -2835,7 +2926,8 @@ edit.videoHide = function() {
         $(selectorHeader + "a").attr("onclick", edit.func);
         edit.func = undefined;
     } else {
-        $(selectorHeader + "a").attr("onclick", "edit.video(" + edit.mediaIndex["video"] + ")");
+        $(selectorHeader + "a")
+            .attr("onclick", "edit.video(" + edit.mediaIndex["video"] + ")");
     }
     // Save data
     edit.videoSave(edit.mediaIndex["video"]);
@@ -2887,42 +2979,49 @@ edit.location = function(index) {
     // Try HTML5 geolocation
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = parseFloat($(selectorHeader + ".latitude").val()) || position.coords.latitude,
-                longitude = parseFloat($(selectorHeader + ".longitude").val()) || position.coords.longitude;
+            var latitude = parseFloat($(selectorHeader + ".latitude")
+                    .val()) || position.coords.latitude,
+                longitude = parseFloat($(selectorHeader + ".longitude")
+                        .val()) || position.coords.longitude;
             pos = new google.maps.LatLng(latitude, longitude);
             mapOptions = {
                 zoom: 15,
                 center: pos
             };
             map = new google.maps.Map(document.getElementById("map-selector"), mapOptions);
-            searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName("place-search")[edit.mediaIndex["place"]], {types: ["geocode"]});
+            searchBox = new google.maps.places.Autocomplete(document.getElementsByClassName(
+                "place-search")[edit.mediaIndex["place"]], {types: ["geocode"]});
             markers = [];
 
             google.maps.event.clearListeners(searchBox, "place_changed");
-            google.maps.event.addListener(searchBox, "place_changed", function() {
-                var place = searchBox.getPlace(),
-                    bounds = new google.maps.LatLngBounds();
-                if (!place) {
-                    // Invalid input
-                    animation.invalid(selectorHeader + ".place-search");
-                } else {
-                    if (markers[0]) {
-                        markers[0].setMap(null);
-                        markers = [];
+            google.maps.event.addListener(searchBox,
+                "place_changed",
+                function() {
+                    var place = searchBox.getPlace(),
+                        bounds = new google.maps.LatLngBounds();
+                    if (!place) {
+                        // Invalid input
+                        animation.invalid(selectorHeader + ".place-search");
+                    } else {
+                        if (markers[0]) {
+                            markers[0].setMap(null);
+                            markers = [];
+                        }
+                        marker = new google.maps.Marker({
+                            map: map,
+                            title: place.name,
+                            position: place.geometry.location
+                        });
+                        marker.setMap(map);
+                        markers.push(marker);
+                        map.setZoom(16);
+                        map.setCenter(place.geometry.location);
+                        $(selectorHeader + ".latitude")
+                            .val(place.geometry.location.lat());
+                        $(selectorHeader + ".longitude")
+                            .val(place.geometry.location.lng());
                     }
-                    marker = new google.maps.Marker({
-                        map: map,
-                        title: place.name,
-                        position: place.geometry.location
-                    });
-                    marker.setMap(map);
-                    markers.push(marker);
-                    map.setZoom(16);
-                    map.setCenter(place.geometry.location);
-                    $(selectorHeader + ".latitude").val(place.geometry.location.lat());
-                    $(selectorHeader + ".longitude").val(place.geometry.location.lng());
-                }
-            });
+                });
 
             // Bias the SearchBox results towards places that are within the
             // bounds of the current map's viewport.
@@ -2934,8 +3033,10 @@ edit.location = function(index) {
             // Press enter to search
             $("#attach-area .place .desc").keyup(function(n) {
                 if (n.keyCode == 13) {
-                    var latitude = parseFloat($(selectorHeader + ".latitude").val()),
-                        longitude = parseFloat($(selectorHeader + ".longitude").val());
+                    var latitude = parseFloat($(selectorHeader + ".latitude")
+                        .val()),
+                        longitude = parseFloat($(selectorHeader + ".longitude")
+                            .val());
                     if (isNaN(latitude)) {
                         animation.invalid(selectorHeader + ".latitude");
                         return;
@@ -2980,7 +3081,8 @@ edit.locationHide = function() {
     // Disable input boxes
     $(selectorHeader + "input").prop("disabled", true);
     // Recover onclick event
-    $(selectorHeader + "a").attr("onclick", "edit.location(" + edit.mediaIndex["place"] + ")");
+    $(selectorHeader + "a")
+        .attr("onclick", "edit.location(" + edit.mediaIndex["place"] + ")");
     // Save data by default
     edit.locationSave(edit.mediaIndex["place"]);
     // Remove the contents
@@ -3094,7 +3196,8 @@ edit.locationWeather = function(pos) {
     }
 
     var apiKey = "6f1ee423e253fba5e40e3276ff3e6d33",
-        url = "https://api.forecast.io/forecast/" + apiKey + "/" + pos.lat() + "," + pos.lng() + "," + parseInt(new Date().getTime() / 1000) + "?units=si";
+        url = "https://api.forecast.io/forecast/" + apiKey + "/" + pos.lat() + "," + pos.lng() + "," + parseInt(
+                new Date().getTime() / 1000) + "?units=si";
     $.ajax({
         type: "GET",
         url: url,
@@ -3124,7 +3227,8 @@ edit.locationWeather = function(pos) {
             $("#attach-area .icontags ." + selector).trigger("click");
         } else {
             // Weather info not applicable
-            animation.log(log.EDIT_PANE_WEATHER_END_FAIL + data["summary"] + log.EDIT_PANE_WEATHER_END_FAIL_END, -1);
+            animation.log(log.EDIT_PANE_WEATHER_END_FAIL + data["summary"] + log.EDIT_PANE_WEATHER_END_FAIL_END,
+                -1);
         }
     });
 };
@@ -3168,7 +3272,8 @@ edit.voice = function(index, link) {
         if (journal.archive.map[fileName]) {
             source = journal.archive.map[fileName]["url"];
             if (source == undefined) {
-                animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title").val());
+                animation.error(log.FILE_NOT_FOUND + $(selectorHeader + ".title")
+                        .val());
                 return;
             }
             app.audioPlayer(selectorHeader + "a", source);
@@ -3193,7 +3298,8 @@ edit.voiceHide = function() {
         $(selectorHeader + "a").attr("onclick", edit.func);
         edit.func = undefined;
     } else {
-        $(selectorHeader + "a").attr("onclick", "edit.voice(" + edit.mediaIndex["voice"] + ")");
+        $(selectorHeader + "a")
+            .attr("onclick", "edit.voice(" + edit.mediaIndex["voice"] + ")");
     }
     // Save data
     edit.voiceSave(edit.mediaIndex["voice"]);
@@ -3293,7 +3399,8 @@ edit.weblinkHide = function() {
     // Disable input boxes
     $(selectorHeader + "input").prop("disabled", true).off("keyup");
     // Recover onclick event
-    $(selectorHeader + "a").attr("onclick", "edit.weblink(" + edit.mediaIndex["weblink"] + ")");
+    $(selectorHeader + "a")
+        .attr("onclick", "edit.weblink(" + edit.mediaIndex["weblink"] + ")");
     // Save data
     edit.weblinkSave(edit.mediaIndex["weblink"], 7);
     $("#edit-pane").off("keyup");
@@ -3331,7 +3438,8 @@ edit.itunes = function(index, typeNum) {
     $(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
         // Press enter to search
         if (n.keyCode == 13) {
-            var term = $(selectorHeader + ".title").val() + "%20" + $(selectorHeader + ".desc").val();
+            var term = $(selectorHeader + ".title").val() + "%20" + $(
+                    selectorHeader + ".desc").val();
             getCoverPhoto(selectorHeader, term, true, typeNum);
         }
     });
@@ -3353,7 +3461,8 @@ edit.itunesHide = function(typeNum) {
     // Disable input boxes
     $(selectorHeader + "input").prop("disabled", true).off("keyup");
     // Recover onclick event
-    $(selectorHeader + "a").attr("onclick", "edit." + type + "(" + edit.mediaIndex[type] + ")");
+    $(selectorHeader + "a")
+        .attr("onclick", "edit." + type + "(" + edit.mediaIndex[type] + ")");
     // Save data
     edit.itunesSave(edit.mediaIndex[type], typeNum);
     $("#edit-pane").off("keyup");
@@ -3422,12 +3531,15 @@ edit.playableSearch = function(typeNum) {
                             return;
                     }
                     // Iterate to find all the results on the server
-                    for (var key = 0, len = itemList.length; key !== len; ++key) {
+                    for (var key = 0, len = itemList.length;
+                         key !== len;
+                         ++key) {
                         var id = itemList[key]["id"],
                             size = itemList[key]["size"],
                             name = itemList[key]["name"],
                             contentUrl = itemList[key]["@content.downloadUrl"],
-                            suffix = name.substring(name.length - 4).toLowerCase(),
+                            suffix = name.substring(name.length - 4)
+                                .toLowerCase(),
                             elementData = {
                                 id: id,
                                 name: name,
@@ -3467,7 +3579,8 @@ edit.playableSearch = function(typeNum) {
                             continue;
                         }
                         dataGroup.push(elementData);
-                        animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + name + log.EDIT_PANE_PLAYABLE_FILE_ADDED);
+                        animation.log(edit.mediaName(typeNum)
+                                .capitalize() + log.EDIT_PANE_PLAYABLE_FILE + name + log.EDIT_PANE_PLAYABLE_FILE_ADDED);
                         // Add to the edit pane
                         switch (typeNum) {
                             case 1:
@@ -3495,7 +3608,9 @@ edit.playableSearch = function(typeNum) {
                     animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
                 })
                 .fail(function(xhr, status, error) {
-                    animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED, error, -1);
+                    animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED,
+                        error,
+                        -1);
                     switch (typeNum) {
                         case 1:
                             // Video
@@ -3560,7 +3675,9 @@ edit.playableSave = function(typeNum, callback) {
         $("#attach-area ." + edit.mediaName(typeNum)).each(function() {
             for (var i = 0; i !== dataGroup.length; ++i) {
                 if ($(this).children("a").hasClass(dataGroup[i]["name"])) {
-                    var match = (dataGroup[i]["resource"] && $(this).hasClass("resource")) || (!dataGroup[i]["resource"] && $(this).hasClass("data"));
+                    var match = (dataGroup[i]["resource"] && $(this)
+                            .hasClass("resource")) || (!dataGroup[i]["resource"] && $(
+                            this).hasClass("data"));
                     // Avoid cross-folder confusion to the files with the same
                     // name
                     if (match) {
@@ -3600,14 +3717,16 @@ edit.playableSave = function(typeNum, callback) {
             callback();
         } else {
             getTokenCallback(function(token) {
-                animation.log(log.EDIT_PANE_PLAYABLE_SAVE_START + edit.mediaName(typeNum) + log.EDIT_PANE_PLAYABLE_SAVE_START_END, 1);
+                animation.log(log.EDIT_PANE_PLAYABLE_SAVE_START + edit.mediaName(
+                        typeNum) + log.EDIT_PANE_PLAYABLE_SAVE_START_END, 1);
                 for (var i = 0; i !== dataGroup.length; ++i) {
                     if (dataGroup[i]["change"]) {
                         // This element wants to change its location
                         var name = dataGroup[i]["name"],
                             title = dataGroup[i]["title"],
                             id = dataGroup[i]["id"],
-                            newName = dateStr + (new Date().getTime() + i) + name.substring(name.length - 4),
+                            newName = dateStr + (new Date().getTime() + i) + name.substring(
+                                    name.length - 4),
                             path;
                         dataGroup[i]["success"] = false;
                         if (dataGroup[i]["resource"]) {
@@ -3638,7 +3757,8 @@ edit.playableSave = function(typeNum, callback) {
                             url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,name,size,@content.downloadUrl&access_token=" + token;
                         } else {
                             path = path === resourceDir ? contentDir : resourceDir;
-                            url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
+                            url = "https://api.onedrive.com/v1.0" + path + "/" + encodeURI(
+                                    name) + "?select=name,size,@content.downloadUrl&access_token=" + token;
                         }
                         $.ajax({
                                 type: "PATCH",
@@ -3673,61 +3793,103 @@ edit.playableSave = function(typeNum, callback) {
                                         break;
                                     }
                                 }
-                                animation.log(edit.mediaName(typeNum).capitalize() + log.EDIT_PANE_PLAYABLE_FILE + title + log.EDIT_PANE_PLAYABLE_FILE_SAVED);
+                                animation.log(edit.mediaName(typeNum)
+                                        .capitalize() + log.EDIT_PANE_PLAYABLE_FILE + title + log.EDIT_PANE_PLAYABLE_FILE_SAVED);
                             })
                             .fail(function(xhr, status, error) {
                                 --pending;
-                                animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED, error, false);
-                                animation.warning("#add-" + edit.mediaName(typeNum));
+                                animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED,
+                                    error,
+                                    false);
+                                animation.warning("#add-" + edit.mediaName(
+                                        typeNum));
                             })
                             .always(function() {
                                 if (pending <= 0) {
                                     // Finished all the processing
                                     // Process HTML element
-                                    $("#attach-area ." + edit.mediaName(typeNum)).each(function() {
-                                        $(this).removeClass("change");
-                                        for (var j = 0; j !== dataGroup.length; ++j) {
-                                            if (!$(this).hasClass("ignore")) {
-                                                if ($(this).children("a").hasClass(dataGroup[j]["name"])) {
-                                                    var match = (dataGroup[j]["resource"] && $(this).hasClass("resource")) || (!dataGroup[j]["resource"] && $(this).hasClass("data"));
-                                                    // Avoid cross-folder
-                                                    // confusion to the files
-                                                    // with the same name
-                                                    if (match) {
-                                                        if (dataGroup[j]["success"]) {
-                                                            dataGroup[j]["success"] = false;
-                                                            dataGroup[j]["resource"] = !dataGroup[j]["resource"];
-                                                            // Transfer
-                                                            // succeeds, update
-                                                            // the class
-                                                            if ($(this).hasClass("resource")) {
-                                                                $(this).removeClass("resource").addClass("data");
-                                                            } else if ($(this).hasClass("data")) {
-                                                                $(this).removeClass("data").addClass("resource");
+                                    $("#attach-area ." + edit.mediaName(typeNum))
+                                        .each(function() {
+                                            $(this).removeClass("change");
+                                            for (var j = 0;
+                                                 j !== dataGroup.length;
+                                                 ++j) {
+                                                if (!$(this)
+                                                        .hasClass("ignore")) {
+                                                    if ($(this)
+                                                            .children("a")
+                                                            .hasClass(dataGroup[j]["name"])) {
+                                                        var match = (dataGroup[j]["resource"] && $(
+                                                                this)
+                                                                .hasClass(
+                                                                    "resource")) || (!dataGroup[j]["resource"] && $(
+                                                                this)
+                                                                .hasClass("data"));
+                                                        // Avoid cross-folder
+                                                        // confusion to the
+                                                        // files with the same
+                                                        // name
+                                                        if (match) {
+                                                            if (dataGroup[j]["success"]) {
+                                                                dataGroup[j]["success"] = false;
+                                                                dataGroup[j]["resource"] = !dataGroup[j]["resource"];
+                                                                // Transfer
+                                                                // succeeds,
+                                                                // update the
+                                                                // class
+                                                                if ($(this)
+                                                                        .hasClass(
+                                                                            "resource")) {
+                                                                    $(this)
+                                                                        .removeClass(
+                                                                            "resource")
+                                                                        .addClass(
+                                                                            "data");
+                                                                } else if ($(
+                                                                        this)
+                                                                        .hasClass(
+                                                                            "data")) {
+                                                                    $(this)
+                                                                        .removeClass(
+                                                                            "data")
+                                                                        .addClass(
+                                                                            "resource");
+                                                                }
+                                                                // Also update
+                                                                // <a> if a new
+                                                                // name is
+                                                                // available
+                                                                if (dataGroup[j]["newName"]) {
+                                                                    dataGroup[j]["name"] = dataGroup[j]["newName"];
+                                                                    $(this)
+                                                                        .children(
+                                                                            "a")
+                                                                        .attr(
+                                                                            "class",
+                                                                            dataGroup[j]["newName"]);
+                                                                    // Remove
+                                                                    // this
+                                                                    delete dataGroup[j]["newName"];
+                                                                }
                                                             }
-                                                            // Also update <a>
-                                                            // if a new name is
-                                                            // available
-                                                            if (dataGroup[j]["newName"]) {
-                                                                dataGroup[j]["name"] = dataGroup[j]["newName"];
-                                                                $(this).children("a").attr("class", dataGroup[j]["newName"]);
-                                                                // Remove this
-                                                                delete dataGroup[j]["newName"];
-                                                            }
+                                                            break;
                                                         }
-                                                        break;
                                                     }
                                                 }
                                             }
-                                        }
-                                        if ($(this).hasClass("data")) {
-                                            // Moved to data
-                                            $(this).addClass("ignore").empty().fadeOut();
-                                        }
-                                    });
+                                            if ($(this).hasClass("data")) {
+                                                // Moved to data
+                                                $(this)
+                                                    .addClass("ignore")
+                                                    .empty()
+                                                    .fadeOut();
+                                            }
+                                        });
                                     // Process JS data
                                     var cacheData = [];
-                                    for (var j = 0; j !== dataGroup.length; ++j) {
+                                    for (var j = 0;
+                                         j !== dataGroup.length;
+                                         ++j) {
                                         dataGroup[j]["change"] = false;
                                         if (dataGroup[j]["resource"]) {
                                             // Update local cache
@@ -3741,8 +3903,11 @@ edit.playableSave = function(typeNum, callback) {
                                             --j;
                                         }
                                     }
-                                    localStorage[edit.mediaName(typeNum)] = JSON.stringify(cacheData);
-                                    animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(typeNum) + log.EDIT_PANE_FINISHED_TRANSFER_END, -1);
+                                    localStorage[edit.mediaName(typeNum)] = JSON.stringify(
+                                        cacheData);
+                                    animation.log(log.EDIT_PANE_FINISHED_TRANSFER + edit.mediaName(
+                                            typeNum) + log.EDIT_PANE_FINISHED_TRANSFER_END,
+                                        -1);
                                     callback();
                                 }
                             });
@@ -3812,7 +3977,14 @@ window.app = function() {
 
     //region Initialilzing data
     var _initializePreloadedTags = function() {
-        app.preloadedTags.push("%photo", "%video", "%music", "%voice", "%book", "%movie", "%place", "%weblink");
+        app.preloadedTags.push("%photo",
+            "%video",
+            "%music",
+            "%voice",
+            "%book",
+            "%movie",
+            "%place",
+            "%weblink");
         var tagsArray = app.tag().getIconsInName();
         for (var key = 0; key != tagsArray.length; ++key) {
             app.preloadedTags.push("#" + tagsArray[key]);
@@ -3831,7 +4003,8 @@ window.app = function() {
             .bind("keydown", function(event) {
                 // Don't navigate away from the field on tab when selecting an
                 // item
-                if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
+                if (event.keyCode === $.ui.keyCode.TAB && $(this)
+                        .autocomplete("instance").menu.active) {
                     event.preventDefault();
                 }
             })
@@ -3853,7 +4026,8 @@ window.app = function() {
                         }
                     }
                     // Delegate back to autocomplete, but extract the last term
-                    response($.ui.autocomplete.filter(availableTags, request.term.split(/ \s*/).pop()));
+                    response($.ui.autocomplete.filter(availableTags,
+                        request.term.split(/ \s*/).pop()));
                 },
                 focus: function() {
                     // Prevent value inserted on focus
@@ -3873,20 +4047,23 @@ window.app = function() {
             });
     }
     var _initializeReformatSummaryTimeOnHover = function() {
-        $(document).delegate("#search-result:not(.stats)", "mouseover mouseleave", function(e) {
-            var $search = $("#search-result");
-            var $total = $("#total-time");
+        $(document)
+            .delegate("#search-result:not(.stats)",
+                "mouseover mouseleave",
+                function(e) {
+                    var $search = $("#search-result");
+                    var $total = $("#total-time");
 
-            if (e.type === "mouseover") {
-                $search.hide();
-                $total.text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
-                $search.fadeIn(500);
-            } else {
-                $search.hide();
-                $total.text(app.displayedTime);
-                $search.fadeIn(500);
-            }
-        });
+                    if (e.type === "mouseover") {
+                        $search.hide();
+                        $total.text(Math.floor(app.displayedTime / 60) + ":" + app.displayedTime % 60);
+                        $search.fadeIn(500);
+                    } else {
+                        $search.hide();
+                        $total.text(app.displayedTime);
+                        $search.fadeIn(500);
+                    }
+                });
     }
     /**
      * Initialize header info (which refers to the div that displays current
@@ -3945,38 +4122,39 @@ window.app = function() {
     var _getEntriesNotInThisYear = function() {
         var queuedYears = [];
 
-        journal.archive.data[app.year] = journal.archive.data[app.year].filter(function(entry) {
-            if (entry == undefined) {
-                app.yearChange[app.year] = true;
-                // Do not need this one
-                return false;
-            }
-            // Test if the data is in current `app.year`
-            var time = entry["time"],
-                createdYear = new Date(time["created"]).getFullYear(),
-                startYear = new Date(time["created"]).getFullYear();
-            // Either the created time or the start time of the entry
-            if (createdYear == app.year || startYear == app.year) {
-                return true;
-            } else {
-                // Move this entry to a new year, given the created time
-                if (!app.yearQueue[createdYear]) {
-                    app.yearQueue[createdYear] = [];
+        journal.archive.data[app.year] = journal.archive.data[app.year].filter(
+            function(entry) {
+                if (entry == undefined) {
+                    app.yearChange[app.year] = true;
+                    // Do not need this one
+                    return false;
                 }
-                // Add to this year
-                app.yearQueue[createdYear].push(entry);
-                app.yearChange[createdYear] = true;
-                // This year has also been changed
-                app.yearChange[app.year] = true;
-                $("#year").addClass("change");
-                $("#last-updated").addClass("change");
-                // Test for uniqueness
-                if (queuedYears.indexOf(createdYear) === -1) {
-                    queuedYears.push(createdYear);
+                // Test if the data is in current `app.year`
+                var time = entry["time"],
+                    createdYear = new Date(time["created"]).getFullYear(),
+                    startYear = new Date(time["created"]).getFullYear();
+                // Either the created time or the start time of the entry
+                if (createdYear == app.year || startYear == app.year) {
+                    return true;
+                } else {
+                    // Move this entry to a new year, given the created time
+                    if (!app.yearQueue[createdYear]) {
+                        app.yearQueue[createdYear] = [];
+                    }
+                    // Add to this year
+                    app.yearQueue[createdYear].push(entry);
+                    app.yearChange[createdYear] = true;
+                    // This year has also been changed
+                    app.yearChange[app.year] = true;
+                    $("#year").addClass("change");
+                    $("#last-updated").addClass("change");
+                    // Test for uniqueness
+                    if (queuedYears.indexOf(createdYear) === -1) {
+                        queuedYears.push(createdYear);
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
         return queuedYears;
     };
@@ -4034,7 +4212,9 @@ window.app = function() {
         }
 
         // Refresh every stuff
-        for (var key = 0, len = journal.archive.data[app.year].length; key != len; ++key) {
+        for (var key = 0, len = journal.archive.data[app.year].length;
+             key != len;
+             ++key) {
             journal.archive.data[app.year][key]["processed"] = 0;
         }
     };
@@ -4043,7 +4223,8 @@ window.app = function() {
         if (app.yearQueue[app.year]) {
             app.yearChange[app.year] = true;
             // Push to the new data
-            journal.archive.data[app.year].push.apply(journal.archive.data[app.year], app.yearQueue[app.year]);
+            journal.archive.data[app.year].push.apply(journal.archive.data[app.year],
+                app.yearQueue[app.year]);
             // Then sort it to remove the duplicate
             edit.sortArchive();
             edit.removeDuplicate();
@@ -4270,7 +4451,9 @@ window.app = function() {
                                 textTags = data[i]["textTags"];
                             if (iconTags) {
                                 // There are iconTags
-                                iconTags = app.tag().getIconsInNameByVal(iconTags).join("|");
+                                iconTags = app.tag()
+                                    .getIconsInNameByVal(iconTags)
+                                    .join("|");
                                 // Add icon tags to texttags
                                 if (textTags) {
                                     textTags += "|" + iconTags;
@@ -4620,7 +4803,8 @@ app.list.prototype = {
                     lastTime = contents[lastQualifiedLoaded].time.start || contents[lastQualifiedLoaded].time.created;
                 }
                 // Go to load/change html of the content
-                currentList.html(journal.archive.data[app.year][currentLoaded], lastTime);
+                currentList.html(journal.archive.data[app.year][currentLoaded],
+                    lastTime);
                 // Track the index of this data
                 lastQualifiedLoaded = currentLoaded;
                 // Update other information
@@ -4641,7 +4825,8 @@ app.list.prototype = {
                 $("#total-time").text(app.displayedTime);
                 // Find the qualified entry, break the loop if scrollbar is not
                 // visible yet
-                if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
+                if ($("#list").get(0).scrollHeight == $("#list")
+                        .height() && ++currentLoaded != journal.total) {
                     continue;
                 }
                 break;
@@ -4662,7 +4847,8 @@ app.list.prototype = {
             // Remove load more
             $(".loadmore").remove();
             // Append a sign to indicate all of the entries have been loaded
-            $("#list").append("<li><p class=\"separator\"><span>EOF</span></p></li>");
+            $("#list")
+                .append("<li><p class=\"separator\"><span>EOF</span></p></li>");
         }
         app.lastQualified = lastQualifiedLoaded;
         app.lastLoaded = currentLoaded;
@@ -4694,7 +4880,8 @@ app.list.prototype = {
                         if (data["tags"]) {
                             subfound = false;
                             var textTagArray = data["tags"].split("|"),
-                                index = textTagArray.indexOf(element[subkey].substr(1));
+                                index = textTagArray.indexOf(element[subkey].substr(
+                                    1));
                             if (index !== -1) {
                                 subfound = true;
                             }
@@ -4736,7 +4923,8 @@ app.list.prototype = {
                         }
                     } else if (element[subkey].charAt(0) === "+") {
                         ////console.log("\t- Test body");
-                        if (data["text"]["body"].match(new RegExp(element[subkey].substr(1), "i"))) {
+                        if (data["text"]["body"].match(new RegExp(element[subkey].substr(
+                                1), "i"))) {
                             ////console.log("\t- Body match!");
                             // Found
                             found = true;
@@ -4910,7 +5098,9 @@ app.list.prototype = {
             }
             // De-hightlight the data that is displayed
             ////console.log(app.currentDisplayed);
-            $("#list").find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeClass("display");
+            $("#list")
+                .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
+                .removeClass("display");
             // Highlight the data that is now displayed
             $(this).addClass("display");
             // Update the index of the list to be displayed
@@ -4938,7 +5128,9 @@ app.list.prototype = {
                     f = this.getContext("2d");
                 g.src = $(this).data("src");
                 g.onload = function() {
-                    var croppedPhoto = app.util.crop(this.width, this.height, 160),
+                    var croppedPhoto = app.util.crop(this.width,
+                        this.height,
+                        160),
                         x = croppedPhoto.marginLeft || 0,
                         y = croppedPhoto.marginTop || 0,
                         width = croppedPhoto.width || 160,
@@ -5099,7 +5291,8 @@ app.list.prototype = {
                     // Invalid length
                     return false;
                 }
-                if (isNaN(startMonth) || isNaN(startYear) || isNaN(endMonth) || isNaN(endYear)) {
+                if (isNaN(startMonth) || isNaN(startYear) || isNaN(endMonth) || isNaN(
+                        endYear)) {
                     // Parse failed
                     return false;
                 }
@@ -5132,7 +5325,8 @@ app.list.prototype = {
                     // Illegal endTime length
                     return false;
                 }
-                if (isNaN(startMonth) || isNaN(startDay) || isNaN(startYear) || isNaN(endMonth) || isNaN(endDay) || isNaN(endTime)) {
+                if (isNaN(startMonth) || isNaN(startDay) || isNaN(startYear) || isNaN(
+                        endMonth) || isNaN(endDay) || isNaN(endTime)) {
                     // Parse failed
                     return false;
                 }
@@ -5180,7 +5374,7 @@ app.detail = function() {
     if (!dataClip.processed) {
         if (dataClip.contentType === app.contentType.BULB) {
             dataClip.title = "";
-            dataClip.chars = dataClip.text.chars + "Chars";
+            dataClip.chars = dataClip.text.chars + " Chars";
             dataClip.contents = this.text(dataClip.text.body);
             dataClip.weblink = dataClip.weblink || undefined;
             dataClip.place = dataClip.place || undefined;
@@ -5194,19 +5388,26 @@ app.detail = function() {
             if (dataClip.book) {
                 this.thumb(dataClip, "book", 50, 70);
                 for (var i = 0; i !== dataClip["book"].length; ++i) {
-                    getCoverPhoto("#detail .book:eq(" + i + ") ", dataClip.book[i].author + " " + dataClip.book[i].title, false, "book");
+                    getCoverPhoto("#detail .book:eq(" + i + ") ",
+                        dataClip.book[i].author + " " + dataClip.book[i].title,
+                        false,
+                        "book");
                 }
             }
             if (dataClip.music) {
                 this.thumb(dataClip, "music", 50, 50);
                 for (var i = 0; i !== dataClip["music"].length; ++i) {
-                    getCoverPhoto("#detail .music:eq(" + i + ") ", dataClip.music[i].author + " " + dataClip.music[i].title);
+                    getCoverPhoto("#detail .music:eq(" + i + ") ",
+                        dataClip.music[i].author + " " + dataClip.music[i].title);
                 }
             }
             if (dataClip.movie) {
                 this.thumb(dataClip, "movie", 50, 70);
                 for (var i = 0; i !== dataClip["movie"].length; ++i) {
-                    getCoverPhoto("#detail .movie:eq(" + i + ") ", dataClip.movie[i].author + " " + dataClip.movie[i].title, false, "movie");
+                    getCoverPhoto("#detail .movie:eq(" + i + ") ",
+                        dataClip.movie[i].author + " " + dataClip.movie[i].title,
+                        false,
+                        "movie");
                 }
             }
             if (dataClip.tags) {
@@ -5219,7 +5420,8 @@ app.detail = function() {
                 dataClip.textTags = [];
             }
             // To avoid undefined error in _.template
-            var elements = "video weblink book music movie images voice place textTags iconTags".split(" ");
+            var elements = "video weblink book music movie images voice place textTags iconTags".split(
+                " ");
             for (var i = 0, len = elements.length; i < len; ++i) {
                 if (dataClip[elements[i]] == undefined) {
                     dataClip[elements[i]] = undefined;
@@ -5261,7 +5463,9 @@ app.detail = function() {
     var eachOp = function() {
         var className = $(this).attr("class");
         if (journal.archive.map[className]) {
-            $(this).attr("href", journal.archive.map[className]["url"]).removeAttr("class");
+            $(this)
+                .attr("href", journal.archive.map[className]["url"])
+                .removeAttr("class");
         }
     };
     $(".lower .video a").each(function(n) {
@@ -5310,7 +5514,11 @@ app.detail.prototype = {
     },
     // Processes all the spacial characters to html-style characters
     htmlSpacialChars: function(rawText) {
-        return rawText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#039;").replace(/"/g, "&quot;");
+        return rawText.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/'/g, "&#039;")
+            .replace(/"/g, "&quot;");
     },
     thumb: function(dataClip, thumbType, width, height) { // [h, l, d, n]
         // Seems that only the type of music, movie, book, weblink will be
@@ -5434,7 +5642,8 @@ app.util = {
         var c = [];
         for (i in styleArray) {
             if (styleArray.hasOwnProperty(i)) {
-                c.push(i.replace(/([A-Z])/, "-$1").toLowerCase() + ":" + (typeof styleArray[i] == "number" ? styleArray[i] + "px" : styleArray[i]));
+                c.push(i.replace(/([A-Z])/, "-$1")
+                        .toLowerCase() + ":" + (typeof styleArray[i] == "number" ? styleArray[i] + "px" : styleArray[i]));
             }
         }
         return c.join(";");
@@ -5811,7 +6020,8 @@ app.tag = function() {
         // Tests if testValue is in totalValue, i.e. typesVal has type of
         // typeVal
         is: function(typesVal, typeVal) { // [R, Q]
-            return this.get(typesVal).charAt(this.get(typeVal).indexOf("1")) == "1";
+            return this.get(typesVal)
+                    .charAt(this.get(typeVal).indexOf("1")) == "1";
         },
         // Gets the binary value at the length of 64
         get: function(value) { // [Q]
@@ -5833,7 +6043,8 @@ app.showEntryImages = function() {
         for (var key = 0; key != data["images"].length; ++key) {
             var file = data["images"][key].fileName;
             if (journal.archive.map[file]) {
-                $(".upper").append("<a href=\"" + journal.archive.map[file]["url"] + "\"><span></span><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
+                $(".upper")
+                    .append("<a href=\"" + journal.archive.map[file]["url"] + "\"><span></span><img src=\"" + journal.archive.map[file]["url"] + "\"></a>");
             } else {
                 animation.error(log.FILE_NOT_LOADED + file + log.DOWNLOAD_PROMPT);
             }
@@ -5878,14 +6089,19 @@ app.PhotoViewer.prototype = {
         f.each(function(j) {
             $("<li>").html(this).appendTo(d);
             if (!!c) {
-                $("<li>").html("<a href=\"#" + j + "\">" + j + "</a>").appendTo(c);
+                $("<li>")
+                    .html("<a href=\"#" + j + "\">" + j + "</a>")
+                    .appendTo(c);
             }
         });
         var e = $("<div class=\"wrap swipe\">").html(d);
         var g = $("<div class=\"control\">");
         g.append("<input type=\"button\" value=\"Close\" class=\"btn-close\"/>");
         if (!!c) {
-            c.css("width", f.length * 17).wrap("<div class=\"pagination\"/>").parent().appendTo(g);
+            c.css("width", f.length * 17)
+                .wrap("<div class=\"pagination\"/>")
+                .parent()
+                .appendTo(g);
         }
         e.append(g);
         e.append("<div class=\"background\"></div>");
@@ -6021,7 +6237,10 @@ app.audioPlayer = function(selector, source) {
         return;
     }
     animation.log(log.AUDIO_DOWNLOAD_START, 1);
-    $("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.audioPlayer.play()");
+    $("#play-media")
+        .html("&#xf04b")
+        .removeClass("play")
+        .attr("onclick", "app.audioPlayer.play()");
     $("#stop-media").attr("onclick", "app.audioPlayer.quit()");
     var element = "<div id=\"audioplayer\">" +
         "<audio id=\"music\" preload=\"true\"><source src=\"" + source + "\"></audio>" +
@@ -6052,7 +6271,8 @@ app.audioPlayer = function(selector, source) {
             // Replay back
             $("#play-media").html("&#xf04b").removeClass("play");
         } else {
-            $("#music-position").html(app.audioPlayer.formatTime(music.currentTime));
+            $("#music-position")
+                .html(app.audioPlayer.formatTime(music.currentTime));
         }
     };
     app.audioPlayer.moveplayHead = function(e) {
@@ -6075,17 +6295,25 @@ app.audioPlayer = function(selector, source) {
     };
     app.audioPlayer.mouseDown = function() {
         app.audioPlayer.onplayhead = true;
-        window.addEventListener("mousemove", app.audioPlayer.moveplayHead, true);
-        music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
+        window.addEventListener("mousemove",
+            app.audioPlayer.moveplayHead,
+            true);
+        music.removeEventListener("timeupdate",
+            app.audioPlayer.timeUpdate,
+            false);
     };
     app.audioPlayer.mouseUp = function(e) {
         if (app.audioPlayer.onplayhead) {
             app.audioPlayer.moveplayHead(e);
-            window.removeEventListener("mousemove", app.audioPlayer.moveplayHead, true);
+            window.removeEventListener("mousemove",
+                app.audioPlayer.moveplayHead,
+                true);
             // returns click as decimal (.77) of the total timelineWidth
             var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
             music.currentTime = duration * clickPercent;
-            music.addEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
+            music.addEventListener("timeupdate",
+                app.audioPlayer.timeUpdate,
+                false);
         }
         app.audioPlayer.onplayhead = false;
     };
@@ -6102,13 +6330,20 @@ app.audioPlayer = function(selector, source) {
         duration = app.audioPlayer.music.duration;
     }, false);
     // timeupdate event listener
-    app.audioPlayer.music.addEventListener("timeupdate", app.audioPlayer.timeUpdate, false);
-    app.audioPlayer.music.addEventListener("loadedmetadata", app.audioPlayer.loadedData);
+    app.audioPlayer.music.addEventListener("timeupdate",
+        app.audioPlayer.timeUpdate,
+        false);
+    app.audioPlayer.music.addEventListener("loadedmetadata",
+        app.audioPlayer.loadedData);
 
     //Makes timeline clickable
-    app.audioPlayer.timeline.addEventListener("click", app.audioPlayer.click, false);
+    app.audioPlayer.timeline.addEventListener("click",
+        app.audioPlayer.click,
+        false);
     // Makes playhead draggable
-    app.audioPlayer.playhead.addEventListener("mousedown", app.audioPlayer.mouseDown, false);
+    app.audioPlayer.playhead.addEventListener("mousedown",
+        app.audioPlayer.mouseDown,
+        false);
     window.addEventListener("mouseup", app.audioPlayer.mouseUp, false);
 };
 /**
@@ -6149,14 +6384,18 @@ app.audioPlayer.quit = function() {
     app.isFunction = true;
     // Unbine all the action listener
     if (app.audioPlayer.music) {
-        app.audioPlayer.music.removeEventListener("timeupdate", app.audioPlayer.timeUpdate);
-        app.audioPlayer.music.removeEventListener("loadedmetadata", app.audioPlayer.loadedData);
+        app.audioPlayer.music.removeEventListener("timeupdate",
+            app.audioPlayer.timeUpdate);
+        app.audioPlayer.music.removeEventListener("loadedmetadata",
+            app.audioPlayer.loadedData);
     }
     if (app.audioPlayer.timeline) {
-        app.audioPlayer.timeline.removeEventListener("click", app.audioPlayer.click);
+        app.audioPlayer.timeline.removeEventListener("click",
+            app.audioPlayer.click);
     }
     if (app.audioPlayer.playhead) {
-        app.audioPlayer.playhead.removeEventListener("mousedown", app.audioPlayer.mouseDown);
+        app.audioPlayer.playhead.removeEventListener("mousedown",
+            app.audioPlayer.mouseDown);
     }
     window.removeEventListener("mouseup", app.audioPlayer.mouseUp);
     animation.hideMenu("media");
@@ -6177,7 +6416,10 @@ app.videoPlayer = function(selector, source) {
     }
     animation.log(log.VIDEO_DOWNLOAD_START, 1);
     $(selector).fadeIn();
-    $("#play-media").html("&#xf04b").removeClass("play").attr("onclick", "app.videoPlayer.play()");
+    $("#play-media")
+        .html("&#xf04b")
+        .removeClass("play")
+        .attr("onclick", "app.videoPlayer.play()");
     $("#stop-media").attr("onclick", "app.videoPlayer.quit()");
     var element = "<div id=\"videoplayer\">" +
         "<video id=\"video\" preload=\"true\"><source src=\"" + source + "\"></video>" +
@@ -6207,7 +6449,8 @@ app.videoPlayer = function(selector, source) {
             // Replay back
             $("#play-media").html("&#xf04b").removeClass("play");
         } else {
-            $("#video-position").html(app.videoPlayer.formatTime(video.currentTime));
+            $("#video-position")
+                .html(app.videoPlayer.formatTime(video.currentTime));
         }
     };
     app.videoPlayer.moveplayHead = function(e) {
@@ -6230,17 +6473,25 @@ app.videoPlayer = function(selector, source) {
     };
     app.videoPlayer.mouseDown = function() {
         app.videoPlayer.onplayhead = true;
-        window.addEventListener("mousemove", app.videoPlayer.moveplayHead, true);
-        video.removeEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
+        window.addEventListener("mousemove",
+            app.videoPlayer.moveplayHead,
+            true);
+        video.removeEventListener("timeupdate",
+            app.videoPlayer.timeUpdate,
+            false);
     };
     app.videoPlayer.mouseUp = function(e) {
         if (app.videoPlayer.onplayhead) {
             app.videoPlayer.moveplayHead(e);
-            window.removeEventListener("mousemove", app.videoPlayer.moveplayHead, true);
+            window.removeEventListener("mousemove",
+                app.videoPlayer.moveplayHead,
+                true);
             // returns click as decimal (.77) of the total timelineWidth
             var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
             video.currentTime = duration * clickPercent;
-            video.addEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
+            video.addEventListener("timeupdate",
+                app.videoPlayer.timeUpdate,
+                false);
         }
         app.videoPlayer.onplayhead = false;
     };
@@ -6259,7 +6510,9 @@ app.videoPlayer = function(selector, source) {
         // Show the play icons
         animation.showMenu("media");
         // Show the control
-        $("#video-position, #video-length, #timeline").fadeIn().css("display", "inline-block");
+        $("#video-position, #video-length, #timeline")
+            .fadeIn()
+            .css("display", "inline-block");
         // Recalculate the width
         timelineWidth = timeline.offsetWidth - playhead.offsetWidth;
         if (this.toggle) {
@@ -6272,13 +6525,20 @@ app.videoPlayer = function(selector, source) {
         duration = app.videoPlayer.video.duration;
     }, false);
     // timeupdate event listener
-    app.videoPlayer.video.addEventListener("timeupdate", app.videoPlayer.timeUpdate, false);
-    app.videoPlayer.video.addEventListener("loadedmetadata", app.videoPlayer.loadedData);
+    app.videoPlayer.video.addEventListener("timeupdate",
+        app.videoPlayer.timeUpdate,
+        false);
+    app.videoPlayer.video.addEventListener("loadedmetadata",
+        app.videoPlayer.loadedData);
 
     //Makes timeline clickable
-    app.videoPlayer.timeline.addEventListener("click", app.videoPlayer.click, false);
+    app.videoPlayer.timeline.addEventListener("click",
+        app.videoPlayer.click,
+        false);
     // Makes playhead draggable
-    app.videoPlayer.playhead.addEventListener("mousedown", app.videoPlayer.mouseDown, false);
+    app.videoPlayer.playhead.addEventListener("mousedown",
+        app.videoPlayer.mouseDown,
+        false);
     window.addEventListener("mouseup", app.videoPlayer.mouseUp, false);
 };
 /**
@@ -6292,19 +6552,24 @@ app.videoPlayer.toggle = function() {
         if (this.toggle.windowSelector) {
             $("#video-fullscreen").fadeOut();
             // Move child
-            $(this.toggle.windowSelector).append($("#videoplayer").css("height", "450px"));
+            $(this.toggle.windowSelector)
+                .append($("#videoplayer").css("height", "450px"));
             // Change the icon
             $("#toggle-media").html("&#xf065");
         } else {
             // Invalid call
-            animation.error("Program error: no app.videoPlayer.toggle.windowSelector");
+            animation.error(
+                "Program error: no app.videoPlayer.toggle.windowSelector");
         }
         this.toggle.isFullScreen = false;
     } else {
         // Go fullscreen
         this.toggle.windowSelector = $("#videoplayer").parent();
         // Move child
-        $("#video-fullscreen").fadeIn().append($("#videoplayer").css("height", "-webkit-calc(100% - 25px)"));
+        $("#video-fullscreen")
+            .fadeIn()
+            .append($("#videoplayer")
+                .css("height", "-webkit-calc(100% - 25px)"));
         // Go fullscreen
         $("#toggle-media").html("&#xf066");
         this.toggle.isFullScreen = true;
@@ -6346,14 +6611,18 @@ app.videoPlayer.quit = function() {
     app.isFunction = true;
     // Unbine all the action listener
     if (app.videoPlayer.video) {
-        app.videoPlayer.video.removeEventListener("timeupdate", app.videoPlayer.timeUpdate);
-        app.videoPlayer.video.removeEventListener("loadedmetadata", app.videoPlayer.loadedData);
+        app.videoPlayer.video.removeEventListener("timeupdate",
+            app.videoPlayer.timeUpdate);
+        app.videoPlayer.video.removeEventListener("loadedmetadata",
+            app.videoPlayer.loadedData);
     }
     if (app.videoPlayer.timeline) {
-        app.videoPlayer.timeline.removeEventListener("click", app.videoPlayer.click);
+        app.videoPlayer.timeline.removeEventListener("click",
+            app.videoPlayer.click);
     }
     if (app.videoPlayer.playhead) {
-        app.videoPlayer.playhead.removeEventListener("mousedown", app.videoPlayer.mouseDown);
+        app.videoPlayer.playhead.removeEventListener("mousedown",
+            app.videoPlayer.mouseDown);
     }
     window.removeEventListener("mouseup", app.videoPlayer.mouseUp);
     animation.hideMenu("media");
@@ -6380,7 +6649,9 @@ app.checkResource = function() {
         groups = ["images", "video", "voice"],
         undefMedia = 0;
     // Iterate to find any media that is not contained in archive.data
-    for (var i = 0, length = journal.archive.data[app.year].length; i !== length; ++i) {
+    for (var i = 0, length = journal.archive.data[app.year].length;
+         i !== length;
+         ++i) {
         var dataClip = journal.archive.data[app.year][i];
         // Iterate to find all the media in different groups
         for (var j = 0; j !== groups.length; ++j) {
@@ -6475,7 +6746,8 @@ app.cleanResource = function() {
                         if (id) {
                             url = "https://api.onedrive.com/v1.0/drive/items/" + id + "?select=id,@content.downloadUrl&access_token=" + token;
                         } else {
-                            url = getResourceUrlHeader(true) + "/" + encodeURI(lostMedia[i]) + "/" + "?select=id,@content.downloadUrl&access_token=" + token;
+                            url = getResourceUrlHeader(true) + "/" + encodeURI(
+                                    lostMedia[i]) + "/" + "?select=id,@content.downloadUrl&access_token=" + token;
                         }
                         // Trying to send to the folder
                         $.ajax({
@@ -6507,7 +6779,9 @@ app.cleanResource = function() {
                     }
                 })
                 .fail(function(xhr, status, error) {
-                    animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL, error, -1);
+                    animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL,
+                        error,
+                        -1);
                 });
         });
     }
@@ -6593,7 +6867,8 @@ archive.init = function(selector) {
                     var name = itemList[key]["name"];
                     // Filter the .js files only, and data.js shouldn't be
                     // included
-                    if ((name.substring(0, 4) === "data" || name.substring(0, 5) === "_data") && name.substring(name.length - 3) === ".js" && name !== "data.js") {
+                    if ((name.substring(0, 4) === "data" || name.substring(0,
+                            5) === "_data") && name.substring(name.length - 3) === ".js" && name !== "data.js") {
                         var dataElement = {
                             name: name,
                             id: itemList[key]["id"],
@@ -6702,7 +6977,8 @@ archive.list.prototype = {
             ++currentLoaded;
             // Find the qualified entry, break the loop if scrollbar is not
             // visible yet
-            if ($("#list").get(0).scrollHeight == $("#list").height() && currentLoaded < archive.data.length) {
+            if ($("#list").get(0).scrollHeight == $("#list")
+                    .height() && currentLoaded < archive.data.length) {
                 continue;
             }
             break;
@@ -6712,7 +6988,8 @@ archive.list.prototype = {
             // Remove load more
             $(".loadmore").remove();
             // Append a sign to indicate all of the entries have been loaded
-            $("#list").append("<li><p class=\"separator\"><span>EOF</span></p></li>");
+            $("#list")
+                .append("<li><p class=\"separator\"><span>EOF</span></p></li>");
         }
         archive.lastLoaded = currentLoaded;
     },
@@ -6796,7 +7073,8 @@ archive.list.prototype = {
             animation.hideHiddenIcons();
             // De-hightlight the data that is displayed
             ////console.log(archive.currentDisplayed);
-            $("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a").removeClass("display");
+            $("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a")
+                .removeClass("display");
             // Highlight the data that is now displayed
             $(this).addClass("display");
             // Update the index of the list to be displayed
@@ -6832,7 +7110,8 @@ archive.detail = function() {
             animation.log(log.CONTENTS_DOWNLOAD_END, -1);
             // Stop telling the user it is loading
             $("#list").removeClass("loading");
-            var contents = JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf("["))).slice(0, 50);
+            var contents = JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf(
+                "["))).slice(0, 50);
             // Convert date
             for (var i = 0; i !== contents.length; ++i) {
                 contents[i]["time"]["created"] = edit.getMyTime(contents[i]["time"]["created"]);
@@ -6881,7 +7160,11 @@ archive.detail = function() {
 archive.detail.prototype = {
     // Processes all the spacial characters to html-style characters
     htmlSpacialChars: function(rawText) {
-        return rawText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#039;").replace(/"/g, "&quot;");
+        return rawText.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/'/g, "&#039;")
+            .replace(/"/g, "&quot;");
     },
     /* Hide the detail-view */
     hideDetail: function() {
@@ -6977,7 +7260,9 @@ archive.protect = function(callback) {
                             // Processed all
                             if (Object.keys(list).length !== 0) {
                                 // Error info
-                                for (var j = 0; j !== archive.data.length; ++j) {
+                                for (var j = 0;
+                                     j !== archive.data.length;
+                                     ++j) {
                                     if (list[archive.data[j]["id"]]) {
                                         // Matched
                                         animation.error(log.ARCHIVE_PROTECT_FAIL + archive.data[j]["name"] + log.SERVER_RETURNS_END + log.SERVER_RETURNS + list[data["id"]] + log.SERVER_RETURNS_END);
@@ -7040,7 +7325,8 @@ archive.remove = function(callback) {
                                     // One operation failed
                                     animation.error(log.ARCHIVE_REMOVE_FAIL);
                                 }
-                                animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END, -1);
+                                animation.log((total - fail) + log.CONTENTS_DOWNLOAD_MEDIA_OF + total + log.ARCHIVE_REMOVE_END,
+                                    -1);
                                 callback();
                             }
                         });
@@ -7173,7 +7459,9 @@ network.timeOut = 15000;
 network.init = function(breakpoint) {
     // Remove all the network activity bar
     $("#network-bar").remove();
-    $(".header").append("<div id=\"network-bar\" ><div id=\"network-progress\"><div id=\"network-followup\"></div></div></div>");
+    $(".header")
+        .append(
+            "<div id=\"network-bar\" ><div id=\"network-progress\"><div id=\"network-followup\"></div></div></div>");
     if (!breakpoint || breakpoint < 0) {
         breakpoint = 0;
     }
@@ -7327,7 +7615,11 @@ function downloadFile(url, textOnly) {
                 app.refresh();
             }, 3);
         } else {
-            $("#download").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+            $("#download")
+                .html("&#xf1ce")
+                .addClass("spin")
+                .removeAttr("onclick")
+                .removeAttr("href");
             // Get text data
             url = url || getCoreDataUrlHeader(true) +
                 ":/content?access_token=" + token;
@@ -7347,10 +7639,13 @@ function downloadFile(url, textOnly) {
                     app.yearUpdate();
                     if (textOnly) {
                         // Change loading icons and re-enable click
-                        $("#download").html("&#xf0ed").removeClass("spin").attr({
-                            onclick: "downloadFile()",
-                            href: "#"
-                        });
+                        $("#download")
+                            .html("&#xf0ed")
+                            .removeClass("spin")
+                            .attr({
+                                onclick: "downloadFile()",
+                                href: "#"
+                            });
                         animation.finished("#download");
                     } else {
                         // Get metadata
@@ -7362,12 +7657,15 @@ function downloadFile(url, textOnly) {
                                 // Get the data number
                                 journal.archive.media = data["folder"]["childCount"];
                                 app.refresh();
-                                animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START, 1);
+                                animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START,
+                                    1);
                                 network.init(journal.archive.media);
                                 downloadMedia();
                             })
                             .fail(function(xhr, status, error) {
-                                animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL, error, -1);
+                                animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL,
+                                    error,
+                                    -1);
                             });
                     }
                 })
@@ -7497,7 +7795,8 @@ function backupAll(years) {
             // Backup the original file
             $.ajax({
                     type: "POST",
-                    url: getCoreDataUrlHeader(false, dataYear) + ":/action.copy?access_token=" + token,
+                    url: getCoreDataUrlHeader(false,
+                        dataYear) + ":/action.copy?access_token=" + token,
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     headers: {
@@ -7513,7 +7812,9 @@ function backupAll(years) {
                 .fail(function(xhr, status, error) {
                     // Bad request means the file to be moved is not found
                     if (error !== "Bad Request") {
-                        animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL, error, -1);
+                        animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL,
+                            error,
+                            -1);
                         network.destroy();
                     }
                     ////alert("Cannot backup the file");
@@ -7537,7 +7838,11 @@ function backupAll(years) {
 function uploadFile(dataYear, callbackOnSuccess) {
     dataYear = parseInt(dataYear) || app.year;
     // Change loading icons and disable click
-    $("#upload").html("&#xf1ce").addClass("spin").removeAttr("onclick").removeAttr("href");
+    $("#upload")
+        .html("&#xf1ce")
+        .addClass("spin")
+        .removeAttr("onclick")
+        .removeAttr("href");
 
     // Test if bulb(s) are still being processed
     if (bulb.isProcessing) {
@@ -7557,7 +7862,8 @@ function uploadFile(dataYear, callbackOnSuccess) {
             tmp += JSON.stringify(edit.minData());
             $.ajax({
                     type: "PUT",
-                    url: getCoreDataUrlHeader(true, dataYear) + ":/content?access_token=" + token,
+                    url: getCoreDataUrlHeader(true,
+                        dataYear) + ":/content?access_token=" + token,
                     contentType: "text/plain",
                     data: tmp
                 })
@@ -7569,8 +7875,14 @@ function uploadFile(dataYear, callbackOnSuccess) {
                     app.updateLastUpdated();
                     animation.log(log.CONTENTS_UPLOAD_END + dataYear, -1);
 
-                    if (typeof callbackOnSuccess === "function")
+                    if (typeof callbackOnSuccess === "function") {
                         callbackOnSuccess();
+                    } else {
+                        edit.sortArchive();
+                        edit.removeDuplicate();
+                        journal.archive.data[app.year] = edit.minData();
+                        edit.saveDataCache();
+                    }
                 })
                 .fail(function(xhr2, status2, error2) {
                     animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
@@ -7579,10 +7891,14 @@ function uploadFile(dataYear, callbackOnSuccess) {
                 .always(function() {
                     network.next();
                     // Change loading icons and re-enable click
-                    $("#upload").html("&#xf0ee").removeClass("spin").css("background", "").attr({
-                        onclick: "uploadSingleFile()",
-                        href: "#"
-                    });
+                    $("#upload")
+                        .html("&#xf0ee")
+                        .removeClass("spin")
+                        .css("background", "")
+                        .attr({
+                            onclick: "uploadSingleFile()",
+                            href: "#"
+                        });
                 });
         };
         if (network.yearFolders.indexOf(app.year) === -1) {
@@ -7985,7 +8301,9 @@ window.bulb = function() {
 
                     animation.log(log.BULB_FETCH_CONTENT_START);
 
-                    for (var key = 0, len = itemList.length; key != len; ++key) {
+                    for (var key = 0, len = itemList.length;
+                         key != len;
+                         ++key) {
                         var dataElement = {
                             id: itemList[key]["id"],
                             url: itemList[key]["@content.downloadUrl"],
@@ -8240,16 +8558,23 @@ stats.init = function() {
         });
     });
     // Hover to highlight the same column and row
-    $("#stats-table").delegate("td", "mouseover mouseleave contextmenu", function(e) {
+    $("#stats-table")
+        .delegate("td", "mouseover mouseleave contextmenu", function(e) {
             if (e.type === "mouseover") {
                 $(this).parent().addClass("hover");
-                $("tr td:nth-child(" + ($(this).index() + 1) + ")").addClass("hover");
+                $("tr td:nth-child(" + ($(this).index() + 1) + ")")
+                    .addClass("hover");
             } else if (e.type === "mouseleave") {
                 $(this).parent().removeClass("hover");
-                $("tr td:nth-child(" + ($(this).index() + 1) + ")").removeClass("hover");
+                $("tr td:nth-child(" + ($(this).index() + 1) + ")")
+                    .removeClass("hover");
             } else {
                 // Right click
-                var key = stats.oldValue || $(this).parent().children("td").children("input").val();
+                var key = stats.oldValue || $(this)
+                        .parent()
+                        .children("td")
+                        .children("input")
+                        .val();
                 $(this).parent().slideUp(200, function() {
                     $(this).remove();
                 });
@@ -8285,7 +8610,10 @@ stats.init = function() {
                         return;
                     } else {
                         // This is a valid entry
-                        $(this).parent().parent().effect("highlight", {color: "#ddd"});
+                        $(this)
+                            .parent()
+                            .parent()
+                            .effect("highlight", {color: "#ddd"});
                         // Add a new entry
                         var index = $(this).parent().parent().index() + 1;
                         // Remove the old value
@@ -8403,7 +8731,10 @@ stats.quit = function() {
     });
     $(".stats").removeClass("stats");
     // Unbind hover to highlight the same column and row
-    $("#stats-table").undelegate("td", "mouseover mouseleave contextmenu").undelegate("input", "focusin focusout keyup").delegate("th", "contextmenu");
+    $("#stats-table")
+        .undelegate("td", "mouseover mouseleave contextmenu")
+        .undelegate("input", "focusin focusout keyup")
+        .delegate("th", "contextmenu");
     // Unbind enter to search for #stats-query
     $("#stats-pane").fadeOut(400, function() {
         $("#contents").fadeIn();
@@ -8447,7 +8778,11 @@ stats.addEntry = function(entry, overwriteNum) {
     htmlContent += "<td>" + sum + "</td>";
     if (overwriteNum) {
         // Overwrite a content
-        $("tbody tr:nth-child(" + overwriteNum + ") input").parent().parent().html(htmlContent).addClass("fadein");
+        $("tbody tr:nth-child(" + overwriteNum + ") input")
+            .parent()
+            .parent()
+            .html(htmlContent)
+            .addClass("fadein");
     } else {
         // Wrap with <tr>
         htmlContent = "<tr>" + htmlContent + "</tr>";
@@ -8643,7 +8978,9 @@ stats.showGraph = function(viewAsMonth) {
         });
     } else {
         var entries;
-        for (i = 0, entries = Object.keys(stats.entries); i !== entries.length; ++i) {
+        for (i = 0, entries = Object.keys(stats.entries);
+             i !== entries.length;
+             ++i) {
             name = entries[i];
             series.push({
                 name: entries[i],
@@ -8685,7 +9022,8 @@ stats.showGraph = function(viewAsMonth) {
             x: -20 //center
         },
         subtitle: {
-            text: "Collected from " + $("#total-char").html() + " chars in " + $("#total-entry").html() + " entries",
+            text: "Collected from " + $("#total-char")
+                .html() + " chars in " + $("#total-entry").html() + " entries",
             x: -20
         },
         xAxis: {

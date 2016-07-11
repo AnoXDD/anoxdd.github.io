@@ -160,6 +160,8 @@ window.log = {
     BULB_FETCH_END: "Bulbs loaded. Failed: ",
     BULB_FETCH_CONTENT_START: "Fetching bulb contents ...",
     BULB_PROCESSED_LEFT: " bulbs processed. Left: ",
+    BULB_REMOVE_MERGED_START: "Cleaning data on OneDrive ...",
+    BULB_FETCH_FINAL_END: "Done integrating bulbs",
 };
 
 animation.degree = 0;
@@ -4723,10 +4725,6 @@ window.app = function() {
         finishMergingBulbs: function() {
             animation.log(log.BULB_FETCH_END + (bulb.getTotalAvailableBulbs() - bulb.getMergedBulbCounter() ));
 
-            // Refresh the data and display it
-            // TODO: the app seems to remove those bulbs on refresh, find a way
-            // to solve it
-
             // Sort the data
             edit.sortArchive();
 
@@ -4734,8 +4732,10 @@ window.app = function() {
             bulb.isProcessing = false;
 
             // Upload the file
-            // TODO remove the bulb after
-            //uploadFile();
+            uploadFile(undefined, function() {
+                animation.log(log.BULB_REMOVE_MERGED_START);
+                bulb.removeUploadedBulbs();
+            });
         }
     }
 
@@ -8084,15 +8084,28 @@ function createFolders(callback, breakpoints) {
 
 /**
  * Removes the file on OneDrive by an id
- * This method will only ATTEMPT to remove the file. It doesn't handle any
- * exceptions should the removal fail
  * @param id - the id of the file to be removed
+ * @param done {function} - the callback function when the removal is a success
+ * @param fail {function} - the callback function when the removal fails
+ * @param always {function} - the callback function that is always called
  */
-function removeFileById(id) {
+function removeFileById(id, done, fail, always) {
     getTokenCallback(function(token) {
         $.ajax({
             type: "DELETE",
             url: "https://api.onedrive.com/v1.0/drive/" + id + "?access_token=" + token
+        }).done(function() {
+            if (typeof done === "function") {
+                done();
+            }
+        }).fail(function() {
+            if (typeof  fail === "function") {
+                fail();
+            }
+        }).always(function() {
+            if (typeof always === "function") {
+                always();
+            }
         });
     });
 }
@@ -8412,7 +8425,15 @@ window.bulb = function() {
                     if (_data[key]["isMerged"]) {
                         // It's merged, try to remove it
                         var id = _data[key]["id"];
-                        removeFileById(id);
+                        removeFileById(id, undefined, undefined, function() {
+                            if (--_mergedBulbCounter === 0) {
+                                // All the merged bulbs have been removed (or
+                                // at least attempts were made to)
+                                bulb.isProcessing = false;
+
+                                animation.log(log.BULB_FETCH_FINAL_END);
+                            }
+                        });
                     }
                 }
             }

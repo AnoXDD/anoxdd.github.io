@@ -156,6 +156,7 @@ window.log = {
     AUTH_REFRESH_EXPIRED: "Previous session expired",
 
     BULB_STILL_BUSY: "Still processing the bulbs",
+    BULB_NO_CONTENT_AVAILABLE: "No bulbs available",
     BULB_FETCH_START: "Loading bulbs ...",
     BULB_FETCH_END: "Bulbs loaded. Failed: ",
     BULB_FETCH_CONTENT_START: "Fetching bulb contents ...",
@@ -4726,6 +4727,7 @@ window.app = function() {
             animation.log(log.BULB_FETCH_END + (bulb.getTotalAvailableBulbs() - bulb.getMergedBulbCounter() ));
 
             // Sort the data
+            edit.removeDuplicate();
             edit.sortArchive();
 
             app.refresh();
@@ -4736,7 +4738,8 @@ window.app = function() {
                 animation.log(log.BULB_REMOVE_MERGED_START);
                 bulb.removeUploadedBulbs();
             });
-        }
+        },
+
     }
 
 }();
@@ -4764,6 +4767,12 @@ app.list = function(filter) {
             f.load(filter);
         });
         this.load(filter);
+
+        // Load all the data at once
+        while ($(".loadmore").length != 0) {
+            f.load(app.command);
+        }
+
         // Scroll to load more
         d.off("scroll").on("scroll", function() {
             ////console.log("scrollTop() = " + $(this).scrollTop() + ";\t
@@ -7844,12 +7853,6 @@ function uploadFile(dataYear, callbackOnSuccess) {
         .removeAttr("onclick")
         .removeAttr("href");
 
-    // Test if bulb(s) are still being processed
-    if (bulb.isProcessing) {
-        animation.error(log.BULB_STILL_BUSY);
-        return;
-    }
-
     getTokenCallback(function(token) {
         /**
          * The function to be called to upload the file. This function assumes
@@ -8311,6 +8314,13 @@ window.bulb = function() {
                     var itemList = data["value"];
                     bulb.clearData();
                     bulb.setTotalBulbs(itemList.length);
+
+                    if (itemList.length === 0) {
+                        // Empty bulb list
+                        animation.log(log.BULB_NO_CONTENT_AVAILABLE);
+                        bulb.isProcessing = false;
+                        return;
+                    }
 
                     animation.log(log.BULB_FETCH_CONTENT_START);
 

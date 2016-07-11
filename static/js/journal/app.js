@@ -7898,11 +7898,11 @@ window.bulb = function() {
                 // Merge into journal archive data
                 bulb.mergeIntoArchive(timestamp);
 
-                animation.log(_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalAvailableBulbs);
+                animation.log(++_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalBulbs);
             }).always(function() {
                 // Decrement the total bulbs to be processed
                 bulb.decrementTotalBulbs();
-                if (bulb.getTotalBulbs() <= 0) {
+                if (_totalBulbs <= 0) {
                     // None bulbs left
                     app.finishMergingBulbs();
                 }

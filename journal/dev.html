@@ -398,14 +398,37 @@
 <script src="/static/js/journal/app.js"></script>
 <script src="/static/js/journal/version.js"></script>
 <script type="text/x-template" id="list-view">
+    <%
+    if (isBulb) {
+    %>
+    <li class="bulb">
+        <%
+        if (month != -1) {
+        %>
+        <p class="separator">
+            <span>
+                <%= month %>
+            </span>
+        </p>
+        <%
+        }
+        %>
+        <a href="javascript:;">
+            <p class="datetime"><%= datetime %></p>
+            <p class="summary sensitive"><%= summary %></p>
+        </a>
+    </li>
+    <%
+    } else {
+    %>
     <li>
         <%
         if (month != -1) {
         %>
         <p class="separator">
-				<span>
-					<%= month %>
-				</span>
+            <span>
+                <%= month %>
+            </span>
         </p>
         <%
         }
@@ -420,6 +443,9 @@
             <div class="attached"><%= attached %></div>
         </a>
     </li>
+    <%
+    }
+    %>
 </script>
 <script type="text/x-template" id="detail-view">
     <div class="head">

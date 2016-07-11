@@ -4876,6 +4876,9 @@ app.list.prototype = {
             data.attached = this.attached(data.attachments);
         } else if (data.contentType === app.contentType.BULB) {
             data.ext = "";
+
+            // Add bulb property for rendering
+            data.isBulb = 1;
         }
 
         // Get the created time

@@ -634,6 +634,8 @@ edit.removalList = {};
 
 edit.localChange = [];
 
+edit.mediaList = ["images", "music", "book", "movie", "video", "voice", "weblink", "place"];
+
 edit.isProcessing = false;
 
 /******************************************************************
@@ -1129,7 +1131,7 @@ edit.importCache = function(data) {
         localStorage["tags"] = data["tags"] ? data["tags"] : "";
     }
     // photos, video, place, music, book, movie
-    var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"];
+    var elem = edit.mediaList;
     for (var i = 0; i !== elem.length; ++i) {
         var medium = elem[i];
         if (localStorage[medium]) {
@@ -1143,14 +1145,19 @@ edit.importCache = function(data) {
     // Return value
     return data;
 };
+
 edit.exportCache = function(index) {
     var data = journal.archive.data[app.year][index] || {};
+
     // Process body from cache
     data = edit.exportCacheBody(data);
+
     // Force the program to reload it
     data["processed"] = 0;
     // Title
     data["title"] = localStorage["title"] || "Untitled";
+    data["tags"] = localStorage["tags"] || "";
+
     data["coverType"] = parseInt(localStorage["coverType"]);
     if (data["coverType"] <= 0) {
         data["coverType"] = edit.coverAuto();
@@ -1158,9 +1165,8 @@ edit.exportCache = function(index) {
     if (!data["attachments"]) {
         data["attachments"] = 0;
     }
-    data["tags"] = localStorage["tags"] || "";
     var media,
-        elem = ["images", "video", "music", "voice", "book", "movie", "place", "weblink"],
+        elem = edit.mediaList,
         attach = 0;
     for (var i = 0; i < elem.length; ++i) {
         media = localStorage[elem[i]] ? JSON.parse(localStorage[elem[i]]) : [];
@@ -1181,6 +1187,7 @@ edit.exportCache = function(index) {
         }
     }
     data["attachments"] = attach;
+
     if (index < 0) {
         // Create a new entry
         journal.archive.data[app.year].push(data);
@@ -1239,6 +1246,7 @@ edit.cleanEditCache = function() {
     edit.voices = [];
     edit.videos = [];
 };
+
 /**
  * Saves only the data in journal.archive.data of this year to cache
  */
@@ -1248,8 +1256,8 @@ edit.saveDataCache = function() {
         localStorage["archive"] = JSON.stringify(journal.archive.data[app.year]);
         localStorage["lastUpdated"] = new Date().getTime();
     }
-
 };
+
 /**
  * Cleans the cache for journal.archive.data
  */
@@ -1350,7 +1358,7 @@ edit.minData = function() {
         // Replace "\r\n" with "\n"
         tmp[key]["text"]["body"] = tmp[key]["text"]["body"].replace(/\r\n/g, "\n");
     }
-    ;
+
     return tmp;
 };
 /**
@@ -1359,7 +1367,9 @@ edit.minData = function() {
 edit.sortArchive = function() {
     journal.archive.data[app.year].sort(function(a, b) {
         // From the latest to oldest
-        return b["time"]["created"] - a["time"]["created"];
+        var timeDiff = b["time"]["created"] - a["time"]["created"];
+
+        return timeDiff ? timeDiff : !!(b["contentType"]) - !!(a["contentType"]);
     });
 };
 /**
@@ -1369,7 +1379,10 @@ edit.sortArchive = function() {
  */
 edit.removeDuplicate = function() {
     for (var i = 0; i < Object.keys(journal.archive.data[app.year]).length - 1; ++i) {
-        if (journal.archive.data[app.year][i]["time"]["created"] === journal.archive.data[app.year][i + 1]["time"]["created"]) {
+
+        var thisEntry = journal.archive.data[app.year][i];
+        var nextEntry = journal.archive.data[app.year][i + 1];
+        if (thisEntry["time"]["created"] === nextEntry["time"]["created"] && thisEntry.contentType !== nextEntry.contentType) {
             // Same contents, remove this one
             app.yearChange[app.year] = true;
             journal.archive.data[app.year].splice(i--, 1);
@@ -2246,7 +2259,7 @@ edit.coverSet = function(type, isToggle) {
  * @return {Number} the chosen cover
  */
 edit.coverAuto = function(typeList) {
-    var priority = ["images", "music", "book", "movie", "video", "voice", "weblink", "place"];
+    var priority = edit.mediaList;
     typeList = typeList || edit.coverRefresh();
     for (var i = 0; i !== priority.length; ++i) {
         if (typeList.indexOf(priority[i]) !== -1) {
@@ -2264,7 +2277,7 @@ edit.coverAuto = function(typeList) {
  * @returns {Object} - A list of all the available attachments
  */
 edit.coverRefresh = function() {
-    var elem = ["images", "video", "voice", "place", "music", "book", "movie", "weblink"],
+    var elem = edit.mediaList,
         ret = [];
     for (var i = 0; i !== elem.length; ++i) {
         // Test if this element is in cache
@@ -4489,7 +4502,7 @@ window.app = function() {
                     created: timestamp
                 },
                 text: {
-                    body: content["content"]
+                    body: content["content"] || content["contentRaw"]
                 }
             };
 
@@ -4521,7 +4534,10 @@ window.app = function() {
             // Refresh the data and display it
             // TODO: the app seems to remove those bulbs on refresh, find a way
             // to solve it
-            // TODO by the way "bullhorn" seems to be a good icon for bulb
+
+            // Sort the data
+            edit.sortArchive();
+
             app.refresh();
             bulb.isProcessing = false;
 
@@ -4806,47 +4822,54 @@ app.list.prototype = {
     /* Converts the content to html and append to the list of contents */
     html: function(data, lastTime) { // [d]
         // All the summary
-        data.summary = data.text.ext;
-        // Find the cover type
-        switch (data.coverType) {
-            default:
-                data.type = "text";
-                data.ext = "";
-                // data.ext = "<p>" + data.contentsExt + "</p>";
-                break;
-            case 1:
-                data.type = "photo";
-                data.ext = this.thumb(data, "images");
-                break;
-            case 2:
-                data.type = "video";
-                data.ext = this.thumb(data, "video");
-                break;
-            case 3:
-                data.type = "music";
-                data.ext = this.thumb(data, "music");
-                break;
-            case 4:
-                data.type = "voice";
-                data.ext = this.thumb("dummy");
-                break;
-            case 5:
-                data.type = "book";
-                data.ext = this.thumb(data, "book");
-                break;
-            case 6:
-                data.type = "movie";
-                data.ext = this.thumb(data, "movie");
-                break;
-            case 7:
-                data.type = "place";
-                data.ext = this.thumb("dummy");
-                break;
-            case 8:
-                data.type = "weblink";
-                data.ext = this.thumb(data, "weblink");
-                break;
+        data.summary = data.text.ext || data.text.substr(0, 50);
+
+        if (!data.contentType) {
+            // Find the cover type
+            switch (data.coverType) {
+                default:
+                    data.type = "text";
+                    data.ext = "";
+                    // data.ext = "<p>" + data.contentsExt + "</p>";
+                    break;
+                case 1:
+                    data.type = "photo";
+                    data.ext = this.thumb(data, "images");
+                    break;
+                case 2:
+                    data.type = "video";
+                    data.ext = this.thumb(data, "video");
+                    break;
+                case 3:
+                    data.type = "music";
+                    data.ext = this.thumb(data, "music");
+                    break;
+                case 4:
+                    data.type = "voice";
+                    data.ext = this.thumb("dummy");
+                    break;
+                case 5:
+                    data.type = "book";
+                    data.ext = this.thumb(data, "book");
+                    break;
+                case 6:
+                    data.type = "movie";
+                    data.ext = this.thumb(data, "movie");
+                    break;
+                case 7:
+                    data.type = "place";
+                    data.ext = this.thumb("dummy");
+                    break;
+                case 8:
+                    data.type = "weblink";
+                    data.ext = this.thumb(data, "weblink");
+                    break;
+            }
+
+            // Get the attached data
+            data.attached = this.attached(data.attachments);
         }
+
         // Get the created time
         var createTime = data.time.start || data.time.created;
         data.datetime = this.date(createTime);
@@ -4854,54 +4877,59 @@ app.list.prototype = {
         if (data.time.end) {
             data.datetime += " - " + this.date(data.time.end, 1);
         }
+
         // Separator
         data.month = this.isInSameMonth(createTime, lastTime);
-        // Get the attached data
-        data.attached = this.attached(data.attachments);
+
         var item = $(app.itemView(data));
+
         // The event when clicking the list
-        item.find(" > a").on("click", function(j) {
-            j.preventDefault();
-            // Show edit panel
-            animation.showMenuOnly("edit");
-            // Remove all the photos that have already been loaded
-            if (app.photos) {
-                app.photos.remove();
-            }
-            // De-hightlight the data that is displayed
-            ////console.log(app.currentDisplayed);
-            $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeClass("display");
-            // Highlight the data that is now displayed
-            $(this).addClass("display");
-            // Update the index of the list to be displayed
-            var flag = (app.currentDisplayed == $(this).parent().index());
-            if (!flag) {
-                app.currentDisplayed = $(this).parent().index();
-                $("#detail").hide().fadeIn(500);
-                app.view = new app.detail();
-            }
-            return false;
-        });
-        $(".thumb > img:not([style])", item).on("load", function() {
-            var h = this.naturalWidth || this.width,
-                f = this.naturalHeight || this.height,
-                g = app.util.crop(h, f, 160);
-            $(this).css(g);
-        });
-        $(".thumb > canvas", item).each(function() {
-            var h = $(this).data("src"),
-                g = new Image(),
-                f = this.getContext("2d");
-            g.src = h;
-            g.onload = function() {
-                var croppedPhoto = app.util.crop(this.width, this.height, 160),
-                    x = croppedPhoto.marginLeft || 0,
-                    y = croppedPhoto.marginTop || 0,
-                    width = croppedPhoto.width || 160,
-                    height = croppedPhoto.height || 160;
-                f.drawImage(g, x, y, width, height);
-            };
-        });
+        if (data.contentType === app.contentType.BULB) {
+
+        } else {
+            item.find(" > a").on("click", function(j) {
+                j.preventDefault();
+                // Show edit panel
+                animation.showMenuOnly("edit");
+                // Remove all the photos that have already been loaded
+                if (app.photos) {
+                    app.photos.remove();
+                }
+                // De-hightlight the data that is displayed
+                ////console.log(app.currentDisplayed);
+                $("#list").find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a").removeClass("display");
+                // Highlight the data that is now displayed
+                $(this).addClass("display");
+                // Update the index of the list to be displayed
+                var flag = (app.currentDisplayed == $(this).parent().index());
+                if (!flag) {
+                    app.currentDisplayed = $(this).parent().index();
+                    $("#detail").hide().fadeIn(500);
+                    app.view = new app.detail();
+                }
+                return false;
+            });
+            $(".thumb > img:not([style])", item).on("load", function() {
+                var h = this.naturalWidth || this.width,
+                    f = this.naturalHeight || this.height,
+                    g = app.util.crop(h, f, 160);
+                $(this).css(g);
+            });
+            $(".thumb > canvas", item).each(function() {
+                var g = new Image(),
+                    f = this.getContext("2d");
+                g.src = $(this).data("src");
+                g.onload = function() {
+                    var croppedPhoto = app.util.crop(this.width, this.height, 160),
+                        x = croppedPhoto.marginLeft || 0,
+                        y = croppedPhoto.marginTop || 0,
+                        width = croppedPhoto.width || 160,
+                        height = croppedPhoto.height || 160;
+                    f.drawImage(g, x, y, width, height);
+                };
+            });
+        }
+
         // return item.data("pid",
         // data.pid).addClass(data.type).appendTo(this.contents); //return
         // item.addClass(data.type).appendTo(this.contents);

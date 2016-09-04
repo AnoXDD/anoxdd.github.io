@@ -315,7 +315,7 @@ function popup(url) {
         "width=" + width,
         "height=" + height,
         "top=" + top,
-        "left=" + left,
+        "left=" + left, 
         "status=no",
         "resizable=yes",
         "toolbar=no",

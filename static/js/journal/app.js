@@ -169,15 +169,15 @@ animation.degree = 0;
 animation.duration = 300;
 animation.indent = 0;
 
-animation.showIcon = function(selector, callback) {
+animation.showIcon = function (selector, callback) {
     $(selector).fadeIn(animation.duration, callback).css({
         top: "10px",
         display: "inline-block"
     });
 };
-animation.hideIcon = function(selector, callback) {
+animation.hideIcon = function (selector, callback) {
     var length = $(selector).length - 1;
-    $(selector).each(function(index) {
+    $(selector).each(function (index) {
         // Test for the index of executed fadeout to avoid calling callback
         // multiple time
         if (index !== length) {
@@ -188,12 +188,12 @@ animation.hideIcon = function(selector, callback) {
         }
     });
 };
-animation.isShown = function(selector) {
+animation.isShown = function (selector) {
     return $(selector).css("top") === "10px" && $(selector)
             .css("display") !== "none";
 };
-animation.toggleIcon = function(selector, callback) {
-    callback = callback || function() {
+animation.toggleIcon = function (selector, callback) {
+    callback = callback || function () {
         };
     if (animation.isShown(selector)) {
         animation.hideIcon(selector, callback);
@@ -206,15 +206,15 @@ animation.toggleIcon = function(selector, callback) {
  * Hides this menu
  * @param {string} name - The name of the menu to be hidden
  */
-animation.hideMenu = function(name) {
+animation.hideMenu = function (name) {
     $("#action-" + name).removeClass("fadein-inline");
     animation.hideHiddenIcons();
 }
 /**
  * Hides all the icon menus
  */
-animation.hideAllMenus = function() {
-    $(".actions > div").each(function() {
+animation.hideAllMenus = function () {
+    $(".actions > div").each(function () {
         // Iterate to remove class "fadein-inline"
         $(this).removeClass("fadein-inline");
     });
@@ -223,8 +223,8 @@ animation.hideAllMenus = function() {
  * Hides all the hidden icons that are not displayed by default
  * @returns {}
  */
-animation.hideHiddenIcons = function() {
-    $(".actions .hidden-icon").each(function() {
+animation.hideHiddenIcons = function () {
+    $(".actions .hidden-icon").each(function () {
         $(this).addClass("hidden");
     });
 }
@@ -237,7 +237,7 @@ animation.hideHiddenIcons = function() {
  * @param {string} name - The name of the menu
  * @see animation.showMenuOnly
  */
-animation.showMenu = function(name) {
+animation.showMenu = function (name) {
     name = "#action-" + name;
     if ($(name).length === 0) {
         // Invaild name
@@ -253,7 +253,7 @@ animation.showMenu = function(name) {
  * @param {String} name - The name of the menu
  * @see animation.showMenu
  */
-animation.showMenuOnly = function(name) {
+animation.showMenuOnly = function (name) {
     // Just hide the direct children that are not entry-option
     animation.hideAllMenus();
     animation.showMenu(name);
@@ -262,16 +262,16 @@ animation.showMenuOnly = function(name) {
  * Shows or hides the icons that ask the user to read or abandon cached data
  * according to if there is any cached data
  */
-animation.testCacheIcons = function() {
+animation.testCacheIcons = function () {
     if (localStorage["_cache"]) {
         // There is cache
         $("#reread").removeClass("hidden");
-        $(".li-add-entry-sub").each(function() {
+        $(".li-add-entry-sub").each(function () {
             $(this).addClass("has-sub");
         });
     } else {
         $("#reread").addClass("hidden");
-        $(".li-add-entry-sub").each(function() {
+        $(".li-add-entry-sub").each(function () {
             $(this).removeClass("has-sub");
         });
     }
@@ -281,9 +281,9 @@ animation.testCacheIcons = function() {
  * add/remove has-sub on its parent `li`
  * @param {string} selector - The seletor to be tested
  */
-animation.testSub = function(selector) {
+animation.testSub = function (selector) {
     var hasChild = false;
-    $(selector).siblings("ul").children("li").children("a").each(function() {
+    $(selector).siblings("ul").children("li").children("a").each(function () {
         if (!$(this).hasClass("hidden")) {
             // This is not hidden
             hasChild = true;
@@ -302,7 +302,7 @@ animation.testSub = function(selector) {
  * adding/removing prev/next year button according to the position of
  * `app.year` in `app.years`.
  */
-animation.testYearButton = function() {
+animation.testYearButton = function () {
     var index = app.years.indexOf(app.year);
     if (index === -1) {
         // Invalid year
@@ -326,7 +326,7 @@ animation.testYearButton = function() {
 /**
  * Tests the sub-ility of all the menus that should have been tested
  */
-animation.testAllSubs = function() {
+animation.testAllSubs = function () {
     animation.testCacheIcons();
     animation.testSub("#add");
     animation.testSub("#action-stats");
@@ -334,9 +334,9 @@ animation.testAllSubs = function() {
 }
 
 /* Return undefined if it is not shown */
-animation.blink = function(selector) {
+animation.blink = function (selector) {
     if (animation.isShown(selector)) {
-        var pulse = function() {
+        var pulse = function () {
             $(selector).fadeOut();
             $(selector).fadeIn();
         };
@@ -348,16 +348,16 @@ animation.blink = function(selector) {
     }
 };
 
-animation.finished = function(selector) {
+animation.finished = function (selector) {
     if (animation.isShown(selector)) {
         /* Keep a record of original text */
         var text = $(selector).html();
-        $(selector).fadeOut(300, function() {
+        $(selector).fadeOut(300, function () {
             $(this).html("&#xf00c").css({
                 background: "#fff",
                 "font-size": "inherit"
             });
-        }).fadeIn(300).delay(500).fadeOut(300, function() {
+        }).fadeIn(300).delay(500).fadeOut(300, function () {
             $(this).html(text).css({
                 background: "",
                 "font-size": ""
@@ -366,15 +366,15 @@ animation.finished = function(selector) {
     }
 };
 
-animation.warning = function(selector) {
+animation.warning = function (selector) {
     if (animation.isShown(selector)) {
         /* Keep a record of original text */
         var text = $(selector).html();
-        $(selector).fadeOut(300, function() {
+        $(selector).fadeOut(300, function () {
             $(this).html("&#xf071").css({
                 background: "#fff"
             });
-        }).fadeIn(300).delay(500).fadeOut(300, function() {
+        }).fadeIn(300).delay(500).fadeOut(300, function () {
             $(this).html(text).css({
                 background: ""
             });
@@ -382,16 +382,16 @@ animation.warning = function(selector) {
     }
 };
 
-animation.deny = function(selector) {
+animation.deny = function (selector) {
     if (animation.isShown(selector)) {
         /* Keep a record of original text */
         var text = $(selector).html();
-        $(selector).fadeOut(300, function() {
+        $(selector).fadeOut(300, function () {
             $(this).html("&#xf05e").css({
                 color: "#000",
                 background: "#fff"
             });
-        }).fadeIn(300).delay(500).fadeOut(300, function() {
+        }).fadeIn(300).delay(500).fadeOut(300, function () {
             $(this).html(text).css({
                 background: "",
                 color: ""
@@ -400,7 +400,7 @@ animation.deny = function(selector) {
     }
 };
 
-animation.invalid = function(selector) {
+animation.invalid = function (selector) {
     $(selector).effect("highlight", {
         color: "#8d8d8d"
     });
@@ -415,7 +415,7 @@ animation.invalid = function(selector) {
  * @param {Number} type - The type of message. 0 for normal. 1 for error. 2 for
  *     warning.
  */
-animation.log = function(message, indent, type) {
+animation.log = function (message, indent, type) {
     /* The time of milliseconds since the emergence before the log square is dimmed */
     var dimTime = 10000,
         /**
@@ -462,17 +462,17 @@ animation.log = function(message, indent, type) {
             htmlContent = "<p class=\"" + tabClass + "\" id=" + id + ">" + message + "</p>";
             parent = "#feedback";
     }
-    $(htmlContent).prependTo(parent).on("contextmenu", function() {
+    $(htmlContent).prependTo(parent).on("contextmenu", function () {
         // Right click to dismiss all
-        $(parent).fadeOut(200, function() {
+        $(parent).fadeOut(200, function () {
             $(this).empty();
             $(this).fadeIn(0);
         });
         return false;
-    }).mousedown(function() {
+    }).mousedown(function () {
         // One click to dismiss all
         $(this).trigger("contextmenu");
-        $(this).fadeOut(200, function() {
+        $(this).fadeOut(200, function () {
             $(this).remove();
         });
     });
@@ -485,7 +485,7 @@ animation.log = function(message, indent, type) {
             break;
     }
     // Auto remove itself
-    setTimeout(function() {
+    setTimeout(function () {
         $("#" + id).trigger("mousedown");
     }, removeTime);
     console.log("From user log: \t" + new Date() + ": " + message);
@@ -504,7 +504,7 @@ animation.log = function(message, indent, type) {
  * @param {Number} indent - The indent parameter. 1 for indenting by one
  *     (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.error = function(message, error, indent) {
+animation.error = function (message, error, indent) {
     if (error != undefined) {
         // Sometimes the error can be empty, but still it is an error
         if (error === "") {
@@ -524,7 +524,7 @@ animation.error = function(message, error, indent) {
  * @param {Number} indent - The indent parameter. 1 for indenting by one
  *     (effective immediately). -1 for dedenting by one (effective after)
  */
-animation.warn = function(message, error, indent) {
+animation.warn = function (message, error, indent) {
     if (error != undefined) {
         animation.log(message + log.SERVER_RETURNS + error + log.SERVER_RETURNS_END,
             indent,
@@ -539,7 +539,7 @@ animation.warn = function(message, error, indent) {
  * file
  * @param {String} message - The message to be logged
  */
-animation.debug = function(message, indent) {
+animation.debug = function (message, indent) {
     if (animation.isDebug) {
         animation.log("[DEBUG] " + message, indent);
     } else {
@@ -551,7 +551,7 @@ animation.debug = function(message, indent) {
  * Switches from this panel to another panel, given the name
  * @param {string} name - The name of the panel to be switched to
  */
-animation.switch = function(name) {
+animation.switch = function (name) {
     // Test if edit pane is displayed
     if (edit.isEditPaneDisplayed) {
         animation.error(log.EDIT_PANE_NOT_SWITCHABLE);
@@ -560,7 +560,7 @@ animation.switch = function(name) {
     }
     // Gets the panel that is currently displayed
     var current;
-    $("#drawer li").each(function(parameters) {
+    $("#drawer li").each(function (parameters) {
         if ($(this).hasClass("display")) {
             // This content is currently displayed
             current = $(this).attr("id");
@@ -661,7 +661,7 @@ edit.isProcessing = false;
  *     (overwrite previously stored info)
  * @param {number} index - The index of the archive data (optional)
  */
-edit.init = function(overwrite, index) {
+edit.init = function (overwrite, index) {
     /* Iterator */
     var i;
     // Sometimes the user just presses the edit button without quitting the
@@ -772,7 +772,7 @@ edit.init = function(overwrite, index) {
     // Content processing
     $("#search-new, #search-result").fadeOut();
     // Initialize the contents
-    $("#contents").fadeOut(400, function() {
+    $("#contents").fadeOut(400, function () {
         /* Iterator */
         var i;
         // Initialize the pane, this line must be the first one!
@@ -781,20 +781,20 @@ edit.init = function(overwrite, index) {
         // Hide photo preview panal
         $("#photo-preview").hide();
         // Enter to finish entry header
-        $("#entry-header").bind("keyup", "return", function() {
+        $("#entry-header").bind("keyup", "return", function () {
                 edit.saveTitle();
                 // Jump to the body
                 $("#entry-body").focus();
             })
             // Ctrl+enter to disable header date check
-            .bind("keyup", "ctrl+return", function() {
+            .bind("keyup", "ctrl+return", function () {
                 // Do so to avoid adding time header
                 edit.saveTitle();
                 edit.notAddHeader = true;
                 // Jump to the body
                 $("#entry-body").focus();
             })
-            .blur(function() {
+            .blur(function () {
                 // This header has lost its focus. Test if needed to add a date
                 // header
                 if (edit.notAddHeader) {
@@ -835,7 +835,7 @@ edit.init = function(overwrite, index) {
                 }
             });
         // Enter to add tag
-        $("#entry-tag").keyup(function(n) {
+        $("#entry-tag").keyup(function (n) {
             if (n.keyCode === 13) {
                 edit.addTag();
                 // Clean the entry
@@ -843,15 +843,15 @@ edit.init = function(overwrite, index) {
             }
         });
         // Click to remove tags
-        $("#attach-area .texttags .other p").click(function() {
+        $("#attach-area .texttags .other p").click(function () {
             edit.removeTag($(this).text().substring(1));
         });
         // Hover to show the time of created, started and ended
-        $("#entry-time-wrap").mouseover(function() {
+        $("#entry-time-wrap").mouseover(function () {
             var created = parseInt(localStorage["created"]) || data["time"]["created"],
                 start = parseInt(localStorage["start"]) || data["time"]["start"],
                 end = parseInt(localStorage["end"]) || data["time"]["end"],
-                convertTime = function(date) {
+                convertTime = function (date) {
                     date = new Date(date);
                     if (!isNaN(date.getTime())) {
                         return edit.format(date.getMonth() + 1) + edit.format(
@@ -937,7 +937,7 @@ edit.init = function(overwrite, index) {
         // Bind hotkeys to add tags
         // If you want to use more than one modifier (e.g. alt+ctrl+z) you
         // should define them by an alphabetical order e.g. alt+ctrl+shift
-        $("#entry-body").bind("keyup", "return", function() {
+        $("#entry-body").bind("keyup", "return", function () {
                 // Add tab(s) if the previous line has any
                 var start = $(this).get(0).selectionStart,
                     end = $(this).get(0).selectionEnd,
@@ -970,10 +970,10 @@ edit.init = function(overwrite, index) {
                 }
                 edit.processBody();
             })
-            .bind("keyup", "space", function() {
+            .bind("keyup", "space", function () {
                 edit.refreshSummary();
             })
-            .bind("keydown", "tab", function(e) {
+            .bind("keydown", "tab", function (e) {
                 e.preventDefault();
                 var start = $(this).get(0).selectionStart,
                     end = $(this).get(0).selectionEnd;
@@ -989,27 +989,27 @@ edit.init = function(overwrite, index) {
                 $(this).get(0).selectionStart = $(this)
                     .get(0).selectionEnd = start + 1;
             })
-            .bind("keyup", "ctrl+shift+f", function() {
+            .bind("keyup", "ctrl+shift+f", function () {
                 edit.toggleTag("friendship");
             })
-            .bind("keyup", "alt+ctrl+r", function() {
+            .bind("keyup", "alt+ctrl+r", function () {
                 edit.toggleTag("relationship");
             })
-            .bind("keyup", "alt+ctrl+i", function() {
+            .bind("keyup", "alt+ctrl+i", function () {
                 edit.toggleTag("ingress");
             })
-            .bind("keyup", "alt+ctrl+t", function() {
+            .bind("keyup", "alt+ctrl+t", function () {
                 edit.toggleTag("thoughts");
             })
-            .bind("keyup", "alt+ctrl+j", function() {
+            .bind("keyup", "alt+ctrl+j", function () {
                 edit.toggleTag("journal");
             })
-            .bind("keyup", "alt+ctrl+m", function() {
+            .bind("keyup", "alt+ctrl+m", function () {
                 edit.toggleTag("minecraft");
             });
         // Let the tags to scroll horizontally
         $("#edit-pane #attach-area .icontags .other, #edit-pane #attach-area .texttags .other, #edit-pane #attach-area .images")
-            .mousewheel(function(event, delta) {
+            .mousewheel(function (event, delta) {
                 // Only scroll horizontally
                 this.scrollLeft -= (delta * 50);
                 event.preventDefault();
@@ -1021,7 +1021,7 @@ edit.init = function(overwrite, index) {
     animation.showMenuOnly("add");
     edit.intervalId = setInterval(edit.refreshTime, 1000);
 };
-edit.quit = function(selector, save) {
+edit.quit = function (selector, save) {
     if (network.isAjaxActive) {
         // Do not quit if network is still working
         animation.warning(log.NETWORK_WORKING);
@@ -1043,7 +1043,7 @@ edit.quit = function(selector, save) {
     edit.cleanupMediaEdit();
     // Content processing
     $("#search-new, #search-result").fadeIn();
-    $("#edit-pane").fadeOut(400, function() {
+    $("#edit-pane").fadeOut(400, function () {
         edit.isEditPaneDisplayed = false;
         // Remove the edit pane
         $("#edit-pane").html("");
@@ -1064,7 +1064,7 @@ edit.quit = function(selector, save) {
  * Saves cache for edit-pane to journal.archive.data
  * @param {string} selector - The selector to show the finished animation
  */
-edit.save = function() {
+edit.save = function () {
     if (network.isAjaxActive) {
         // Do not save if network is still working
         animation.warn(log.NETWORK_WORKING);
@@ -1080,11 +1080,11 @@ edit.save = function() {
     }
     edit.processRemovalList();
     // Save photos, voices and videos
-    edit.photoSave(function() {
+    edit.photoSave(function () {
         network.init();
-        edit.playableSave(1, function() {
+        edit.playableSave(1, function () {
             network.init();
-            edit.playableSave(3, function() {
+            edit.playableSave(3, function () {
                 network.init();
                 clearInterval(id);
                 var index = edit.find(localStorage["created"]);
@@ -1112,7 +1112,7 @@ edit.save = function() {
 /**
  * Processes removal list to do the final cleanup of contents
  */
-edit.processRemovalList = function() {
+edit.processRemovalList = function () {
     for (var key = 0; key < edit.removalList.length; ++key) {
         if (localStorage[key]) {
             var data = JSON.parse(localStorage[key]);
@@ -1133,7 +1133,7 @@ edit.processRemovalList = function() {
  * is
  * @param {object} data - The data clip of entry to be processed
  */
-edit.importCache = function(data) {
+edit.importCache = function (data) {
     // Title
     if (localStorage["title"]) {
         data["title"] = localStorage["title"];
@@ -1177,7 +1177,7 @@ edit.importCache = function(data) {
     return data;
 };
 
-edit.exportCache = function(index) {
+edit.exportCache = function (index) {
     var data = journal.archive.data[app.year][index] || {};
 
     // Process body from cache
@@ -1233,7 +1233,7 @@ edit.exportCache = function(index) {
  * @param {object} data - The data clip of entry to be processed
  * @returns {object} data - Processed data
  */
-edit.exportCacheBody = function(data) {
+edit.exportCacheBody = function (data) {
     if (!data["time"]) {
         data["time"] = {};
     }
@@ -1267,7 +1267,7 @@ edit.exportCacheBody = function(data) {
     data["text"]["ext"] = body.substring(0, 50);
     return data;
 };
-edit.cleanEditCache = function() {
+edit.cleanEditCache = function () {
     delete localStorage["_cache"];
     var deleteList = ["title", "body", "created", "currentEditing", "tags", "place", "music", "movie", "book", "images", "weblink", "video", "voice", "start", "end"];
     for (var i = 0; i !== deleteList.length; ++i) {
@@ -1281,7 +1281,7 @@ edit.cleanEditCache = function() {
 /**
  * Saves only the data in journal.archive.data of this year to cache
  */
-edit.saveDataCache = function() {
+edit.saveDataCache = function () {
     if (app.year === new Date().getFullYear()) {
         // Only cache the data of this year
         localStorage["archive"] = JSON.stringify(journal.archive.data[app.year]);
@@ -1292,14 +1292,14 @@ edit.saveDataCache = function() {
 /**
  * Cleans the cache for journal.archive.data
  */
-edit.removeDataCache = function() {
+edit.removeDataCache = function () {
     delete localStorage["archive"];
 };
 /**
  * Tries to read journal.archive.data from cache and then copy it to
  * journal.archive.data
  */
-edit.tryReadCache = function() {
+edit.tryReadCache = function () {
     if (localStorage["archive"]) {
         // Seems that there is available data
         journal.archive.data[new Date().getFullYear()] = JSON.parse(localStorage["archive"]);
@@ -1316,7 +1316,7 @@ edit.tryReadCache = function() {
  * @param {string/number} created - The created time of entry to be searched
  * @returns {number} - The index of data, -1 if not found
  */
-edit.find = function(created) {
+edit.find = function (created) {
     for (var key = 0, len = journal.archive.data[app.year].length;
          key != len;
          ++key) {
@@ -1334,7 +1334,7 @@ edit.find = function(created) {
 /**
  * Returns an empty content object array entry
  */
-edit.newContent = function() {
+edit.newContent = function () {
     var dict = {};
     // Set created time
     dict["time"] = {};
@@ -1350,8 +1350,8 @@ edit.newContent = function() {
 /**
  * Minimizes the data, remove unnecessary tags
  */
-edit.minData = function() {
-    var tmp = journal.archive.data[app.year].filter(function(key) {
+edit.minData = function () {
+    var tmp = journal.archive.data[app.year].filter(function (key) {
         return key != undefined;
     });
     for (var key = 0, len = tmp.length; key !== len; ++key) {
@@ -1399,8 +1399,8 @@ edit.minData = function() {
 /**
  * Sorts journal.archive.data
  */
-edit.sortArchive = function() {
-    journal.archive.data[app.year].sort(function(a, b) {
+edit.sortArchive = function () {
+    journal.archive.data[app.year].sort(function (a, b) {
         // From the latest to oldest
         var timeDiff = b["time"]["created"] - a["time"]["created"];
 
@@ -1412,7 +1412,7 @@ edit.sortArchive = function() {
  * means two entries, being sorted, have the same created time (and that's it).
  * This function assumes that `journal.archive.data` is sorted
  */
-edit.removeDuplicate = function() {
+edit.removeDuplicate = function () {
     for (var i = 0;
          i < Object.keys(journal.archive.data[app.year]).length - 1;
          ++i) {
@@ -1433,7 +1433,7 @@ edit.removeDuplicate = function() {
 /************************** REDO **********************************/
 
 /* NOT USABLE */
-edit.undo = function() {
+edit.undo = function () {
     ////	if (edit.localChange.length == 0) {
     ////		// No changes to undo
     ////		animation.deny("#add-undo");
@@ -1454,7 +1454,7 @@ edit.undo = function() {
     ////	}
 };
 /* NOT USABLE */
-edit.change = function(key, value) {
+edit.change = function (key, value) {
     ////	var dict = {};
     ////	if (localStorage[key])
     ////		// Archive this value
@@ -1471,7 +1471,7 @@ edit.change = function(key, value) {
 /**
  * Removes an entry from view-list
  */
-edit.removeEntry = function() {
+edit.removeEntry = function () {
     // Test if there are any deletable data
     if (app.currentDisplayed == -1) {
         animation.error(log.NO_ENTRY_SELECTED);
@@ -1494,12 +1494,12 @@ edit.removeEntry = function() {
     if ($entry.next().length === 0 || $entry.next()
             .has("p.separator").length !== 0) {
         // Reaches EOF or the beginning of next month (separator)
-        $entry.fadeOut(500, function() {
+        $entry.fadeOut(500, function () {
             $(this).empty();
         });
     } else {
         // Pretend there is a separator
-        $entry.children("a").fadeOut(500, function() {
+        $entry.children("a").fadeOut(500, function () {
             $(this).remove();
         });
     }
@@ -1517,7 +1517,7 @@ edit.removeEntry = function() {
  *     this function. When typeNum == -3 this has to include "url", "fileName",
  *     "id" and "title" key
  */
-edit.addMedia = function(typeNum, arg) {
+edit.addMedia = function (typeNum, arg) {
     var selectorHeader = "#attach-area ." + edit.mediaName(Math.abs(typeNum)),
         length = $(selectorHeader).length,
         htmlContent;
@@ -1579,7 +1579,7 @@ edit.addMedia = function(typeNum, arg) {
         $(selectorHeader + ":eq(" + length + ") a").trigger("click");
     }
 };
-edit.removeMedia = function(typeNum) {
+edit.removeMedia = function (typeNum) {
     var type = edit.mediaName(typeNum);
     edit.coverTest(type);
     // Move voice and video data to data folder
@@ -1605,20 +1605,20 @@ edit.removeMedia = function(typeNum) {
  *     edit.playableSearch(). Should any bugs are found, check to see if that
  *     function has the same bugs
  */
-edit.addMediaFromQueue = function() {
+edit.addMediaFromQueue = function () {
     // Add throttle
     $("#return-lost-media").removeAttr("onclick");
     animation.log(log.QUEUE_START, 1);
     network.init(1);
-    edit.photo(true, function() {
+    edit.photo(true, function () {
         network.next();
-        getTokenCallback(function(token) {
+        getTokenCallback(function (token) {
             var url = "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
             $.ajax({
                     type: "GET",
                     url: url
                 })
-                .done(function(data, status, xhr) {
+                .done(function (data, status, xhr) {
                     /* Iterator */
                     var i = 0;
                     var itemList = data["value"],
@@ -1697,10 +1697,10 @@ edit.addMediaFromQueue = function() {
                         animation.debug(addedVoice + log.QUEUE_FOUND_VOICES);
                     }
                 })
-                .fail(function(xhr, status, error) {
+                .fail(function (xhr, status, error) {
                     animation.error(log.QUEUE_FAILED, error);
                 })
-                .always(function() {
+                .always(function () {
                     // Add it back
                     $("#return-lost-media")
                         .attr("onclick", "app.cleanResource()");
@@ -1716,7 +1716,7 @@ edit.addMediaFromQueue = function() {
  * @param {number} index (Optional) - The index of the type of media to be
  *     added to the list
  */
-edit.addToRemovalList = function(name, index) {
+edit.addToRemovalList = function (name, index) {
     if (!edit.removalList[name]) {
         edit.removalList[name] = [];
     }
@@ -1736,7 +1736,7 @@ edit.addToRemovalList = function(name, index) {
  * @param {number} typeNum - The value of this media
  * @returns {string} - The string name of the media. Empty if not applicable
  */
-edit.mediaName = function(typeNum) {
+edit.mediaName = function (typeNum) {
     switch (typeNum) {
         case 0:
             return "photo";
@@ -1763,7 +1763,7 @@ edit.mediaName = function(typeNum) {
  * @param {string} type - The name of this media
  * @returns {number} - The num value of the media. -1 if not applicable
  */
-edit.mediaValue = function(type) {
+edit.mediaValue = function (type) {
     if (type === "photo") {
         return 0;
     }
@@ -1795,7 +1795,7 @@ edit.mediaValue = function(type) {
  * Sets the medium to be removed and show the remove-confirm button
  * @param {number} typeVal - The type numerical value of the type
  */
-edit.setRemove = function(typeVal) {
+edit.setRemove = function (typeVal) {
     edit.confirmVal = typeVal;
     if (typeVal === 2) {
         $("#pin-point").removeClass("hidden");
@@ -1805,7 +1805,7 @@ edit.setRemove = function(typeVal) {
 /**
  * Cleans up all the media edit data to get ready for next editing
  */
-edit.cleanupMediaEdit = function() {
+edit.cleanupMediaEdit = function () {
     $("#edit-pane").off("keyup");
     switch (edit.isEditing) {
         case 1:
@@ -1837,7 +1837,7 @@ edit.cleanupMediaEdit = function() {
  *     value will be retrieved from edit.mediaIndex
  * @returns {string} - The selector header
  */
-edit.getSelectorHeader = function(type, index) {
+edit.getSelectorHeader = function (type, index) {
     if (index == undefined) {
         return "#attach-area ." + type + ":eq(" + edit.mediaIndex[type] + ") ";
     }
@@ -1846,10 +1846,10 @@ edit.getSelectorHeader = function(type, index) {
 
 /************************** ANIMATION *****************************/
 
-edit.toggleLight = function() {
+edit.toggleLight = function () {
     $("#text-area").toggleClass("dark").children().toggleClass("dark");
 };
-edit.fullScreen = function() {
+edit.fullScreen = function () {
     // Clean all the data to hide map selector and photo viewer
     edit.cleanupMediaEdit();
     // Disable auto-height
@@ -1872,13 +1872,13 @@ edit.fullScreen = function() {
         document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
 };
-edit.windowMode = function() {
+edit.windowMode = function () {
     // Exit dark mode
     $("#text-area").removeClass("dark").children().removeClass("dark");
     // Change the icon
     animation.showMenuOnly("add");
     // Resize
-    $(".header").fadeIn(400, function() {
+    $(".header").fadeIn(400, function () {
     });
     $("body").removeClass("fullscreen");
     $("#attach-area").fadeIn();
@@ -1902,16 +1902,16 @@ edit.windowMode = function() {
  * Stores the value in the title textbox into cache
  * @returns {}
  */
-edit.saveTitle = function() {
+edit.saveTitle = function () {
     localStorage["title"] = $("#entry-header").val();
 };
-edit.refreshSummary = function() {
+edit.refreshSummary = function () {
     var text = $("#entry-body").val(),
         len = text.length;
     $("#entry-char").text(len);
     $("#entry-line").text(text.split(/\r*\n/).length);
 };
-edit.refreshTime = function() {
+edit.refreshTime = function () {
     ++edit.time;
     var date = new Date();
     var timeString = edit.format(date.getMonth() + 1) + edit.format(date.getDate()) + edit.format(
@@ -1928,7 +1928,7 @@ edit.refreshTime = function() {
  * @returns {string} - The string to make the number at started with an 0 if
  *     length is 1
  */
-edit.format = function(n) {
+edit.format = function (n) {
     return n < 10 ? "0" + n : "" + n;
 };
 /**
@@ -1936,7 +1936,7 @@ edit.format = function(n) {
  * @param {string} time - My time string
  * @returns {number} - The time since epoch
  */
-edit.convertTime = function(time) {
+edit.convertTime = function (time) {
     var month = parseInt(time.substring(0, 2)),
         day = parseInt(time.substring(2, 4)),
         year = parseInt(time.substring(4, 6)),
@@ -1960,7 +1960,7 @@ edit.convertTime = function(time) {
  *     dateStr returned (e.g. function(dateStr))
  * @returns {string} - My format of the time
  */
-edit.getDate = function(callback) {
+edit.getDate = function (callback) {
     var dateStr;
     // Get date from title, ignore what title looks like
     if (localStorage["title"]) {
@@ -2004,7 +2004,7 @@ edit.getDate = function(callback) {
  * @param {Number} timeNum - The seconds from epoch
  * @returns {String} - The formatted string
  */
-edit.getMyTime = function(timeNum) {
+edit.getMyTime = function (timeNum) {
     var date = new Date(timeNum);
     if (isNaN(date.getTime())) {
         return timeNum;
@@ -2021,7 +2021,7 @@ edit.getMyTime = function(timeNum) {
  * 1) Do some command line work
  * 2) Save the after-processed text to the cache
  */
-edit.processBody = function() {
+edit.processBody = function () {
     // Command line work
     var lines = $("#entry-body").val().split(/\r*\n/);
     for (var i = 0; i < lines.length; ++i) {
@@ -2087,7 +2087,7 @@ edit.processBody = function() {
  * @param {string} tag (Optional) - The value of the tag to be added
  * @param {boolean} mute - Whether log "xxx is added" or not
  */
-edit.addTag = function(tag, mute) {
+edit.addTag = function (tag, mute) {
     // Find replacable tags
     tag = edit.autoCorrectTags[tag] || tag;
     // If a tag is not specified, it will get the value from the input box
@@ -2105,7 +2105,7 @@ edit.addTag = function(tag, mute) {
         var found = false,
             added = false;
         // Try to convert to iconTag
-        $("#attach-area .icontags span").each(function() {
+        $("#attach-area .icontags span").each(function () {
             if ($(this).attr("title").toLowerCase() === tag) {
                 // Found
                 found = true;
@@ -2170,16 +2170,16 @@ edit.addTag = function(tag, mute) {
  * @param {string} tagName - The name of the tag to be removed
  * @param {boolean} mute - Whether log "xxx is added" or not
  */
-edit.removeTag = function(tag, mute) {
+edit.removeTag = function (tag, mute) {
     var tagArray = localStorage["tags"].split("|");
     for (var i = 0; i !== tagArray.length; ++i) {
         if (tagArray[i] === tag) {
             // Matched
             // Try to remove from the text tag panel
             var removed = false;
-            $("#attach-area .texttags p").each(function() {
+            $("#attach-area .texttags p").each(function () {
                 if ($(this).text() === "#" + tag) {
-                    $(this).animate({width: "0"}, function() {
+                    $(this).animate({width: "0"}, function () {
                         $(this).remove();
                         removed = true;
                     });
@@ -2188,7 +2188,7 @@ edit.removeTag = function(tag, mute) {
             if (!removed) {
                 var found = false;
                 // Keep searching in icontags
-                $("#attach-area .icontags .highlight").each(function() {
+                $("#attach-area .icontags .highlight").each(function () {
                     if (!found) {
                         if ($(this).attr("title").toLowerCase() === tag) {
                             if (!mute) {
@@ -2212,7 +2212,7 @@ edit.removeTag = function(tag, mute) {
  * @param {string} tag - The name of the tag to be toggled
  * @param {boolean} mute - Whether log "xxx is added" or not
  */
-edit.toggleTag = function(tag, mute) {
+edit.toggleTag = function (tag, mute) {
     if (localStorage["tags"].split("|").indexOf(tag) !== -1) {
         // Already added
         edit.removeTag(tag, mute);
@@ -2226,7 +2226,7 @@ edit.toggleTag = function(tag, mute) {
  * This function will only give visual feedback
  * @param {string} tag - The name of the tag to be toggled
  */
-edit.toggleIcon = function(tag) {
+edit.toggleIcon = function (tag) {
     var htmlName = app.tag().getHtmlByName(tag),
         selector = "#attach-area .icontags span." + htmlName,
         parent = $(selector).parent().attr("class");
@@ -2245,7 +2245,7 @@ edit.toggleIcon = function(tag) {
             $("#attach-area .icontags ." + parent + " span")
                 .removeClass("hidden");
         } else {
-            setTimeout(function() {
+            setTimeout(function () {
                 $("#attach-area .icontags .selected ." + htmlName).remove();
             }, 400);
         }
@@ -2264,7 +2264,7 @@ edit.toggleIcon = function(tag) {
  *     the same as current type
  * @return {number} the number of cover type
  */
-edit.coverSet = function(type, isToggle) {
+edit.coverSet = function (type, isToggle) {
     var coverType,
         typeNum = type;
     if (typeof (type) == "string") {
@@ -2326,7 +2326,7 @@ edit.coverSet = function(type, isToggle) {
  * @param {Object} typeList - A list of attachments to be selected from
  * @return {Number} the chosen cover
  */
-edit.coverAuto = function(typeList) {
+edit.coverAuto = function (typeList) {
     var priority = edit.mediaList;
     typeList = typeList || edit.coverRefresh();
     for (var i = 0; i !== priority.length; ++i) {
@@ -2344,7 +2344,7 @@ edit.coverAuto = function(typeList) {
  * entry
  * @returns {Object} - A list of all the available attachments
  */
-edit.coverRefresh = function() {
+edit.coverRefresh = function () {
     var elem = edit.mediaList,
         ret = [];
     for (var i = 0; i !== elem.length; ++i) {
@@ -2371,10 +2371,10 @@ edit.coverRefresh = function() {
  * type. If not, deselect the covertype in edit pane
  * @param {string} type - The name of the type
  */
-edit.coverTest = function(type) {
+edit.coverTest = function (type) {
     var has = false;
     // Test if all the attachments is displayed
-    $("#attach-area ." + type).each(function() {
+    $("#attach-area ." + type).each(function () {
         if ($(this).css("display") !== "none") {
             // The entry still has this attachment
             has = true;
@@ -2394,10 +2394,10 @@ edit.coverTest = function(type) {
  * @param {function} callback - The callback function after the images are
  *     loaded
  */
-edit.photo = function(isQueue, callback) {
+edit.photo = function (isQueue, callback) {
     // Fix callback if not defined
     if (typeof callback != "function") {
-        callback = function() {
+        callback = function () {
         };
     }
     if (edit.photos.length !== 0 && !isQueue) {
@@ -2424,7 +2424,7 @@ edit.photo = function(isQueue, callback) {
         isQueue = false;
     }
     // Extend the image area and add sortable functionality and hover
-    $("#attach-area .images").css({height: "100px"}).hover(function() {
+    $("#attach-area .images").css({height: "100px"}).hover(function () {
         // Mouseover
         // Clean up the data
         edit.cleanupMediaEdit();
@@ -2432,7 +2432,7 @@ edit.photo = function(isQueue, callback) {
             effect: "fade",
             duration: 200
         });
-    }, function() {
+    }, function () {
         // Mouseout
         $("#photo-preview").hide({
             effect: "fade",
@@ -2444,8 +2444,8 @@ edit.photo = function(isQueue, callback) {
         revert: true
     }).disableSelection();
     // Prepartion before doing server work
-    var processFunc = function(dateStr) {
-        getTokenCallback(function(token) {
+    var processFunc = function (dateStr) {
+        getTokenCallback(function (token) {
             var url;
             if (isQueue) {
                 url = "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/queue:/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
@@ -2455,7 +2455,7 @@ edit.photo = function(isQueue, callback) {
             $.ajax({
                 type: "GET",
                 url: url
-            }).done(function(data) {
+            }).done(function (data) {
                     if (data["@odata.nextLink"] && !isQueue) {
                         animation.warn(log.EDIT_PANE_TOO_MANY_RESULTS);
                     }
@@ -2525,23 +2525,23 @@ edit.photo = function(isQueue, callback) {
                         href: "#"
                     }).fadeIn();
                     // Clicking on img functionality
-                    $("#attach-area .images div").each(function() {
+                    $("#attach-area .images div").each(function () {
                         // Re-apply
                         $(this).off("contextmenu");
-                        $(this).on("contextmenu", function() {
+                        $(this).on("contextmenu", function () {
                             // Right click to select the images
                             $(this).toggleClass("change");
                             // Return false to disable other functionalities
                             return false;
                         });
                     });
-                    $("#attach-area .images img").each(function() {
-                        $(this).unbind("mouseenter mouseleave").hover(function() {
+                    $("#attach-area .images img").each(function () {
+                        $(this).unbind("mouseenter mouseleave").hover(function () {
                             // Mouseover
                             $("#photo-preview img")
                                 .animate({opacity: 1}, 200)
                                 .attr("src", $(this).attr("src"));
-                        }, function() {
+                        }, function () {
                             // Mouseout
                             $("#photo-preview img").animate({opacity: 0}, 0);
                         });
@@ -2559,7 +2559,7 @@ edit.photo = function(isQueue, callback) {
                         animation.finished("#add-photo");
                     }
                 })
-                .fail(function(xhr, status, error) {
+                .fail(function (xhr, status, error) {
                     if (!isQueue) {
                         $("#add-photo").html("&#xf03e").attr({
                             onclick: "edit.addMedia(0)",
@@ -2580,7 +2580,7 @@ edit.photo = function(isQueue, callback) {
                         }
                     }
                 })
-                .always(function() {
+                .always(function () {
                     // Test if queue photo is to be added
                     if (addQueue) {
                         edit.photo(true, callback);
@@ -2619,7 +2619,7 @@ edit.photo = function(isQueue, callback) {
                 localStorage["images"] = JSON.stringify(images);
             }
         }
-        edit.getDate(function(dateStr) {
+        edit.getDate(function (dateStr) {
             // Get resource photos from user content folder
             animation.log(log.EDIT_PANE_IMAGES_START + dateStr + log.EDIT_PANE_IMAGES_START_END,
                 1);
@@ -2628,7 +2628,7 @@ edit.photo = function(isQueue, callback) {
         });
     } else {
         // Remove all the queue images
-        $("#attach-area .images .queue").each(function() {
+        $("#attach-area .images .queue").each(function () {
             // Remove this image from edit.photos
             for (var i = 0; i !== edit.photos.length; ++i) {
                 var url = $(this).children("img").attr("src");
@@ -2651,7 +2651,7 @@ edit.photo = function(isQueue, callback) {
  * @param {function} callback - The callback function to be called after all
  *     the changes have been made
  */
-edit.photoSave = function(callback) {
+edit.photoSave = function (callback) {
     if (edit.photos.length == 0) {
         // Nothing to process
         callback();
@@ -2661,9 +2661,9 @@ edit.photoSave = function(callback) {
         var photoQueue = [],
         /* New images attached to this entry */
             newImagesData = [];
-        edit.getDate(function(timeHeader) {
+        edit.getDate(function (timeHeader) {
             // Change the `change` of edit.photos according to html contents
-            $("#attach-area .images div").each(function() {
+            $("#attach-area .images div").each(function () {
                 for (var i = 0; i !== edit.photos.length; ++i) {
                     if ($(this)
                             .children("img")
@@ -2697,7 +2697,7 @@ edit.photoSave = function(callback) {
                 processingPhoto = 0;
             if (photoQueue.length !== 0) {
                 // Process the photos
-                getTokenCallback(function(token) {
+                getTokenCallback(function (token) {
                     animation.log(log.EDIT_PANE_IMAGES_SAVE_START, 1);
                     for (var i = 0; i !== photoQueue.length; ++i) {
                         var requestJson,
@@ -2734,7 +2734,7 @@ edit.photoSave = function(callback) {
                                 contentType: "application/json",
                                 data: JSON.stringify(requestJson)
                             })
-                            .done(function(data, status, xhr) {
+                            .done(function (data, status, xhr) {
                                 var id = data["id"],
                                     name = data["name"];
                                 for (var j = 0; j !== edit.photos.length; ++j) {
@@ -2751,14 +2751,14 @@ edit.photoSave = function(callback) {
                                 }
                                 animation.debug((++processingPhoto) + log.EDIT_PANE_IMAGES_OF + photoQueue.length + log.EDIT_PANE_IMAGES_TRASNFERRED);
                             })
-                            .fail(function(xhr, status, error) {
+                            .fail(function (xhr, status, error) {
                                 ++processingPhoto;
                                 animation.error(log.EDIT_PANE_TRANSFERRED_FAILED + log.SERVER_RETURNS
                                     + error + log.SERVER_RETURNS_END);
                                 animation.warning("#add-photo");
                                 // Revert the transfer process
                             })
-                            .always(function(data, status, xhr) {
+                            .always(function (data, status, xhr) {
                                 /* Iterator */
                                 var j;
                                 // Test if it is elligible for calling
@@ -2768,7 +2768,7 @@ edit.photoSave = function(callback) {
                                     // Find the correct img to add or remove
                                     // highlight class on it
                                     $("#attach-area .images div")
-                                        .each(function() {
+                                        .each(function () {
                                             $(this).removeClass("change");
                                             // Try to match images with
                                             // edit.photos
@@ -2812,7 +2812,7 @@ edit.photoSave = function(callback) {
                                     // Process edit.photos and match the
                                     // sequence in the div
                                     $("#attach-area .images img")
-                                        .each(function() {
+                                        .each(function () {
                                             for (j = 0;
                                                  j !== edit.photos.length;
                                                  ++j) {
@@ -2838,7 +2838,7 @@ edit.photoSave = function(callback) {
                 });
             } else {
                 // Sort the images again
-                $("#attach-area .images img").each(function() {
+                $("#attach-area .images img").each(function () {
                     for (j = 0; j !== edit.photos.length; ++j) {
                         if (edit.photos[j]["url"] === $(this).attr("src")) {
                             if (edit.photos[j]["resource"]) {
@@ -2856,7 +2856,7 @@ edit.photoSave = function(callback) {
         });
     }
 };
-edit.photoHide = function() {
+edit.photoHide = function () {
     // Just hide everything, no further moves to be made
     $("#attach-area .images").animate({height: "0"}).fadeOut().html("");
 };
@@ -2871,7 +2871,7 @@ edit.photoHide = function() {
  * @param {string} link (Optional) - The url to the address of the link, for
  *     newly created element
  */
-edit.video = function(index, link) {
+edit.video = function (index, link) {
     if (index == edit.mediaIndex["video"] || index == undefined) {
         return;
     }
@@ -2883,7 +2883,7 @@ edit.video = function(index, link) {
     $(selectorHeader + "a").removeAttr("onclick");
     $(selectorHeader + "input").prop("disabled", false);
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    $("#edit-pane").keyup(function (n) {
         if (n.keyCode === 27) {
             edit.videoHide();
         }
@@ -2913,7 +2913,7 @@ edit.video = function(index, link) {
     }
     edit.setRemove(1);
 };
-edit.videoHide = function() {
+edit.videoHide = function () {
     if (edit.mediaIndex["video"] < 0) {
         // Invalid call
         return;
@@ -2940,7 +2940,7 @@ edit.videoHide = function() {
     edit.mediaIndex["video"] = -1;
     edit.isEditing = -1;
 };
-edit.videoSave = function(index) {
+edit.videoSave = function (index) {
     var data = localStorage["video"],
         selectorHeader = edit.getSelectorHeader("video", index),
         title = $(selectorHeader + ".title").val();
@@ -2955,7 +2955,7 @@ edit.videoSave = function(index) {
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
  */
-edit.videoSearch = function() {
+edit.videoSearch = function () {
     edit.playableSearch(1);
 };
 
@@ -2965,7 +2965,7 @@ edit.videoSearch = function() {
  * Toggles location panel getter using Google Map
  * @param {number} index - The index of location element
  */
-edit.location = function(index) {
+edit.location = function (index) {
     if (index == edit.mediaIndex["place"] || index == undefined) {
         return;
     }
@@ -2981,7 +2981,7 @@ edit.location = function(index) {
     var selectorHeader = edit.getSelectorHeader("place", index);
     // Try HTML5 geolocation
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition(function (position) {
             var latitude = parseFloat($(selectorHeader + ".latitude")
                     .val()) || position.coords.latitude,
                 longitude = parseFloat($(selectorHeader + ".longitude")
@@ -2999,7 +2999,7 @@ edit.location = function(index) {
             google.maps.event.clearListeners(searchBox, "place_changed");
             google.maps.event.addListener(searchBox,
                 "place_changed",
-                function() {
+                function () {
                     var place = searchBox.getPlace(),
                         bounds = new google.maps.LatLngBounds();
                     if (!place) {
@@ -3028,13 +3028,13 @@ edit.location = function(index) {
 
             // Bias the SearchBox results towards places that are within the
             // bounds of the current map's viewport.
-            google.maps.event.addListener(map, "bounds_changed", function() {
+            google.maps.event.addListener(map, "bounds_changed", function () {
                 var bounds = map.getBounds();
                 searchBox.setBounds(bounds);
             });
 
             // Press enter to search
-            $("#attach-area .place .desc").keyup(function(n) {
+            $("#attach-area .place .desc").keyup(function (n) {
                 if (n.keyCode == 13) {
                     var latitude = parseFloat($(selectorHeader + ".latitude")
                         .val()),
@@ -3052,7 +3052,7 @@ edit.location = function(index) {
                     edit.locationGeocode(pos);
                 }
             });
-        }, function() {
+        }, function () {
             animation.error(log.LOCATION_PIN_FAIL);
         });
     } else {
@@ -3066,7 +3066,7 @@ edit.location = function(index) {
     // Avoid accidentally click
     $(selectorHeader + "a").removeAttr("onclick");
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    $("#edit-pane").keyup(function (n) {
         if (n.keyCode === 27) {
             edit.locationHide();
         }
@@ -3075,7 +3075,7 @@ edit.location = function(index) {
 /**
  * Hides the map selector and saves the data
  */
-edit.locationHide = function() {
+edit.locationHide = function () {
     if (edit.mediaIndex["place"] < 0) {
         // Invalid call
         return;
@@ -3101,7 +3101,7 @@ edit.locationHide = function() {
  * Saves the location and collapses the panal
  * @param {number} index - The index of the location element
  */
-edit.locationSave = function(index) {
+edit.locationSave = function (index) {
     var data = localStorage["place"],
         selectorHeader = edit.getSelectorHeader("place", index),
         latitude = parseFloat($(selectorHeader + ".latitude").val()),
@@ -3122,12 +3122,12 @@ edit.locationSave = function(index) {
     data[index] = newElem;
     localStorage["place"] = JSON.stringify(data);
 };
-edit.locationPin = function() {
+edit.locationPin = function () {
     // Show the location menu
     var selectorHeader = edit.getSelectorHeader("place");
     // Try HTML5 geolocation
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition(function (position) {
             var latitude = position.coords.latitude,
                 longitude = position.coords.longitude,
                 pos = new google.maps.LatLng(latitude, longitude);
@@ -3136,7 +3136,7 @@ edit.locationPin = function() {
             $(selectorHeader + ".longitude").val(longitude);
             edit.locationGeocode(pos);
             edit.locationWeather(pos);
-        }, function() {
+        }, function () {
             animation.error(log.LOCATION_PIN_FAIL);
         });
     } else {
@@ -3150,7 +3150,7 @@ edit.locationPin = function() {
  * @param {object} pos - The position object indicating the position to be
  *     reverse geocoded
  */
-edit.locationGeocode = function(pos) {
+edit.locationGeocode = function (pos) {
     var mapOptions = {
             zoom: 16,
             center: pos
@@ -3165,7 +3165,7 @@ edit.locationGeocode = function(pos) {
     map.setCenter(pos);
     // Reverse geocoding to get current address
     var geocoder = new google.maps.Geocoder();
-    geocoder.geocode({'latLng': pos}, function(results, status) {
+    geocoder.geocode({'latLng': pos}, function (results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             if (results[0]) {
                 $(selectorHeader + ".title").val(results[0].formatted_address);
@@ -3183,10 +3183,10 @@ edit.locationGeocode = function(pos) {
  * @param {object} pos - The position object indicating the position to find
  *     the weather
  */
-edit.locationWeather = function(pos) {
+edit.locationWeather = function (pos) {
     // Test if the weather info already exists
     var flag = false;
-    $("#attach-area .icontags .weather p").each(function() {
+    $("#attach-area .icontags .weather p").each(function () {
         if ($(this).hasClass("highlight")) {
             flag = true;
         }
@@ -3205,7 +3205,7 @@ edit.locationWeather = function(pos) {
         type: "GET",
         url: url,
         dataType: "jsonp"
-    }).done(function(data, staus, xhr) {
+    }).done(function (data, staus, xhr) {
         var weather = data["currently"],
             icon = weather["icon"];
         animation.log(log.EDIT_PANE_WEATHER_RESULT + weather["temperature"] + log.EDIT_PANE_WEATHER_RESULT_END);
@@ -3246,7 +3246,7 @@ edit.locationWeather = function(pos) {
  * @param {string} link (Optional) - The url to the address of the link, for
  *     newly created element
  */
-edit.voice = function(index, link) {
+edit.voice = function (index, link) {
     if (index == edit.mediaIndex["voice"] || index == undefined) {
         return;
     }
@@ -3257,7 +3257,7 @@ edit.voice = function(index, link) {
     $(selectorHeader + "a").removeAttr("onclick");
     $(selectorHeader + "input").prop("disabled", false);
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    $("#edit-pane").keyup(function (n) {
         if (n.keyCode === 27) {
             edit.voiceHide();
         }
@@ -3286,7 +3286,7 @@ edit.voice = function(index, link) {
     }
     edit.setRemove(3);
 };
-edit.voiceHide = function() {
+edit.voiceHide = function () {
     if (edit.mediaIndex["voice"] < 0) {
         // Invalid call
         return;
@@ -3312,7 +3312,7 @@ edit.voiceHide = function() {
     edit.mediaIndex["voice"] = -1;
     edit.isEditing = -1;
 };
-edit.voiceSave = function(index) {
+edit.voiceSave = function (index) {
     var data = localStorage["voice"],
         selectorHeader = edit.getSelectorHeader("voice", index),
         title = $(selectorHeader + ".title").val();
@@ -3327,55 +3327,55 @@ edit.voiceSave = function(index) {
 /**
  * Search for all the voices from the data folder and add it to the edit.voice
  */
-edit.voiceSearch = function() {
+edit.voiceSearch = function () {
     edit.playableSearch(3);
 };
 /**
  * Use the microphone to record a new voice
  */
-edit.voiceNew = function() {
+edit.voiceNew = function () {
 
 };
 
 /************************** MUSIC 4 **************************/
 
-edit.music = function(index) {
+edit.music = function (index) {
     edit.itunes(index, 4);
 };
-edit.musicHide = function() {
+edit.musicHide = function () {
     edit.itunesHide(4);
 };
-edit.musicSave = function(index) {
+edit.musicSave = function (index) {
     edit.itunesSave(index, 4);
 };
 
 /************************** MOVIE 5 *************************/
 
-edit.movie = function(index) {
+edit.movie = function (index) {
     edit.itunes(index, 5);
 };
-edit.movieHide = function() {
+edit.movieHide = function () {
     edit.itunesHide(5);
 };
-edit.movieSave = function(index) {
+edit.movieSave = function (index) {
     edit.itunesSave(index, 5);
 };
 
 /************************** BOOK 6 **************************/
 
-edit.book = function(index) {
+edit.book = function (index) {
     edit.itunes(index, 6);
 };
-edit.bookHide = function() {
+edit.bookHide = function () {
     edit.itunesHide(6);
 };
-edit.bookSave = function(index) {
+edit.bookSave = function (index) {
     edit.itunesHide(index, 6);
 };
 
 /************************** WEBLINK 7 **************************/
 
-edit.weblink = function(index) {
+edit.weblink = function (index) {
     if (index == edit.mediaIndex["weblink"] || index == undefined) {
         return;
     }
@@ -3386,14 +3386,14 @@ edit.weblink = function(index) {
     $(selectorHeader + "a").removeAttr("onclick");
     $(selectorHeader + "input").prop("disabled", false);
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    $("#edit-pane").keyup(function (n) {
         if (n.keyCode == 27) {
             edit.weblinkHide(7);
         }
     });
     edit.isEditing = 7;
 };
-edit.weblinkHide = function() {
+edit.weblinkHide = function () {
     if (edit.mediaIndex["weblink"] < 0) {
         // Invalid call
         return;
@@ -3412,7 +3412,7 @@ edit.weblinkHide = function() {
     edit.mediaIndex["weblink"] = -1;
     edit.isEditing = -1;
 };
-edit.weblinkSave = function(index) {
+edit.weblinkSave = function (index) {
     var data = localStorage["weblink"],
         selectorHeader = edit.getSelectorHeader("weblink", index),
         title = $(selectorHeader + ".title").val(),
@@ -3428,7 +3428,7 @@ edit.weblinkSave = function(index) {
 
 /************* GENERIC FOR MUSIC MOVIE & BOOK ***************/
 
-edit.itunes = function(index, typeNum) {
+edit.itunes = function (index, typeNum) {
     var type = edit.mediaName(typeNum);
     if (index == edit.mediaIndex[type] || index == undefined) {
         return;
@@ -3438,7 +3438,7 @@ edit.itunes = function(index, typeNum) {
     var selectorHeader = edit.getSelectorHeader(type);
     edit.setRemove(typeNum);
     $(selectorHeader + "a").removeAttr("onclick");
-    $(selectorHeader + "input").prop("disabled", false).keyup(function(n) {
+    $(selectorHeader + "input").prop("disabled", false).keyup(function (n) {
         // Press enter to search
         if (n.keyCode == 13) {
             var term = $(selectorHeader + ".title").val() + "%20" + $(
@@ -3447,14 +3447,14 @@ edit.itunes = function(index, typeNum) {
         }
     });
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    $("#edit-pane").keyup(function (n) {
         if (n.keyCode == 27) {
             edit.itunesHide(typeNum);
         }
     });
     edit.isEditing = typeNum;
 };
-edit.itunesHide = function(typeNum) {
+edit.itunesHide = function (typeNum) {
     var type = edit.mediaName(typeNum);
     if (edit.mediaIndex[type] < 0) {
         // Invalid call
@@ -3474,7 +3474,7 @@ edit.itunesHide = function(typeNum) {
     edit.mediaIndex[type] = -1;
     edit.isEditing = -1;
 };
-edit.itunesSave = function(index, typeNum) {
+edit.itunesSave = function (index, typeNum) {
     var type = edit.mediaName(typeNum),
         data = localStorage[type],
         selectorHeader = edit.getSelectorHeader(type, index),
@@ -3501,16 +3501,16 @@ edit.itunesSave = function(index, typeNum) {
  *     change is made, make sure that function is corresponding change is made
  *     as well
  */
-edit.playableSearch = function(typeNum) {
-    getTokenCallback(function(token) {
-        edit.getDate(function(dateStr) {
+edit.playableSearch = function (typeNum) {
+    getTokenCallback(function (token) {
+        edit.getDate(function (dateStr) {
             var url = getDataUrlHeader() + "/" + dateStr + ":/children?select=id,name,size,@content.downloadUrl&access_token=" + token;
             animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_START, 1);
             $.ajax({
                     type: "GET",
                     url: url
                 })
-                .done(function(data, status, xhr) {
+                .done(function (data, status, xhr) {
                     if (data["@odata.nextLink"]) {
                         // More content available!
                         // Do nothing right now
@@ -3610,7 +3610,7 @@ edit.playableSearch = function(typeNum) {
                     edit.playableSetToggle();
                     animation.log(log.EDIT_PANE_PLAYABLE_SEARCH_END, -1);
                 })
-                .fail(function(xhr, status, error) {
+                .fail(function (xhr, status, error) {
                     animation.error(log.EDIT_PANE_PLAYABLE_SEARCH_FAILED,
                         error,
                         -1);
@@ -3632,11 +3632,11 @@ edit.playableSearch = function(typeNum) {
  * Sets all video and voice attachments so that their classes will be toggled
  * "change" upon right clicking
  */
-edit.playableSetToggle = function() {
-    $("#edit-pane .video, #edit-pane .voice").each(function() {
+edit.playableSetToggle = function () {
+    $("#edit-pane .video, #edit-pane .voice").each(function () {
         // Reset the right click bindings
         $(this).off("contextmenu");
-        $(this).on("contextmenu", function() {
+        $(this).on("contextmenu", function () {
             // Right click to select the media
             $(this).toggleClass("change");
             // Return false to disable other functionalities
@@ -3653,8 +3653,8 @@ edit.playableSetToggle = function() {
  * @param {Function} callback - The callback function to be called after all
  *     the processing is done
  */
-edit.playableSave = function(typeNum, callback) {
-    edit.getDate(function(dateStr) {
+edit.playableSave = function (typeNum, callback) {
+    edit.getDate(function (dateStr) {
         var resourceDir = "/drive/root:/Apps/Journal/resource/" + app.year,
             contentDir = "/drive/root:/Apps/Journal/data/" + app.year + "/" + dateStr,
             dataGroup,
@@ -3675,7 +3675,7 @@ edit.playableSave = function(typeNum, callback) {
                 return;
         }
         // Collect data from HTML element
-        $("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+        $("#attach-area ." + edit.mediaName(typeNum)).each(function () {
             for (var i = 0; i !== dataGroup.length; ++i) {
                 if ($(this).children("a").hasClass(dataGroup[i]["name"])) {
                     var match = (dataGroup[i]["resource"] && $(this)
@@ -3711,7 +3711,7 @@ edit.playableSave = function(typeNum, callback) {
             // Nothing to be transferred
             // Clean all the data if the user asked for it but did nothing to it
             // Process HTML element
-            $("#attach-area ." + edit.mediaName(typeNum)).each(function() {
+            $("#attach-area ." + edit.mediaName(typeNum)).each(function () {
                 if ($(this).hasClass("data")) {
                     // Moved to data
                     $(this).addClass("ignore").empty().fadeOut();
@@ -3719,7 +3719,7 @@ edit.playableSave = function(typeNum, callback) {
             });
             callback();
         } else {
-            getTokenCallback(function(token) {
+            getTokenCallback(function (token) {
                 animation.log(log.EDIT_PANE_PLAYABLE_SAVE_START + edit.mediaName(
                         typeNum) + log.EDIT_PANE_PLAYABLE_SAVE_START_END, 1);
                 for (var i = 0; i !== dataGroup.length; ++i) {
@@ -3769,7 +3769,7 @@ edit.playableSave = function(typeNum, callback) {
                                 contentType: "application/json",
                                 data: JSON.stringify(requestJson)
                             })
-                            .done(function(data) {
+                            .done(function (data) {
                                 --pending;
                                 var title = "";
                                 for (var j = 0; j !== dataGroup.length; ++j) {
@@ -3799,7 +3799,7 @@ edit.playableSave = function(typeNum, callback) {
                                 animation.log(edit.mediaName(typeNum)
                                         .capitalize() + log.EDIT_PANE_PLAYABLE_FILE + title + log.EDIT_PANE_PLAYABLE_FILE_SAVED);
                             })
-                            .fail(function(xhr, status, error) {
+                            .fail(function (xhr, status, error) {
                                 --pending;
                                 animation.warn(log.EDIT_PANE_TRANSFERRED_FAILED,
                                     error,
@@ -3807,12 +3807,12 @@ edit.playableSave = function(typeNum, callback) {
                                 animation.warning("#add-" + edit.mediaName(
                                         typeNum));
                             })
-                            .always(function() {
+                            .always(function () {
                                 if (pending <= 0) {
                                     // Finished all the processing
                                     // Process HTML element
                                     $("#attach-area ." + edit.mediaName(typeNum))
-                                        .each(function() {
+                                        .each(function () {
                                             $(this).removeClass("change");
                                             for (var j = 0;
                                                  j !== dataGroup.length;
@@ -3929,7 +3929,7 @@ edit.playableSave = function(typeNum, callback) {
  * Capitalizes the first chatacter of a string
  * @returns {String} - The capitalized string
  */
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
@@ -3970,7 +3970,7 @@ journal.archive.media = 0;
 /** The map to map the source name to the weblink. Format: {name: {id: xxx, url: xxx, size: xxx}} */
 journal.archive.map = {};
 
-window.app = function() {
+window.app = function () {
 
     //region Private variables
 
@@ -3979,7 +3979,7 @@ window.app = function() {
     //region Private functions
 
     //region Initialilzing data
-    var _initializePreloadedTags = function() {
+    var _initializePreloadedTags = function () {
         app.preloadedTags.push("%photo",
             "%video",
             "%music",
@@ -3993,9 +3993,9 @@ window.app = function() {
             app.preloadedTags.push("#" + tagsArray[key]);
         }
     }
-    var _initializeQueryTextbox = function(thisApp) {
+    var _initializeQueryTextbox = function (thisApp) {
         var $query = $("#query");
-        $query.keyup(function(n) {
+        $query.keyup(function (n) {
                 if (n.keyCode == 13) {
                     app.command = $query.val();
                     $query.effect("highlight", {color: "#dddddd"});
@@ -4003,7 +4003,7 @@ window.app = function() {
                 }
             })
             // Autocomplete for preloaded tags
-            .bind("keydown", function(event) {
+            .bind("keydown", function (event) {
                 // Don't navigate away from the field on tab when selecting an
                 // item
                 if (event.keyCode === $.ui.keyCode.TAB && $(this)
@@ -4014,7 +4014,7 @@ window.app = function() {
             .autocomplete({
                 minLength: 1,
                 autoFocus: true,
-                source: function(request, response) {
+                source: function (request, response) {
                     // Remove elements that are already there
                     var terms = $("#query").val().split(" "),
                         availableTags = app.preloadedTags.sort();
@@ -4032,11 +4032,11 @@ window.app = function() {
                     response($.ui.autocomplete.filter(availableTags,
                         request.term.split(/ \s*/).pop()));
                 },
-                focus: function() {
+                focus: function () {
                     // Prevent value inserted on focus
                     return false;
                 },
-                select: function(event, ui) {
+                select: function (event, ui) {
                     var terms = this.value.split(/ \s*/);
                     // Remove the current input
                     terms.pop();
@@ -4049,11 +4049,11 @@ window.app = function() {
                 }
             });
     }
-    var _initializeReformatSummaryTimeOnHover = function() {
+    var _initializeReformatSummaryTimeOnHover = function () {
         $(document)
             .delegate("#search-result:not(.stats)",
                 "mouseover mouseleave",
-                function(e) {
+                function (e) {
                     var $search = $("#search-result");
                     var $total = $("#total-time");
 
@@ -4072,8 +4072,8 @@ window.app = function() {
      * Initialize header info (which refers to the div that displays current
      * year and last updated time of token and journal data
      */
-    var _initializeHeaderInfoUpdateOnHover = function() {
-        $("#header-info").mouseover(function() {
+    var _initializeHeaderInfoUpdateOnHover = function () {
+        $("#header-info").mouseover(function () {
             // Update #last-updated
             app.readLastUpdated();
             // Update #token-expired-in
@@ -4091,18 +4091,18 @@ window.app = function() {
             $("#token-expires-in").html(expiresIn);
         });
     }
-    var _initializeNetworkSetup = function() {
+    var _initializeNetworkSetup = function () {
 // Setup timeout time
         $.ajaxSetup({
             timeout: network.timeOut
         });
         // Setup network monitor
-        $(document).ajaxStart(function() {
+        $(document).ajaxStart(function () {
             network.isAjaxActive = true;
             // By default, just initialize the network bar
             network.init();
         });
-        $(document).ajaxStop(function() {
+        $(document).ajaxStop(function () {
             network.isAjaxActive = false;
             if (network.breakpoint === 0) {
                 // Do not destroy it if there are breakpoints
@@ -4110,7 +4110,7 @@ window.app = function() {
             }
         });
     }
-    var _initializeIconsAppearance = function() {
+    var _initializeIconsAppearance = function () {
 // Test if there is any cache
         animation.testCacheIcons();
         animation.testAllSubs();
@@ -4122,11 +4122,11 @@ window.app = function() {
      * Gets the entires that are not in this year and remove invalid entries
      * @returns {Array} - an array of entries not in this year
      */
-    var _getEntriesNotInThisYear = function() {
+    var _getEntriesNotInThisYear = function () {
         var queuedYears = [];
 
         journal.archive.data[app.year] = journal.archive.data[app.year].filter(
-            function(entry) {
+            function (entry) {
                 if (entry == undefined) {
                     app.yearChange[app.year] = true;
                     // Do not need this one
@@ -4165,7 +4165,7 @@ window.app = function() {
      * Add processed years into the archive
      * @param {Array} queuedYears - the queued year to be processed
      */
-    var _processQueuedYears = function(queuedYears) {
+    var _processQueuedYears = function (queuedYears) {
         animation.log(log.DATA_MOVED_TO_OTHER_YEAR + queuedYears.join(", ") + log.DATA_MOVED_TO_OTHER_YEAR_END);
         // Add to `app.years`
         for (var i = 0; i !== queuedYears.length; ++i) {
@@ -4182,7 +4182,7 @@ window.app = function() {
      * @param (string} filter - to filter the element that is supposed to be in
      *     the result
      */
-    var _resetDataAndLayout = function(filter) {
+    var _resetDataAndLayout = function (filter) {
 // Reset animation indentation
         animation.indent = 0;
         // Remove all the child elements and always
@@ -4222,7 +4222,7 @@ window.app = function() {
         }
     };
 
-    var _attemptLoadDataFromQueue = function() {
+    var _attemptLoadDataFromQueue = function () {
         if (app.yearQueue[app.year]) {
             app.yearChange[app.year] = true;
             // Push to the new data
@@ -4235,7 +4235,7 @@ window.app = function() {
             delete app.yearQueue[app.year];
         }
     }
-    var _processQueuedData = function() {
+    var _processQueuedData = function () {
 // Test if there are any data in the queue
         _attemptLoadDataFromQueue();
 
@@ -4253,7 +4253,7 @@ window.app = function() {
      *     loaded
      * @private
      */
-    var _loadData = function(data, callback) {
+    var _loadData = function (data, callback) {
         // Raw data
         console.log("app.loadScript(): data.length = " + data.length);
 
@@ -4278,7 +4278,7 @@ window.app = function() {
      * @param filter - the filter to filter out the data
      * @private
      */
-    var _displayDataInList = function(filter) {
+    var _displayDataInList = function (filter) {
         $("#total-entry").text(journal.archive.data[app.year].length);
         ////console.log("Calling app.list(" + filter + ")");
         ////console.log("\t> lastLoaded = " + app.lastLoaded);
@@ -4344,7 +4344,7 @@ window.app = function() {
         /**
          * Initializes this app
          */
-        initializeApp: function() {
+        initializeApp: function () {
             // Enter to search
             var thisApp = this;
             // Header fix
@@ -4375,7 +4375,7 @@ window.app = function() {
          * @version 2.0 - Removes param `forceReload` as every call to this
          *     function needs a force reload
          */
-        addLoadDataWithFilter: function(filter, newContent) {
+        addLoadDataWithFilter: function (filter, newContent) {
             // Test the validity of `newContent`
             if (newContent == "") {
                 // Try to add nothing
@@ -4416,7 +4416,7 @@ window.app = function() {
                     // New contents available! Refresh the new data
                     animation.debug(log.CONTENTS_NEW + newContent.length + log.CONTENTS_NEW_END);
                     console.log("addLoadDataWithFilter(): data.length = " + newContent.length);
-                    _loadData(newContent, function() {
+                    _loadData(newContent, function () {
                         _displayDataInList(filter)
                     });
                     edit.saveDataCache();
@@ -4434,11 +4434,11 @@ window.app = function() {
         /**
          * Simply refreshes and force reloads the app
          */
-        refresh: function() {
+        refresh: function () {
             app.addLoadDataWithFilter("");
         },
 
-        updateData: function(data) {
+        updateData: function (data) {
             if (!app.version[app.year]) {
                 app.version[app.year] = 1;
             }
@@ -4491,14 +4491,14 @@ window.app = function() {
          * Gets all the available year by the folder name under /core/ and
          * stores them in `app.years`, in ascending order (earliest year first)
          */
-        getYears: function() {
+        getYears: function () {
             animation.log(log.GET_YEARS_START);
-            getTokenCallback(function(token) {
+            getTokenCallback(function (token) {
                 $.ajax({
                         type: "GET",
                         url: "https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/children?select=name,createdBy&orderby=name&access_token=" + token
                     })
-                    .done(function(data) {
+                    .done(function (data) {
                         var itemList = data["value"];
                         app.years = [];
                         for (var i = 0; i !== itemList.length; ++i) {
@@ -4524,7 +4524,7 @@ window.app = function() {
                         animation.testYearButton();
                         animation.log(log.GET_YEARS_END);
                     })
-                    .fail(function(xhr, status, error) {
+                    .fail(function (xhr, status, error) {
                         animation.error(log.GET_YEARS_FAIL, error);
                         app.getYears();
                     });
@@ -4539,7 +4539,7 @@ window.app = function() {
          * if no data found for this year in the memory.
          * @param {number} year - The year to go
          */
-        yearUpdateTry: function(year) {
+        yearUpdateTry: function (year) {
             app.year = year;
             if (app.years.length === 0) {
                 app.years.push(app.year);
@@ -4565,7 +4565,7 @@ window.app = function() {
          * year and it will call `app.yearUpdateTry()`. This function will also
          * correct the buttons for switching between years.
          */
-        yearUpdate: function() {
+        yearUpdate: function () {
             app.refresh();
             // Test the correctness of the buttons
             animation.testYearButton();
@@ -4578,7 +4578,7 @@ window.app = function() {
          * correct it if `app.year` is invalid.
          * @param {boolean} isToEnd - If year goes to the earliest possible year
          */
-        prev: function(isToEnd) {
+        prev: function (isToEnd) {
             if (network.isAjaxActive) {
                 // Do not switch if network is still working
                 animation.warn(log.NETWORK_WORKING);
@@ -4605,7 +4605,7 @@ window.app = function() {
          * @param {boolean} isToEnd - If year goes to the latest year (i.e. this
          *     year)
          */
-        next: function(isToEnd) {
+        next: function (isToEnd) {
             if (network.isAjaxActive) {
                 // Do not switch if network is still working
                 animation.warn(log.NETWORK_WORKING);
@@ -4631,7 +4631,7 @@ window.app = function() {
          * @param {number} time (Optional) - the time that marks when the data
          *     is last updated, or set to current time
          */
-        updateLastUpdated: function(time) {
+        updateLastUpdated: function (time) {
             time = parseInt(time) || new Date().getTime();
             app.lastUpdated[app.year] = time;
             if (app.year === new Date().getFullYear()) {
@@ -4646,7 +4646,7 @@ window.app = function() {
          * found
          * (this year only), and displays it on the appropriate area
          */
-        readLastUpdated: function() {
+        readLastUpdated: function () {
             var lastUpdated = app.lastUpdated[app.year];
             if (!lastUpdated) {
                 // Test if it is this year
@@ -4676,7 +4676,7 @@ window.app = function() {
          * @param timestamp - the timestamp of the bulb
          * @return true if this bulb is already in the journal
          */
-        isBulbExist: function(timestamp) {
+        isBulbExist: function (timestamp) {
             // TODO implement it
         },
 
@@ -4686,7 +4686,7 @@ window.app = function() {
          * @param content - the content of a bulb in bulb._data
          * @param timestamp - the timestamp of the bulb
          */
-        addBulb: function(content, timestamp) {
+        addBulb: function (content, timestamp) {
             var body = content["content"] || content["contentRaw"];
             var newData = {
                 contentType: app.contentType.BULB,
@@ -4723,7 +4723,7 @@ window.app = function() {
          * Wraps up the integration of bulbs
          * @require called after all the bulbs are downloaded and merged
          */
-        finishMergingBulbs: function() {
+        finishMergingBulbs: function () {
             animation.log(log.BULB_FETCH_END + (bulb.getTotalAvailableBulbs() - bulb.getMergedBulbCounter() ));
 
             // Sort the data
@@ -4734,7 +4734,7 @@ window.app = function() {
             bulb.isProcessing = false;
 
             // Upload the file
-            uploadFile(undefined, function() {
+            uploadFile(undefined, function () {
                 animation.log(log.BULB_REMOVE_MERGED_START);
                 bulb.removeUploadedBulbs();
             });
@@ -4749,7 +4749,7 @@ window.app = function() {
  * Displays a list on the #list
  * @param {String} filter - The request string to display certain filter
  */
-app.list = function(filter) {
+app.list = function (filter) {
     ////console.log("Called app.list(" + filter + ")");
     var f = this,
     /* The data loaded */
@@ -4762,7 +4762,7 @@ app.list = function(filter) {
         d.html("<ul></ul><div class=\"loadmore\"></div>");
         this.contents = d.children("ul");
         this.loadmore = d.children("div.loadmore");
-        this.loadmore.on("click", function() {
+        this.loadmore.on("click", function () {
             ////console.log("> Loadmore clicked");
             f.load(filter);
         });
@@ -4774,7 +4774,7 @@ app.list = function(filter) {
         }
 
         // Scroll to load more
-        d.off("scroll").on("scroll", function() {
+        d.off("scroll").on("scroll", function () {
             ////console.log("scrollTop() = " + $(this).scrollTop() + ";\t
             // f.contents.height() = " + f.contents.height() + ";\t d.height()
             // = " + d.height());
@@ -4789,7 +4789,7 @@ app.list = function(filter) {
 };
 app.list.prototype = {
     /* Load one qualified entry of the contents from the data */
-    load: function(filter) {
+    load: function (filter) {
         ////console.log("Call app.list.load(" + filter + ")");
         var currentList = this, // [h]
             contents = journal.archive.data[app.year], // original:[f]
@@ -4863,7 +4863,7 @@ app.list.prototype = {
         app.lastLoaded = currentLoaded;
     },
     /* Checks if this entry satisfies current string filter */
-    qualify: function(data, filter) {
+    qualify: function (data, filter) {
         ////console.log("Call app.list.qualify(" + data["title"] + ", " +
         // filter + ")"); Test if the filter is there
         if (!filter) {
@@ -4973,7 +4973,7 @@ app.list.prototype = {
      * @param {boolean} timeOnly - If only returns the time
      * @returns {string} Converted time
      */
-    date: function(time, timeOnly) {
+    date: function (time, timeOnly) {
         var date = new Date(time),
             hour = date.getHours(),
             minute = date.getMinutes();
@@ -5026,7 +5026,7 @@ app.list.prototype = {
         }
     },
     /* Converts the content to html and append to the list of contents */
-    html: function(data, lastTime) { // [d]
+    html: function (data, lastTime) { // [d]
         // All the summary
         data.summary = data.text.ext || data.text.body.substr(0, 50);
 
@@ -5097,7 +5097,7 @@ app.list.prototype = {
         var item = $(app.itemView(data));
 
         // Bind the click event of this data clip
-        item.find(" > a").on("click", function(j) {
+        item.find(" > a").on("click", function (j) {
             j.preventDefault();
             // Show edit panel
             animation.showMenuOnly("edit");
@@ -5126,17 +5126,17 @@ app.list.prototype = {
         if (data.contentType === app.contentType.BULB) {
 
         } else {
-            $(".thumb > img:not([style])", item).on("load", function() {
+            $(".thumb > img:not([style])", item).on("load", function () {
                 var h = this.naturalWidth || this.width,
                     f = this.naturalHeight || this.height,
                     g = app.util.crop(h, f, 160);
                 $(this).css(g);
             });
-            $(".thumb > canvas", item).each(function() {
+            $(".thumb > canvas", item).each(function () {
                 var g = new Image(),
                     f = this.getContext("2d");
                 g.src = $(this).data("src");
-                g.onload = function() {
+                g.onload = function () {
                     var croppedPhoto = app.util.crop(this.width,
                         this.height,
                         160),
@@ -5156,12 +5156,12 @@ app.list.prototype = {
         this.contents.append($newClass.fadeIn(500));
     },
     /* Add an empty html list */
-    htmlEmpty: function() {
+    htmlEmpty: function () {
         console.log("not show!");
         return $("#list ul").append("<li></li>");
     },
     /*  Get the thumbnail of the contents and returns the html */
-    thumb: function(data, type) {
+    thumb: function (data, type) {
         var typeContents = data[type],
             returnHtml;
         if (!!typeContents && typeContents.length > 0) {
@@ -5234,7 +5234,7 @@ app.list.prototype = {
         return returnHtml || "<div class=\"dummy\"></div>";
     },
     /* Attach the attachments the contents have to the content */
-    attached: function(contentFlag) { // [d, h]
+    attached: function (contentFlag) { // [d, h]
         var retArray = [], // [g]
             typeArray = app.tag().content(contentFlag); // [e]
         // Iterate to push all of the contents
@@ -5249,7 +5249,7 @@ app.list.prototype = {
      The time format should be mmddyy
      Supported time format: @mmddyy:mmddyy @mmddyy @mmyy:mmyy @mmyy
      */
-    isInRange: function(timeStr, timeNum) {
+    isInRange: function (timeStr, timeNum) {
         console.log("Call addLoadDataWithFilter.isInRange(" + timeStr + "," + timeNum + ")");
         var timeArray = timeStr.split(":"),
             date = new Date(timeNum);
@@ -5363,7 +5363,7 @@ app.list.prototype = {
      * @returns {number} - The month of `newTime` if two time differs, -1 if
      *     same
      */
-    isInSameMonth: function(newTime, oldTime) {
+    isInSameMonth: function (newTime, oldTime) {
         var newDate = new Date(newTime),
             newMonth = newDate.getMonth();
         // Just initialized
@@ -5378,7 +5378,7 @@ app.list.prototype = {
 /**
  * Display the detail of the data at current index
  */
-app.detail = function() {
+app.detail = function () {
     var dataClip = journal.archive.data[app.year][app.currentDisplayed];
     if (!dataClip.processed) {
         if (dataClip.contentType === app.contentType.BULB) {
@@ -5453,11 +5453,11 @@ app.detail = function() {
         $("#menu-show-images").addClass("hidden");
     }
     // Back button
-    $(".btn-back", app.cDetail).on("click", function() {
+    $(".btn-back", app.cDetail).on("click", function () {
         this.hideDetail();
     });
     // Click the icons to search
-    $(".icontags > span").on("click", function() {
+    $(".icontags > span").on("click", function () {
         var tag = app.tag().getNameByHtml(this.className);
         if (tag != "") {
             addLoadDataWithFilter("#" + tag);
@@ -5469,7 +5469,7 @@ app.detail = function() {
     ////	}
     ////});
     // Add online media url to the classes
-    var eachOp = function() {
+    var eachOp = function () {
         var className = $(this).attr("class");
         if (journal.archive.map[className]) {
             $(this)
@@ -5477,7 +5477,7 @@ app.detail = function() {
                 .removeAttr("class");
         }
     };
-    $(".lower .video a").each(function(n) {
+    $(".lower .video a").each(function (n) {
         // Make sure previous audio player is cleared
         app.videoPlayer.quit();
         var className = $(this).attr("class");
@@ -5488,7 +5488,7 @@ app.detail = function() {
             animation.error(log.FILE_NOT_LOADED + className + log.DOWNLOAD_PROMPT);
         }
     });
-    $(".lower .voice a").each(function(n) {
+    $(".lower .voice a").each(function (n) {
         // Make sure previous audio player is cleared
         app.audioPlayer.quit();
         var className = $(this).attr("class");
@@ -5505,7 +5505,7 @@ app.detail = function() {
     return dataClip;
 };
 app.detail.prototype = {
-    text: function(rawText) { // [c]
+    text: function (rawText) { // [c]
         // Processes spacial characters
         rawText = this.htmlSpacialChars(rawText);
         // Replace all manual lines to a horizontal line
@@ -5522,14 +5522,14 @@ app.detail.prototype = {
         return "<p>" + rawText + "</p>";
     },
     // Processes all the spacial characters to html-style characters
-    htmlSpacialChars: function(rawText) {
+    htmlSpacialChars: function (rawText) {
         return rawText.replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/'/g, "&#039;")
             .replace(/"/g, "&quot;");
     },
-    thumb: function(dataClip, thumbType, width, height) { // [h, l, d, n]
+    thumb: function (dataClip, thumbType, width, height) { // [h, l, d, n]
         // Seems that only the type of music, movie, book, weblink will be
         // passed in
         var thumbClip = dataClip[thumbType]; // [m]
@@ -5559,7 +5559,7 @@ app.detail.prototype = {
         }
     },
     /* Hide the detail-view */
-    hideDetail: function() {
+    hideDetail: function () {
         // !!!!!HIDE THE CONTENT LISTS!!!!
         $("#edit-this, #delete").addClass("hidden");
         animation.testAllSubs();
@@ -5574,9 +5574,9 @@ app.detail.prototype = {
     }
 };
 // Change the layout the main container
-app.layout = function() {
+app.layout = function () {
     var activeWindow = $(window), // Current active window
-        changeWindowSize = function() {
+        changeWindowSize = function () {
             // Tests the width of current window to enable spaces on the top
             // and the buttom to disappear
             var newHeight = activeWindow.height() - 110;
@@ -5590,7 +5590,7 @@ app.layout = function() {
 // Defines the utility functions for this
 app.util = {
     // Fit the picture into an allocated frame (space can be saw)
-    fit: function(width, height, newWidth, newHeight) {
+    fit: function (width, height, newWidth, newHeight) {
         var l = (newWidth < width) ? newWidth : width,
             g = (newHeight < height) ? newHeight : height;
         var j = Math.ceil((width / height) * g),
@@ -5616,7 +5616,7 @@ app.util = {
         return retArray;
     },
     // Crop a picture to FILL all of the spaces allocated
-    crop: function(width, height, newWidth, newHeight) {
+    crop: function (width, height, newWidth, newHeight) {
         newHeight = newHeight || newWidth;
         var e = Math.ceil((width / height) * newHeight),
             j = Math.ceil(newWidth / (width / height));
@@ -5647,7 +5647,7 @@ app.util = {
         return retArray;
     },
     // Converts object to html-style and returns the converted code
-    style: function(styleArray) {
+    style: function (styleArray) {
         var c = [];
         for (i in styleArray) {
             if (styleArray.hasOwnProperty(i)) {
@@ -5658,7 +5658,7 @@ app.util = {
         return c.join(";");
     },
     // Converts the second to human readable type
-    runTime: function(second) {
+    runTime: function (second) {
         if (second && second > 0) {
             second = second / 1000;
             var e = "0",
@@ -5675,7 +5675,7 @@ app.util = {
     }
 };
 // Use the power of 2 to store multiple data
-app.tag = function() {
+app.tag = function () {
     /************************************************************
      * When adding a new element here, please make sure that CSS file is also
      * updated. The maximum integer allowed for JavaScript is 2^53 - 1.
@@ -5861,7 +5861,7 @@ app.tag = function() {
         weblinkVal = 128, // [P]
         binaryString = "000000000000000000000000000000000000000000000000000000000000000"; // [c]
     return {
-        content: function(contentFlag) { // [Q, S]
+        content: function (contentFlag) { // [Q, S]
             var retArray = []; // [R]
             if (this.is(contentFlag, photoVal)) {
                 retArray.push("photo");
@@ -5896,7 +5896,7 @@ app.tag = function() {
          * @param {number} typeVal - The number of type value
          * @returns {object} The list of all the icons in this value
          */
-        getIconsInHtmlByVal: function(typeVal) {
+        getIconsInHtmlByVal: function (typeVal) {
             var retArray = [];
             for (var i = 0; i !== icons.length; ++i) {
                 if (this.is(typeVal, icons[i]["value"])) {
@@ -5912,7 +5912,7 @@ app.tag = function() {
          * @param {number} typeVal - The number of type value
          * @returns {object} The list of all the icons in this value
          */
-        getIconsInNameByVal: function(typeVal) {
+        getIconsInNameByVal: function (typeVal) {
             var retArray = [];
             for (var i = 0; i !== icons.length; ++i) {
                 if (this.is(typeVal, icons[i]["value"])) {
@@ -5921,22 +5921,22 @@ app.tag = function() {
             }
             return retArray;
         },
-        getValueByName: function(name) {
+        getValueByName: function (name) {
             return this.translate(name.toLowerCase(), "name", "value");
         },
-        getValueByHtml: function(name) {
+        getValueByHtml: function (name) {
             return this.translate(name.toLowerCase(), "html", "value");
         },
-        getHtmlByName: function(name) {
+        getHtmlByName: function (name) {
             return this.translate(name.toLowerCase(), "name", "html");
         },
-        getNameByHtml: function(html) {
+        getNameByHtml: function (html) {
             return this.translate(html.toLowerCase(), "html", "name");
         },
-        getIconsInHtml: function() {
+        getIconsInHtml: function () {
             return this.getAll("html");
         },
-        getIconsInName: function() {
+        getIconsInName: function () {
             return this.getAll("name");
         },
         /**
@@ -5945,7 +5945,7 @@ app.tag = function() {
          * @returns {object} The list of all the available tag icons. Empty if
          *     type is invalid
          */
-        getAll: function(type) {
+        getAll: function (type) {
             var retArray = [];
             for (var i = 0; i !== icons.length; ++i) {
                 if (icons[i][type]) {
@@ -5964,7 +5964,7 @@ app.tag = function() {
          * @returns {string} The result if and only if found, empty string
          *     otherwise
          */
-        translate: function(data, source, target) {
+        translate: function (data, source, target) {
             for (var i = 0; i !== icons.length; ++i) {
                 if (icons[i][source] && icons[i][target]) {
                     // Intentionally use == instead of ===
@@ -5981,7 +5981,7 @@ app.tag = function() {
          * @param {string} tags - The tag string, separated by "|"
          * @returns {object} The object with keys of `icontags` and `texttags`
          */
-        separate: function(tags) {
+        separate: function (tags) {
             // Re-process the tags
             // Remove any empty tags
             while (tags.indexOf("||") !== -1) {
@@ -6016,28 +6016,28 @@ app.tag = function() {
 
 
         /* Set typeVal on typesVal. Return typesVal | typeVal */
-        or: function(typesVal, typeVal) {
+        or: function (typesVal, typeVal) {
             var newVal = this.get(typesVal).split("");
             newVal[this.get(typeVal).indexOf("1")] = "1";
             return parseInt(newVal.join(""), 2);
         },
-        andnot: function(typesVal, typeVal) {
+        andnot: function (typesVal, typeVal) {
             var newVal = this.get(typesVal).split("");
             newVal[this.get(typeVal).indexOf("1")] = "0";
             return parseInt(newVal.join(""), 2);
         },
         // Tests if testValue is in totalValue, i.e. typesVal has type of
         // typeVal
-        is: function(typesVal, typeVal) { // [R, Q]
+        is: function (typesVal, typeVal) { // [R, Q]
             return this.get(typesVal)
                     .charAt(this.get(typeVal).indexOf("1")) == "1";
         },
         // Gets the binary value at the length of 64
-        get: function(value) { // [Q]
+        get: function (value) { // [Q]
             return this.substr(binaryString + value.toString(2));
         },
         // Returns the last 64 digits of this string
-        substr: function(string) { // [R]
+        substr: function (string) { // [R]
             var len = string.length; // [Q]
             return string.substr(len - 64);
         }
@@ -6046,7 +6046,7 @@ app.tag = function() {
 /**
  * Shows the images of the entry
  */
-app.showEntryImages = function() {
+app.showEntryImages = function () {
     var data = journal.archive.data[app.year][app.currentDisplayed];
     if (data["images"]) {
         for (var key = 0; key != data["images"].length; ++key) {
@@ -6060,7 +6060,7 @@ app.showEntryImages = function() {
         }
     }
     $("#menu-show-images").addClass("hidden");
-    $(".upper").addClass("expand").mousewheel(function(event, delta) {
+    $(".upper").addClass("expand").mousewheel(function (event, delta) {
         // Only scroll horizontally
         this.scrollLeft -= (delta * 50);
         event.preventDefault();
@@ -6070,7 +6070,7 @@ app.showEntryImages = function() {
     // Activate the photo viewer on click
     if (photos.length > 0) {
         app.photos = new app.PhotoViewer(photos.find(" > img").clone());
-        photos.on("click", function(o) {
+        photos.on("click", function (o) {
             o.preventDefault();
             var n = $(this).index();
             app.photos.open(n);
@@ -6078,24 +6078,24 @@ app.showEntryImages = function() {
         });
     }
 }
-app.PhotoViewer = function(c, d) {
+app.PhotoViewer = function (c, d) {
     if (!c && typeof c != "object") {
         return false;
     }
     this.list = c;
-    this.callback = d || function() {
+    this.callback = d || function () {
         };
     this.make();
     this.init();
 };
 app.PhotoViewer.prototype = {
-    make: function() {
+    make: function () {
         var f = this.list;
         if (f.length > 1) {
             var c = $("<ul>");
         }
         var d = $("<ul class=\"swipe-wrap\">");
-        f.each(function(j) {
+        f.each(function (j) {
             $("<li>").html(this).appendTo(d);
             if (!!c) {
                 $("<li>")
@@ -6117,11 +6117,11 @@ app.PhotoViewer.prototype = {
         var h = $("<div id=\"photoviewer\">").html(e);
         h.appendTo("body");
     },
-    init: function() {
+    init: function () {
         var c = this;
         this.viewer = $("body > div#photoviewer");
     },
-    bind: function() {
+    bind: function () {
         if (!!this._bind) {
             this.swipe.setup();
             return false;
@@ -6133,11 +6133,11 @@ app.PhotoViewer.prototype = {
         this.swipe = new Swipe(c[0], {
             continuous: false,
             callback: j.callback,
-            transitionEnd: function(k) {
+            transitionEnd: function (k) {
                 j.paging(k);
             }
         });
-        $("input.btn-close", g).on("click", function() {
+        $("input.btn-close", g).on("click", function () {
             j.close();
         });
         var h = c.find(" > ul > li > img");
@@ -6146,7 +6146,7 @@ app.PhotoViewer.prototype = {
             var k = $(window),
                 m = k.width(),
                 l = k.height();
-            h.each(function() {
+            h.each(function () {
                 var r = $(this),
                     q = r.context.naturalWidth || r.context.width,
                     o = r.context.naturalHeight || r.context.height,
@@ -6158,18 +6158,20 @@ app.PhotoViewer.prototype = {
         d();
         $(window).on("resize", d);
         var f = $("div.control", g);
-        h.on("click", function() {
+        h.on("click", function () {
             f.fadeToggle(200);
         });
         var e = c.find(" > ul > li");
-        e.on("click", function(k) {
-            if (k, this == k.toElement) {
+        e.on("click", function (k) {
+            if (this == k.toElement) {
+                // Below is the original code. But the minifier reports it can be a bug or something. If anything goes
+                // wrong, use the code below: if (k, this == k.toElement) {
                 j.close();
             }
         });
         this._bind = 1;
     },
-    fit: function(g, f, e, d) {
+    fit: function (g, f, e, d) {
         var c = app.util.fit(g, f, e, d);
         if (!$.browser.msie) {
             c.marginLeft = -((c.width / 2) + 10);
@@ -6180,7 +6182,7 @@ app.PhotoViewer.prototype = {
         }
         return c;
     },
-    open: function(c) {
+    open: function (c) {
         var c = c || 0,
             e = this,
             d = this.viewer;
@@ -6194,7 +6196,7 @@ app.PhotoViewer.prototype = {
         d.css({
             opacity: 1
         }, 200);
-        $(window).on("keyup.photoviewer", function(f) {
+        $(window).on("keyup.photoviewer", function (f) {
             if (f.keyCode == 27) {
                 e.close();
             } else {
@@ -6208,25 +6210,25 @@ app.PhotoViewer.prototype = {
             }
         });
     },
-    close: function() {
+    close: function () {
         this.viewer.fadeOut(200);
         $(window).off("keyup.photoviewer");
     },
-    prev: function() {
+    prev: function () {
         this.swipe.prev();
     },
-    next: function() {
+    next: function () {
         this.swipe.next();
     },
-    go: function(c) {
+    go: function (c) {
         var c = c || 0;
         this.swipe.slide(c, 1);
     },
-    paging: function(c) {
+    paging: function (c) {
         this.pagination.filter(".active").removeClass("active");
         this.pagination.eq(c).addClass("active");
     },
-    remove: function() {
+    remove: function () {
         this.viewer.remove();
     }
 };
@@ -6237,7 +6239,7 @@ app.PhotoViewer.prototype = {
  *     player, in jQuery style
  * @param {String} source - The url of the source of music file
  */
-app.audioPlayer = function(selector, source) {
+app.audioPlayer = function (selector, source) {
     if (app.isFunction) {
         app.isFunction = false;
     } else {
@@ -6266,14 +6268,14 @@ app.audioPlayer = function(selector, source) {
         timelineWidth = timeline.offsetWidth - playhead.offsetWidth,
     /* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
         onplayhead = false;
-    app.audioPlayer.formatTime = function(timeNum) {
+    app.audioPlayer.formatTime = function (timeNum) {
         var minute = parseInt(timeNum / 60),
             second = parseInt(timeNum % 60);
         minute = minute < 10 ? "0" + minute : minute;
         second = second < 10 ? "0" + second : second;
         return minute + ":" + second;
     }; // Synchronizes playhsead position with current point in audio
-    app.audioPlayer.timeUpdate = function() {
+    app.audioPlayer.timeUpdate = function () {
         var playPercent = timelineWidth * (music.currentTime / duration);
         playhead.style.marginLeft = playPercent + "px";
         if (music.currentTime === duration) {
@@ -6284,7 +6286,7 @@ app.audioPlayer = function(selector, source) {
                 .html(app.audioPlayer.formatTime(music.currentTime));
         }
     };
-    app.audioPlayer.moveplayHead = function(e) {
+    app.audioPlayer.moveplayHead = function (e) {
         var newMargLeft = e.pageX - timeline.getBoundingClientRect().left;
         if (newMargLeft >= 0 && newMargLeft <= timelineWidth) {
             playhead.style.marginLeft = newMargLeft + "px";
@@ -6296,13 +6298,13 @@ app.audioPlayer = function(selector, source) {
             playhead.style.marginLeft = timelineWidth + "px";
         }
     };
-    app.audioPlayer.click = function(e) {
+    app.audioPlayer.click = function (e) {
         app.audioPlayer.moveplayHead(e);
         // returns click as decimal (.77) of the total timelineWidth
         var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
         music.currentTime = duration * clickPercent;
     };
-    app.audioPlayer.mouseDown = function() {
+    app.audioPlayer.mouseDown = function () {
         app.audioPlayer.onplayhead = true;
         window.addEventListener("mousemove",
             app.audioPlayer.moveplayHead,
@@ -6311,7 +6313,7 @@ app.audioPlayer = function(selector, source) {
             app.audioPlayer.timeUpdate,
             false);
     };
-    app.audioPlayer.mouseUp = function(e) {
+    app.audioPlayer.mouseUp = function (e) {
         if (app.audioPlayer.onplayhead) {
             app.audioPlayer.moveplayHead(e);
             window.removeEventListener("mousemove",
@@ -6326,7 +6328,7 @@ app.audioPlayer = function(selector, source) {
         }
         app.audioPlayer.onplayhead = false;
     };
-    app.audioPlayer.loadedData = function() {
+    app.audioPlayer.loadedData = function () {
         animation.log(AUDIO_DOWNLOAD_END, -1);
         // Update the length
         $("#music-length").html(app.audioPlayer.formatTime(music.duration));
@@ -6335,7 +6337,7 @@ app.audioPlayer = function(selector, source) {
         // Show the play icon
         animation.showMenu("media");
     }; // Gets audio file duration
-    app.audioPlayer.music.addEventListener("canplaythrough", function() {
+    app.audioPlayer.music.addEventListener("canplaythrough", function () {
         duration = app.audioPlayer.music.duration;
     }, false);
     // timeupdate event listener
@@ -6358,7 +6360,7 @@ app.audioPlayer = function(selector, source) {
 /**
  * Handles the play and pause of the audio player after loading
  */
-app.audioPlayer.play = function() {
+app.audioPlayer.play = function () {
     // Test if the media is playing
     if ($("#play-media").hasClass("play")) {
         // Is playing
@@ -6381,10 +6383,10 @@ app.audioPlayer.play = function() {
  *     player, in jQuery style
  * @param {String} source - The url of the source of music file
  */
-app.audioPlayer.quit = function() {
+app.audioPlayer.quit = function () {
     $("#play-media").html("&#xf04b").removeClass("play");
     // Remove audioplayer
-    $("#audioplayer").fadeOut(400, function() {
+    $("#audioplayer").fadeOut(400, function () {
         $(this).remove();
     });
     // Reset the css
@@ -6415,7 +6417,7 @@ app.audioPlayer.quit = function() {
  *     player, in jQuery style
  * @param {String} source - The url of the source of video file
  */
-app.videoPlayer = function(selector, source) {
+app.videoPlayer = function (selector, source) {
     if (app.isFunction) {
         app.isFunction = false;
     } else {
@@ -6444,14 +6446,14 @@ app.videoPlayer = function(selector, source) {
         timelineWidth,
     /* Boolean value so that mouse is moved on mouseUp only when the playhead is released */
         onplayhead = false;
-    app.videoPlayer.formatTime = function(timeNum) {
+    app.videoPlayer.formatTime = function (timeNum) {
         var minute = parseInt(timeNum / 60),
             second = parseInt(timeNum % 60);
         minute = minute < 10 ? "0" + minute : minute;
         second = second < 10 ? "0" + second : second;
         return minute + ":" + second;
     }; // Synchronizes playhsead position with current point in audio
-    app.videoPlayer.timeUpdate = function() {
+    app.videoPlayer.timeUpdate = function () {
         var playPercent = timelineWidth * (video.currentTime / duration);
         playhead.style.marginLeft = playPercent + "px";
         if (video.currentTime === duration) {
@@ -6462,7 +6464,7 @@ app.videoPlayer = function(selector, source) {
                 .html(app.videoPlayer.formatTime(video.currentTime));
         }
     };
-    app.videoPlayer.moveplayHead = function(e) {
+    app.videoPlayer.moveplayHead = function (e) {
         var newMargLeft = e.pageX - timeline.getBoundingClientRect().left;
         if (newMargLeft >= 0 && newMargLeft <= timelineWidth) {
             playhead.style.marginLeft = newMargLeft + "px";
@@ -6474,13 +6476,13 @@ app.videoPlayer = function(selector, source) {
             playhead.style.marginLeft = timelineWidth + "px";
         }
     };
-    app.videoPlayer.click = function(e) {
+    app.videoPlayer.click = function (e) {
         app.videoPlayer.moveplayHead(e);
         // returns click as decimal (.77) of the total timelineWidth
         var clickPercent = (e.pageX - timeline.getBoundingClientRect().left) / timelineWidth;
         video.currentTime = duration * clickPercent;
     };
-    app.videoPlayer.mouseDown = function() {
+    app.videoPlayer.mouseDown = function () {
         app.videoPlayer.onplayhead = true;
         window.addEventListener("mousemove",
             app.videoPlayer.moveplayHead,
@@ -6489,7 +6491,7 @@ app.videoPlayer = function(selector, source) {
             app.videoPlayer.timeUpdate,
             false);
     };
-    app.videoPlayer.mouseUp = function(e) {
+    app.videoPlayer.mouseUp = function (e) {
         if (app.videoPlayer.onplayhead) {
             app.videoPlayer.moveplayHead(e);
             window.removeEventListener("mousemove",
@@ -6504,7 +6506,7 @@ app.videoPlayer = function(selector, source) {
         }
         app.videoPlayer.onplayhead = false;
     };
-    app.videoPlayer.loadedData = function() {
+    app.videoPlayer.loadedData = function () {
         animation.log(log.VIDEO_DOWNLOAD_END, -1);
         // Change the height
         if (app.videoPlayer.height != undefined) {
@@ -6530,7 +6532,7 @@ app.videoPlayer = function(selector, source) {
         }
         $("#toggle-media").html("&#xf065");
     }; // Gets audio file duration
-    app.videoPlayer.video.addEventListener("canplaythrough", function() {
+    app.videoPlayer.video.addEventListener("canplaythrough", function () {
         duration = app.videoPlayer.video.duration;
     }, false);
     // timeupdate event listener
@@ -6555,7 +6557,7 @@ app.videoPlayer = function(selector, source) {
  * This function will determine if the video is fullscreen by a static variable
  * inside function
  */
-app.videoPlayer.toggle = function() {
+app.videoPlayer.toggle = function () {
     if (this.toggle.isFullScreen) {
         // Switch to window mode
         if (this.toggle.windowSelector) {
@@ -6587,7 +6589,7 @@ app.videoPlayer.toggle = function() {
 /**
  * Handles the play and pause of the vedio player after loading
  */
-app.videoPlayer.play = function() {
+app.videoPlayer.play = function () {
     // Test if the media is playing
     if ($("#play-media").hasClass("play")) {
         // Is playing
@@ -6610,10 +6612,10 @@ app.videoPlayer.play = function() {
  *     player, in jQuery style
  * @param {String} source - The url of the source of video file
  */
-app.videoPlayer.quit = function() {
+app.videoPlayer.quit = function () {
     $("#play-media").html("&#xf04b").removeClass("play");
     // Remove videoplayer
-    $("#videoplayer").fadeOut(400, function() {
+    $("#videoplayer").fadeOut(400, function () {
         $(this).remove();
     });
     // Reset this variable
@@ -6648,7 +6650,7 @@ app.videoPlayer.quit = function() {
  * The other can be the media that claimed to be existing in /resource but in
  * fact it does not
  */
-app.checkResource = function() {
+app.checkResource = function () {
     // Test if the necessary file is ready
     if (Object.keys(journal.archive.map).length === 0) {
         animation.error(log.MEDIA_CLEAN_NOT_FOUND + log.DOWNLOAD_PROMPT);
@@ -6712,19 +6714,19 @@ app.checkResource = function() {
  * to their date folder according to the file name, after app.checkResource()
  * is run
  */
-app.cleanResource = function() {
+app.cleanResource = function () {
     // Test if the required variable is needed
     if (app.lostMedia.length === 0) {
         animation.error(log.MEDIA_CLEAN_NO_DATA);
     } else {
         animation.log(log.MEDIA_CLEAN_START);
         // Move to their folder according to their names
-        getTokenCallback(function(token) {
+        getTokenCallback(function (token) {
             // Finds all the available folder names
             $.ajax({
                 type: "GET",
                 url: getDataUrlHeader() + ":/children?select=name&top=500&access_token=" + token
-            }).done(function(data) {
+            }).done(function (data) {
                     var itemList = data["value"],
                         folders = [];
                     for (var i = 0, len = itemList.length; i !== len; ++i) {
@@ -6765,14 +6767,14 @@ app.cleanResource = function() {
                                 contentType: "application/json",
                                 data: JSON.stringify(requestJson)
                             })
-                            .done(function() {
+                            .done(function () {
                                 // Placeholder, do nothing
                             })
-                            .fail(function() {
+                            .fail(function () {
                                 // Add the counter for the failure
                                 ++fail;
                             })
-                            .always(function() {
+                            .always(function () {
                                 if (++done === app.lostMedia.length) {
                                     // All finished
                                     // Print fail info
@@ -6787,7 +6789,7 @@ app.cleanResource = function() {
                             });
                     }
                 })
-                .fail(function(xhr, status, error) {
+                .fail(function (xhr, status, error) {
                     animation.error(log.MEDIA_CLEAN_GET_FOLDERS_FAIL,
                         error,
                         -1);
@@ -6797,7 +6799,7 @@ app.cleanResource = function() {
 }
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     app.app = $("div#app");
     app.contents = app.app.find(" > #contents");
     app.cList = app.app.find(" > #contents > #list");
@@ -6854,19 +6856,19 @@ archive.confirmName = "";
  * Initializes the archive view with a selector of the caller of this function
  * @param {String} selector - The string of selector
  */
-archive.init = function(selector) {
+archive.init = function (selector) {
     $(selector).addClass("spinr");
     archive.contents = undefined;
     archive.data = [];
     archive.confirmName = "";
     // Get the data from the server
-    getTokenCallback(function(token) {
+    getTokenCallback(function (token) {
         animation.log(log.ARCHIVE_START, 1);
         $.ajax({
                 type: "GET",
                 url: "https://api.onedrive.com/v1.0/drive/special/approot:/core/" + app.year + ":/children?select=id,name,size,createdDateTime,lastModifiedDateTime,@content.downloadUrl&top=500&orderby=lastModifiedDateTime%20desc&access_token=" + token
             })
-            .done(function(data, status, xhr) {
+            .done(function (data, status, xhr) {
                 if (data["@odata.nextLink"]) {
                     animation.warn(log.ARCHIVE_TOO_MANY);
                 }
@@ -6908,10 +6910,10 @@ archive.init = function(selector) {
                 $("#search-new, #search-result").fadeOut();
                 archive.load();
             })
-            .fail(function(xhr, status, error) {
+            .fail(function (xhr, status, error) {
                 animation.error(log.FILES_NOT_FOUND, error, -1);
             })
-            .always(function() {
+            .always(function () {
                 $(selector).removeClass("spinr");
             });
     });
@@ -6920,7 +6922,7 @@ archive.init = function(selector) {
 /**
  * Reloads the content view of the journal.
  */
-archive.load = function() {
+archive.load = function () {
     // Hide anyway
     $("#search-result").hide();
     // Also hide the detail view
@@ -6937,7 +6939,7 @@ archive.load = function() {
     archive.dataLoaded = true;
 };
 
-archive.list = function() {
+archive.list = function () {
     ////console.log("Called archive.list(" +  + ")");
     var f = this,
         d = app.cList,
@@ -6947,12 +6949,12 @@ archive.list = function() {
         d.html("<ul></ul><div class=\"loadmore\"></div>");
         this.contents = d.children("ul");
         this.loadmore = d.children("div.loadmore");
-        this.loadmore.on("click", function() {
+        this.loadmore.on("click", function () {
             f.load();
         });
         this.load();
         // Scroll to load more
-        d.off("scroll").on("scroll", function() {
+        d.off("scroll").on("scroll", function () {
             if ($(this).scrollTop() > (f.contents.height() - d.height())) {
                 if ($(".loadmore").length !== 0) {
                     f.load();
@@ -6966,7 +6968,7 @@ archive.list.prototype = {
      * Load one qualified entry of the contents from the data until the
      * scrollbar appears
      */
-    load: function() {
+    load: function () {
         ////console.log("Call archive.list.load(" + filter + ")");
         var contents = archive.data,
             currentLoaded = archive.lastLoaded;
@@ -7009,7 +7011,7 @@ archive.list.prototype = {
      * @param {boolean} timeOnly - If only returns the time
      * @returns {string} Converted time
      */
-    date: function(time) {
+    date: function (time) {
         if (typeof time !== "number") {
             return "";
         }
@@ -7073,10 +7075,10 @@ archive.list.prototype = {
      * Converts the content to html and append to the list of contents
      * @param {Object} data - The data to be appended
      */
-    html: function(data) { // [d]
+    html: function (data) { // [d]
         var item = $(archive.itemView(data));
         // The event when clicking the list
-        item.find(" > a").on("click", function(j) {
+        item.find(" > a").on("click", function (j) {
             j.preventDefault();
             // Hide restore icon
             animation.hideHiddenIcons();
@@ -7094,7 +7096,7 @@ archive.list.prototype = {
                 archive.view = new archive.detail();
             }
             return false;
-        }).on("contextmenu", function() {
+        }).on("contextmenu", function () {
             // Right click to select the archive list
             $(this).toggleClass("change");
             // Return false to disable other functionalities
@@ -7105,7 +7107,7 @@ archive.list.prototype = {
     }
 };
 
-archive.detail = function() {
+archive.detail = function () {
     var dataClip = archive.data[archive.currentDisplayed];
     if (!dataClip.processed) {
         animation.log(log.CONTENTS_DOWNLOAD_START, 1);
@@ -7115,7 +7117,7 @@ archive.detail = function() {
         $.ajax({
             type: "GET",
             url: dataClip["url"]
-        }).done(function(data, status, xhr) {
+        }).done(function (data, status, xhr) {
             animation.log(log.CONTENTS_DOWNLOAD_END, -1);
             // Stop telling the user it is loading
             $("#list").removeClass("loading");
@@ -7134,13 +7136,13 @@ archive.detail = function() {
             app.app.addClass("detail-view");
             $("#detail").fadeIn(500);
             // Back button
-            $(".btn-back", app.cDetail).on("click", function() {
+            $(".btn-back", app.cDetail).on("click", function () {
                 t.hideDetail();
             });
             // Show restore button
             $("#archive-restore").removeClass("hidden");
             return dataClip;
-        }).fail(function(xhr, status, error) {
+        }).fail(function (xhr, status, error) {
             animation.error(log.CONTENTS_DOWNLOAD_TEXT_FAIL, error, -1);
             // Hide this detail
             t.hideDetail();
@@ -7157,7 +7159,7 @@ archive.detail = function() {
             }
             $("#detail").fadeIn(500);
             // Back button
-            $(".btn-back", app.cDetail).on("click", function() {
+            $(".btn-back", app.cDetail).on("click", function () {
                 this.hideDetail();
             });
             return dataClip;
@@ -7168,7 +7170,7 @@ archive.detail = function() {
 };
 archive.detail.prototype = {
     // Processes all the spacial characters to html-style characters
-    htmlSpacialChars: function(rawText) {
+    htmlSpacialChars: function (rawText) {
         return rawText.replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
@@ -7176,7 +7178,7 @@ archive.detail.prototype = {
             .replace(/"/g, "&quot;");
     },
     /* Hide the detail-view */
-    hideDetail: function() {
+    hideDetail: function () {
         // !!!!!HIDE THE CONTENT LISTS!!!!
         app.cDetail.css("display", "none").empty();
         app.cList.css("display", "inline-block");
@@ -7190,7 +7192,7 @@ archive.detail.prototype = {
  * Restores this archive
  * This fcuntion will contact OneDrive server
  */
-archive.restore = function() {
+archive.restore = function () {
     if (archive.currentDisplayed < 0) {
         // Invalid call: no item selected
         animation.error(log.ARCHIVE_NO_SELECTED);
@@ -7204,9 +7206,9 @@ archive.restore = function() {
 /**
  * Applies the changes on removal and protection
  */
-archive.apply = function() {
-    archive.protect(function() {
-        archive.remove(function() {
+archive.apply = function () {
+    archive.protect(function () {
+        archive.remove(function () {
             archive.init();
         });
     });
@@ -7218,8 +7220,8 @@ archive.apply = function() {
  * @param {Function} callback - The callback function after the server finishes
  *     all the tasks
  */
-archive.protect = function(callback) {
-    getTokenCallback(function(token) {
+archive.protect = function (callback) {
+    getTokenCallback(function (token) {
         var list = {},
             processed = 0;
         for (var i = 0; i !== archive.data.length; ++i) {
@@ -7257,14 +7259,14 @@ archive.protect = function(callback) {
                         contentType: "application/json",
                         data: JSON.stringify(requestJson)
                     })
-                    .done(function(data) {
+                    .done(function (data) {
                         // Processed, remove it from the list
                         delete list[data["id"]];
                     })
-                    .fail(function(xhr, status, error) {
+                    .fail(function (xhr, status, error) {
                         list[data["id"]] = error;
                     })
-                    .always(function() {
+                    .always(function () {
                         if (++processed >= len) {
                             // Processed all
                             if (Object.keys(list).length !== 0) {
@@ -7292,8 +7294,8 @@ archive.protect = function(callback) {
  * @param {Function} callback - The callback function after the server finishes
  *     all the tasks
  */
-archive.remove = function(callback) {
-    getTokenCallback(function(token) {
+archive.remove = function (callback) {
+    getTokenCallback(function (token) {
         var total = 0,
             fail = 0,
             processed = 0;
@@ -7321,13 +7323,13 @@ archive.remove = function(callback) {
                             type: "DELETE",
                             url: "https://api.onedrive.com/v1.0/drive/items/" + archive.data[i]["id"] + "?access_token=" + token
                         })
-                        .done(function() {
+                        .done(function () {
                             // Do nothing now
                         })
-                        .fail(function() {
+                        .fail(function () {
                             ++fail;
                         })
-                        .always(function() {
+                        .always(function () {
                             if (++processed >= total) {
                                 // All the files are removed
                                 if (fail > 0) {
@@ -7351,9 +7353,9 @@ archive.remove = function(callback) {
  * given by the parameter
  * @param {String} type - The type to be marked
  */
-archive.toggle = function(type) {
+archive.toggle = function (type) {
     var changed = false;
-    $("#list .archive").each(function(index) {
+    $("#list .archive").each(function (index) {
         if ($(this).children("a").hasClass("change")) {
             changed = true;
             if ($(this).children("a").toggleClass(type).hasClass(type)) {
@@ -7372,14 +7374,14 @@ archive.toggle = function(type) {
 /**
  * Selects the archives since archive.currentDisplayed
  */
-archive.selectBelow = function() {
+archive.selectBelow = function () {
     var since = archive.currentDisplayed;
     if (since === -1) {
         // Select all
         animation.log(log.ARCHIVE_SELECT_ALL);
     }
     ++since;
-    $("#list .archive").each(function(index) {
+    $("#list .archive").each(function (index) {
         if (index >= since) {
             $(this).children("a").addClass("change");
         }
@@ -7389,8 +7391,8 @@ archive.selectBelow = function() {
 /**
  * Reverses selection of all archive lists
  */
-archive.reverse = function() {
-    $("#list .archive").each(function() {
+archive.reverse = function () {
+    $("#list .archive").each(function () {
         $(this).children("a").toggleClass("change");
     });
 }
@@ -7398,14 +7400,14 @@ archive.reverse = function() {
 /**
  * Clears the selection of all archive lists and removes all their changes
  */
-archive.clear = function() {
-    $("#list .archive").each(function() {
+archive.clear = function () {
+    $("#list .archive").each(function () {
         $(this).children("a").removeAttr("class");
     });
 }
 
 
-archive.quit = function() {
+archive.quit = function () {
     if (archive.isDisplayed) {
         archive.isDisplayed = false;
         $("#list").empty();
@@ -7465,7 +7467,7 @@ network.timeOut = 15000;
  * Initializes the network bar and show it
  * @param {number} breakpoint - The number of breakpoints
  */
-network.init = function(breakpoint) {
+network.init = function (breakpoint) {
     // Remove all the network activity bar
     $("#network-bar").remove();
     $(".header")
@@ -7480,7 +7482,7 @@ network.init = function(breakpoint) {
     // Increment by a little automatically
     clearInterval(network.interval);
     var toDestroy = false;
-    network.interval = setInterval(function() {
+    network.interval = setInterval(function () {
         // Test if the network bar needs destroyed
         if (toDestroy) {
             network.destroy();
@@ -7504,7 +7506,7 @@ network.init = function(breakpoint) {
  * @param {number} percent - The percent of the network bar. A number between 0
  *     and 1
  */
-network.setPercent = function(percent) {
+network.setPercent = function (percent) {
     network.percent = percent;
 }
 
@@ -7513,7 +7515,7 @@ network.setPercent = function(percent) {
  * @param {string} status - The status string to be shown on the bar
  * @returns {}
  */
-network.setStatus = function(status) {
+network.setStatus = function (status) {
 
 }
 
@@ -7521,7 +7523,7 @@ network.setStatus = function(status) {
  * Pushes network bar to the next breakpoint
  * @returns {}
  */
-network.next = function() {
+network.next = function () {
     network.setPercent(++network.current / (network.breakpoint + 1));
 }
 
@@ -7529,7 +7531,7 @@ network.next = function() {
  * Destroies the network bar and hide it. This function will set the percent to
  * 1 then hide it
  */
-network.destroy = function() {
+network.destroy = function () {
     if (network.percent < 1) {
         // Set to a larger value to make the slide bar go faster
         network.percent = 2;
@@ -7611,17 +7613,27 @@ function getBulbUrlHeader() {
  * @param {String} url - The direct url of the file. Default is from
  *     core/data.js
  * @param {Boolean} textOnly - whether to download text file or not
+ * @param {Function} callbackOnSuccess - the function to be called if downloading is a success
  */
-function downloadFile(url, textOnly) {
+function downloadFile(url, textOnly, callbackOnSuccess) {
     animation.log(log.CONTENTS_DOWNLOAD_START, 1);
     ////console.log("Start downloadFile()");
     // Change loading icons and disable click
-    getTokenCallback(function(token) {
+
+    // Justify the callback function
+    if (typeof callbackOnSuccess != "function") {
+        // Create an empty function
+        callbackOnSuccess = function () {
+        };
+    }
+
+    getTokenCallback(function (token) {
         if (network.yearFolders.indexOf(app.year) === -1) {
             // Create a folder instead of searching for it
-            createFolders(function() {
+            createFolders(function () {
                 // Simply refresh the list-view
                 app.refresh();
+                callbackOnSuccess();
             }, 3);
         } else {
             $("#download")
@@ -7636,7 +7648,7 @@ function downloadFile(url, textOnly) {
                     type: "GET",
                     url: url
                 })
-                .done(function(data, status, xhr) {
+                .done(function (data, status, xhr) {
                     window.app.dataLoaded[app.year] = false;
                     app.addLoadDataWithFilter("", xhr.responseText);
                     ////console.log("downloadFile()\tFinish core data");
@@ -7662,7 +7674,7 @@ function downloadFile(url, textOnly) {
                                 type: "GET",
                                 url: getResourceUrlHeader() + ":?select=folder&access_token=" + token
                             })
-                            .done(function(data, status, xhr) {
+                            .done(function (data, status, xhr) {
                                 // Get the data number
                                 journal.archive.media = data["folder"]["childCount"];
                                 app.refresh();
@@ -7671,14 +7683,16 @@ function downloadFile(url, textOnly) {
                                 network.init(journal.archive.media);
                                 downloadMedia();
                             })
-                            .fail(function(xhr, status, error) {
+                            .fail(function (xhr, status, error) {
                                 animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL,
                                     error,
                                     -1);
                             });
                     }
+
+                    callbackOnSuccess();
                 })
-                .fail(function(xhr, status, error) {
+                .fail(function (xhr, status, error) {
                     // Change loading icons and re-enable click
                     $("#download").html("&#xf0ed").removeClass("spin").attr({
                         onclick: "downloadFile()",
@@ -7701,7 +7715,7 @@ function downloadFile(url, textOnly) {
                     app.year = parseInt($("#year").html());
                     ////alert("Cannot download the file. Do you enable CORS?");
                 })
-                .always(function() {
+                .always(function () {
                     animation.log(log.CONTENTS_DOWNLOAD_END, -1);
                     ////console.log("downloadFile()\tFinish downloading");
                 });
@@ -7728,7 +7742,7 @@ function downloadMedia(url) {
             type: "GET",
             url: url
         })
-        .done(function(data, status, xhr) {
+        .done(function (data, status, xhr) {
             if (data["@odata.nextLink"]) {
                 // More contents available!
                 var nextUrl = data["@odata.nextLink"];
@@ -7769,7 +7783,7 @@ function downloadMedia(url) {
             }
             ////console.log("downloadFile()\tFinish media data");
         })
-        .fail(function() {
+        .fail(function () {
             network.destroy();
         });
 }
@@ -7780,7 +7794,7 @@ function downloadMedia(url) {
  * @param {Object} - The list of years to backup
  */
 function backupAll(years) {
-    getTokenCallback(function(token) {
+    getTokenCallback(function (token) {
         animation.log(log.CONTENTS_BACKUP_START);
         years = years || app.years;
         network.init(years.length - 1);
@@ -7814,11 +7828,11 @@ function backupAll(years) {
                 })
                 ////////////////////////////// ADD PROGRESS BAR SOMEWHERE
                 // BETWEEN !!!!!!!!  //////////////
-                .done(function() {
+                .done(function () {
                     ////console.log("uploadFile():\t Done backup");
                     animation.debug(log.CONTENTS_UPLOAD_BACKUP);
                 })
-                .fail(function(xhr, status, error) {
+                .fail(function (xhr, status, error) {
                     // Bad request means the file to be moved is not found
                     if (error !== "Bad Request") {
                         animation.error(log.CONTENTS_UPLOAD_BACKUP_FAIL,
@@ -7828,7 +7842,7 @@ function backupAll(years) {
                     }
                     ////alert("Cannot backup the file");
                 })
-                .always(function(xhr, status, error) {
+                .always(function (xhr, status, error) {
                     network.next();
                     ////console.log("uploadFile()\tFinish uploading");
                 });
@@ -7853,12 +7867,12 @@ function uploadFile(dataYear, callbackOnSuccess) {
         .removeAttr("onclick")
         .removeAttr("href");
 
-    getTokenCallback(function(token) {
+    getTokenCallback(function (token) {
         /**
          * The function to be called to upload the file. This function assumes
          * that the folder has already been prepared
          */
-        var upload = function() {
+        var upload = function () {
             // Get the version
             var tmp = app.version[dataYear] || "";
             // Clean the unnecessary data
@@ -7870,7 +7884,7 @@ function uploadFile(dataYear, callbackOnSuccess) {
                     contentType: "text/plain",
                     data: tmp
                 })
-                .done(function() {
+                .done(function () {
                     ////console.log("uploadFile():\t Done!");
                     // Now the data is up-to-date
                     app.yearChange[app.year] = false;
@@ -7887,11 +7901,11 @@ function uploadFile(dataYear, callbackOnSuccess) {
                         edit.saveDataCache();
                     }
                 })
-                .fail(function(xhr2, status2, error2) {
+                .fail(function (xhr2, status2, error2) {
                     animation.error(log.CONTENTS_UPLOAD_FAIL, error2, -1);
                     ////alert("Cannot upload files");
                 })
-                .always(function() {
+                .always(function () {
                     network.next();
                     // Change loading icons and re-enable click
                     $("#upload")
@@ -7962,7 +7976,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
         url: url + term,
         dataType: "jsonp",
         // Work with the response
-        success: function(response) {
+        success: function (response) {
             var result = response.results[0];
             if (result == undefined) {
                 // Not found
@@ -7991,7 +8005,7 @@ function getCoverPhoto(selectorHeader, term, more, type) {
  *     creating
  */
 function createDateFolder(dateStr, callback) {
-    getTokenCallback(function(token) {
+    getTokenCallback(function (token) {
         var requestJson = {
             name: dateStr,
             folder: {}
@@ -8003,19 +8017,19 @@ function createDateFolder(dateStr, callback) {
                 data: JSON.stringify(requestJson),
                 statusCode: {
                     // Conflict, considered this folder is created successfully
-                    409: function() {
+                    409: function () {
                         edit.isFolder = true;
                         edit.folderDate = dateStr;
                     }
                 }
             })
-            .done(function() {
+            .done(function () {
                 // Successfully created this directory
                 edit.isFolder = true;
                 edit.folderDate = dateStr;
                 animation.debug(log.FOLDER_CREATED);
             })
-            .always(function() {
+            .always(function () {
                 // Always try to run the callback function
                 callback(dateStr);
             });
@@ -8032,7 +8046,7 @@ function createDateFolder(dateStr, callback) {
  *     bar
  */
 function createFolders(callback, breakpoints) {
-    getTokenCallback(function(token) {
+    getTokenCallback(function (token) {
         var created = 0,
             abort = false,
             urls = ["https://api.onedrive.com/v1.0/drive/root:/Apps/Journal/core:/",
@@ -8051,7 +8065,7 @@ function createFolders(callback, breakpoints) {
                     contentType: "application/json",
                     data: JSON.stringify(requestJson)
                 })
-                .done(function() {
+                .done(function () {
                     network.next();
                     if (++created === urls.length) {
                         // All have been created
@@ -8060,7 +8074,7 @@ function createFolders(callback, breakpoints) {
                         callback(token);
                     }
                 })
-                .fail(function(xhr) {
+                .fail(function (xhr) {
                     if (xhr.status == 409) {
                         // Conflict, considered this folder is created
                         // successfully
@@ -8093,19 +8107,19 @@ function createFolders(callback, breakpoints) {
  * @param always {function} - the callback function that is always called
  */
 function removeFileById(id, done, fail, always) {
-    getTokenCallback(function(token) {
+    getTokenCallback(function (token) {
         $.ajax({
             type: "DELETE",
             url: "https://api.onedrive.com/v1.0/drive/items/" + id + "?access_token=" + token
-        }).done(function() {
+        }).done(function () {
             if (typeof done === "function") {
                 done();
             }
-        }).fail(function() {
+        }).fail(function () {
             if (typeof  fail === "function") {
                 fail();
             }
-        }).always(function() {
+        }).always(function () {
             if (typeof always === "function") {
                 always();
             }
@@ -8145,7 +8159,7 @@ function removeFileById(id, done, fail, always) {
  * Created by Anoxic on 061616.
  */
 
-window.bulb = function() {
+window.bulb = function () {
     "use strict";
     /**
      * These are the data to be processed
@@ -8234,14 +8248,14 @@ window.bulb = function() {
      * @param {string} timestamp The timestamp
      */
     function _fetchBulbContent(timestamp) {
-        getTokenCallback(function(token) {
+        getTokenCallback(function (token) {
             var id = bulb.getID(timestamp);
             var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "/content?access_token=" + token;
 
             $.ajax({
                 type: "GET",
                 url: url
-            }).done(function(data, status, xhr) {
+            }).done(function (data, status, xhr) {
                 // Get the content of bulb
                 var content = xhr.responseText;
                 // Remove illegal characters
@@ -8254,7 +8268,7 @@ window.bulb = function() {
                 bulb.mergeIntoArchive(timestamp);
 
                 animation.log(++_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalBulbs);
-            }).always(function() {
+            }).always(function () {
                 // Decrement the total bulbs to be processed
                 bulb.decrementTotalBulbs();
                 if (_totalBulbs <= 0) {
@@ -8276,74 +8290,77 @@ window.bulb = function() {
          * Start fetching the bulb data from the server.
          * The first function to call to get started
          */
-        initFetchData: function(url) {
+        initFetchData: function (url) {
             if (bulb.isProcessing) {
                 animation.error(log.BULB_STILL_BUSY);
                 return;
             }
 
-            animation.log(log.BULB_FETCH_START);
+            // Download the latest data first
+            downloadFile(undefined, undefined, function () {
+                animation.log(log.BULB_FETCH_START);
 
-            bulb.isProcessing = true;
+                bulb.isProcessing = true;
 
-            if (url == undefined) {
-                // Initial call
-                var token = getTokenFromCookie();
-                url = getBulbUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
+                if (url == undefined) {
+                    // Initial call
+                    var token = getTokenFromCookie();
+                    url = getBulbUrlHeader() + ":/children?select=id,name,size,@content.downloadUrl&top=500&access_token=" + token;
 
-                bulb.totalBulbs = 0;
-            }
+                    bulb.totalBulbs = 0;
+                }
 
-            $.ajax({
-                    type: "GET",
-                    url: url
-                })
-                .done(function(data) {
-                    // Test if there is more bulbs available
-                    //if (data["@odata.nextLink"] && false) { // never go into
-                    // the loop (intended) // More bulbs available! var nextUrl
-                    // = data["@odata.nextLink"];  var groups =
-                    // nextUrl.split("&"); // Manually ask server return
-                    // downloadUrl for (var i = 0; i !== groups.length; ++i) {
-                    // if (groups[i].startsWith("$select")) { groups[i] =
-                    // "$select=id,name,size,@content.downloadUrl"; break; } }
-                    // nextUrl = groups.join("&");
-                    // bulb.initFetchData(nextUrl); }
+                $.ajax({
+                        type: "GET",
+                        url: url
+                    })
+                    .done(function (data) {
+                        // Test if there is more bulbs available
+                        //if (data["@odata.nextLink"] && false) { // never go into
+                        // the loop (intended) // More bulbs available! var nextUrl
+                        // = data["@odata.nextLink"];  var groups =
+                        // nextUrl.split("&"); // Manually ask server return
+                        // downloadUrl for (var i = 0; i !== groups.length; ++i) {
+                        // if (groups[i].startsWith("$select")) { groups[i] =
+                        // "$select=id,name,size,@content.downloadUrl"; break; } }
+                        // nextUrl = groups.join("&");
+                        // bulb.initFetchData(nextUrl); }
 
-                    // Add these bulbs to the queue to process them
-                    var itemList = data["value"];
-                    bulb.clearData();
-                    bulb.setTotalBulbs(itemList.length);
+                        // Add these bulbs to the queue to process them
+                        var itemList = data["value"];
+                        bulb.clearData();
+                        bulb.setTotalBulbs(itemList.length);
 
-                    if (itemList.length === 0) {
-                        // Empty bulb list
-                        animation.log(log.BULB_NO_CONTENT_AVAILABLE);
-                        bulb.isProcessing = false;
-                        return;
-                    }
+                        if (itemList.length === 0) {
+                            // Empty bulb list
+                            animation.log(log.BULB_NO_CONTENT_AVAILABLE);
+                            bulb.isProcessing = false;
+                            return;
+                        }
 
-                    animation.log(log.BULB_FETCH_CONTENT_START);
+                        animation.log(log.BULB_FETCH_CONTENT_START);
 
-                    for (var key = 0, len = itemList.length;
-                         key != len;
-                         ++key) {
-                        var dataElement = {
-                            id: itemList[key]["id"],
-                            url: itemList[key]["@content.downloadUrl"],
-                        };
-                        var filename = itemList[key]["name"];
-                        var timestamp = bulb.getTimeFromEpoch(filename);
+                        for (var key = 0, len = itemList.length;
+                             key != len;
+                             ++key) {
+                            var dataElement = {
+                                id: itemList[key]["id"],
+                                url: itemList[key]["@content.downloadUrl"],
+                            };
+                            var filename = itemList[key]["name"];
+                            var timestamp = bulb.getTimeFromEpoch(filename);
 
-                        bulb.setData(timestamp, dataElement);
+                            bulb.setData(timestamp, dataElement);
 
-                        _fetchBulbContent(timestamp);
-                    }
-                }).fail(function() {
-                bulb.isProcessing = false;
+                            _fetchBulbContent(timestamp);
+                        }
+                    }).fail(function () {
+                    bulb.isProcessing = false;
+                });
             });
         },
 
-        setdata: function(timestamp, data) {
+        setdata: function (timestamp, data) {
             _data[timestamp] = data;
         },
 
@@ -8353,7 +8370,7 @@ window.bulb = function() {
          * filename (in the format of mmddyy_hhmmss)
          * @param {string} myStr - The filename of bulb
          */
-        getTimeFromEpoch: function(myStr) {
+        getTimeFromEpoch: function (myStr) {
             var month = parseInt(myStr.substr(0, 2));
             var day = parseInt(myStr.substr(2, 2));
             var year = 2000 + parseInt(myStr.substr(4, 2));
@@ -8370,7 +8387,7 @@ window.bulb = function() {
          * data, given the timestamp to index `_data`
          * @param {number} timestamp - The timestamp of the data
          */
-        extractRawContent: function(timestamp) {
+        extractRawContent: function (timestamp) {
             // Website
             _extractWebsiteFromContent(timestamp);
 
@@ -8382,7 +8399,7 @@ window.bulb = function() {
          * Merges the bulb indexed by the timestamp into the local archive
          * @param timestamp - the timestamp of the bulb to be merged
          */
-        mergeIntoArchive: function(timestamp) {
+        mergeIntoArchive: function (timestamp) {
             // Test if this timestamp has already been merged into the archive
             if (app.isBulbExist(timestamp)) {
                 // Add it to the removal list
@@ -8394,36 +8411,36 @@ window.bulb = function() {
             }
         },
 
-        setIsMerged: function(timestamp) {
+        setIsMerged: function (timestamp) {
             _data[timestamp]["isMerged"] = true;
         },
 
-        setTotalBulbs: function(num) {
+        setTotalBulbs: function (num) {
             _totalBulbs = num;
             _totalAvailableBulbs = num;
         },
 
-        decrementTotalBulbs: function() {
+        decrementTotalBulbs: function () {
             --_totalBulbs;
         },
 
-        getTotalBulbs: function() {
+        getTotalBulbs: function () {
             return _totalBulbs;
         },
 
-        getTotalAvailableBulbs: function() {
+        getTotalAvailableBulbs: function () {
             return _totalAvailableBulbs;
         },
 
-        getMergedBulbCounter: function() {
+        getMergedBulbCounter: function () {
             return _mergedBulbCounter;
         },
 
-        setData: function(timestamp, data) {
+        setData: function (timestamp, data) {
             _data[timestamp] = data;
         },
 
-        clearData: function() {
+        clearData: function () {
             _data = {};
         },
 
@@ -8431,13 +8448,13 @@ window.bulb = function() {
          * Call the server to remove merged and uploaded bulbs
          * @require called after all the bulbs are downloaded
          */
-        removeUploadedBulbs: function() {
+        removeUploadedBulbs: function () {
             for (var key in _data) {
                 if (_data.hasOwnProperty(key)) {
                     if (_data[key]["isMerged"]) {
                         // It's merged, try to remove it
                         var id = _data[key]["id"];
-                        removeFileById(id, undefined, undefined, function() {
+                        removeFileById(id, undefined, undefined, function () {
                             if (--_mergedBulbCounter === 0) {
                                 // All the merged bulbs have been removed (or
                                 // at least attempts were made to)
@@ -8451,15 +8468,15 @@ window.bulb = function() {
             }
         },
 
-        getBulbData: function() {
+        getBulbData: function () {
             return _data;
         },
 
-        getID: function(timestamp) {
+        getID: function (timestamp) {
             return _data[timestamp]["id"];
         },
 
-        setRawContent: function(timestamp, contentRaw) {
+        setRawContent: function (timestamp, contentRaw) {
             _data[timestamp]["contentRaw"] = contentRaw;
         }
     }
@@ -8527,7 +8544,7 @@ stats.isGraphDisplayed = false;
 /**
  * Initializes the stats panel
  */
-stats.init = function() {
+stats.init = function () {
     /* Iterator */
     var i;
     // Initialize variables
@@ -8557,7 +8574,7 @@ stats.init = function() {
     $("#stats-query").fadeIn();
     // Empty this input box
     $("#stats-query").val("");
-    $("#stats-query").unbind("keyup").bind("keyup", "return", function() {
+    $("#stats-query").unbind("keyup").bind("keyup", "return", function () {
         var newEntry = $(this).val();
         newEntry = stats.simplifyEntry(newEntry);
         if (newEntry.length === 0) {
@@ -8583,8 +8600,8 @@ stats.init = function() {
     stats.initTable();
     animation.showMenuOnly("stats");
     // Bind click to select for `.checkbox`
-    $("#stats-options li.checkbox").each(function() {
-        $(this).click(function() {
+    $("#stats-options li.checkbox").each(function () {
+        $(this).click(function () {
             $(this).toggleClass("checked");
             var name = $(this).attr("encode");
             stats.options[name] = !stats.options[name];
@@ -8592,7 +8609,7 @@ stats.init = function() {
     });
     // Hover to highlight the same column and row
     $("#stats-table")
-        .delegate("td", "mouseover mouseleave contextmenu", function(e) {
+        .delegate("td", "mouseover mouseleave contextmenu", function (e) {
             if (e.type === "mouseover") {
                 $(this).parent().addClass("hover");
                 $("tr td:nth-child(" + ($(this).index() + 1) + ")")
@@ -8608,7 +8625,7 @@ stats.init = function() {
                         .children("td")
                         .children("input")
                         .val();
-                $(this).parent().slideUp(200, function() {
+                $(this).parent().slideUp(200, function () {
                     $(this).remove();
                 });
                 delete stats.entries[key];
@@ -8616,7 +8633,7 @@ stats.init = function() {
             }
         })
         // Click or leave to edit the input menu
-        .delegate("input", "focusin focusout keyup", function(e) {
+        .delegate("input", "focusin focusout keyup", function (e) {
             if (e.type === "focusin") {
                 // Record the old value
                 stats.oldValue = $(this).val();
@@ -8663,15 +8680,15 @@ stats.init = function() {
             }
         })
         // Click to sort
-        .delegate("th", "click", function() {
+        .delegate("th", "click", function () {
             if ($("tbody tr").length !== 0) {
                 var desc = $(this).hasClass("desc"),
                     index = $(this).index(),
                     map = [];
                 // Extract the data
-                $("tbody tr").each(function() {
+                $("tbody tr").each(function () {
                     var key, value;
-                    $(this).children("td").each(function(n) {
+                    $(this).children("td").each(function (n) {
                         if (n === 0) {
                             // Get the index
                             key = $(this).children("input").val();
@@ -8697,12 +8714,12 @@ stats.init = function() {
                     $("th").eq(index).addClass("desc");
                     if (index === 0) {
                         // Sort the string
-                        map.sort(function(a, b) {
+                        map.sort(function (a, b) {
                             return b["value"].localeCompare(a["value"]);
                         });
                     } else {
                         // Sort the value
-                        map.sort(function(a, b) {
+                        map.sort(function (a, b) {
                             return b["value"] - a["value"];
                         });
                     }
@@ -8710,12 +8727,12 @@ stats.init = function() {
                     $("th").eq(index).addClass("asce");
                     if (index === 0) {
                         // Sort the string
-                        map.sort(function(a, b) {
+                        map.sort(function (a, b) {
                             return a["value"].localeCompare(b["value"]);
                         });
                     } else {
                         // Sort the value
-                        map.sort(function(a, b) {
+                        map.sort(function (a, b) {
                             return a["value"] - b["value"];
                         })
                     }
@@ -8726,7 +8743,7 @@ stats.init = function() {
                 }
             }
         });
-    $("#contents").fadeOut(400, function() {
+    $("#contents").fadeOut(400, function () {
         // Total count for everything
         $("#search-result").addClass("stats");
         $(".response").addClass("stats");
@@ -8737,7 +8754,7 @@ stats.init = function() {
 /**
  * Initializes or resets the table for display
  */
-stats.initTable = function() {
+stats.initTable = function () {
     stats.oldValue = "";
     stats.removeAll();
     // The first line
@@ -8753,13 +8770,13 @@ stats.initTable = function() {
 /**
  * Quits the stats panel
  */
-stats.quit = function() {
+stats.quit = function () {
     stats.removeAll();
     // Animation to recover what it was
     $("#query").fadeIn();
     $("#stats-query").fadeOut().unbind("keyup");
     // Unbind click to toggle checkbox
-    $("#stats-options li.checkbox").each(function() {
+    $("#stats-options li.checkbox").each(function () {
         $(this).unbind("click");
     });
     $(".stats").removeClass("stats");
@@ -8769,7 +8786,7 @@ stats.quit = function() {
         .undelegate("input", "focusin focusout keyup")
         .delegate("th", "contextmenu");
     // Unbind enter to search for #stats-query
-    $("#stats-pane").fadeOut(400, function() {
+    $("#stats-pane").fadeOut(400, function () {
         $("#contents").fadeIn();
         animation.showMenuOnly();
         app.refresh();
@@ -8783,7 +8800,7 @@ stats.quit = function() {
  * @param {number} overwriteNum (Optional) - The index of the table row to be
  *     overwriten, started with 1
  */
-stats.addEntry = function(entry, overwriteNum) {
+stats.addEntry = function (entry, overwriteNum) {
     /* Iterator */
     var i;
     // Empty or create it anyway
@@ -8830,7 +8847,7 @@ stats.addEntry = function(entry, overwriteNum) {
  * @param {string} str - The entry to be processed
  * @returns {string} - The simplified entry
  */
-stats.simplifyEntry = function(str) {
+stats.simplifyEntry = function (str) {
     var group = str.split("|"),
         ret = [];
     for (var i = 0; i !== group.length; ++i) {
@@ -8843,7 +8860,7 @@ stats.simplifyEntry = function(str) {
 /**
  * Gets the summary for this year and update necessary DOM's
  */
-stats.getYearSum = function() {
+stats.getYearSum = function () {
     var totalChar = 0,
         totalLine = 0,
         totalTime = 0,
@@ -8891,7 +8908,7 @@ stats.getYearSum = function() {
  * @returns {object} - A list of 12 elements, refer to 12 months, each of which
  *     has at most 31 elements refer to each day in the month
  */
-stats.getResult = function(entry) {
+stats.getResult = function (entry) {
     var keywords = entry.split("|"),
         result;
     if (stats.isLeapYear) {
@@ -8942,7 +8959,7 @@ stats.getResult = function(entry) {
  * @param {number} time - The time to get the result
  * @returns {number} - How many days has passed
  */
-stats.getDayNumber = function(time) {
+stats.getDayNumber = function (time) {
     var date = new Date(time),
         firstDay = new Date(app.year, 0, 1);
     return Math.floor((new Date(date) - firstDay) / 86400000);
@@ -8952,7 +8969,7 @@ stats.getDayNumber = function(time) {
  * @param {number} createdTime - The started time of seconds since epoch
  * @returns {boolean} - Whether created time is in the range
  */
-stats.isInTimeRange = function(createdTime) {
+stats.isInTimeRange = function (createdTime) {
     var day = stats.getDayNumber(createdTime);
     return day >= stats.options.startDay && day <= stats.options.endDay;
 }
@@ -8960,7 +8977,7 @@ stats.isInTimeRange = function(createdTime) {
 /**
  * Removes all the entries on the chart to reset the chart
  */
-stats.removeAll = function() {
+stats.removeAll = function () {
     $("#stats-table").html("").fadeIn().css("display", "inline-table");
     stats.entries = {};
     stats.hideGraph();
@@ -8971,7 +8988,7 @@ stats.removeAll = function() {
  * Todo add a parameter to determine whether to display as each day or each
  * month
  */
-stats.toggleGraph = function() {
+stats.toggleGraph = function () {
     if (!stats.isGraphDisplayed) {
         stats.showGraph();
     } else {
@@ -8982,7 +8999,7 @@ stats.toggleGraph = function() {
  * Shows the analysis graph
  * @param {boolean} viewAsMonth - Whether to view the chart as month
  */
-stats.showGraph = function(viewAsMonth) {
+stats.showGraph = function (viewAsMonth) {
     /* Iterator */
     var i, j;
     stats.isGraphDisplayed = true;
@@ -8993,9 +9010,9 @@ stats.showGraph = function(viewAsMonth) {
     if (viewAsMonth) {
         days = app.monthArray;
         // Extract the data from the html content
-        $("#stats-table tbody tr").each(function() {
+        $("#stats-table tbody tr").each(function () {
             var monthData = [];
-            $(this).children("td").each(function(n) {
+            $(this).children("td").each(function (n) {
                 if (n === 0) {
                     // The first element, get the input value
                     name = $(this).children("input").val();
@@ -9092,9 +9109,9 @@ stats.showGraph = function(viewAsMonth) {
 /**
  * Hides the analysis graph
  */
-stats.hideGraph = function() {
+stats.hideGraph = function () {
     stats.isGraphDisplayed = false;
-    $("#graph").fadeOut(function() {
+    $("#graph").fadeOut(function () {
         $(this).html("");
     });
     $("#action-stats .hidden-icon").addClass("hidden");
@@ -9103,7 +9120,7 @@ stats.hideGraph = function() {
 /**
  * Toggles the year view between by day and by month (i.e. as the chart shows)
  */
-stats.toggleYearView = function() {
+stats.toggleYearView = function () {
     stats.hideGraph();
     stats.options.viewAsMonth = !stats.options.viewAsMonth;
     stats.showGraph(stats.options.viewAsMonth);

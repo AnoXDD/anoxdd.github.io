@@ -4,15 +4,15 @@
 <head>
     <meta charset="utf-8"/>
     <title>Anoxic's Journal Viewer</title>
-    <link rel="stylesheet" href="/static/css/journal.css" type="text/css"/>
-    <link rel="stylesheet" href="/static/css/jquery-ui.css"/>
-    <link rel="icon" href="/static/journal/favicon.ico"/>
+    <link rel="stylesheet" href="../static/css/journal.dev.css" type="text/css"/>
+    <link rel="stylesheet" href="../static/css/jquery-ui.css"/>
+    <link rel="icon" href="../static/journal/favicon.ico"/>
 </head>
 <body>
 <!-- Search bar -->
 <div class="header">
     <p id="sign-in-prompt">This is a website designed for keeping a journal, and
-        is strongly customized to satisify the author's own need. For more
+        is strongly customized to satisfy the author's own need. For more
         information, visit the <a target="_blank" href="http://anoxic.me">author's
             homepage</a> for (possibly) more details. </p>
     <div id="search-new">
@@ -21,7 +21,8 @@
         <input type="text" id="stats-query" class="search-text"
                autocomplete="off" onclick="this.select()"/>
     </div>
-    <div id="search-result">
+    <div id="search-result" style="">
+        <!--this item is currently hidden for debugging purpose-->
         <ul>
             <li class="search-data" id="total-entry">...</li>
             <li class="hidden search-data" id="total-image">...</li>
@@ -41,7 +42,6 @@
         <p id="token-expires-in"></p>
     </div>
 </div>
-<div class="response" id="errors"></div>
 <div class="response" id="feedback"></div>
 <div class="actions">
     <div id="action-media">
@@ -380,23 +380,23 @@
     </div>
 </div>
 <div id="version"></div>
-<script id="odauth" src="/static/js/journal/odauth.v2.js"
+<script id="odauth" src="../static/js/journal/odauth.v2.js"
         clientid="000000004C14D0D9"
         clientsecret="ywGrXJMufpTJxa5AsQCd3ovdMasZSnxf"
         scopes="wl.signin wl.offline_access onedrive.readwrite onedrive.appfolder"
         redirecturi="https://anoxdd.github.io/journal/callback.html"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYzTk0IOxZg2Od4kGjBPrqmk6UjdJx9OI&v=3.exp&libraries=places"></script>
-<script src="/static/js/lib/jquery.min.js"></script>
-<script src="/static/js/lib/modernizr.min.js"></script>
-<script src="/static/js/lib/jquery.grab.min.js"></script>
-<script src="/static/js/lib/jquery.mousewheel.min.js"></script>
-<script src="/static/js/lib/jquery.ui.min.js"></script>
-<script src="/static/js/lib/jquery.hotkeys.js"></script>
-<script src="/static/js/lib/underscore.min.js"></script>
-<script src="/static/js/lib/swipe.min.js"></script>
-<script src="/static/js/lib/highcharts.min.js"></script>
-<script src="/static/js/journal/app.js"></script>
-<script src="/static/js/journal/version.js"></script>
+<script src="../static/js/lib/jquery.min.js"></script>
+<script src="../static/js/lib/modernizr.min.js"></script>
+<script src="../static/js/lib/jquery.grab.min.js"></script>
+<script src="../static/js/lib/jquery.mousewheel.min.js"></script>
+<script src="../static/js/lib/jquery.ui.min.js"></script>
+<script src="../static/js/lib/jquery.hotkeys.js"></script>
+<script src="../static/js/lib/underscore.min.js"></script>
+<script src="../static/js/lib/swipe.min.js"></script>
+<script src="../static/js/lib/highcharts.min.js"></script>
+<script src="../static/js/journal/app.dev.js"></script>
+<script src="../static/js/journal/version.js"></script>
 <script type="text/x-template" id="list-view">
     <%
     if (isBulb) {

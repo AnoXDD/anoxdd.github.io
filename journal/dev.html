@@ -360,7 +360,7 @@
 <div id="video-fullscreen"></div>
 <!-- Main frame of the viewer -->
 <div id="app">
-    <div id="calendar"></div>
+    <div id="data-calendar"></div>
     <div id="contents">
         <div id="list"></div>
         <div id="detail"></div>
@@ -921,35 +921,35 @@
         </div>
     </div>
 </script>
-<script type="text/x-template" id="calendar-view">
-    <table class="calendar-table">
-        <% for (var i = 0; i !== 3; ++i) { %>
-        <tr class="calendar-table-row">
-            <%
-            for (var j = 0; j !== 4; ++j) {
-                var month = i * 4 + j;
-            %>
-                <td class="month-cell">
-                    <div class="month-title <%- 'month-' + month %>"><%= monthName[month] %></div>
-                    <table class="month-table">
-                        <% for (var k = 0; k != 6; ++k) { %>
-                        <tr class="month-week">
-                            <%
-                            for (var l = 0; l != 7; ++l) {
-                            var day = days[month][k * 7 + l];
-                            %>
-                            <td class="day <%- 'day-' + day %>">
-                                <% if (day) { print(day); } %>
-                            </td>
-                            <% } %>
-                        </tr>
-                        <% } %>
-                    </table>
-                </td>
-            <% } %>
-        </tr>
-        <% } %>
-    </table>
-</script>
+<!--<script type="text/x-template" id="calendar-view">-->
+    <!--<table class="calendar-table">-->
+        <!--<% for (var i = 0; i !== 3; ++i) { %>-->
+        <!--<tr class="calendar-table-row">-->
+            <!--<%-->
+            <!--for (var j = 0; j !== 4; ++j) {-->
+                <!--var month = i * 4 + j;-->
+            <!--%>-->
+                <!--<td class="month-cell">-->
+                    <!--<div class="month-title <%- 'month-' + month %>"><%= monthName[month] %></div>-->
+                    <!--<table class="month-table">-->
+                        <!--<% for (var k = 0; k != 6; ++k) { %>-->
+                        <!--<tr class="month-week">-->
+                            <!--<%-->
+                            <!--for (var l = 0; l != 7; ++l) {-->
+                            <!--var day = days[month][k * 7 + l];-->
+                            <!--%>-->
+                            <!--<td class="day <%- 'day-' + day %>">-->
+                                <!--<% if (day) { print(day); } %>-->
+                            <!--</td>-->
+                            <!--<% } %>-->
+                        <!--</tr>-->
+                        <!--<% } %>-->
+                    <!--</table>-->
+                <!--</td>-->
+            <!--<% } %>-->
+        <!--</tr>-->
+        <!--<% } %>-->
+    <!--</table>-->
+<!--</script>-->
 </body>
 </html>

@@ -9253,7 +9253,7 @@ window.calendar = function() {
             var view = $(calendar.viewTemplate(data));
 
             // Show the view
-            $("#calendar").html(view);
+            $("#data-calendar").html(view);
         },
 
         /**
@@ -9282,7 +9282,6 @@ window.calendar = function() {
                     bulbNumber = 0;
                     var newDay = new Date(time);
                     currentDaySeconds = new Date(app.year, newDay.getMonth(), newDay.getDate());
-                    // todo also count this day's data into it
                 }
 
                 // Count it!

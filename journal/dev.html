@@ -929,8 +929,8 @@
             for (var j = 0; j !== 4; ++j) {
                 var month = i * 4 + j;
             %>
-                <td class="month-cell">
-                    <div class="month-title <%- 'month-' + month %>"><%= monthName[month] %></div>
+                <td class="month-cell <%- 'month-' + month %>">
+                    <div class="month-title"><%= monthName[month] %></div>
                     <table class="month-table">
                         <% for (var k = 0; k != 6; ++k) { %>
                         <tr class="month-week">

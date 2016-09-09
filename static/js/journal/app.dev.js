@@ -9273,7 +9273,7 @@ window.calendar = function() {
 
                 // Test if the difference is more than 1 day
                 var time = content.time.start || content.time.created;
-                if (time - currentDaySeconds >= 86400000) {
+                if (time - currentDaySeconds >= 86400000 || time - currentDaySeconds < 0) {
                     // Render it on the previous day
                     _renderHtml(currentDaySeconds, hasArticle, bulbNumber);
 
@@ -9281,7 +9281,7 @@ window.calendar = function() {
                     hasArticle = false;
                     bulbNumber = 0;
                     var newDay = new Date(time);
-                    currentDaySeconds = new Date(app.year, newDay.getMonth(), newDay.getDate());
+                    currentDaySeconds = new Date(app.year, newDay.getMonth(), newDay.getDate()).getTime();
                 }
 
                 // Count it!

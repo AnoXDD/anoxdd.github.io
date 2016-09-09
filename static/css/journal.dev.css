@@ -234,7 +234,8 @@ body {
     text-align: center;
     top: -webkit-calc(50% - 30px);
     width: 38%;
-    z-index: 0; }
+    z-index: 0;
+    display: none; }
 
 #list {
   background-color: #F3F3F3;
@@ -1274,7 +1275,7 @@ body {
     position: absolute;
     text-align: center;
     text-overflow: ellipsis;
-    top: 45px;
+    top: -45px;
     transition: top .4s ease, left .4s ease, padding .4s ease, background .4s ease;
     width: 30%;
     z-index: 10; }
@@ -1400,8 +1401,7 @@ body {
   width: 99%;
   z-index: 100;
   overflow: inherit;
-  padding: 0;
-  position: absolute; }
+  padding: 0; }
   .response.stats {
     top: 6%; }
   .response p {
@@ -1418,7 +1418,7 @@ body {
     margin-left: 6%;
     overflow: hidden;
     text-overflow: ellipsis;
-    box-shadow: #757575 7px 7px 14px;
+    box-shadow: black 7px 7px 14px;
     z-index: 10;
     animation: fadein-feedback 10.5s ease; }
     .response p::after {
@@ -2480,5 +2480,85 @@ body.fullscreen .entry-data::before {
   display: none !important; }
 body.fullscreen #entry-time-wrap:not(:hover) {
   height: 31px; }
+
+#calendar {
+  background: #fafafa;
+  width: 100%;
+  height: 100%; }
+  #calendar .calendar-table {
+    width: 80%;
+    height: 100%;
+    min-width: 1000px;
+    max-width: 2000px;
+    margin: auto; }
+    #calendar .calendar-table .month-cell {
+      position: relative; }
+      #calendar .calendar-table .month-cell:hover .month-title {
+        height: 15%;
+        color: #e0e0e0;
+        font-size: 20px;
+        background: #424242;
+        border-radius: 3px;
+        box-shadow: black 4px 5px 10px;
+        z-index: 5; }
+    #calendar .calendar-table .calendar-table-row {
+      width: 25%;
+      position: relative; }
+      #calendar .calendar-table .calendar-table-row .month-title {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        height: 100%;
+        width: 100%;
+        background: #bdbdbd;
+        color: #eee;
+        font-size: 50px;
+        transition: .4s ease; }
+      #calendar .calendar-table .calendar-table-row .month-table {
+        margin-top: 15%;
+        margin-left: auto;
+        margin-right: auto; }
+        #calendar .calendar-table .calendar-table-row .month-table .day {
+          border-radius: 5px;
+          width: 30px;
+          height: 30px;
+          text-align: center;
+          transition: .3s ease;
+          background: #fafafa; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.article {
+            border: 1px black solid;
+            font-weight: bold; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-0 {
+            background: #eee; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-1 {
+            background: #e0e0e0; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-2 {
+            background: #bdbdbd; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-3 {
+            background: #9e9e9e; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-4 {
+            background: #757575;
+            color: #fafafa; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-5 {
+            background: #616161;
+            color: #fafafa; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-6 {
+            background: #424242;
+            color: #fafafa; }
+          #calendar .calendar-table .calendar-table-row .month-table .day.bulb-7 {
+            background: black;
+            color: #fafafa; }
+          #calendar .calendar-table .calendar-table-row .month-table .day:not(.day-0):hover {
+            background: #424242;
+            color: #fafafa;
+            box-shadow: #757575 2px 2px 3px; }
+          #calendar .calendar-table .calendar-table-row .month-table .day:first-child, #calendar .calendar-table .calendar-table-row .month-table .day:last-child {
+            color: #d32F2f; }
 
 /*# sourceMappingURL=journal.dev.css.map */

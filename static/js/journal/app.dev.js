@@ -9136,21 +9136,21 @@ window.calendar = function() {
     "use strict";
 
     /**
-     * The threshold of each bulb. The number before each class means the minimum number the bulb(s) have to be.
-     * The key (number) should be sorted descendingly
+     * The threshold of each bulb. The first element (number) of each element means the minimum number the bulb(s) have
+     * to be. The key (number) should be sorted descendingly
      * @type {{}}
      * @private
      */
-    var _BULB_CLASS_THRESHOLD = {
-        20: "bulb-7",
-        15: "bulb-6",
-        10: "bulb-5",
-        7 : "bulb-4",
-        5 : "bulb-3",
-        3 : "bulb-2",
-        2 : "bulb-1",
-        1 : "bulb-0"
-    };
+    var _BULB_CLASS_THRESHOLD = [
+        [20, "bulb-7"],
+        [15, "bulb-6"],
+        [10, "bulb-5"],
+        [7, "bulb-4"],
+        [5, "bulb-3"],
+        [3, "bulb-2"],
+        [2, "bulb-1"],
+        [1, "bulb-0"]
+    ];
 
     /**
      * Generates the calendar of this year
@@ -9208,11 +9208,9 @@ window.calendar = function() {
      * @private
      */
     function _getBulbClassGivenAmount(bulbNumber) {
-        for (var key in _BULB_CLASS_THRESHOLD) {
-            if (_BULB_CLASS_THRESHOLD.hasOwnProperty(key)) {
-                if (bulbNumber > key) {
-                    return _BULB_CLASS_THRESHOLD[key];
-                }
+        for (var i = 0; i !== _BULB_CLASS_THRESHOLD.length; ++i) {
+            if (bulbNumber > _BULB_CLASS_THRESHOLD[i][0]) {
+                return _BULB_CLASS_THRESHOLD[i][1];
             }
         }
 

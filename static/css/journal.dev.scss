@@ -3577,6 +3577,7 @@ body.fullscreen {
         color: $grey-lightest;
         font-size: 50px;
         transition: .4s ease;
+        z-index: 10;
       }
 
       .month-table {
@@ -3585,15 +3586,18 @@ body.fullscreen {
         margin-right: auto;
 
         .day {
+          position: relative;
+          overflow: visible;
           border-radius: 5px;
           width: 30px;
           height: 30px;
           text-align: center;
           transition: .3s ease;
           background: $grey-white;
+          z-index: auto;
 
           &.article {
-            border: 1px black solid;
+            border: 1px $red solid;
             font-weight: bold;
           }
 
@@ -3627,13 +3631,39 @@ body.fullscreen {
           }
 
           &:not(.day-0):hover {
-            background: $grey-darkest;
-            color: $grey-white;
-            box-shadow: $grey-dark 2px 2px 3px;
+            .bubble {
+              opacity: 1;
+            }
           }
 
           &:first-child, &:last-child {
             color: $red;
+          }
+
+          .bubble {
+
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            background: inherit;
+            box-shadow: $grey-dark 2px 2px 7px;
+            border-radius: 4px;
+            width: 45px;
+            left: -5px;
+            height: 45px;
+            top: -5px;
+            z-index: 10;
+            transition: opacity .2s ease;
+            display: table-cell;
+            vertical-align: middle;
+
+            .article-no::before {
+              content: "\f044\A0";
+            }
+
+            .bulb-no::before {
+              content: "\f0eb\A0";
+            }
           }
         }
       }

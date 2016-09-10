@@ -9142,15 +9142,21 @@ window.calendar = function() {
      * @private
      */
     var _BULB_CLASS_THRESHOLD = [
-        [20, "bulb-7"],
-        [15, "bulb-6"],
-        [10, "bulb-5"],
-        [7, "bulb-4"],
-        [5, "bulb-3"],
-        [3, "bulb-2"],
-        [2, "bulb-1"],
-        [1, "bulb-0"]
-    ];
+            [20, "bulb-7"],
+            [15, "bulb-6"],
+            [10, "bulb-5"],
+            [7, "bulb-4"],
+            [5, "bulb-3"],
+            [3, "bulb-2"],
+            [2, "bulb-1"],
+            [1, "bulb-0"]
+        ],
+        /**
+         * Whether some basic functions of it has been initialized
+         * @type {boolean}
+         * @private
+         */
+        _isInitialized = false;
 
     /**
      * Generates the calendar of this year
@@ -9220,26 +9226,45 @@ window.calendar = function() {
     /**
      * Renders the content on the calendar
      * @param time {Number} - the time of the day to render
-     * @param hasArticle {boolean} - whether this day has article
+     * @param articleNumber {Number} - whether this day has article
      * @param bulbNumber {Number} - the number of bulbs of this day
      * @private
      */
-    function _renderHtml(time, hasArticle, bulbNumber) {
+    function _renderHtml(time, articleNumber, bulbNumber) {
         var date = new Date(time),
             $targetHtml = $(".calendar-table .month-" + date.getMonth() + " .day-" + date.getDate());
 
-        if (hasArticle) {
+        if (articleNumber) {
             $targetHtml.addClass("article");
         }
 
-        $targetHtml.addClass(_getBulbClassGivenAmount(bulbNumber));
+        $targetHtml.addClass(_getBulbClassGivenAmount(bulbNumber))
+            // Add data onto this class
+            .css({
+                article: articleNumber,
+                bulb   : bulbNumber
+            })
+            // Clear pre-loaded bubbles to show the details
+            .children(".bubble").remove()
+            // Add the new bubbles
+            .prepend("<div class='bubble'><p class='article-no'>" + articleNum +
+                "</p><p class='bulb-no'>" + bulbNum +
+                "</p></div>");
+
+        // Add href
+        if (articleNumber || bulbNumber) {
+            $targetHtml.attr("href", "javascript:;")
+                .click(function() {
+
+                });
+        }
     }
 
     return {
         viewTemplate: undefined,
 
         /**
-         * Initialize the calendar view, should only be called once everytime a new year is loaded
+         * Initialize the calendar view, should only be called once every time a new year is loaded
          */
         initView: function() {
             // Clean the canvas
@@ -9264,7 +9289,7 @@ window.calendar = function() {
 
             // Iterate through the elements
             var currentDaySeconds = new Date(app.year, 0, 1).getTime(),
-                hasArticle = false,
+                articleNumber = 0,
                 bulbNumber = 0;
             for (var i = 0; i !== length; ++i) {
                 var content = contents[i];
@@ -9273,10 +9298,10 @@ window.calendar = function() {
                 var time = content.time.start || content.time.created;
                 if (time - currentDaySeconds >= 86400000 || time - currentDaySeconds < 0) {
                     // Render it on the previous day
-                    _renderHtml(currentDaySeconds, hasArticle, bulbNumber);
+                    _renderHtml(currentDaySeconds, articleNumber, bulbNumber);
 
                     // Update necessary data fields
-                    hasArticle = false;
+                    articleNumber = false;
                     bulbNumber = 0;
                     var newDay = new Date(time);
                     currentDaySeconds = new Date(app.year, newDay.getMonth(), newDay.getDate()).getTime();
@@ -9286,7 +9311,7 @@ window.calendar = function() {
                 if (content.contentType === app.contentType.BULB) {
                     ++bulbNumber;
                 } else {
-                    hasArticle = true;
+                    articleNumber = true;
                 }
             }
         },

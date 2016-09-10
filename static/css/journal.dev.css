@@ -2519,20 +2519,24 @@ body.fullscreen #entry-time-wrap:not(:hover) {
         background: #bdbdbd;
         color: #eee;
         font-size: 50px;
-        transition: .4s ease; }
+        transition: .4s ease;
+        z-index: 10; }
       #data-calendar .calendar-table .calendar-table-row .month-table {
         margin-top: 15%;
         margin-left: auto;
         margin-right: auto; }
         #data-calendar .calendar-table .calendar-table-row .month-table .day {
+          position: relative;
+          overflow: visible;
           border-radius: 5px;
           width: 30px;
           height: 30px;
           text-align: center;
           transition: .3s ease;
-          background: #fafafa; }
+          background: #fafafa;
+          z-index: auto; }
           #data-calendar .calendar-table .calendar-table-row .month-table .day.article {
-            border: 1px black solid;
+            border: 1px #d32F2f solid;
             font-weight: bold; }
           #data-calendar .calendar-table .calendar-table-row .month-table .day.bulb-0 {
             background: #eee; }
@@ -2554,11 +2558,28 @@ body.fullscreen #entry-time-wrap:not(:hover) {
           #data-calendar .calendar-table .calendar-table-row .month-table .day.bulb-7 {
             background: black;
             color: #fafafa; }
-          #data-calendar .calendar-table .calendar-table-row .month-table .day:not(.day-0):hover {
-            background: #424242;
-            color: #fafafa;
-            box-shadow: #757575 2px 2px 3px; }
+          #data-calendar .calendar-table .calendar-table-row .month-table .day:not(.day-0):hover .bubble {
+            opacity: 1; }
           #data-calendar .calendar-table .calendar-table-row .month-table .day:first-child, #data-calendar .calendar-table .calendar-table-row .month-table .day:last-child {
             color: #d32F2f; }
+          #data-calendar .calendar-table .calendar-table-row .month-table .day .bubble {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            background: inherit;
+            box-shadow: #757575 2px 2px 7px;
+            border-radius: 4px;
+            width: 45px;
+            left: -5px;
+            height: 45px;
+            top: -5px;
+            z-index: 10;
+            transition: opacity .2s ease;
+            display: table-cell;
+            vertical-align: middle; }
+            #data-calendar .calendar-table .calendar-table-row .month-table .day .bubble .article-no::before {
+              content: "\f044\A0"; }
+            #data-calendar .calendar-table .calendar-table-row .month-table .day .bubble .bulb-no::before {
+              content: "\f0eb\A0"; }
 
 /*# sourceMappingURL=journal.dev.css.map */

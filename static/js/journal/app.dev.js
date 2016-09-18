@@ -9232,7 +9232,7 @@ window.calendar = function() {
      */
     function _renderHtml(time, articleNumber, bulbNumber) {
         var date = new Date(time),
-            $targetHtml = $(".calendar-table .month-" + date.getMonth() + " .day-" + date.getDate());
+            $targetHtml = $("#month-" + date.getMonth() + " .day-" + date.getDate());
 
         if (articleNumber) {
             $targetHtml.addClass("article");

@@ -922,34 +922,40 @@
     </div>
 </script>
 <script type="text/x-template" id="calendar-view">
-    <table class="calendar-table">
-        <% for (var i = 0; i !== 3; ++i) { %>
-        <tr class="calendar-table-row">
-            <%
-            for (var j = 0; j !== 4; ++j) {
-                var month = i * 4 + j;
-            %>
-                <td class="month-cell <%- 'month-' + month %>">
-                    <div class="month-title"><%= monthName[month] %></div>
-                    <table class="month-table">
-                        <% for (var k = 0; k != 6; ++k) { %>
-                        <tr class="month-week">
-                            <%
-                            for (var l = 0; l != 7; ++l) {
-                            var day = days[month][k * 7 + l];
-                            %>
-                            <td class="day <%- 'day-' + day %>">
-                                <% if (day) { print(day); } %>
-                            </td>
-                            <% } %>
-                        </tr>
-                        <% } %>
-                    </table>
-                </td>
-            <% } %>
-        </tr>
+    <div class="calendar-table">
+        <% for (var i = 0; i !== 12; ++i) { %>
+        <div class="month-cell" id="<%- 'month-' + i %>">
+            <div class="month-title"><%= monthName[i] %></div>
+            <table class="month-table">
+                <% for (var k = 0; k != 5; ++k) { %>
+                <tr class="month-week">
+                    <%
+                    for (var l = 0; l != 7; ++l) {
+                    var day = days[i][k * 7 + l];
+                    %>
+                    <td class="day <%- 'day-' + day %>">
+                        <% if (day) { print(day); } %>
+                    </td>
+                    <% } %>
+                </tr>
+                <% }
+                if (days[i][35]) {
+                %>
+                <tr class="month-week">
+                    <%
+                    for (var l = 0; l != 7; ++l) {
+                    var day = days[i][35 + l];
+                    %>
+                    <td class="day <%- 'day-' + day %>">
+                        <% if (day) { print(day); } %>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </table>
+        </div>
         <% } %>
-    </table>
+    </div>
 </script>
 </body>
 </html>

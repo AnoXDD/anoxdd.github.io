@@ -2563,6 +2563,7 @@ body.fullscreen #entry-time-wrap:not(:hover) {
           #data-calendar .calendar-table .calendar-table-row .month-table .day:first-child, #data-calendar .calendar-table .calendar-table-row .month-table .day:last-child {
             color: #d32F2f; }
           #data-calendar .calendar-table .calendar-table-row .month-table .day .bubble {
+            font-weight: normal;
             position: absolute;
             pointer-events: none;
             opacity: 0;

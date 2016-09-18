@@ -9244,11 +9244,9 @@ window.calendar = function() {
                 article: articleNumber,
                 bulb   : bulbNumber
             })
-            // Clear pre-loaded bubbles to show the details
-            .children(".bubble").remove()
             // Add the new bubbles
-            .prepend("<div class='bubble'><p class='article-no'>" + articleNum +
-                "</p><p class='bulb-no'>" + bulbNum +
+            .prepend("<div class='bubble'><p class='article-no'>" + articleNumber +
+                "</p><p class='bulb-no'>" + bulbNumber +
                 "</p></div>");
 
         // Add href
@@ -9284,6 +9282,8 @@ window.calendar = function() {
          * @param filter {String} - the filter to be applied
          */
         showContent: function(filter) {
+            this.clear();
+            
             var contents = journal.archive.data[app.year],
                 length = contents.length;
 
@@ -9301,7 +9301,7 @@ window.calendar = function() {
                     _renderHtml(currentDaySeconds, articleNumber, bulbNumber);
 
                     // Update necessary data fields
-                    articleNumber = false;
+                    articleNumber = 0;
                     bulbNumber = 0;
                     var newDay = new Date(time);
                     currentDaySeconds = new Date(app.year, newDay.getMonth(), newDay.getDate()).getTime();
@@ -9311,7 +9311,7 @@ window.calendar = function() {
                 if (content.contentType === app.contentType.BULB) {
                     ++bulbNumber;
                 } else {
-                    articleNumber = true;
+                    ++articleNumber;
                 }
             }
         },

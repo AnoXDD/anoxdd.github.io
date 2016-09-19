@@ -922,6 +922,10 @@
     </div>
 </script>
 <script type="text/x-template" id="calendar-view">
+    <a class="calendar-mini" onclick="calendar.expand()" href="javascript:;">
+        <div class="btn-back"></div>
+        <div id="calendar-thumbnail"></div>
+    </a>
     <div class="calendar-table">
         <% for (var i = 0; i !== 12; ++i) { %>
         <div class="month-cell" id="<%- 'month-' + i %>">

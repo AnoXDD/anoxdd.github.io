@@ -9142,13 +9142,9 @@ window.calendar = function() {
      * @private
      */
     var _BULB_CLASS_THRESHOLD = [
-            [20, "bulb-7"],
-            [15, "bulb-6"],
-            [10, "bulb-5"],
-            [7, "bulb-4"],
-            [5, "bulb-3"],
-            [3, "bulb-2"],
-            [2, "bulb-1"],
+            [15, "bulb-3"],
+            [7, "bulb-2"],
+            [3, "bulb-1"],
             [1, "bulb-0"]
         ],
         /**
@@ -9232,7 +9228,9 @@ window.calendar = function() {
      */
     function _renderHtml(time, articleNumber, bulbNumber) {
         var date = new Date(time),
-            $targetHtml = $("#month-" + date.getMonth() + " .day-" + date.getDate());
+            month = date.getMonth(),
+            day = date.getDate(),
+            $targetHtml = $("#month-" + month + " .day-" + day);
 
         if (articleNumber) {
             $targetHtml.addClass("article");
@@ -9253,8 +9251,11 @@ window.calendar = function() {
         if (articleNumber || bulbNumber) {
             $targetHtml.attr("href", "javascript:;")
                 .click(function() {
-
+                    var str = app.monthArray[month] + " " + day;
+                    this.shrink(str);
                 });
+        } else {
+            $targetHtml.removeAttr("href");
         }
     }
 
@@ -9283,7 +9284,7 @@ window.calendar = function() {
          */
         showContent: function(filter) {
             this.clear();
-            
+
             var contents = journal.archive.data[app.year],
                 length = contents.length;
 
@@ -9321,6 +9322,25 @@ window.calendar = function() {
          */
         clear: function() {
             $(".calendar-table .day").removeClass("article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7");
+        },
+
+        /**
+         * Shrinks the calendar area
+         * @param str - the name to be displayed
+         */
+        shrink: function(str) {
+            str = str || "";
+            $("#calendar-thumbnail").text(str);
+            $("#data-calendar").addClass("minimized");
+            // TODO implemtn this
+        },
+
+        /**
+         * Expands the calendar area
+         */
+        expand: function() {
+            // TODO implemtn this
+            $("#data-calendar").removeClass("minimized");
         }
     }
 }();

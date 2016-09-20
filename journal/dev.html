@@ -360,8 +360,8 @@
 <div id="video-fullscreen"></div>
 <!-- Main frame of the viewer -->
 <div id="app">
-    <div id="data-calendar"></div>
     <div id="contents">
+        <div id="data-calendar"></div>
         <div id="list"></div>
         <div id="detail"></div>
     </div>
@@ -942,7 +942,8 @@
                     </td>
                     <% } %>
                 </tr>
-                <% }
+                <%
+                }
                 if (days[i][35]) {
                 %>
                 <tr class="month-week">

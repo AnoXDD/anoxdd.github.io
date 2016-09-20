@@ -9252,10 +9252,16 @@ window.calendar = function() {
             $targetHtml.attr("href", "javascript:;")
                 .click(function() {
                     var str = app.monthArray[month] + " " + day;
-                    this.shrink(str);
+                    calendar.shrink(str);
+                    
+                    str = "@";
+                    str += month < 9 ? ("0" + (month + 1)) : (month + 1);
+                    str += day < 10 ? ("0" + day) : day;
+                    str += app.year % 100;
+                    app.addLoadDataWithFilter(str);
                 });
         } else {
-            $targetHtml.removeAttr("href");
+            $targetHtml.removeAttr("href").off("click");
         }
     }
 
@@ -9332,15 +9338,15 @@ window.calendar = function() {
             str = str || "";
             $("#calendar-thumbnail").text(str);
             $("#data-calendar").addClass("minimized");
-            // TODO implemtn this
+            $("#list").addClass("extended");
         },
 
         /**
          * Expands the calendar area
          */
         expand: function() {
-            // TODO implemtn this
             $("#data-calendar").removeClass("minimized");
+            $("#list").removeClass("extended");
         }
     }
 }();

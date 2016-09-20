@@ -1,5 +1,6 @@
 @charset "utf-8";
 
+// region colors
 // Basic colors
 $grey-white: #fafafa;
 $grey-lightest: #eee;
@@ -14,6 +15,13 @@ $black-light: #212121;
 $black: #000;
 
 $red: #d32F2f;
+
+// endregion
+
+// region component width
+$calendar-width: 300px;
+$calendar-width-mini: 40px;
+// endregion
 
 ::-webkit-scrollbar {
   background: #e3e3e3;
@@ -354,6 +362,7 @@ body {
   top: 20px;
   transition: .4s ease;
   width: 90%;
+  overflow: hidden;
 
   &.detail-view .header h1 {
     display: none;
@@ -363,6 +372,8 @@ body {
 #contents {
   transition: height .2s;
   height: 100%;
+  width: 100%;
+  display: inline-block;
 
   &::before {
     background-color: rgba(146, 146, 146, 0.5);
@@ -385,10 +396,14 @@ body {
   background-color: #F3F3F3;
   display: none;
   height: 100%;
+  width: calc(49% - #{$calendar-width});
   overflow-x: hidden;
   overflow-y: auto;
-  position: absolute;
-  width: 38%;
+  transition: width .4s ease;
+
+  &.extended {
+    width: calc(49% - #{$calendar-width-mini});
+  }
 
   ul {
     padding: 1% .5% 0;
@@ -1131,11 +1146,9 @@ body {
 #detail {
   display: none;
   height: 100%;
-  left: 39%;
-  margin-left: 1%;
-  position: absolute;
   /* transition: opacity .4s ease; */
-  width: 60%;
+  width: 50%;
+  float: right;
 
   &.show {
     opacity: 1;
@@ -1176,11 +1189,6 @@ body {
       transition: 1s ease;
       width: 55%;
     }
-  }
-
-  .center, .content {
-    position: absolute;
-    top: 50px;
   }
 
   .center {
@@ -3530,15 +3538,13 @@ body.fullscreen {
 }
 
 #data-calendar {
-  $calendar-width: 300px;
-  $calendar-width-mini: 40px;
-
   height: 100%;
   width: $calendar-width;
   overflow-y: scroll;
   overflow-x: hidden;
   background: $grey-white;
   transition: .4s ease;
+  display: inline-block;
 
   .calendar-table {
     width: 100%;

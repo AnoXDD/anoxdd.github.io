@@ -9292,10 +9292,21 @@ window.calendar = function() {
      */
     function _hideUpcomingMonths() {
         var date = new Date();
-        if (app.year == date.getFullYear()) {
-            for (var i = date.getMonth(); i != 12; ++i) {
+        if (app.year === date.getFullYear()) {
+            for (var i = date.getMonth() + 1; i < 12; ++i) {
                 $("#month-" + i).addClass("hidden");
             }
+        }
+    }
+
+    /**
+     * Highlights today
+     * @private
+     */
+    function _highlightToday() {
+        var date = new Date();
+        if (app.year === date.getFullYear()) {
+            $("#month-" + date.getMonth() + " .day-" + date.getDate()).addClass("today");
         }
     }
 
@@ -9358,6 +9369,7 @@ window.calendar = function() {
 
             _renderMonthSummary();
             _hideUpcomingMonths();
+            _highlightToday();
         },
 
         /**
@@ -9373,6 +9385,7 @@ window.calendar = function() {
             $(".calendar-table").find(".bubble").remove();
 
             $(".month-cell").removeClass("hidden");
+            $(".today").removeClass("today");
         },
 
         /**

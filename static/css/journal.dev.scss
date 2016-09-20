@@ -3571,14 +3571,6 @@ body.fullscreen {
           display: inline-block;
           padding: 2px 5px;
         }
-
-        .article-no {
-
-        }
-
-        .bulb-no {
-
-        }
       }
     }
 
@@ -3611,6 +3603,11 @@ body.fullscreen {
 
         &.article {
           font-weight: bold;
+        }
+
+        &.today {
+          background-color: black;
+          color: $grey-lighter;
         }
 
         // region bulbclass

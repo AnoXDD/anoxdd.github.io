@@ -1149,6 +1149,7 @@ body {
   /* transition: opacity .4s ease; */
   width: 50%;
   float: right;
+  overflow-y: scroll;
 
   &.show {
     opacity: 1;
@@ -3632,25 +3633,43 @@ body.fullscreen {
           position: absolute;
           pointer-events: none;
           opacity: 0;
-          background: inherit;
+          background: $grey-lighter;
           box-shadow: black 2px 2px 7px;
-          width: 30px;
-          left: -5px;
-          height: 30px;
-          top: -5px;
+          padding: 5px;
+          width: 50px;
+          left: -20px;
+          height: 50px;
+          top: -20px;
           z-index: 10;
           transition: opacity .2s ease;
           display: table-cell;
           vertical-align: middle;
+          font-size: 14px;
 
-          .article-no::before {
-            content: "\f044\A0";
-            font-weight: normal;
+          .article-no, .bulb-no {
+            color: black;
+            font-size: 12px;
+            position: absolute;
+            bottom: 0;
+            padding: 8px;
           }
 
-          .bulb-no::before {
-            content: "\f0eb\A0";
-            font-weight: normal;
+          .article-no {
+            left: 0;
+
+            &::before {
+              content: "\f044\A0";
+              font-weight: normal;
+            }
+          }
+
+          .bulb-no {
+            right: 0;
+
+            &::before {
+              content: "\f0eb\A0";
+              font-weight: normal;
+            }
           }
         }
       }

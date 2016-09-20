@@ -9230,6 +9230,7 @@ window.calendar = function() {
         var date = new Date(time),
             month = date.getMonth(),
             day = date.getDate(),
+            dateStr = app.monthArray[month] + " " + day,
             $targetHtml = $("#month-" + month + " .day-" + day);
 
         if (articleNumber) {
@@ -9243,7 +9244,8 @@ window.calendar = function() {
                 bulb   : bulbNumber
             })
             // Add the new bubbles
-            .prepend("<div class='bubble'><p class='article-no'>" + articleNumber +
+            .prepend("<div class='bubble'>" + dateStr +
+                "<p class='article-no'>" + articleNumber +
                 "</p><p class='bulb-no'>" + bulbNumber +
                 "</p></div>");
 
@@ -9251,10 +9253,9 @@ window.calendar = function() {
         if (articleNumber || bulbNumber) {
             $targetHtml.attr("href", "javascript:;")
                 .click(function() {
-                    var str = app.monthArray[month] + " " + day;
-                    calendar.shrink(str);
-                    
-                    str = "@";
+                    calendar.shrink(dateStr);
+
+                    var str = "@";
                     str += month < 9 ? ("0" + (month + 1)) : (month + 1);
                     str += day < 10 ? ("0" + day) : day;
                     str += app.year % 100;
@@ -9327,7 +9328,9 @@ window.calendar = function() {
          * Clear all the labels/tags on the calendar
          */
         clear: function() {
-            $(".calendar-table .day").removeClass("article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7");
+            $(".calendar-table .day")
+                .removeClass("article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7")
+                .find(".bubble").remove();
         },
 
         /**

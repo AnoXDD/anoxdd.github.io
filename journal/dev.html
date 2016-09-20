@@ -929,7 +929,7 @@
     <div class="calendar-table">
         <% for (var i = 0; i !== 12; ++i) { %>
         <div class="month-cell" id="<%- 'month-' + i %>">
-            <a class="month-title"><%= monthName[i] %></a>
+            <a class="month-title" href="javascript:;"><%= monthName[i] %></a>
             <table class="month-table">
                 <% for (var k = 0; k != 5; ++k) { %>
                 <tr class="month-week">

@@ -2534,7 +2534,7 @@ body.fullscreen #entry-time-wrap:not(:hover) {
         #data-calendar .calendar-table .month-table .day.article {
           font-weight: bold; }
         #data-calendar .calendar-table .month-table .day.today {
-          background-color: black;
+          background-color: #424242;
           color: #e0e0e0; }
         #data-calendar .calendar-table .month-table .day.bulb-0 {
           background: #eee; }

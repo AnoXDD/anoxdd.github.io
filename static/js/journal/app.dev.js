@@ -4065,7 +4065,7 @@ window.app = function() {
                         $search.fadeIn(500);
                     }
                 });
-    }
+    };
     /**
      * Initialize header info (which refers to the div that displays current
      * year and last updated time of token and journal data
@@ -4088,7 +4088,7 @@ window.app = function() {
             expiresIn = expiresIn || "Expired";
             $("#token-expires-in").html(expiresIn);
         });
-    }
+    };
     var _initializeNetworkSetup = function() {
 // Setup timeout time
         $.ajaxSetup({
@@ -4107,12 +4107,12 @@ window.app = function() {
                 network.destroy();
             }
         });
-    }
+    };
     var _initializeIconsAppearance = function() {
 // Test if there is any cache
         animation.testCacheIcons();
         animation.testAllSubs();
-    }
+    };
     //endregion
 
     //region Load data
@@ -4282,7 +4282,16 @@ window.app = function() {
         ////console.log("\t> lastLoaded = " + app.lastLoaded);
         new app.list(filter);
         app.dataLoaded[app.year] = true;
-    }
+    };
+
+    /**
+     * Initialize the calendar
+     * @private
+     */
+    var _initializeCalendar = function() {
+        calendar.initView();
+        calendar.showContent();
+    };
 
     //endregion
 
@@ -4362,10 +4371,13 @@ window.app = function() {
             // Network setup
             _initializeNetworkSetup();
             _initializeIconsAppearance();
+            _initializeCalendar();
         },
 
         /**
          * Reloads the content view of the journal.
+         * This function will NOT affect the appearance of calendar
+         *
          * @param {String} filter - The string representing the filter of
          *     display
          * @param {String} newContent - The string representing the new content
@@ -4827,11 +4839,7 @@ app.list.prototype = {
                         app.displayedTime += timeDelta;
                     }
                 }
-                $("#search-result").hide().fadeIn(500);
-                $("#total-displayed").text(app.displayedNum);
-                $("#total-char").text(app.displayedChars);
-                $("#total-line").text(app.displayedLines);
-                $("#total-time").text(app.displayedTime);
+
                 // Find the qualified entry, break the loop if scrollbar is not
                 // visible yet
                 if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
@@ -4850,6 +4858,14 @@ app.list.prototype = {
                 }
             }
         }
+
+        // Update the data
+        $("#search-result").hide().fadeIn(500);
+        $("#total-displayed").text(app.displayedNum);
+        $("#total-char").text(app.displayedChars);
+        $("#total-line").text(app.displayedLines);
+        $("#total-time").text(app.displayedTime);
+
         // Update loaded contents
         if (++currentLoaded >= journal.total) {
             // Remove load more
@@ -6806,11 +6822,11 @@ $(document).ready(function() {
     app.cDetail = app.app.find(" > #contents > #detail");
     app.itemView = _.template($("#list-view").html());
     app.detailView = _.template($("#detail-view").html());
+    calendar.viewTemplate = _.template($("#calendar-view").html());
     app.layout();
     app.initializeApp();
     archive.itemView = _.template($("#archive-view").html());
     archive.detailView = _.template($("#archive-detail-view").html());
-    calendar.viewTemplate = _.template($("#calendar-view").html());
 });
 
 //endregion
@@ -9162,7 +9178,7 @@ window.calendar = function() {
      *     starts with Sunday. For empty day, use 0 instead.
      * @private
      */
-    function _generateCalendar() {
+    var _generateCalendar = function() {
         // Get the first day of this year
         var day = new Date();
 
@@ -9203,7 +9219,7 @@ window.calendar = function() {
         }
 
         return days;
-    }
+    };
 
     /**
      * Gets the appropriate class name given the amount of bulbs
@@ -9211,7 +9227,7 @@ window.calendar = function() {
      * @returns {string} - the class name
      * @private
      */
-    function _getBulbClassGivenAmount(bulbNumber) {
+    var _getBulbClassGivenAmount = function(bulbNumber) {
         for (var i = 0; i !== _BULB_CLASS_THRESHOLD.length; ++i) {
             if (bulbNumber > _BULB_CLASS_THRESHOLD[i][0]) {
                 return _BULB_CLASS_THRESHOLD[i][1];
@@ -9219,7 +9235,7 @@ window.calendar = function() {
         }
 
         return "";
-    }
+    };
 
     /**
      * Renders the content on the calendar
@@ -9228,7 +9244,7 @@ window.calendar = function() {
      * @param bulbNumber {Number} - the number of bulbs of this day
      * @private
      */
-    function _renderHtml(time, articleNumber, bulbNumber) {
+    var _renderHtml = function(time, articleNumber, bulbNumber) {
         var date = new Date(time),
             month = date.getMonth(),
             day = date.getDate(),
@@ -9269,46 +9285,56 @@ window.calendar = function() {
         } else {
             $targetHtml.removeAttr("href").off("click");
         }
-    }
+    };
 
     /**
      * Renders the month summary
      * @private
      */
-    function _renderMonthSummary() {
+    var _renderMonthSummary = function() {
         for (var i = 0; i != 12; ++i) {
             var article = _monthArticleNum[i] || 0;
             var bulb = _monthBulbNum[i] || 0;
 
-            $("#month-" + i).prepend("<div class='bubble'><p class='article-no'>" + article +
-                "</p><p class='bulb-no'>" + bulb +
-                "</p></div>");
+            $("#month-" + i)
+                .prepend("<div class='bubble'><p class='article-no'>" + article +
+                    "</p><p class='bulb-no'>" + bulb +
+                    "</p></div>")
+                .click(function() {
+                    calendar.shrink(app.monthArray[i]);
+
+                    var str = "@";
+                    str += month < 9 ? ("0" + (month + 1)) : (month + 1);
+                    str += app.year % 100;
+
+                    app.addLoadDataWithFilter(str);
+                });
         }
-    }
+    };
 
     /**
      * Hides the upcoming month (because there is nothing to display)
      * @private
      */
-    function _hideUpcomingMonths() {
+    var _hideUpcomingMonths = function() {
         var date = new Date();
         if (app.year === date.getFullYear()) {
             for (var i = date.getMonth() + 1; i < 12; ++i) {
                 $("#month-" + i).addClass("hidden");
             }
         }
-    }
+    };
 
     /**
      * Highlights today
      * @private
      */
-    function _highlightToday() {
+    var _highlightToday = function() {
         var date = new Date();
         if (app.year === date.getFullYear()) {
             $("#month-" + date.getMonth() + " .day-" + date.getDate()).addClass("today");
         }
-    }
+    };
 
     return {
         viewTemplate: undefined,
@@ -9327,7 +9353,8 @@ window.calendar = function() {
 
             // Show the view
             $("#data-calendar").html(view);
-        },
+        }
+        ,
 
         /**
          * Shows the data on the calendar
@@ -9370,7 +9397,8 @@ window.calendar = function() {
             _renderMonthSummary();
             _hideUpcomingMonths();
             _highlightToday();
-        },
+        }
+        ,
 
         /**
          * Clear all the labels/tags on the calendar, also reset all the data fields
@@ -9386,7 +9414,8 @@ window.calendar = function() {
 
             $(".month-cell").removeClass("hidden");
             $(".today").removeClass("today");
-        },
+        }
+        ,
 
         /**
          * Shrinks the calendar area
@@ -9397,7 +9426,8 @@ window.calendar = function() {
             $("#calendar-thumbnail").text(str);
             $("#data-calendar").addClass("minimized");
             $("#list").addClass("extended");
-        },
+        }
+        ,
 
         /**
          * Expands the calendar area

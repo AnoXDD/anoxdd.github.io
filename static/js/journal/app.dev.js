@@ -9152,7 +9152,9 @@ window.calendar = function() {
          * @type {boolean}
          * @private
          */
-        _isInitialized = false;
+        _isInitialized = false,
+        _monthArticleNum = {},
+        _monthBulbNum = {};
 
     /**
      * Generates the calendar of this year
@@ -9249,6 +9251,9 @@ window.calendar = function() {
                 "</p><p class='bulb-no'>" + bulbNumber +
                 "</p></div>");
 
+        _monthArticleNum[month] = (_monthArticleNum[month] || 0) + (articleNumber || 0);
+        _monthBulbNum[month] = (_monthBulbNum[month] || 0) + (bulbNumber || 0);
+
         // Add href
         if (articleNumber || bulbNumber) {
             $targetHtml.attr("href", "javascript:;")
@@ -9263,6 +9268,34 @@ window.calendar = function() {
                 });
         } else {
             $targetHtml.removeAttr("href").off("click");
+        }
+    }
+
+    /**
+     * Renders the month summary
+     * @private
+     */
+    function _renderMonthSummary() {
+        for (var i = 0; i != 12; ++i) {
+            var article = _monthArticleNum[i] || 0;
+            var bulb = _monthBulbNum[i] || 0;
+
+            $("#month-" + i).prepend("<div class='bubble'><p class='article-no'>" + article +
+                "</p><p class='bulb-no'>" + bulb +
+                "</p></div>");
+        }
+    }
+
+    /**
+     * Hides the upcoming month (because there is nothing to display)
+     * @private
+     */
+    function _hideUpcomingMonths() {
+        var date = new Date();
+        if (app.year == date.getFullYear()) {
+            for (var i = date.getMonth(); i != 12; ++i) {
+                $("#month-" + i).addClass("hidden");
+            }
         }
     }
 
@@ -9322,15 +9355,24 @@ window.calendar = function() {
                     ++articleNumber;
                 }
             }
+
+            _renderMonthSummary();
+            _hideUpcomingMonths();
         },
 
         /**
-         * Clear all the labels/tags on the calendar
+         * Clear all the labels/tags on the calendar, also reset all the data fields
          */
         clear: function() {
             $(".calendar-table .day")
-                .removeClass("article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7")
-                .find(".bubble").remove();
+                .removeClass("article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7");
+
+            _monthArticleNum = {};
+            _monthBulbNum = {};
+
+            $(".calendar-table").find(".bubble").remove();
+
+            $(".month-cell").removeClass("hidden");
         },
 
         /**

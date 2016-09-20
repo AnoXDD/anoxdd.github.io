@@ -2499,12 +2499,22 @@ body.fullscreen #entry-time-wrap:not(:hover) {
       position: relative;
       transition: height .2s ease;
       padding-bottom: 20px; }
+      #data-calendar .calendar-table .month-cell.hidden {
+        display: none; }
+      #data-calendar .calendar-table .month-cell > .bubble {
+        position: absolute;
+        right: 20px; }
+        #data-calendar .calendar-table .month-cell > .bubble .article-no, #data-calendar .calendar-table .month-cell > .bubble .bulb-no {
+          color: #bdbdbd;
+          display: inline-block;
+          padding: 2px 5px; }
     #data-calendar .calendar-table .month-title {
       color: #bdbdbd;
       border-bottom: 1px solid #bdbdbd;
       padding-bottom: 10px;
       font-size: 18px;
-      margin: 10px 20px; }
+      margin: 10px 20px;
+      display: block; }
     #data-calendar .calendar-table .month-table {
       margin-top: 5px;
       margin-left: auto;
@@ -2572,14 +2582,14 @@ body.fullscreen #entry-time-wrap:not(:hover) {
             padding: 8px; }
           #data-calendar .calendar-table .month-table .day .bubble .article-no {
             left: 0; }
-            #data-calendar .calendar-table .month-table .day .bubble .article-no::before {
-              content: "\f044\A0";
-              font-weight: normal; }
           #data-calendar .calendar-table .month-table .day .bubble .bulb-no {
             right: 0; }
-            #data-calendar .calendar-table .month-table .day .bubble .bulb-no::before {
-              content: "\f0eb\A0";
-              font-weight: normal; }
+    #data-calendar .calendar-table .article-no::before {
+      content: "\f044\A0";
+      font-weight: normal; }
+    #data-calendar .calendar-table .bulb-no::before {
+      content: "\f0eb\A0";
+      font-weight: normal; }
   #data-calendar .calendar-mini {
     position: absolute;
     top: 0;

@@ -3556,6 +3556,30 @@ body.fullscreen {
       position: relative;
       transition: height .2s ease;
       padding-bottom: 20px;
+
+      &.hidden {
+        display: none;
+      }
+
+      > .bubble {
+
+        position: absolute;
+        right: 20px;
+
+        .article-no, .bulb-no {
+          color: $grey-light;
+          display: inline-block;
+          padding: 2px 5px;
+        }
+
+        .article-no {
+
+        }
+
+        .bulb-no {
+
+        }
+      }
     }
 
     .month-title {
@@ -3564,6 +3588,7 @@ body.fullscreen {
       padding-bottom: 10px;
       font-size: 18px;
       margin: 10px 20px;
+      display: block;
     }
 
     .month-table {
@@ -3656,23 +3681,24 @@ body.fullscreen {
 
           .article-no {
             left: 0;
-
-            &::before {
-              content: "\f044\A0";
-              font-weight: normal;
-            }
           }
 
           .bulb-no {
             right: 0;
-
-            &::before {
-              content: "\f0eb\A0";
-              font-weight: normal;
-            }
           }
         }
       }
+
+    }
+
+    .article-no::before {
+      content: "\f044\A0";
+      font-weight: normal;
+    }
+
+    .bulb-no::before {
+      content: "\f0eb\A0";
+      font-weight: normal;
     }
   }
 

@@ -49,7 +49,7 @@ function animateElems() {
         setTimeout(function() {
             $this.css({
                 animation: "fadein-top .4s ease",
-                opacity: 1
+                opacity  : 1
             });
         }, 100 * i);
     });
@@ -60,7 +60,7 @@ function animateElems() {
         setTimeout(function() {
             $this.css({
                 animation: "fadein-left 1s ease",
-                opacity: 1
+                opacity  : 1
             });
         }, 100 * i);
     });
@@ -125,31 +125,32 @@ function animateHeightToOriginal(element) {
  * Enables the ripple effect
  */
 function enableRippleEffect() {
-    $(document).delegate("a:not(.no-ripple), input[type=checkbox] + label, input[type=radio] + label", "click", function(e) {
-        var d;
-        // Find if any ripple effect is in it
-        if ($(this).find(".ink").length === 0) {
-            $(this).prepend("<span class='ink'></span>");
-        }
+    $(document)
+        .delegate("a:not(.no-ripple), input[type=checkbox] + label, input[type=radio] + label", "click", function(e) {
+            var d;
+            // Find if any ripple effect is in it
+            if ($(this).find(".ink").length === 0) {
+                $(this).prepend("<span class='ink'></span>");
+            }
 
-        // Select the only one ripple effect
-        var $ink = $(this).find(".ink");
-        $ink.removeClass("ripple-animate");
+            // Select the only one ripple effect
+            var $ink = $(this).find(".ink");
+            $ink.removeClass("ripple-animate");
 
-        if (!$ink.height() && !$ink.width()) {
-            d = Math.max($(this).outerWidth(), $(this).outerHeight());
-            $ink.css({
-                height: d,
-                width: d
-            });
-        }
+            if (!$ink.height() && !$ink.width()) {
+                d = Math.max($(this).outerWidth(), $(this).outerHeight());
+                $ink.css({
+                    height: d,
+                    width : d
+                });
+            }
 
-        // Animate the stuffs
-        var x = e.pageX - $(this).offset().left - $ink.width() / 2;
-        var y = e.pageY - $(this).offset().top - $ink.height() / 2;
+            // Animate the stuffs
+            var x = e.pageX - $(this).offset().left - $ink.width() / 2;
+            var y = e.pageY - $(this).offset().top - $ink.height() / 2;
 
-        $ink.css({top: y + "px", left: x + "px"}).addClass("ripple-animate");
-    });
+            $ink.css({top: y + "px", left: x + "px"}).addClass("ripple-animate");
+        });
 }
 
 /**
@@ -203,6 +204,21 @@ function enableToggleProjectDetail() {
 }
 
 /**
+ * Randomizes the skill list
+ */
+function randomizeSkills() {
+    var unsortedElems = $("#skills .skills-wrapper").children(".skill:not(.joke)");
+    var elems = unsortedElems.clone();
+
+    elems.sort(function() {
+        return (Math.round(Math.random()) - 0.5);
+    });
+
+    for (var i = 0; i < elems.length; i++) {
+        unsortedElems.eq(i).replaceWith(elems[i]);
+    }
+}
+/**
  * Initializes the separator
  * @returns {}
  */
@@ -218,4 +234,5 @@ $(document).ready(function() {
     enableResponsiveHeader();
     enableToggleProjectDetail();
     enableRippleEffect();
-})
+    randomizeSkills();
+});

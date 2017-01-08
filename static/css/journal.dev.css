@@ -2533,9 +2533,6 @@ body.fullscreen #entry-time-wrap:not(:hover) {
         z-index: auto; }
         #data-calendar .calendar-table .month-table .day.article {
           font-weight: bold; }
-        #data-calendar .calendar-table .month-table .day.today {
-          background-color: #424242;
-          color: #e0e0e0; }
         #data-calendar .calendar-table .month-table .day.bulb-0 {
           background: #eee; }
         #data-calendar .calendar-table .month-table .day.bulb-1 {
@@ -2560,6 +2557,9 @@ body.fullscreen #entry-time-wrap:not(:hover) {
           opacity: 1; }
         #data-calendar .calendar-table .month-table .day:first-child, #data-calendar .calendar-table .month-table .day:last-child {
           color: #d32F2f; }
+        #data-calendar .calendar-table .month-table .day.today {
+          background-color: #424242;
+          color: #e0e0e0; }
         #data-calendar .calendar-table .month-table .day .bubble {
           font-weight: normal;
           position: absolute;

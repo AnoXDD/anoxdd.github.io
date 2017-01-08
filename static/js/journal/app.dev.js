@@ -4218,6 +4218,8 @@ window.app = function() {
              ++key) {
             journal.archive.data[app.year][key]["processed"] = 0;
         }
+
+        calendar.showContent();
     };
 
     var _attemptLoadDataFromQueue = function() {
@@ -4290,7 +4292,6 @@ window.app = function() {
      */
     var _initializeCalendar = function() {
         calendar.initView();
-        calendar.showContent();
     };
 
     //endregion
@@ -4798,6 +4799,11 @@ app.list = function(filter) {
     }
 };
 app.list.prototype = {
+    /**
+     * Used to cache the query result to avoid multiple processing of the same string
+     * Format of each entry: ${queryString}: [${startDate}, ${endDate}]
+     */
+    queryCache   : {},
     /* Load one qualified entry of the contents from the data */
     load         : function(filter) {
         ////console.log("Call app.list.load(" + filter + ")");
@@ -4975,7 +4981,7 @@ app.list.prototype = {
             if (found) {
                 continue;
             }
-            console.log("Reach end");
+
             // No result found
             return false;
         }
@@ -5172,7 +5178,6 @@ app.list.prototype = {
     },
     /* Add an empty html list */
     htmlEmpty    : function() {
-        console.log("not show!");
         return $("#list ul").append("<li></li>");
     },
     /*  Get the thumbnail of the contents and returns the html */
@@ -5265,104 +5270,49 @@ app.list.prototype = {
      Supported time format: @mmddyy:mmddyy @mmddyy @mmyy:mmyy @mmyy
      */
     isInRange    : function(timeStr, timeNum) {
-        console.log("Call addLoadDataWithFilter.isInRange(" + timeStr + "," + timeNum + ")");
-        var timeArray = timeStr.split(":"),
-            date = new Date(timeNum);
-        if (timeArray.length == 1) {
-            // An element, test for the length
-            var singleTime = timeArray[0];
-            if (singleTime.length == 4) {
-                // mmyy
-                var month = parseInt(singleTime.substr(0, 2)),
-                    year = parseInt(singleTime.substr(2, 2));
-                if (isNaN(month) || isNaN(year)) {
-                    // Parse failed
-                    return false;
-                }
-                // Return the result
-                return (date.getYear() % 100 == year && date.getMonth() + 1 == month);
-            } else if (singleTime.length == 6) {
-                // mmddyy
-                var month = parseInt(singleTime.substr(0, 2)),
-                    day = parseInt(singleTime.substr(2, 2)),
-                    year = parseInt(singleTime.substr(4, 2));
-                if (isNaN(month) || isNaN(day) || isNaN(year)) {
-                    // Parse failed
-                    return false;
-                }
-                // Return the result
-                return (date.getYear() % 100 == year && date.getMonth() + 1 == month && date.getDate() == day);
+        // Test if it is cached already
+        var queryResult = queryCache[timeStr];
+        if (!queryResult) {
+            queryResult = [0, 0];
+            var timeArray = timeStr.split(":");
+            if (timeArray.length == 1) {
+                queryResult = getTimeRange(timeArray[0]);
             } else {
-                // No such matches
-                return false;
-            }
-        } else if (timeArray.length == 2) {
-            // Double elements; an range has be specified
-            var startTime = timeArray[0],
-                endTime = timeArray[1];
-            if (startTime.length == 4) {
-                // mmyy
-                var startMonth = parseInt(startTime.substr(0, 2)),
-                    startYear = parseInt(startTime.substr(2, 2)),
-                    endMonth = parseInt(endTime.substr(0, 2)),
-                    endYear;
-                // Automatically fill endYear if the user does not specify it
-                if (endTime.length == 2) {
-                    endYear = startYear;
-                } else if (endTime.length == 4) {
-                    endYear = parseInt(endTime.substr(2, 2));
-                } else {
-                    // Invalid length
-                    return false;
-                }
-                if (isNaN(startMonth) || isNaN(startYear) || isNaN(endMonth) || isNaN(
-                        endYear)) {
-                    // Parse failed
-                    return false;
-                }
-                var month = date.getMonth() + 1,
-                    year = date.getYear() % 100;
-                // Test if the time is in range
-                if (month >= startMonth && month <= endMonth && year >= startYear && year <= endYear) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else if (startTime.length == 6) {
-                // mmyydd
-                var startMonth = parseInt(startTime.substr(0, 2)),
-                    startDay = parseInt(startTime.substr(2, 2)),
-                    startYear = parseInt(startTime.substr(4, 2)),
-                    endMonth = startMonth,
-                    endDay = startDay,
-                    endYear = startYear;
-                if (endTime.length == 2) {
-                    endDay = parseInt(endTime);
-                } else if (endTime.length == 4) {
-                    endMonth = parseInt(endTime.substr(0, 2));
-                    endDay = parseInt(endTime.substr(2, 2));
-                } else if (endTime.length == 6) {
-                    endMonth = parseInt(endTime.substr(0, 2));
-                    endDay = parseInt(endTime.substr(2, 2));
-                    endYear = parseInt(endTime.substr(4, 2));
-                } else {
-                    // Illegal endTime length
-                    return false;
-                }
-                if (isNaN(startMonth) || isNaN(startDay) || isNaN(startYear) || isNaN(
-                        endMonth) || isNaN(endDay) || isNaN(endTime)) {
-                    // Parse failed
-                    return false;
-                }
-                var startDate = new Date(2000 + startYear, startMonth - 1, startDay),
-                    endDate = new Date(2000 + endYear, endMonth - 1, endDay, 23, 59, 59);
-                // Test if the time is in range
-                return startDate < timeNum && endDate > timeNum;
-            } else {
-                // Illegal length
-                return false;
+                queryResult[0] = getTimeRange(timeArray[0])[0];
+                queryResult[1] = getTimeRange(timeArray[1])[1];
             }
         }
+
+        return timeNum >= queryResult[0] && timeNum <= queryResult[1];
+    },
+    /**
+     * A private function, called to return a range specified by timeStr
+     * @param timeStr - a time str specificed
+     * @return [${startDate}, ${endDate}];
+     */
+    getTimeRange : function(timeStr) {
+        var range = [0, 0];
+        if (timeStr.length == 4) {
+            var month = timeStr.substr(0, 2),
+                year = timeStr.substr(2);
+
+            if (!isNaN(month) && !isNaN(year)) {
+                range[0] = new Date(year, month - 1).getTime();
+                range[1] = new Date(year, month).getTime() - 1;
+            }
+        } else if (timeStr.length == 6) {
+            var month = timeStr.substr(0, 2),
+                day = timeStr.substr(2, 2),
+                year = timeStr.substr(4);
+
+            if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+                range[0] = new Date(year, month - 1, day).getTime();
+                // Because a day has fixed length of seconds
+                range[1] = range[0] + 86399999;
+            }
+        }
+
+        return range;
     },
     /*
      Tests if the months and years are the same.
@@ -9300,8 +9250,10 @@ window.calendar = function() {
                 .prepend("<div class='bubble'><p class='article-no'>" + article +
                     "</p><p class='bulb-no'>" + bulb +
                     "</p></div>")
-                .click(function() {
-                    calendar.shrink(app.monthArray[i]);
+                .find(".month-title").click(function() {
+                    // Get the month
+                    var month = parseInt($(this).prop("id").substr(6));
+                    calendar.shrink(app.monthArray[month]);
 
                     var str = "@";
                     str += month < 9 ? ("0" + (month + 1)) : (month + 1);

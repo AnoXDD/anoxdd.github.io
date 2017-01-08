@@ -3605,11 +3605,6 @@ body.fullscreen {
           font-weight: bold;
         }
 
-        &.today {
-          background-color: $grey-darkest;
-          color: $grey-lighter;
-        }
-
         // region bulbclass
         &.bulb-0 {
           background: $grey-lightest;
@@ -3648,6 +3643,11 @@ body.fullscreen {
 
         &:first-child, &:last-child {
           color: $red;
+        }
+
+        &.today {
+          background-color: $grey-darkest;
+          color: $grey-lighter;
         }
 
         .bubble {

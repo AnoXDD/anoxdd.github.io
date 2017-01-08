@@ -5271,7 +5271,7 @@ app.list.prototype = {
      */
     isInRange    : function(timeStr, timeNum) {
         // Test if it is cached already
-        var queryResult = queryCache[timeStr];
+        var queryResult = this.queryCache[timeStr];
         if (!queryResult) {
             queryResult = [0, 0];
             var timeArray = timeStr.split(":");
@@ -9252,7 +9252,7 @@ window.calendar = function() {
                     "</p></div>")
                 .find(".month-title").click(function() {
                     // Get the month
-                    var month = parseInt($(this).prop("id").substr(6));
+                    var month = parseInt($(this).parent().prop("id").substr(6));
                     calendar.shrink(app.monthArray[month]);
 
                     var str = "@";

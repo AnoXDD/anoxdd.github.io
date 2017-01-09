@@ -9251,7 +9251,7 @@ window.calendar = function() {
                 .prepend("<div class='bubble'><p class='article-no'>" + article +
                     "</p><p class='bulb-no'>" + bulb +
                     "</p></div>")
-                .find(".month-title").click(function() {
+                .find(".month-title").off("click").click(function() {
                 // Get the month
                 var month = parseInt($(this).parent().prop("id").substr(6));
                 calendar.shrink(app.monthArray[month]);

@@ -1855,9 +1855,6 @@ edit.fullScreen = function() {
     $("#app").css("height", "inherit");
     // Change the icon
     animation.showMenuOnly("fullscreen");
-    // Hide the other part
-    $(".header").fadeOut(400);
-    $("#attach-area").fadeOut(400);
     $("body").addClass("fullscreen");
     // Request the browser to toggle fullscreen
     if (document.documentElement.requestFullscreen) {
@@ -1876,10 +1873,7 @@ edit.windowMode = function() {
     // Change the icon
     animation.showMenuOnly("add");
     // Resize
-    $(".header").fadeIn(400, function() {
-    });
     $("body").removeClass("fullscreen");
-    $("#attach-area").fadeIn();
     // Re-enable auto-height
     app.layout();
     // Request the browser to exit fullscreen
@@ -9221,11 +9215,9 @@ window.calendar = function() {
         _monthArticleNum[month] = (_monthArticleNum[month] || 0) + (articleNumber || 0);
         _monthBulbNum[month] = (_monthBulbNum[month] || 0) + (bulbNumber || 0);
 
-        $targetHtml.removeAttr("href").off("click");
-
         // Add href
         if (articleNumber || bulbNumber) {
-            $targetHtml.attr("href", "javascript:;")
+            $targetHtml.attr("href", "javascript:;").off("click")
                 .click(function() {
                     calendar.shrink(dateStr);
 
@@ -9235,6 +9227,7 @@ window.calendar = function() {
                     str += app.year % 100;
                     app.addLoadDataWithFilter(str);
                 });
+        } else {
         }
     };
 

@@ -1,4 +1,4 @@
-﻿app.version.main = "v4.5.13 Build 071116_2336";
+﻿app.version.main = "v4.6.3 Build 010817_1627";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -14,6 +14,10 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  *
  * Todo add an integrity check before logging in
+ *
+ * v4.6 - Calendar update
+ * [Add] Add calendar on the left
+ * [Chg] The UI when creating the journal
  *
  * v4.5 - Bulb update
  * [Chg] Refactor the code to make it easier to organize

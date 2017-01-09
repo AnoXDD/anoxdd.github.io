@@ -5281,6 +5281,7 @@ app.list.prototype = {
                 queryResult[0] = this.getTimeRange(timeArray[0])[0];
                 queryResult[1] = this.getTimeRange(timeArray[1])[1];
             }
+            this.queryCache[timeStr] = queryResult;
         }
 
         return timeNum >= queryResult[0] && timeNum <= queryResult[1];
@@ -5293,17 +5294,17 @@ app.list.prototype = {
     getTimeRange : function(timeStr) {
         var range = [0, 0];
         if (timeStr.length == 4) {
-            var month = timeStr.substr(0, 2),
-                year = timeStr.substr(2);
+            var month = parseInt(timeStr.substr(0, 2)),
+                year = parseInt(timeStr.substr(2)) + 2000;
 
             if (!isNaN(month) && !isNaN(year)) {
                 range[0] = new Date(year, month - 1).getTime();
                 range[1] = new Date(year, month).getTime() - 1;
             }
         } else if (timeStr.length == 6) {
-            var month = timeStr.substr(0, 2),
-                day = timeStr.substr(2, 2),
-                year = timeStr.substr(4);
+            var month = parseInt(timeStr.substr(0, 2)),
+                day = parseInt(timeStr.substr(2, 2)),
+                year = parseInt(timeStr.substr(4)) + 2000;
 
             if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
                 range[0] = new Date(year, month - 1, day).getTime();
@@ -9251,16 +9252,16 @@ window.calendar = function() {
                     "</p><p class='bulb-no'>" + bulb +
                     "</p></div>")
                 .find(".month-title").click(function() {
-                    // Get the month
-                    var month = parseInt($(this).parent().prop("id").substr(6));
-                    calendar.shrink(app.monthArray[month]);
+                // Get the month
+                var month = parseInt($(this).parent().prop("id").substr(6));
+                calendar.shrink(app.monthArray[month]);
 
-                    var str = "@";
-                    str += month < 9 ? ("0" + (month + 1)) : (month + 1);
-                    str += app.year % 100;
+                var str = "@";
+                str += month < 9 ? ("0" + (month + 1)) : (month + 1);
+                str += app.year % 100;
 
-                    app.addLoadDataWithFilter(str);
-                });
+                app.addLoadDataWithFilter(str);
+            });
         }
     };
 

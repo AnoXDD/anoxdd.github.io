@@ -5276,10 +5276,10 @@ app.list.prototype = {
             queryResult = [0, 0];
             var timeArray = timeStr.split(":");
             if (timeArray.length == 1) {
-                queryResult = getTimeRange(timeArray[0]);
+                queryResult = this.getTimeRange(timeArray[0]);
             } else {
-                queryResult[0] = getTimeRange(timeArray[0])[0];
-                queryResult[1] = getTimeRange(timeArray[1])[1];
+                queryResult[0] = this.getTimeRange(timeArray[0])[0];
+                queryResult[1] = this.getTimeRange(timeArray[1])[1];
             }
         }
 

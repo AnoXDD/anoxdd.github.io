@@ -9221,6 +9221,8 @@ window.calendar = function() {
         _monthArticleNum[month] = (_monthArticleNum[month] || 0) + (articleNumber || 0);
         _monthBulbNum[month] = (_monthBulbNum[month] || 0) + (bulbNumber || 0);
 
+        $targetHtml.removeAttr("href").off("click");
+
         // Add href
         if (articleNumber || bulbNumber) {
             $targetHtml.attr("href", "javascript:;")
@@ -9233,8 +9235,6 @@ window.calendar = function() {
                     str += app.year % 100;
                     app.addLoadDataWithFilter(str);
                 });
-        } else {
-            $targetHtml.removeAttr("href").off("click");
         }
     };
 

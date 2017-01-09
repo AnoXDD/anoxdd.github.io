@@ -178,8 +178,6 @@ input, textarea {
   transition: box-shadow .4s ease; }
   input:active, input:focus, input:hover, textarea:active, textarea:focus, textarea:hover {
     box-shadow: 0 0 5px #AAA; }
-  input.dark:active, input.dark:focus, input.dark:hover, textarea.dark:active, textarea.dark:focus, textarea.dark:hover {
-    box-shadow: 0 0 5px #DDD; }
 
 body {
   background-attachment: fixed;
@@ -195,7 +193,7 @@ body {
   background-repeat: no-repeat; }
 
 #version {
-  background-color: #2B2B2B;
+  background-color: #2b2b2b;
   bottom: 0px;
   color: #dadada;
   font-size: 12px;
@@ -208,7 +206,6 @@ body {
 
 #app {
   background-color: #f3f3f3;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
   display: none;
   height: 76%;
   margin-left: auto;
@@ -805,7 +802,7 @@ body {
   #detail .weblink a, #detail .movie a, #detail .music a, #detail .book a, #detail .voice a, #detail .place a {
     transition: background-color .2s; }
   #detail .movie, #detail .music, #detail .book, #detail .voice, #detail .video, #detail .place, #detail .texttags, #detail .icontags {
-    /* border-top: 1px solid #dadada; */
+    /* border-top: 1px solid $silverWhite; */
     padding: 10px; }
   #detail .movie a, #detail .music a, #detail .book a, #detail .voice a, #detail .place a, #detail .video a {
     display: block;
@@ -1330,7 +1327,7 @@ body {
 
 #header-info {
   background-color: #555;
-  box-shadow: 0 0 10px #2B2B2B;
+  box-shadow: 0 0 10px #2b2b2b;
   color: #dadada;
   height: 70px;
   left: 0px;
@@ -1471,7 +1468,7 @@ body {
   .actions a, .actions p {
     background: #3f3f3f;
     border-radius: 20px;
-    box-shadow: 0 0 10px #2B2B2B;
+    box-shadow: 0 0 10px #2b2b2b;
     color: #b7b7b7;
     display: block;
     font-size: 18px;
@@ -1566,9 +1563,20 @@ body {
   height: 100%;
   position: absolute;
   width: 64%; }
-
-#text-area.dark {
-  background-color: #444444; }
+  #text-area.dark {
+    background-color: #2b2b2b; }
+    #text-area.dark #entry-body {
+      border-top: 1px #dadada solid; }
+    #text-area.dark #entry-header, #text-area.dark #entry-body {
+      background-color: #2b2b2b;
+      border-radius: 0;
+      color: #dadada; }
+      #text-area.dark #entry-header:focus, #text-area.dark #entry-header:hover, #text-area.dark #entry-header:active, #text-area.dark #entry-body:focus, #text-area.dark #entry-body:hover, #text-area.dark #entry-body:active {
+        outline: 0;
+        box-shadow: none; }
+    #text-area.dark .entry-data {
+      background: transparent;
+      color: #dadada; }
 
 #attach-area {
   display: inline-block;
@@ -1681,14 +1689,6 @@ body {
 
 #entry-body:focus, #entry-header:focus {
   /*outline: #dddddd solid 1px;*/ }
-
-#entry-header.dark, #entry-body.dark {
-  background-color: #1A1A1A !important;
-  border-color: #2b2b2b;
-  color: #dadada; }
-
-#entry-header.dark:focus, #entry-body.dark:focus {
-  outline: 0; }
 
 #entry-header {
   display: inline-block;
@@ -2008,7 +2008,7 @@ body {
 
 #attach-area .movie, #attach-area .music, #attach-area .movie, #attach-area .book, #attach-area .voice, #attach-area .video, #attach-area .place, #attach-area .weblink, #attach-area .texttags, #attach-area .icontags, #attach-area .types {
   margin-bottom: 10px;
-  /* border-top: 1px solid #dadada; */
+  /* border-top: 1px solid $silverWhite; */
   padding: 10px 10px 0 10px; }
 
 #attach-area .movie, #attach-area .music, #attach-area .book, #attach-area .video {
@@ -2441,11 +2441,10 @@ body.sensitive-mode .sensitive {
 
 body.fullscreen #app {
   height: 95%;
-  top: 2%; }
+  top: 2%;
+  width: 850px; }
 body.fullscreen #text-area {
   width: 100%; }
-body.fullscreen #feedback {
-  top: 9.5%; }
 body.fullscreen #feedback p {
   background-color: #444;
   box-shadow: 0 0 15px #111;
@@ -2466,15 +2465,15 @@ body.fullscreen #entry-summary {
     top: .4em; }
   body.fullscreen #entry-summary .entry-time-elem {
     margin-bottom: 5px; }
-  body.fullscreen #entry-summary .entry-time-wrap {
-    background: transparent; }
 body.fullscreen #entry-body {
-  font-size: 18px;
+  font-size: 24px;
   height: -webkit-calc(100% - 414px);
   padding: 60px 60px 300px 60px;
   width: -webkit-calc(100% - 129px); }
 body.fullscreen .entry-data::before {
   display: none !important; }
+body.fullscreen #entry-time-wrap {
+  background: transparent; }
 body.fullscreen #entry-time-wrap:not(:hover) {
   height: 31px; }
 body.fullscreen .header, body.fullscreen #attach-area {

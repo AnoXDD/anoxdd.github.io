@@ -1845,14 +1845,14 @@ edit.getSelectorHeader = function(type, index) {
 /************************** ANIMATION *****************************/
 
 edit.toggleLight = function() {
-    $("#text-area").toggleClass("dark").children().toggleClass("dark");
+    $("#text-area").toggleClass("dark");
 };
 edit.fullScreen = function() {
     // Clean all the data to hide map selector and photo viewer
     edit.cleanupMediaEdit();
     // Disable auto-height
     $(window).off("resize");
-    $("#app").css("height", "inherit");
+    $("#app").css("height", "");
     // Change the icon
     animation.showMenuOnly("fullscreen");
     $("body").addClass("fullscreen");
@@ -1869,7 +1869,7 @@ edit.fullScreen = function() {
 };
 edit.windowMode = function() {
     // Exit dark mode
-    $("#text-area").removeClass("dark").children().removeClass("dark");
+    $("#text-area").removeClass("dark");
     // Change the icon
     animation.showMenuOnly("add");
     // Resize

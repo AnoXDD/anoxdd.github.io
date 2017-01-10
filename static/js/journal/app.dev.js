@@ -4191,6 +4191,7 @@ window.app = function() {
         app.currentDisplayed = -1;
 
         app.command = filter;
+        app.highlightWords = [];
 
         $("#query").val(filter);
         $("#total-displayed").text(app.displayedNum);
@@ -4206,7 +4207,7 @@ window.app = function() {
             $("#year").removeClass("change");
         }
 
-        // Refresh every stuff
+        // Reset every stuff
         for (var key = 0, len = journal.archive.data[app.year].length;
              key != len;
              ++key) {
@@ -4323,6 +4324,8 @@ window.app = function() {
         preloadedTags   : [],
         /** The keyword to be searched */
         command         : "",
+        /** A list of words that should be highlighted */
+        highlightWords  : [],
         /** The boolean indicates if some mutually exclusive functions should be running if any others are */
         isFunction      : true,
         /** The variable to track the media that do not belong to any entry */
@@ -4813,6 +4816,8 @@ app.list.prototype = {
         }
         contents[currentLoaded].index = currentLoaded;
 
+        filter = this.processFilter(filter);
+
         // Test if current entry satisfies the filter
         while (true) {
             if (this.qualify(contents[currentLoaded], filter)) {
@@ -4877,108 +4882,103 @@ app.list.prototype = {
         app.lastQualified = lastQualifiedLoaded;
         app.lastLoaded = currentLoaded;
     },
-    /* Checks if this entry satisfies current string filter */
-    qualify      : function(data, filter) {
-        ////console.log("Call app.list.qualify(" + data["title"] + ", " +
-        // filter + ")"); Test if the filter is there
+    /**
+     * Pre-process the filter to make it easier to process
+     * @param filter - the raw filter to be processed
+     * @return Array - an array of filter requirements
+     */
+    processFilter: function(filter) {
         if (!filter) {
-            return true;
+            return [];
         }
+
         // Clear multiple white spaces
         while (filter.search("  ") != -1) {
             filter = filter.replace("  ", " ");
         }
-        /* The elements of all the filter */
-        var elements = filter.toLowerCase().split(" ");
-        // Iterate for all the elements
-        for (var key = 0, len = elements.length; key < len; ++key) {
-            var element = elements[key].split("|"),
-                found = false;
-            console.log("\t\t> Testing " + element);
-            // The for-loop will break if any match is found
-            for (var subkey in element) {
-                if (element.hasOwnProperty(subkey)) {
-                    // Tag
-                    var subfound;
-                    if (element[subkey].charAt(0) === "#") {
-                        if (data["tags"]) {
-                            subfound = false;
-                            var textTagArray = data["tags"].split("|"),
-                                index = textTagArray.indexOf(element[subkey].substr(
-                                    1));
-                            if (index !== -1) {
-                                subfound = true;
-                            }
-                            if (subfound) {
-                                ////console.log("\t- Tags Found!");
-                                // Found
-                                found = true;
-                                break;
-                            }
-                        }
 
-                    } else if (element[subkey].charAt(0) === "%") {
-                        ////console.log("\t- Test type");
-                        // Type
-                        subfound = false;
-                        var typeArray = app.tag().content(data["attachments"]),
-                            type = element[subkey].substr(1);
-                        for (var i = 0; i !== typeArray.length; ++i) {
-                            if (type == typeArray[i]) {
-                                subfound = true;
-                                break;
-                            }
-                        }
-                        if (subfound) {
-                            ////console.log("\t- Type match!");
-                            // Found
-                            found = true;
-                            break;
-                        }
-                    } else if (element[subkey].charAt(0) === "@") {
-                        ////console.log("\t- Test time");
-                        // Time
-                        var timeStr = element[subkey].substr(1);
-                        if (this.isInRange(timeStr, data["time"]["created"])) {
-                            console.log("\t- Time match!");
-                            // Found
-                            found = true;
-                            break;
-                        }
-                    } else if (element[subkey].charAt(0) === "+") {
-                        ////console.log("\t- Test body");
-                        if (data["text"]["body"].match(new RegExp(element[subkey].substr(
-                                1), "i"))) {
-                            ////console.log("\t- Body match!");
-                            // Found
-                            found = true;
-                            break;
-                        }
-                    } else {
-                        ////console.log("\t- Test title");
-                        if (data["title"].match(new RegExp(element[subkey], "i"))) {
-                            ////console.log("\t- Title match!");
-                            // Found
-                            found = true;
-                            break;
-                        }
-                    }
-                    // Any one matches will break the inner loop
-                    if (found) {
-                        break;
-                    }
+        var processedFilter = [];
+
+        var andGroups = filter.toLowerCase().split(" ");
+        for (var i = 0, len = andGroups.length; i < len; ++i) {
+            var orGroups = andGroups[i].split("|"),
+                req = {
+                    tags       : [],
+                    attachments: [],
+                    keywords   : []
+                };
+            for (var j = 0, len2 = orGroups.length; j < len2; ++j) {
+                var currentReq = orGroups[j];
+                if (currentReq[0] === "#") {
+                    req.tags.push(currentReq.substr(1));
+                } else if (currentReq[0] === "%") {
+                    req.attachments.push(currentReq.substr(1));
+                } else if (currentReq[0] === "@") {
+                    req.timeRange = currentReq.substr(1);
+                } else {
+                    req.keywords.push(currentReq);
+                    app.highlightWords.push(currentReq);
                 }
             }
-            // If any one matches in the inner loop, the outer loop will
-            // continue until any one doe not match or all the tests have been
-            // passed
-            if (found) {
+
+            processedFilter.push(req);
+        }
+
+        return processedFilter;
+    },
+    /**
+     *  */
+    /**
+     * Checks if this entry satisfies current string filter
+     * This function assumes that `processFilter` is called beforehand
+     * @param data - the data entry
+     * @param filter - the processed filter
+     * @returns {boolean}
+     */
+    qualify      : function(data, filter) {
+        /**
+         * A helper function to return if two arrays have common elements
+         * @param array1
+         * @param array2
+         */
+        var hasCommonElement = function(array1, array2) {
+            for (var i = 0; i < array1.length; ++i) {
+                if (array2.indexOf(array1[i]) !== -1) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        var tags = (data["tags"] || "").split("|"),
+            attachments = app.tag().content(data["attachments"]),
+            time = data["time"]["created"];
+
+        for (var i = 0; i < filter.length; ++i) {
+            var currentReq = filter[i];
+
+            // Test if time is in range, or tags/attachments match
+            if (this.isInRange(filter.timeRange || "", time) ||
+                hasCommonElement(tags, currentReq.tags) ||
+                hasCommonElement(attachments, currentReq.attachments)) {
                 continue;
             }
 
-            // No result found
-            return false;
+            // Test if the keywords match
+            for (var j = 0; j < current.keywords.length; ++j) {
+                if (data["title"].match(new RegExp(current.keywords[j], "i")) ||
+                    data["text"]["body"].match(new RegExp(current.keywords[j], "i"))) {
+                    break;
+                }
+            }
+
+            // Nothing matches
+            if (j === current.keywords.length) {
+                return false;
+            }
         }
+
         return true;
     },
     /**
@@ -5341,17 +5341,22 @@ app.list.prototype = {
  */
 app.detail = function() {
     var dataClip = journal.archive.data[app.year][app.currentDisplayed];
+
+
+    dataClip.contents = this.text(dataClip.text.body);
+    if (app.command && app.command[0] === '+') {
+        // Highlight the keyword
+
+    }
+    dataClip.chars = dataClip.text.chars + " Chars";
+
     if (!dataClip.processed) {
         if (dataClip.contentType === app.contentType.BULB) {
             dataClip.title = "";
-            dataClip.chars = dataClip.text.chars + " Chars";
-            dataClip.contents = this.text(dataClip.text.body);
             dataClip.weblink = dataClip.weblink || undefined;
             dataClip.place = dataClip.place || undefined;
         } else {
-            dataClip.chars = dataClip.text.chars + " Chars";
             dataClip.lines = dataClip.text.lines + " Lines";
-            dataClip.contents = this.text(dataClip.text.body);
             if (dataClip.weblink) {
                 this.thumb(dataClip, "weblink", 50, 50);
             }
@@ -5398,7 +5403,7 @@ app.detail = function() {
                 }
             }
         }
-        // Set the read status of the clip to read
+        // Set the clip as processed already
         dataClip.processed = 1;
     }
 
@@ -5413,10 +5418,7 @@ app.detail = function() {
     } else {
         $("#menu-show-images").addClass("hidden");
     }
-    // Back button
-    $(".btn-back", app.cDetail).on("click", function() {
-        this.hideDetail();
-    });
+
     // Click the icons to search
     $(".icontags > span").on("click", function() {
         var tag = app.tag().getNameByHtml(this.className);
@@ -5424,12 +5426,7 @@ app.detail = function() {
             addLoadDataWithFilter("#" + tag);
         }
     });
-    ////$(window).on("keyup.detail-key", function(n) {
-    ////	if (n.keyCode == 8) {
-    ////		$(".btn-back", app.cDetail).trigger("click");
-    ////	}
-    ////});
-    // Add online media url to the classes
+
     var eachOp = function() {
         var className = $(this).attr("class");
         if (journal.archive.map[className]) {

@@ -1237,7 +1237,7 @@ body {
       position: relative;
       z-index: 2;
       &:after {
-        border: 1px solid rgba(0, 0, 0, .1);
+        border: 1px solid rgba(0, 0, 0, .8);
         bottom: 0;
         content: '';
         display: block;
@@ -1263,7 +1263,7 @@ body {
 
   .text {
     color: #4e4e4e;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: normal;
     line-height: 1.2em;
     min-height: 100px;
@@ -1273,6 +1273,9 @@ body {
       line-height: 1.5em;
       margin-bottom: 1em;
       transition: color .4s ease;
+      &.highlight {
+        background-color: yellow;
+      }
       &.t1 {
         color: #aaa;
         padding-left: 4em;

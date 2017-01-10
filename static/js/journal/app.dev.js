@@ -5341,13 +5341,17 @@ app.list.prototype = {
  */
 app.detail = function() {
     var dataClip = journal.archive.data[app.year][app.currentDisplayed];
+    var contents = this.text(dataClip.text.body);
 
-
-    dataClip.contents = this.text(dataClip.text.body);
-    if (app.command && app.command[0] === '+') {
-        // Highlight the keyword
-
+    // Highlight the keyword
+    if (app.highlightWords) {
+        for (var i = 0; i < app.highlightWords.length; ++i) {
+            var re = new RegExp(app.highlightWords[i], "g");
+            contents.replace(re, "<span class='highlight'>" + app.highlightWords[i] + "</span>");
+        }
     }
+
+    dataClip.contents = contents;
     dataClip.chars = dataClip.text.chars + " Chars";
 
     if (!dataClip.processed) {
@@ -6665,7 +6669,7 @@ app.checkResource = function() {
     }
     // Show the button for furthur actions
     animation.showIcon("#return-lost-media");
-}
+};
 
 /**
  * Cleans the resource folder and moves those files that are not collected back

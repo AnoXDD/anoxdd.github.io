@@ -403,17 +403,6 @@
     if (isBulb) {
     %>
     <li class="bulb">
-        <%
-        if (month != -1) {
-        %>
-        <p class="separator">
-            <span>
-                <%= month %>
-            </span>
-        </p>
-        <%
-        }
-        %>
         <a href="javascript:;">
             <p class="datetime"><%= datetime %></p>
             <p class="summary sensitive"><%= summary %></p>
@@ -423,17 +412,6 @@
     } else {
     %>
     <li>
-        <%
-        if (month != -1) {
-        %>
-        <p class="separator">
-            <span>
-                <%= month %>
-            </span>
-        </p>
-        <%
-        }
-        %>
         <a href="javascript:;">
             <div class="cover">
                 <div class="ext"><%= ext %></div>

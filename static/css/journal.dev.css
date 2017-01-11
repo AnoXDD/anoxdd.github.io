@@ -772,7 +772,7 @@ body {
       line-height: 1.5em;
       margin-bottom: 1em;
       transition: color .4s ease; }
-      #detail .text p.highlight {
+      #detail .text p .highlight {
         background-color: yellow; }
       #detail .text p.t1 {
         color: #aaa;

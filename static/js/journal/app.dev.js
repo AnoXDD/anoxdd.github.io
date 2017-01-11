@@ -3991,7 +3991,7 @@ window.app = function() {
                 if (n.keyCode == 13) {
                     app.command = $query.val();
                     $query.effect("highlight", {color: "#dddddd"});
-                    app.addLoadDataWithFilter(app.command, true);
+                    app.addLoadDataWithFilter(app.command);
                 }
             })
             // Autocomplete for preloaded tags
@@ -4952,7 +4952,7 @@ app.list.prototype = {
         };
 
         var tags = (data["tags"] || "").split("|"),
-            attachments = app.tag().content(data["attachments"]),
+            attachments = app.tag().content(data["attachments"] || 0),
             time = data["time"]["created"];
 
         for (var i = 0; i < filter.length; ++i) {
@@ -4966,15 +4966,15 @@ app.list.prototype = {
             }
 
             // Test if the keywords match
-            for (var j = 0; j < current.keywords.length; ++j) {
-                if (data["title"].match(new RegExp(current.keywords[j], "i")) ||
-                    data["text"]["body"].match(new RegExp(current.keywords[j], "i"))) {
+            for (var j = 0; j < currentReq.keywords.length; ++j) {
+                if (data["title"] && data["title"].match(new RegExp(currentReq.keywords[j], "i")) ||
+                    data["text"]["body"].match(new RegExp(currentReq.keywords[j], "i"))) {
                     break;
                 }
             }
 
             // Nothing matches
-            if (j === current.keywords.length) {
+            if (j === currentReq.keywords.length) {
                 return false;
             }
         }
@@ -5347,7 +5347,7 @@ app.detail = function() {
     if (app.highlightWords) {
         for (var i = 0; i < app.highlightWords.length; ++i) {
             var re = new RegExp(app.highlightWords[i], "g");
-            contents.replace(re, "<span class='highlight'>" + app.highlightWords[i] + "</span>");
+         contents =   contents.replace(re, "<span class='highlight'>" + app.highlightWords[i] + "</span>");
         }
     }
 

@@ -1273,7 +1273,7 @@ body {
       line-height: 1.5em;
       margin-bottom: 1em;
       transition: color .4s ease;
-      &.highlight {
+      .highlight {
         background-color: yellow;
       }
       &.t1 {

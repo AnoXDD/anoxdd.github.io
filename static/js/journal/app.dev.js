@@ -4849,6 +4849,9 @@ app.list.prototype = {
             }
         }
 
+        // Decrement by 1 because it's not actually loaded
+        --currentLoaded;
+
         // Update the data
         $("#search-result").hide().fadeIn(500);
         $("#total-displayed").text(app.displayedNum);
@@ -5037,7 +5040,8 @@ app.list.prototype = {
         data.isBulb = 0;
 
         if (!data.contentType) {
-            var coverType = !isDynamicCover && data.coverType ? 1 : data.coverType;
+            // & 1 is hardcoded: because that means the attachment has photo
+            var coverType = !isDynamicCover && (data.attachments & 1) ? 1 : data.coverType;
             // Find the cover type
             switch (coverType) {
                 default:

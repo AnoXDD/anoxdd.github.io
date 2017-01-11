@@ -254,7 +254,8 @@ body {
   #list li {
     float: left;
     margin: 0 0 -1px 3%;
-    width: 94%; }
+    width: 94%;
+    position: relative; }
     #list li.bulb a {
       height: 10px;
       padding: 5px 10px; }
@@ -302,7 +303,7 @@ body {
     display: inline-block;
     height: 60px;
     margin-bottom: 5px;
-    padding: 10px;
+    padding: 10px 10px 10px 20px;
     position: relative;
     text-decoration: none;
     transition: background-color .4s ease, box-shadow .2s ease, width .4s ease;
@@ -312,89 +313,79 @@ body {
     #list a:hover {
       background-color: #ddd;
       box-shadow: 0 1px 10px #555; }
-    #list a div.cover, #list a p.summary {
-      transition: width .3s; }
-  #list .photo a:hover div.cover {
-    width: 60px; }
-  #list .photo a:hover p.summary {
-    width: -webkit-calc(95% - 60px); }
   #list.loading .archive a.display {
     animation: blink 3s infinite ease;
     background-color: initial;
     margin-right: 1.5em;
     min-width: 0; }
-  #list p.title {
-    color: #4e4e4e;
-    display: inline-block;
-    font-size: 16px;
-    font-weight: lighter;
-    margin-bottom: -3px;
-    max-width: 60%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
-  #list p.size {
-    background-color: #808080;
-    border-radius: 25px;
-    color: #eee;
-    display: inline-block;
-    float: right;
-    font-size: 9px;
-    margin-left: 10px;
-    margin-top: 2px;
-    opacity: 1;
-    padding: 2px 7px;
-    position: relative;
-    top: 2px; }
-  #list p.datetime {
-    color: #808080;
-    display: inline-block;
-    float: right;
-    font-size: 12px;
-    font-weight: lighter;
-    margin-top: 3px;
-    text-align: right; }
-  #list p.summary {
-    color: #5d5d5d;
-    font-size: 11px;
-    font-weight: lighter;
-    overflow: hidden;
-    position: relative;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 95%; }
-  #list p.separator {
-    display: block;
-    overflow: hidden;
-    text-align: center;
-    white-space: nowrap; }
-    #list p.separator > span {
-      color: #898989;
+  #list p {
+    position: relative; }
+    #list p.title {
       display: inline-block;
+      font-size: 16px;
+      font-weight: lighter;
+      margin-bottom: -3px;
+      max-width: 60%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; }
+    #list p.size {
+      border-radius: 25px;
+      color: #eee;
+      display: inline-block;
+      float: right;
+      font-size: 9px;
+      margin-left: 10px;
+      margin-top: 2px;
+      opacity: 1;
+      padding: 2px 7px;
+      position: relative;
+      top: 2px; }
+    #list p.datetime {
+      display: inline-block;
+      float: right;
       font-size: 12px;
       font-weight: lighter;
-      padding: 10px;
-      position: relative; }
-      #list p.separator > span:before, #list p.separator > span:after {
-        background: #dadada;
-        content: "";
-        height: 1px;
-        position: absolute;
-        top: 50%;
-        width: 9999px; }
-      #list p.separator > span:before {
-        margin-right: 15px;
-        right: 100%; }
-      #list p.separator > span:after {
-        left: 100%;
-        margin-left: 15px; }
+      margin-top: 3px;
+      text-align: right; }
+    #list p.summary {
+      font-size: 11px;
+      font-weight: lighter;
+      overflow: hidden;
+      position: relative;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 95%; }
+    #list p.separator {
+      display: block;
+      overflow: hidden;
+      text-align: center;
+      white-space: nowrap; }
+      #list p.separator > span {
+        color: #898989;
+        display: inline-block;
+        font-size: 12px;
+        font-weight: lighter;
+        padding: 10px;
+        position: relative; }
+        #list p.separator > span:before, #list p.separator > span:after {
+          background: #dadada;
+          content: "";
+          height: 1px;
+          position: absolute;
+          top: 50%;
+          width: 9999px; }
+        #list p.separator > span:before {
+          margin-right: 15px;
+          right: 100%; }
+        #list p.separator > span:after {
+          left: 100%;
+          margin-left: 15px; }
   #list .archive p.title {
     max-width: 43%; }
   #list div.cover {
     float: left;
-    height: 60px;
-    margin-right: 10px;
-    width: 0px; }
+    height: 60px; }
   #list div.ext {
     color: #5d5d5d;
     font-size: 11px;
@@ -407,10 +398,12 @@ body {
     overflow: hidden;
     position: relative; }
     #list div.thumb img, #list div.thumb canvas {
-      border: 0;
-      height: 60px;
-      outline: 0;
-      width: 60px; }
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: .5; }
     #list div.thumb:after {
       bottom: 0;
       content: '';

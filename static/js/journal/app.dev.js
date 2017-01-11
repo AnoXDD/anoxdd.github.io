@@ -4331,9 +4331,6 @@ window.app = function() {
         /** The variable to track the media that do not belong to any entry */
         lostMedia       : [],
 
-        /** The maximum number of entries to load */
-        entriesToLoadAtOnce: 10,
-
         /** Whether the date of this year is loaded */
         dataLoaded : {},
         /** When the data of this year is updated */
@@ -4822,7 +4819,7 @@ app.list.prototype = {
         filter = this.processFilter(filter);
 
         // Test if current entry satisfies the filter
-        for (var i = 0; i < app.entriesToLoadAtOnce; ++i) {
+        for (var i = 0; i < 10; +i) {
             if (this.qualify(contents[currentLoaded], filter)) {
                 var lastTime;
                 // Get the time of last clip
@@ -4962,7 +4959,7 @@ app.list.prototype = {
             var currentReq = filter[i];
 
             // Test if time is in range, or tags/attachments match
-            if (this.isInRange(currentReq.timeRange || "", time) ||
+            if (this.isInRange(filter.timeRange || "", time) ||
                 hasCommonElement(tags, currentReq.tags) ||
                 hasCommonElement(attachments, currentReq.attachments)) {
                 continue;
@@ -5238,7 +5235,7 @@ app.list.prototype = {
             }
             var j = "<img src=\"" + fileName + "\"" + thumbPropertiesHtml + ">";
             if (Modernizr.canvas) {
-                j = "<canvas width=\"160\" height=\"160\" data-src=\"" + fileName + "\"></canvas>";
+                j = "<canvas style='background: url('" + fileName + "')'></canvas>";
             }
             if (first.urlType > 1 && type == "weblink") {
                 g = "<span class=\"weblink-video\"></span>";

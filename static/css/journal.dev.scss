@@ -415,6 +415,7 @@ body {
     float: left;
     margin: 0 0 -1px 3%;
     width: 94%;
+    position: relative;
 
     &.bulb {
       a {
@@ -500,7 +501,7 @@ body {
     display: inline-block;
     height: 60px;
     margin-bottom: 5px;
-    padding: 10px;
+    padding: 10px 10px 10px 20px;
     position: relative;
     text-decoration: none;
     transition: background-color .4s ease, box-shadow .2s ease, width .4s ease;
@@ -514,20 +515,6 @@ body {
       background-color: #ddd;
       box-shadow: 0 1px 10px #555;
     }
-
-    div.cover, p.summary {
-      transition: width .3s;
-    }
-  }
-
-  .photo a:hover {
-    div.cover {
-      width: 60px;
-    }
-
-    p.summary {
-      width: -webkit-calc(95% - 60px);
-    }
   }
 
   &.loading .archive a.display {
@@ -538,9 +525,9 @@ body {
   }
 
   p {
+    position: relative;
 
     &.title {
-      color: #4e4e4e;
       display: inline-block;
       font-size: 16px;
       font-weight: lighter;
@@ -552,7 +539,6 @@ body {
     }
 
     &.size {
-      background-color: #808080;
       border-radius: 25px;
       color: #eee;
       display: inline-block;
@@ -567,7 +553,6 @@ body {
     }
 
     &.datetime {
-      color: #808080;
       display: inline-block;
       float: right;
       font-size: 12px;
@@ -577,7 +562,6 @@ body {
     }
 
     &.summary {
-      color: #5d5d5d;
       font-size: 11px;
       font-weight: lighter;
       overflow: hidden;
@@ -631,8 +615,6 @@ body {
     &.cover {
       float: left;
       height: 60px;
-      margin-right: 10px;
-      width: 0px;
     }
 
     &.ext {
@@ -652,10 +634,12 @@ body {
       position: relative;
 
       img, canvas {
-        border: 0;
-        height: 60px;
-        outline: 0;
-        width: 60px;
+        height: 100%;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: .5;
       }
       &:after {
         bottom: 0;

@@ -329,8 +329,8 @@ body {
 }
 
 // todo use include on this
-.header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #list div.attached span, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .video .thumb, #detail .place .thumb, .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2 {
-  //background-image: url('/static/img/archive.png');
+.header h1, #list a:after, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #list div.attached span, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .video .thumb, #detail .place .thumb, .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2 {
+  background-image: url('/static/img/archive.png');
   background-repeat: no-repeat;
 }
 
@@ -515,6 +515,10 @@ body {
       background-color: #ddd;
       box-shadow: 0 1px 10px #555;
       height: 200px;
+
+      canvas {
+        opacity: 1;
+      }
     }
   }
 
@@ -645,6 +649,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
         opacity: .5;
+        transition: opacity .4s;
       }
       &:after {
         bottom: 0;
@@ -1605,8 +1610,8 @@ body {
 }
 
 @media (-webkit-min-device-pixel-ratio: 1.5) {
-  .header h1, #list a:after, #list div.dummy, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2, #attach-area .video .video-play, #attach-area .weblink .thumb, #attach-area .movie .thumb, #attach-area .music .thumb, #attach-area .book .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
-    //background-image: url('/static/img/archive@2x.png');
+  .header h1, #list a:after, #list div.thumb span.video-play, #list div.thumb span.weblink-video, #detail .video .video-play, #detail .weblink .thumb, #detail .movie .thumb, #detail .music .thumb, #detail .book .thumb, #detail .voice .thumb, #detail .place .thumb, #detail .video .thumb, .icontags span, #detail .btn-back span, #detail .btn-prev, #detail .btn-next, .cp-container, .cp-buffer-1, .cp-buffer-2, .cp-progress-1, .cp-progress-2, #attach-area .video .video-play, #attach-area .weblink .thumb, #attach-area .movie .thumb, #attach-area .music .thumb, #attach-area .book .thumb, #attach-area .voice .thumb, #attach-area .place .thumb, #attach-area .video .thumb {
+    background-image: url('/static/img/archive@2x.png');
     background-size: 800px 530px;
   }
 

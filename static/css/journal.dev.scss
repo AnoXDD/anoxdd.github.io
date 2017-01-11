@@ -504,7 +504,7 @@ body {
     padding: 10px 10px 10px 20px;
     position: relative;
     text-decoration: none;
-    transition: background-color .4s ease, box-shadow .2s ease, width .4s ease;
+    transition: .4s ease;
     width: 96%;
 
     &.display {
@@ -514,6 +514,7 @@ body {
     &:hover {
       background-color: #ddd;
       box-shadow: 0 1px 10px #555;
+      height: 200px;
     }
   }
 
@@ -613,8 +614,12 @@ body {
 
   div {
     &.cover {
-      float: left;
-      height: 60px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
     }
 
     &.ext {
@@ -1209,7 +1214,8 @@ body {
     padding: 1% 0;
     transition: .5s ease;
     &.expand {
-      height: 70%;
+      max-height: 800px;
+      height: 70vh;
     }
   }
 

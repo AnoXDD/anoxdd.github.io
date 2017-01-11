@@ -5040,16 +5040,22 @@ app.list.prototype = {
             return dateHeader + " " + hour + ":" + minute;
         }
     },
-    /* Converts the content to html and append to the list of contents */
-    html         : function(data, lastTime) { // [d]
+    /**
+     * Converts the content to html and append to the list of contents
+     * @param data
+     * @param lastTime
+     * @param isDynamicCover - deliberately set false so the cover is always a photo
+     */
+    html         : function(data, lastTime, isDynamicCover) { // [d]
         // All the summary
         data.summary = data.text.ext || data.text.body.substr(0, 50);
 
         data.isBulb = 0;
 
         if (!data.contentType) {
+            var coverType = isDynamicCover ? data.coverType : 1;
             // Find the cover type
-            switch (data.coverType) {
+            switch (coverType) {
                 default:
                     data.type = "text";
                     data.ext = "";
@@ -5235,7 +5241,7 @@ app.list.prototype = {
             }
             var j = "<img src=\"" + fileName + "\"" + thumbPropertiesHtml + ">";
             if (Modernizr.canvas) {
-                j = "<canvas style='background: url('" + fileName + "')'></canvas>";
+                j = "<canvas style=\"background-image: url('" + fileName + "')\"></canvas>";
             }
             if (first.urlType > 1 && type == "weblink") {
                 g = "<span class=\"weblink-video\"></span>";

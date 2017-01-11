@@ -4330,6 +4330,8 @@ window.app = function() {
         isFunction      : true,
         /** The variable to track the media that do not belong to any entry */
         lostMedia       : [],
+        /** The limit of how many entries to be loaded before it stops */
+        entryLoadLimit : 10,
 
         /** Whether the date of this year is loaded */
         dataLoaded : {},
@@ -4819,7 +4821,7 @@ app.list.prototype = {
         filter = this.processFilter(filter);
 
         // Test if current entry satisfies the filter
-        for (var i = 0; i < 10; +i) {
+        for (var i = 0; i < app.entryLoadLimit; ++i) {
             if (this.qualify(contents[currentLoaded], filter)) {
                 var lastTime;
                 // Get the time of last clip

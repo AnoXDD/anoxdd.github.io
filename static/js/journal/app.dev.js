@@ -4331,7 +4331,7 @@ window.app = function() {
         /** The variable to track the media that do not belong to any entry */
         lostMedia       : [],
         /** The limit of how many entries to be loaded before it stops */
-        entryLoadLimit : 10,
+        entryLoadLimit  : 10,
 
         /** Whether the date of this year is loaded */
         dataLoaded : {},
@@ -4778,10 +4778,10 @@ app.list = function(filter) {
         });
         this.load(filter);
 
-        // Load all the data at once
-        while ($(".loadmore").length != 0) {
-            f.load(app.command);
-        }
+        // // Load all the data at once
+        // while ($(".loadmore").length != 0) {
+        //     f.load(app.command);
+        // }
 
         // Scroll to load more
         d.off("scroll").on("scroll", function() {
@@ -4821,18 +4821,9 @@ app.list.prototype = {
         filter = this.processFilter(filter);
 
         // Test if current entry satisfies the filter
-        for (var i = 0; i < app.entryLoadLimit; ++i) {
+        for (var i = 0; i < app.entryLoadLimit && currentLoaded < journal.total; ++i, ++currentLoaded) {
             if (this.qualify(contents[currentLoaded], filter)) {
-                var lastTime;
-                // Get the time of last clip
-                if (lastQualifiedLoaded == -1) {
-                    lastTime = 0;
-                } else {
-                    lastTime = contents[lastQualifiedLoaded].time.start || contents[lastQualifiedLoaded].time.created;
-                }
-                // Go to load/change html of the content
-                currentList.html(journal.archive.data[app.year][currentLoaded],
-                    lastTime);
+                currentList.html(journal.archive.data[app.year][currentLoaded]);
                 // Track the index of this data
                 lastQualifiedLoaded = currentLoaded;
                 // Update other information
@@ -4849,20 +4840,12 @@ app.list.prototype = {
 
                 // Find the qualified entry, break the loop if scrollbar is not
                 // visible yet
-                if ($("#list").get(0).scrollHeight == $("#list").height() && ++currentLoaded != journal.total) {
-                    continue;
+                if ($("#list").get(0).scrollHeight == $("#list").height()) {
+                    i = 0;
                 }
-                break;
             } else {
                 // Not qualified; add an empty list
                 this.htmlEmpty();
-                // 1) Increment currentLoaded to try to load the next entry
-                // candidate 2) Tests if this is the last entry to be loaded.
-                // If so, break the circle
-                if (++currentLoaded == journal.total) {
-                    // Break out of the loop
-                    break;
-                }
             }
         }
 
@@ -5045,17 +5028,16 @@ app.list.prototype = {
     /**
      * Converts the content to html and append to the list of contents
      * @param data
-     * @param lastTime
      * @param isDynamicCover - deliberately set false so the cover is always a photo
      */
-    html         : function(data, lastTime, isDynamicCover) { // [d]
+    html         : function(data, isDynamicCover) { // [d]
         // All the summary
         data.summary = data.text.ext || data.text.body.substr(0, 50);
 
         data.isBulb = 0;
 
         if (!data.contentType) {
-            var coverType = isDynamicCover ? data.coverType : 1;
+            var coverType = !isDynamicCover && data.coverType ? 1 : data.coverType;
             // Find the cover type
             switch (coverType) {
                 default:
@@ -5113,9 +5095,6 @@ app.list.prototype = {
         if (data.time.end) {
             data.datetime += " - " + this.date(data.time.end, 1);
         }
-
-        // Separator
-        data.month = this.isInSameMonth(createTime, lastTime);
 
         var item = $(app.itemView(data));
 
@@ -7639,27 +7618,27 @@ function downloadFile(url, textOnly, callbackOnSuccess) {
                                 href   : "#"
                             });
                         animation.finished("#download");
-                    } else {
-                        // Get metadata
-                        $.ajax({
-                                type: "GET",
-                                url : getResourceUrlHeader() + ":?select=folder&access_token=" + token
-                            })
-                            .done(function(data, status, xhr) {
-                                // Get the data number
-                                journal.archive.media = data["folder"]["childCount"];
-                                app.refresh();
-                                animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START,
-                                    1);
-                                network.init(journal.archive.media);
-                                downloadMedia();
-                            })
-                            .fail(function(xhr, status, error) {
-                                animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL,
-                                    error,
-                                    -1);
-                            });
                     }
+
+                    // Get metadata
+                    $.ajax({
+                            type: "GET",
+                            url : getResourceUrlHeader() + ":?select=folder&access_token=" + token
+                        })
+                        .done(function(data, status, xhr) {
+                            // Get the data number
+                            journal.archive.media = data["folder"]["childCount"];
+                            app.refresh();
+                            animation.log(log.CONTENTS_DOWNLOAD_MEDIA_START,
+                                1);
+                            network.init(journal.archive.media);
+                            downloadMedia();
+                        })
+                        .fail(function(xhr, status, error) {
+                            animation.error(log.CONTENTS_DOWNLOAD_MEDIA_FAIL,
+                                error,
+                                -1);
+                        });
 
                     callbackOnSuccess();
                 })

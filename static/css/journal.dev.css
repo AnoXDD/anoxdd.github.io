@@ -258,7 +258,9 @@ body {
     position: relative; }
     #list li.bulb a {
       height: 10px;
-      padding: 5px 10px; }
+      padding: 3px 10px;
+      background: transparent;
+      box-shadow: none; }
       #list li.bulb a p.datetime {
         margin: 0;
         font-size: 8px; }
@@ -314,8 +316,6 @@ body {
       background-color: #ddd;
       box-shadow: 0 1px 10px #555;
       height: 200px; }
-      #list a:hover canvas {
-        opacity: 1; }
   #list.loading .archive a.display {
     animation: blink 3s infinite ease;
     background-color: initial;
@@ -432,6 +432,8 @@ body {
         left: 0;
         top: 0;
         width: 100%; }
+  #list a:hover canvas {
+    opacity: 1; }
   #list a div.thumb span.video-play {
     background-position: -590px -300px;
     border: 0;

@@ -420,7 +420,9 @@ body {
     &.bulb {
       a {
         height: 10px;
-        padding: 5px 10px;
+        padding: 3px 10px;
+        background: transparent;
+        box-shadow:none;
 
         p.datetime {
           margin: 0;
@@ -515,10 +517,6 @@ body {
       background-color: #ddd;
       box-shadow: 0 1px 10px #555;
       height: 200px;
-
-      canvas {
-        opacity: 1;
-      }
     }
   }
 
@@ -676,6 +674,10 @@ body {
       }
     }
 
+  }
+
+  a:hover canvas {
+    opacity: 1;
   }
 
   a div.thumb span.video-play {

@@ -235,14 +235,25 @@ body {
     z-index: 0;
     display: none; }
 
-#list {
+#list, #map {
+  display: inline-block;
+  height: 50%;
+  width: 100%;
+  transition: height .4s ease, width .4s ease; }
+
+#list-tab {
   background-color: #F3F3F3;
-  display: none;
+  display: inline-block;
   height: 100%;
-  width: calc(49% - 300px);
+  width: calc(49% - 300px); }
+  #list-tab.list-only #list {
+    height: 100%; }
+  #list-tab.list-only #map {
+    height: 0; }
+
+#list {
   overflow-x: hidden;
-  overflow-y: auto;
-  transition: width .4s ease; }
+  overflow-y: auto; }
   #list.extended {
     width: calc(49% - 40px); }
   #list ul {

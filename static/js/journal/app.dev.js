@@ -5517,7 +5517,6 @@ app.detail.prototype = {
         $("#edit-this, #delete").addClass("hidden");
         animation.testAllSubs();
         app.cDetail.css("display", "none").empty();
-        app.cList.css("display", "inline-block");
         app.app.removeClass("detail-view");
         //// $(window).off("keyup.detail-key");
         // Remove all the photos
@@ -9374,6 +9373,136 @@ window.calendar = function() {
             $("#data-calendar").removeClass("minimized");
             $("#list").removeClass("extended");
         }
+    }
+}();
+
+//endregion
+
+//region map
+
+window.map = function() {
+    "use strict";
+
+    var _LOCATION_DOT = {
+        path        : 'M 0,0 0,0 z',
+        fillOpacity : 0.8,
+        scale       : 1,
+        strokeColor : 'red',
+        strokeWeight: 10
+    };
+
+    var _initialized = false,
+        _toBeRefreshed = false,
+        _map,
+        _infoWindow,
+        _markers = [];
+
+    /**
+     * Extracts the location data from the bulbs of current journal archive
+     * @private
+     */
+    var _extractLocationData = function() {
+// todo only extract shown data
+        _markers = [];
+
+        for (var i = 0, len = journal.archive.data[app.year].length; i < len; ++i) {
+            var bulb = journal.archive.data[app.year][i];
+            if (bulb.contentType === app.contentType.BULB && bulb["place"]) {
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(bulb["place"]["latitude"], bulb["place"]["longitude"]),
+                    icon    : _LOCATION_DOT,
+                    map     : _map,
+                    title   : new Date(bulb["time"]["created"]).toString()
+                });
+
+                var contentString = '<p class="bulb-content">' +
+                    bulb["text"]["body"] + '</p><p class="location">' +
+                    (bulb["place"]["title"] || "") +
+                    '</p>';
+
+                marker.addListener("click", () => {
+                    _infoWindow.setContent(contentString);
+                    _infoWindow.open(_map, marker);
+                });
+
+                _markers.push(marker);
+            }
+        }
+    };
+
+    /**
+     * Show the markers and display them on the map
+     * @private
+     */
+    var _showMarkers = function() {
+        this.reset();
+
+        _extractLocationData();
+        _showDataOnMap();
+    };
+
+    /**
+     * Show the data on the map.
+     * This function assumes that the location data is already extracted from the journal data
+     * @private
+     */
+    var _showDataOnMap = function() {
+        _drawDataLocations();
+        _drawLinesBetweenLocations();
+    };
+
+    return {
+        /**
+         * The function to be called once the map is initialized
+         */
+        init: function() {
+
+            //todo to be changed later
+            var uluru = {lat: -25.363, lng: 131.044};
+            _map = new google.maps.Map(document.getElementById("map"), {
+                zoom  : 4,
+                center: uluru
+            });
+
+            _infoWindow = new google.maps.InfoWindow();
+
+            _initialized = true;
+
+            if (_toBeRefreshed) {
+                _toBeRefreshed = false;
+                _showMarkers();
+            }
+        },
+
+        /**
+         * Show the map, with an optional value of the new data
+         * @param data
+         */
+        show: function() {
+            $("#list-tab").removeClass("list-only");
+
+            if (_initialized) {
+                _showMarkers();
+            }
+        },
+
+        /**
+         * Hide the map
+         */
+        hide: function() {
+            $("#list-tab").addClass("list-only");
+        },
+
+        /**
+         * Reset the map. Remove any components on the map
+         */
+        reset: function() {
+            for (var i = 0; i < _markers.length; ++i) {
+                _markers[i].setMap(null);
+            }
+            _markers = [];
+        }
+
     }
 }();
 

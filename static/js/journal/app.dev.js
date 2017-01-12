@@ -6754,7 +6754,7 @@ app.cleanResource = function() {
 $(document).ready(function() {
     app.app = $("div#app");
     app.contents = app.app.find(" > #contents");
-    app.cList = app.app.find(" > #contents > #list");
+    app.cList = app.app.find("#list");
     app.cDetail = app.app.find(" > #contents > #detail");
     app.itemView = _.template($("#list-view").html());
     app.detailView = _.template($("#detail-view").html());
@@ -9401,31 +9401,33 @@ window.map = function() {
      * Extracts the location data from the bulbs of current journal archive
      * @private
      */
-    var _extractLocationData = function() {
+    var _drawDataLocations = function() {
 // todo only extract shown data
         _markers = [];
 
         for (var i = 0, len = journal.archive.data[app.year].length; i < len; ++i) {
             var bulb = journal.archive.data[app.year][i];
             if (bulb.contentType === app.contentType.BULB && bulb["place"]) {
-                var marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(bulb["place"]["latitude"], bulb["place"]["longitude"]),
-                    icon    : _LOCATION_DOT,
-                    map     : _map,
-                    title   : new Date(bulb["time"]["created"]).toString()
-                });
+                (function innerLoop(bulb) {
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(bulb["place"]["latitude"], bulb["place"]["longitude"]),
+                        icon    : _LOCATION_DOT,
+                        map     : _map,
+                        title   : new Date(bulb["time"]["created"]).toString()
+                    });
 
-                var contentString = '<p class="bulb-content">' +
-                    bulb["text"]["body"] + '</p><p class="location">' +
-                    (bulb["place"]["title"] || "") +
-                    '</p>';
+                    var contentString = '<p class="bulb-content">' +
+                        bulb["text"]["body"] + '</p><p class="location">' +
+                        (bulb["place"]["title"] || "") +
+                        '</p>';
 
-                marker.addListener("click", () => {
-                    _infoWindow.setContent(contentString);
-                    _infoWindow.open(_map, marker);
-                });
+                    marker.addListener("click", () => {
+                        _infoWindow.setContent(contentString);
+                        _infoWindow.open(_map, marker);
+                    });
 
-                _markers.push(marker);
+                    _markers.push(marker);
+                })(bulb);
             }
         }
     };
@@ -9435,9 +9437,8 @@ window.map = function() {
      * @private
      */
     var _showMarkers = function() {
-        this.reset();
+        map.reset();
 
-        _extractLocationData();
         _showDataOnMap();
     };
 

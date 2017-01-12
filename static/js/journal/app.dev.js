@@ -9384,52 +9384,133 @@ window.map = function() {
     "use strict";
 
     var _LOCATION_DOT = {
-        path        : 'M 0,0 0,0 z',
-        fillOpacity : 0.8,
-        scale       : 1,
-        strokeColor : 'red',
-        strokeWeight: 10
-    };
+            path        : 'M 0,0 0,0 z',
+            fillOpacity : 0.8,
+            scale       : 1,
+            strokeColor : 'red',
+            strokeWeight: 10
+        },
+        _INFO_WINDOW_TIMEOUT = 5000;
 
     var _initialized = false,
         _toBeRefreshed = false,
         _map,
+        /**
+         * The infowindow to show bulb content
+         */
         _infoWindow,
-        _markers = [];
+        /**
+         * The path between each bulb (dot)
+         */
+        _path,
+        /**
+         * The timeout id that the infowindow will be hidden
+         * @type {number}
+         * @private
+         */
+        _infoWindowTimeoutID = 0,
+        /**
+         * The list of markers
+         * @type {Array}
+         * @private
+         */
+        _markers = [],
+        /**
+         * The list of content strings to be shown in the infowindow
+         * @type {Array}
+         * @private
+         */
+        _contentStrings = [],
+        /**
+         * The index of the bulb last displayed. This index is from `_markers` and `_contentStrings`
+         * @type {number}
+         * @private
+         */
+        _lastDisplayedIndex = -1;
 
     /**
      * Extracts the location data from the bulbs of current journal archive
+     * This function will read the data and will simple append the data to _markers and _contentStrings
      * @private
      */
     var _drawDataLocations = function() {
 // todo only extract shown data
-        _markers = [];
+        var coordinates = [];
 
         for (var i = 0, len = journal.archive.data[app.year].length; i < len; ++i) {
             var bulb = journal.archive.data[app.year][i];
             if (bulb.contentType === app.contentType.BULB && bulb["place"]) {
                 (function innerLoop(bulb) {
+                    var latlng = {
+                        lat: bulb["place"]["latitude"],
+                        lng: bulb["place"]["longitude"]
+                    };
+                    coordinates.append(latlng);
+
                     var marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(bulb["place"]["latitude"], bulb["place"]["longitude"]),
+                        position: latlng,
                         icon    : _LOCATION_DOT,
                         map     : _map,
                         title   : new Date(bulb["time"]["created"]).toString()
                     });
 
-                    var contentString = '<p class="bulb-content">' +
+                    // todo add navigation to next and previous
+                    var contentString = '<p class="bulb-date">' +
+                        new Date(bulb["time"]["created"]).toString() + '</p><p class="bulb-content">' +
                         bulb["text"]["body"] + '</p><p class="location">' +
                         (bulb["place"]["title"] || "") +
                         '</p>';
 
-                    marker.addListener("click", () => {
-                        _infoWindow.setContent(contentString);
-                        _infoWindow.open(_map, marker);
+                    var currentIndex = _markers.length;
+
+                    marker.addListener("mouseover", () => {
+                        _showInfowindow(currentIndex);
+                    });
+
+                    marker.addListener("mouseout", () => {
+                        clearTimeout(_infoWindowTimeoutID);
+
+                        _infoWindowTimeoutID = setTimeout(() => {
+                            _infoWindow.close();
+                        }, _INFO_WINDOW_TIMEOUT);
+                    });
+
+                    marker.addListener("click", ()=> {
+                        // todo show the bulb in the list
                     });
 
                     _markers.push(marker);
+                    _contentStrings.push(contentString);
                 })(bulb);
             }
         }
+
+        // Add coordinates to the map
+        _path = new google.maps.Polyline({
+            path: coordinates,
+            geodesic: true,
+            strokeColor: 'black',
+            strokeOpacity: 0.7,
+            strokeWeight: 1
+        });
+
+        _path.setMap(_map);
+    };
+
+    /**
+     * Show the infowindow with an index
+     * @param index - the index of `_markers` and `_infowindow`
+     * @private
+     */
+    var _showInfoWindow = function(index) {
+        index = index || _lastDisplayedIndex;
+
+        clearTimeout(_infoWindowTimeoutID);
+
+        _lastDisplayedIndex = index;
+
+        _infoWindow.setContent(_contentStrings[index]);
+        _infoWindow.open(_map, _markers[index]);
     };
 
     /**
@@ -9449,7 +9530,6 @@ window.map = function() {
      */
     var _showDataOnMap = function() {
         _drawDataLocations();
-        _drawLinesBetweenLocations();
     };
 
     return {
@@ -9477,7 +9557,7 @@ window.map = function() {
 
         /**
          * Show the map, with an optional value of the new data
-         * @param data
+         * @param data todo
          */
         show: function() {
             $("#list-tab").removeClass("list-only");
@@ -9485,6 +9565,28 @@ window.map = function() {
             if (_initialized) {
                 _showMarkers();
             }
+        },
+
+        /**
+         * Shows the next bulb available. Will do nothing if no next bulb is available
+         */
+        showNextBulb: function() {
+            if (++_lastDisplayedIndex >= _markers.length) {
+                _lastDisplayedIndex = _markers.length - 1;
+            }
+
+            _showInfoWindow();
+        },
+
+        /**
+         * Shows the previous bulb available. Will do nothing if no previos bulb is available
+         */
+        showPreviousBulb: function() {
+            if (--_lastDisplayedIndex < 0) {
+                _lastDisplayedIndex = 0;
+            }
+
+            _showInfoWindow();
         },
 
         /**
@@ -9498,10 +9600,17 @@ window.map = function() {
          * Reset the map. Remove any components on the map
          */
         reset: function() {
+            if (_path) {
+                _path.setMap(null);
+            }
+
             for (var i = 0; i < _markers.length; ++i) {
                 _markers[i].setMap(null);
             }
+
             _markers = [];
+            _contentStrings = [];
+            _lastDisplayedIndex = -1;
         }
 
     }

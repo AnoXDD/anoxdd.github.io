@@ -9442,10 +9442,10 @@ window.map = function() {
             if (bulb.contentType === app.contentType.BULB && bulb["place"]) {
                 (function innerLoop(bulb) {
                     var latlng = {
-                        lat: bulb["place"]["latitude"],
-                        lng: bulb["place"]["longitude"]
+                        lat: parseFloat(bulb["place"]["latitude"]),
+                        lng: parseFloat(bulb["place"]["longitude"])
                     };
-                    coordinates.append(latlng);
+                    coordinates.push(latlng);
 
                     var marker = new google.maps.Marker({
                         position: latlng,
@@ -9464,7 +9464,7 @@ window.map = function() {
                     var currentIndex = _markers.length;
 
                     marker.addListener("mouseover", () => {
-                        _showInfowindow(currentIndex);
+                        _showInfoWindow(currentIndex);
                     });
 
                     marker.addListener("mouseout", () => {

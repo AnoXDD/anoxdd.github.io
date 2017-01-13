@@ -3,7 +3,7 @@
  */
 function showContent() {
     // Add something before
-    var header = "<p>(C) 2016 Runjie Guan. All rights reserved.<br/>This website only supports modern browser. </p>";
+    var header = "<p>(C) 2017 Runjie Guan. All rights reserved.<br/>This website only supports modern browser. </p>";
 
     setTimeout(function() {
         // Add to header

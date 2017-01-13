@@ -1,3 +1,10 @@
+/**
+ * Things to do to release stable
+ * 1. Copy app.dev.js to app.js. Remove animation.debug=true;
+ * 2. Copy journal.dev.css to journal.old.css
+ * 2. Copy dev.html to index.html. Rename journal/app.dev.js to lib/app.min.js. Rename journal.dev.css to journal.old.min.css
+ */
+
 //region animation.js
 
 /* A library for animations */

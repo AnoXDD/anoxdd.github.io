@@ -3778,5 +3778,40 @@ body.fullscreen {
 }
 
 #map {
+  .map-infowindow-container {
+    position: relative;
+    width: 500px;
 
+    .location {
+      text-align: right;
+    }
+    .map-actions {
+      position: absolute;
+      width: 100%;
+
+      a {
+        position: absolute;
+        top: 0;
+        width: 50%;
+        transition: background .4s ease;
+        background: transparent;
+      }
+    }
+  }
+
+  #bulb-map-prev {
+    left: 0;
+
+    &:hover {
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0) 100%);
+    }
+  }
+
+  #bulb-map-next {
+    right: 0;
+
+    &:hover {
+      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.35) 100%);
+    }
+  }
 }

@@ -9455,11 +9455,11 @@ window.map = function() {
                     });
 
                     // todo add navigation to next and previous
-                    var contentString = '<p class="bulb-date">' +
+                    var contentString = '<div class="map-infowindow-container"><p class="bulb-date">' +
                         new Date(bulb["time"]["created"]).toString() + '</p><p class="bulb-content">' +
                         bulb["text"]["body"] + '</p><p class="location">' +
                         (bulb["place"]["title"] || "") +
-                        '</p>';
+                        '</p><div class="map-actions"><a href="map.showPreviousBulb()" id="bulb-map-prev"></a><a href="map.showNextBulb()" id="bulb-map-next"></a></div></div>';
 
                     var currentIndex = _markers.length;
 
@@ -9487,11 +9487,11 @@ window.map = function() {
 
         // Add coordinates to the map
         _path = new google.maps.Polyline({
-            path: coordinates,
-            geodesic: true,
-            strokeColor: 'black',
+            path         : coordinates,
+            geodesic     : true,
+            strokeColor  : 'black',
             strokeOpacity: 0.7,
-            strokeWeight: 1
+            strokeWeight : 1
         });
 
         _path.setMap(_map);

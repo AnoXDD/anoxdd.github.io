@@ -2643,4 +2643,27 @@ body.fullscreen .header, body.fullscreen #attach-area {
       pointer-events: initial;
       opacity: 1; }
 
+#map .map-infowindow-container {
+  position: relative;
+  width: 500px; }
+  #map .map-infowindow-container .location {
+    text-align: right; }
+  #map .map-infowindow-container .map-actions {
+    position: absolute;
+    width: 100%; }
+    #map .map-infowindow-container .map-actions a {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      transition: background .4s ease;
+      background: transparent; }
+#map #bulb-map-prev {
+  left: 0; }
+  #map #bulb-map-prev:hover {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, transparent 75%, transparent 100%); }
+#map #bulb-map-next {
+  right: 0; }
+  #map #bulb-map-next:hover {
+    background: linear-gradient(to right, transparent 0%, transparent 25%, rgba(0, 0, 0, 0.35) 100%); }
+
 /*# sourceMappingURL=journal.dev.css.map */

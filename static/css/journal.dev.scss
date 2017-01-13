@@ -401,6 +401,10 @@ body {
   height: 100%;
   width: calc(49% - #{$calendar-width});
 
+  &.extended {
+    width: calc(49% - #{$calendar-width-mini});
+  }
+
   &.list-only {
     #list {
       height: 100%;
@@ -415,10 +419,6 @@ body {
 #list {
   overflow-x: hidden;
   overflow-y: auto;
-
-  &.extended {
-    width: calc(49% - #{$calendar-width-mini});
-  }
 
   ul {
     padding: 1% .5% 0;

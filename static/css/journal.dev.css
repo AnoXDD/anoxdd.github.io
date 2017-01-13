@@ -246,6 +246,8 @@ body {
   display: inline-block;
   height: 100%;
   width: calc(49% - 300px); }
+  #list-tab.extended {
+    width: calc(49% - 40px); }
   #list-tab.list-only #list {
     height: 100%; }
   #list-tab.list-only #map {
@@ -254,8 +256,6 @@ body {
 #list {
   overflow-x: hidden;
   overflow-y: auto; }
-  #list.extended {
-    width: calc(49% - 40px); }
   #list ul {
     padding: 1% .5% 0; }
     #list ul:after {

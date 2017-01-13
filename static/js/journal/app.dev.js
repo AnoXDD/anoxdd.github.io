@@ -4840,15 +4840,14 @@ app.list.prototype = {
                         app.displayedTime += timeDelta;
                     }
                 }
-
-                // Find the qualified entry, break the loop if scrollbar is not
-                // visible yet
-                if ($("#list").get(0).scrollHeight == $("#list").height()) {
-                    i = 0;
-                }
             } else {
                 // Not qualified; add an empty list
                 this.htmlEmpty();
+            }
+
+            // Always keep loading if the list is not filled with any entries yet
+            if ($("#list").get(0).scrollHeight == $("#list").height()) {
+                i = 0;
             }
         }
 
@@ -9365,7 +9364,7 @@ window.calendar = function() {
             str = str || "";
             $("#calendar-thumbnail").text(str);
             $("#data-calendar").addClass("minimized");
-            $("#list").addClass("extended");
+            $("#list-tab").addClass("extended");
         }
         ,
 
@@ -9374,7 +9373,7 @@ window.calendar = function() {
          */
         expand: function() {
             $("#data-calendar").removeClass("minimized");
-            $("#list").removeClass("extended");
+            $("#list-tab").removeClass("extended");
         }
     }
 }();
@@ -9572,6 +9571,8 @@ window.map = function() {
 
             if (_initialized) {
                 _showMarkers();
+            } else {
+                map.init();
             }
         },
 

@@ -2666,9 +2666,9 @@ body.fullscreen .header, body.fullscreen #attach-area {
         opacity: 1; }
 #map #bulb-map-prev {
   left: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, transparent 75%, transparent 100%); }
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.75) 0%, transparent 100%); }
 #map #bulb-map-next {
   right: 0;
-  background: linear-gradient(to right, transparent 0%, transparent 25%, rgba(0, 0, 0, 0.35) 100%); }
+  background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.75) 100%); }
 
 /*# sourceMappingURL=journal.dev.css.map */

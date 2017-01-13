@@ -4950,7 +4950,7 @@ app.list.prototype = {
             var currentReq = filter[i];
 
             // Test if time is in range, or tags/attachments match
-            if (this.isInRange(filter.timeRange || "", time) ||
+            if (this.isInRange(currentReq.timeRange || "", time) ||
                 hasCommonElement(tags, currentReq.tags) ||
                 hasCommonElement(attachments, currentReq.attachments)) {
                 continue;
@@ -9383,10 +9383,6 @@ window.calendar = function() {
 
 //region map
 
-function initMap() {
-    map.init();
-}
-
 window.map = function() {
     "use strict";
 
@@ -9523,6 +9519,10 @@ window.map = function() {
 
         _infoWindow.setContent(_contentStrings[index]);
         _infoWindow.open(_map, _markers[index]);
+
+        // Set the map position
+        _map.setCenter(_markers[index].position);
+        _map.setZoom(15);
     };
 
     /**
@@ -9561,10 +9561,7 @@ window.map = function() {
 
             _initialized = true;
 
-            if (_toBeRefreshed) {
-                _toBeRefreshed = false;
-                _showMarkers();
-            }
+            map.show();
         },
 
         /**

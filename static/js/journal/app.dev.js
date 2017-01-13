@@ -4437,6 +4437,9 @@ window.app = function() {
             _resetDataAndLayout(filter);
             _displayDataInList(filter);
 
+            // Reload the map data
+            map.show();
+
             // Show the final result anyway
             $search.fadeIn(500);
         },
@@ -9380,6 +9383,10 @@ window.calendar = function() {
 
 //region map
 
+function initMap() {
+    map.init();
+}
+
 window.map = function() {
     "use strict";
 
@@ -9435,7 +9442,8 @@ window.map = function() {
      */
     var _drawDataLocations = function() {
 // todo only extract shown data
-        var coordinates = [];
+        var coordinates = [],
+         bounds = new google.maps.LatLngBounds();
 
         for (var i = 0, len = journal.archive.data[app.year].length; i < len; ++i) {
             var bulb = journal.archive.data[app.year][i];
@@ -9446,6 +9454,7 @@ window.map = function() {
                         lng: parseFloat(bulb["place"]["longitude"])
                     };
                     coordinates.push(latlng);
+                    bounds.extend(latlng);
 
                     var marker = new google.maps.Marker({
                         position: latlng,
@@ -9454,7 +9463,6 @@ window.map = function() {
                         title   : new Date(bulb["time"]["created"]).toString()
                     });
 
-                    // todo add navigation to next and previous
                     var contentString = '<div class="map-infowindow-container"><p class="bulb-date">' +
                         new Date(bulb["time"]["created"]).toString() + '</p><p class="bulb-content">' +
                         bulb["text"]["body"] + '</p><p class="location">' +
@@ -9495,6 +9503,9 @@ window.map = function() {
         });
 
         _path.setMap(_map);
+
+        // Set the zoom level of the map
+        _map.fitBounds(bounds);
     };
 
     /**
@@ -9557,7 +9568,6 @@ window.map = function() {
 
         /**
          * Show the map, with an optional value of the new data
-         * @param data todo
          */
         show: function() {
             $("#list-tab").removeClass("list-only");

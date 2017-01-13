@@ -9443,7 +9443,7 @@ window.map = function() {
     var _drawDataLocations = function() {
 // todo only extract shown data
         var coordinates = [],
-         bounds = new google.maps.LatLngBounds();
+            bounds = new google.maps.LatLngBounds();
 
         for (var i = 0, len = journal.archive.data[app.year].length; i < len; ++i) {
             var bulb = journal.archive.data[app.year][i];
@@ -9467,7 +9467,8 @@ window.map = function() {
                         new Date(bulb["time"]["created"]).toString() + '</p><p class="bulb-content">' +
                         bulb["text"]["body"] + '</p><p class="location">' +
                         (bulb["place"]["title"] || "") +
-                        '</p><div class="map-actions"><a href="map.showPreviousBulb()" id="bulb-map-prev"></a><a href="map.showNextBulb()" id="bulb-map-next"></a></div></div>';
+                        '</p><div class="map-actions"><a href="javascript:;" onclick="map.showOlderBulb()" id="bulb-map-prev"></a>' +
+                        '<a href="javascript:;" onclick="map.showLaterBulb()" id="bulb-map-next"></a></div></div>';
 
                     var currentIndex = _markers.length;
 
@@ -9578,9 +9579,9 @@ window.map = function() {
         },
 
         /**
-         * Shows the next bulb available. Will do nothing if no next bulb is available
+         * Shows an older bulb available. Will do nothing if no next bulb is available
          */
-        showNextBulb: function() {
+        showOlderBulb: function() {
             if (++_lastDisplayedIndex >= _markers.length) {
                 _lastDisplayedIndex = _markers.length - 1;
             }
@@ -9589,9 +9590,9 @@ window.map = function() {
         },
 
         /**
-         * Shows the previous bulb available. Will do nothing if no previos bulb is available
+         * Shows a later (more recent) bulb available. Will do nothing if no previos bulb is available
          */
-        showPreviousBulb: function() {
+        showLaterBulb: function() {
             if (--_lastDisplayedIndex < 0) {
                 _lastDisplayedIndex = 0;
             }

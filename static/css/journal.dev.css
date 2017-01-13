@@ -2646,24 +2646,29 @@ body.fullscreen .header, body.fullscreen #attach-area {
 #map .map-infowindow-container {
   position: relative;
   width: 500px; }
+  #map .map-infowindow-container .bulb-content {
+    padding: 10px; }
   #map .map-infowindow-container .location {
     text-align: right; }
   #map .map-infowindow-container .map-actions {
     position: absolute;
-    width: 100%; }
+    width: 100%;
+    height: 100%;
+    top: 0; }
     #map .map-infowindow-container .map-actions a {
       position: absolute;
       top: 0;
       width: 50%;
-      transition: background .4s ease;
-      background: transparent; }
+      height: 100%;
+      transition: opacity .4s ease;
+      opacity: 0; }
+      #map .map-infowindow-container .map-actions a:hover {
+        opacity: 1; }
 #map #bulb-map-prev {
-  left: 0; }
-  #map #bulb-map-prev:hover {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, transparent 75%, transparent 100%); }
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, transparent 75%, transparent 100%); }
 #map #bulb-map-next {
-  right: 0; }
-  #map #bulb-map-next:hover {
-    background: linear-gradient(to right, transparent 0%, transparent 25%, rgba(0, 0, 0, 0.35) 100%); }
+  right: 0;
+  background: linear-gradient(to right, transparent 0%, transparent 25%, rgba(0, 0, 0, 0.35) 100%); }
 
 /*# sourceMappingURL=journal.dev.css.map */

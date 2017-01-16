@@ -3522,8 +3522,8 @@ body.fullscreen {
     height: 100%;
     right: 0;
     z-index: 100;
-    background: black;
     cursor: w-resize;
+    top:80px;
   }
 
   #errors {

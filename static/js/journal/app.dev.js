@@ -1459,7 +1459,7 @@ edit.enableWidthAdjust = function() {
         windowWidth = 0,
         selfWidth = app.$ruler.outerWidth();
 
-    edit.setAppWidthWithRuler(praseInt(localStorage["rulerRight"] || 0));
+    edit.setAppWidthWithRuler(parseInt(localStorage["rulerRight"] || 0));
 
     app.$ruler.off("mousedown mousemove mouseup")
         .mousedown(function(e) {

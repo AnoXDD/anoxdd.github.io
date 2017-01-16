@@ -2474,8 +2474,8 @@ body.fullscreen #ruler {
   height: 100%;
   right: 0;
   z-index: 100;
-  background: black;
-  cursor: w-resize; }
+  cursor: w-resize;
+  top: 80; }
 body.fullscreen #errors {
   top: 13%; }
 body.fullscreen #entry-line {

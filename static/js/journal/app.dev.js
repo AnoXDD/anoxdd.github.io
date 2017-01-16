@@ -775,6 +775,8 @@ edit.init = function(overwrite, index) {
     console.log(Object.keys(data));
     var editPane = $(edit.editView(data));
 
+    edit.enableWidthAdjust();
+
     // Content processing
     $("#search-new, #search-result").fadeOut();
     // Initialize the contents
@@ -1435,6 +1437,47 @@ edit.removeDuplicate = function() {
 /******************************************************************
  ************************ CONTENT CONTROL *************************
  ******************************************************************/
+
+edit.enableWidthAdjust = function() {
+    var isDown = false,
+        /**
+         * The distance between where the mouse is down and the left edge,
+         * always positive
+         * @type {number}
+         */
+        delta = 0,
+        windowWidth = 0,
+        selfWidth = $("#ruler").outerWidth();
+
+    $("#ruler").off("mousedown mousemove mouseup")
+        .mousedown(function(e) {
+            isDown = true;
+
+            windowWidth = $(window).width();
+
+            var left = $(this).offset().left;
+
+            delta = e.pageX - left;
+            console.log(delta);
+        })
+        .mousemove(function(e) {
+            if (isDown) {
+                var right = Math.max(windowWidth - selfWidth - e.pageX + delta,
+                    0);
+                var width = windowWidth - 2 * (right + selfWidth);
+
+                width = app.$app.width(width).width();
+                $(this)
+                    .css("right", `${(windowWidth - width) / 2 - selfWidth}px`);
+            }
+        })
+        .mouseup((e)=> {
+            // Adjust the ruler to put it back to the right place
+            isDown = false;
+
+            console.log(`${e.pageX}`);
+        });
+};
 
 /************************** REDO **********************************/
 
@@ -5450,7 +5493,7 @@ app.detail = function() {
     var l = $(app.detailView(dataClip));
     // !!!!!HIDE THE CONTENT LISTS!!!!
     app.$detail.css("display", "inline-block").html(l);
-    app.app.addClass("detail-view");
+    app.$app.addClass("detail-view");
     $(".content.loading").removeClass("loading");
     // Show the button if any images available
     if (dataClip["images"]) {
@@ -5562,7 +5605,7 @@ app.detail.prototype = {
         $("#edit-this, #delete").addClass("hidden");
         animation.testAllSubs();
         app.$detail.css("display", "none").empty();
-        app.app.removeClass("detail-view");
+        app.$app.removeClass("detail-view");
         //// $(window).off("keyup.detail-key");
         // Remove all the photos
         if (app.photos) {
@@ -5577,7 +5620,7 @@ app.layout = function() {
             // Tests the width of current window to enable spaces on the top
             // and the buttom to disappear
             var newHeight = activeWindow.height() - 110;
-            app.app.height(newHeight);
+            app.$app.height(newHeight);
             app.contents.height(newHeight);
         };
     changeWindowSize();
@@ -6798,8 +6841,8 @@ app.cleanResource = function() {
 
 
 $(document).ready(function() {
-    app.app = $("#app");
-    app.contents = app.app.find(" > #contents");
+    app.$app = $("#app");
+    app.contents = app.$app.find(" > #contents");
     app.$list = $("#list");
     app.$detail = $("#detail");
     app.$editPane = $("#edit-pane");
@@ -7135,7 +7178,7 @@ archive.detail = function() {
             dataClip.processed = true;
             var l = $(archive.detailView(dataClip));
             app.$detail.css("display", "inline-block").html(l);
-            app.app.addClass("detail-view");
+            app.$app.addClass("detail-view");
             app.$detail.fadeIn(500);
             // Back button
             $(".btn-back", app.$detail).on("click", function() {
@@ -7154,7 +7197,7 @@ archive.detail = function() {
             var l = $(archive.detailView(dataClip));
             // !!!!!HIDE THE CONTENT LISTS!!!!
             app.$detail.html(l);
-            app.app.addClass("detail-view");
+            app.$app.addClass("detail-view");
             // Hide center if no images available
             if (!dataClip["images"]) {
                 $(".center").hide();
@@ -7184,7 +7227,7 @@ archive.detail.prototype = {
         // !!!!!HIDE THE CONTENT LISTS!!!!
         app.$detail.css("display", "none").empty();
         app.$list.css("display", "inline-block");
-        app.app.removeClass("detail-view");
+        app.$app.removeClass("detail-view");
         animation.hideHiddenIcons();
         //// $(window).off("keyup.detail-key");
     }
@@ -9541,7 +9584,7 @@ window.map = function() {
 
                         }
 
-                        var $li = app.$list.find("li:nth-child(" + (i+1) + ")"),
+                        var $li = app.$list.find("li:nth-child(" + (i + 1) + ")"),
                             $a = $li.find("a");
 
                         $a.click();

@@ -2468,7 +2468,14 @@ body.fullscreen #feedback p {
   height: 17px;
   width: 20%; }
 body.fullscreen #ruler {
-  display: block; }
+  display: block;
+  position: absolute;
+  width: 500px;
+  height: 100%;
+  right: 0;
+  z-index: 100;
+  background: black;
+  cursor: w-resize; }
 body.fullscreen #errors {
   top: 13%; }
 body.fullscreen #entry-line {

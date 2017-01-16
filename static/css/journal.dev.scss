@@ -3517,6 +3517,13 @@ body.fullscreen {
 
   #ruler {
     display: block;
+    position: absolute;
+    width: 500px;
+    height: 100%;
+    right: 0;
+    z-index: 100;
+    background: black;
+    cursor: w-resize;
   }
 
   #errors {

@@ -2459,7 +2459,8 @@ body.sensitive-mode .sensitive {
 body.fullscreen #app {
   height: 95%;
   top: 2%;
-  width: 850px; }
+  width: 850px;
+  min-width: 80; }
 body.fullscreen #text-area {
   width: 100%; }
 body.fullscreen #feedback p {
@@ -2475,7 +2476,7 @@ body.fullscreen #ruler {
   right: 0;
   z-index: 100;
   cursor: w-resize;
-  top: 80; }
+  top: 80px; }
 body.fullscreen #errors {
   top: 13%; }
 body.fullscreen #entry-line {

@@ -1437,17 +1437,8 @@ edit.removeDuplicate = function() {
  ******************************************************************/
 
 /**
- * Sets the width of #app given the right property of css from app.$ruler
- * @param rulerRight
+ * Enables the ruler that can adjust the width of the edit pane
  */
-edit.setAppWidthWithRuler = function(rulerRight) {
-    var width = windowWidth - 2 * (rulerRight + selfWidth);
-
-    width = app.$app.width(width).width();
-    app.$ruler
-        .css("right", `${(windowWidth - width) / 2 - selfWidth}px`);
-};
-
 edit.enableWidthAdjust = function() {
     var isDown = false,
         /**
@@ -1456,10 +1447,17 @@ edit.enableWidthAdjust = function() {
          * @type {number}
          */
         delta = 0,
-        windowWidth = 0,
-        selfWidth = app.$ruler.outerWidth();
+        windowWidth = $(window).width(),
+        selfWidth = app.$ruler.outerWidth(),
+        setAppWidth = function(rulerRight) {
+            var width = windowWidth - 2 * (rulerRight + selfWidth);
 
-    edit.setAppWidthWithRuler(parseInt(localStorage["rulerRight"] || 0));
+            width = app.$app.width(width).width();
+            app.$ruler
+                .css("right", `${(windowWidth - width) / 2 - selfWidth}px`);
+        };
+
+    setAppWidth(parseInt(localStorage["rulerRight"] || 0));
 
     app.$ruler.off("mousedown mousemove mouseup")
         .mousedown(function(e) {
@@ -1477,7 +1475,7 @@ edit.enableWidthAdjust = function() {
                 var right = Math.max(windowWidth - selfWidth - e.pageX + delta,
                     0);
 
-                edit.setAppWidthWithRuler(right);
+                setAppWidth(right);
             }
         })
         .mouseup(function(e) {
@@ -9606,7 +9604,7 @@ window.map = function() {
                             $a = $li.find("a");
 
                         $a.click();
-                        app.$list.scrollTop(0).scollTop($li.position().top);
+                        app.$list.scrollTop(0).scrollTop($li.position().top);
                     });
 
                     _markers.push(marker);
@@ -9649,7 +9647,7 @@ window.map = function() {
         _map.setZoom(15);
 
         // Set the map position to center if not in the bound
-        if (_map.getBounds().contains(_markers[index].position)) {
+        if (!_map.getBounds().contains(_markers[index].position)) {
             _map.setCenter(_markers[index].position);
         }
     };
@@ -9740,8 +9738,14 @@ window.map = function() {
 
         /**
          * Reset the map. Remove any components on the map
+         * @param force - whether to force reload the map
          */
-        reset: function() {
+        reset: function(force) {
+            if (force) {
+                $("#map").empty();
+                map.init();
+            }
+
             if (_path) {
                 _path.setMap(null);
             }

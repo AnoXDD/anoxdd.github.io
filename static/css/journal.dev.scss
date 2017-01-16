@@ -3502,6 +3502,7 @@ body.fullscreen {
     height: 95%;
     top: 2%;
     width: 850px;
+    min-width:800px;
   }
 
   #text-area {
@@ -3523,7 +3524,7 @@ body.fullscreen {
     right: 0;
     z-index: 100;
     cursor: w-resize;
-    top:80px;
+    top: 80px;
   }
 
   #errors {

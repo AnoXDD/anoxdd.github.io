@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>YiPangDeZuoYe</title>
+    <style>
+        textarea {
+            width: 1000px;
+            height: 1000px;
+            resize: none;
+            display: block;
+        }
+
+        input {
+            width: 1000px;
+            font-size: 15px;
+            display: block;
+        }
+    </style>
+    <script>
+        function ready(fn) {
+            if (document.readyState != 'loading') {
+                fn();
+            } else {
+                document.addEventListener('DOMContentLoaded', fn);
+            }
+        }
+
+        ready(function() {
+            $result = document.getElementById("result");
+            $console = document.getElementById("console");
+
+            askForPrompt();
+        });
+
+        var $result = document.getElementById("result"),
+                $console = document.getElementById("console");
+
+        var cars = [];
+        var nextNewCar;
+        var STATUS = {
+            IDLE            : -1,
+            INPUT_NEW_MANU  : 0,
+            INPUT_NEW_MODEL : 1,
+            INPUT_NEW_NUMBER: 2,
+            INPUT_NEW_PRICE : 3,
+            INPUT_NEW_COLOR : 4,
+            LOOK_UP         : 10
+        };
+        var status = STATUS.IDLE;
+
+        function Car(manu, model, number, price, color) {
+            this.manu = manu || "";
+            this.model = model || "";
+            this.number = number || "";
+            this.price = price || 0;
+            this.color = color || "red";
+
+            this.toString = function() {
+                return String.raw`
+                Manufacturer: ${this.manu}
+                Model: ${this.model}
+                Registration Number: ${this.number}
+                Price: ${this.price}
+                Color: ${this.color}`;
+            }
+
+            this.match = function(str) {
+                return this.manu.indexOf(str) !== -1 ||
+                        this.model.indexOf(str) !== -1 ||
+                        this.number.indexOf(str) !== -1 ||
+                        this.color.indexOf(str) !== -1;
+            }
+        }
+
+        function sendCommand(e) {
+            if (e.keyCode == 13) {
+                var command = $console.value;
+                print(`>> ${command}`);
+                print("-----------------");
+
+                if (status == STATUS.IDLE) {
+                    if (command == 1) {
+                        status = STATUS.INPUT_NEW_MANU;
+                        print("Manufacturer: ");
+                    } else if (command == 2) {
+                        printAllCars();
+                        askForPrompt();
+                    } else if (command == 3) {
+                        status = STATUS.LOOK_UP;
+                        printLookupPrompt();
+                    } else {
+                        print("????");
+                        askForPrompt();
+                    }
+                } else if (status == STATUS.INPUT_NEW_MANU) {
+                    print("Model: ");
+                    nextNewCar = new Car(command);
+                    status = STATUS.INPUT_NEW_MODEL;
+                } else if (status == STATUS.INPUT_NEW_MODEL) {
+                    print("Registration Number: ");
+                    nextNewCar.model = command;
+                    status = STATUS.INPUT_NEW_NUMBER;
+                } else if (status == STATUS.INPUT_NEW_NUMBER) {
+                    print("Price: ");
+                    nextNewCar.number = command;
+                    status = STATUS.INPUT_NEW_PRICE;
+                } else if (status == STATUS.INPUT_NEW_PRICE) {
+                    print("Color: ");
+                    nextNewCar.price = parseFloat(command);
+                    status = STATUS.INPUT_NEW_COLOR;
+                } else if (status == STATUS.INPUT_NEW_COLOR) {
+                    nextNewCar.color = command;
+                    insertNewCar(nextNewCar);
+                    print("Your car:");
+                    print(nextNewCar.toString());
+                    status = STATUS.IDLE;
+                    askForPrompt();
+
+                    nextNewCar = undefined;
+                } else if (status == STATUS.LOOK_UP) {
+                    lookupCar(command);
+                    status = STATUS.IDLE;
+                    askForPrompt();
+                }
+
+                $console.value = "";
+            }
+        }
+
+        function printLookupPrompt() {
+            print("Search by anything:");
+        }
+
+        function askForPrompt() {
+            print("Hey SanPang!");
+            print("1: Input a new entry");
+            print("2: Print all cars");
+            print("3: Look up");
+        }
+
+        function lookupCar(command) {
+            var results = cars.filter(function(car) {
+                return car.match(command);
+            });
+
+            print("Results are: ");
+            for (var i = 0; i < results.length; ++i) {
+                print(results[i].toString());
+            }
+        }
+
+        function insertNewCar(car) {
+            cars.push(car);
+        }
+
+        function printAllCars() {
+            // Sort the car
+            cars = cars.sort(function(a, b) {
+                return a.manu > b.manu;
+            });
+
+            print("Printing all the cars: ");
+            for (var i = 0; i < cars.length; ++i) {
+                print(cars[i].toString());
+            }
+            print();
+        }
+
+        /**
+         * Print something to the text area
+         * @param string
+         */
+        function print(string) {
+            result.textContent += (string || "") + "\n";
+
+            $result.scrollTop = $result.scrollHeight;
+        }
+    </script>
+</head>
+<body>
+<textarea id="result" disabled></textarea>
+<input type="text" id="console" onkeypress="sendCommand(event)">
+</body>

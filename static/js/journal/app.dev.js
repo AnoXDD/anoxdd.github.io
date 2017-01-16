@@ -9541,11 +9541,11 @@ window.map = function() {
 
                         }
 
-                        var $li = app.$list.find("li:nth-child(" + i + ")"),
+                        var $li = app.$list.find("li:nth-child(" + (i+1) + ")"),
                             $a = $li.find("a");
 
                         $a.click();
-                        app.$list.scrollTop($a.position().top);
+                        app.$list.scrollTop(0).scollTop($li.position().top);
                     });
 
                     _markers.push(marker);
@@ -9584,9 +9584,13 @@ window.map = function() {
         _infoWindow.setContent(_contentStrings[index]);
         _infoWindow.open(_map, _markers[index]);
 
-        // Set the map position
-        _map.setCenter(_markers[index].position);
+        // Set zoom
         _map.setZoom(15);
+
+        // Set the map position to center if not in the bound
+        if (_map.getBounds().contains(_marker[index].position)) {
+            _map.setCenter(_markers[index].position);
+        }
     };
 
     /**

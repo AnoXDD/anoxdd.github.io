@@ -2550,7 +2550,9 @@ edit.photo = function(isQueue, callback) {
                                 .attr("src", $(this).attr("src"));
                         }, function() {
                             // Mouseout
-                            $("#photo-preview").find("img").animate({opacity: 0}, 0);
+                            $("#photo-preview")
+                                .find("img")
+                                .animate({opacity: 0}, 0);
                         });
                     });
                     if (isQueue) {
@@ -4803,9 +4805,9 @@ app.list = function(filter) {
         this.loadmore = d.children("div.loadmore");
         this.loadmore.on("click", function() {
             ////console.log("> Loadmore clicked");
-            f.load(filter);
+            f.load();
         });
-        this.load(filter);
+        this.load();
 
         // // Load all the data at once
         // while ($(".loadmore").length != 0) {
@@ -4820,7 +4822,7 @@ app.list = function(filter) {
             if ($(this).scrollTop() > (f.contents.height() - d.height())) {
                 if ($(".loadmore").length != 0) {
                     ////console.log("> Loadmore scrolled");
-                    f.load(app.command);
+                    f.load();
                 }
             }
         });
@@ -4833,7 +4835,7 @@ app.list.prototype = {
      */
     queryCache           : {},
     /* Load one qualified entry of the contents from the data */
-    load                 : function(filter) {
+    load                 : function() {
         ////console.log("Call app.list.load(" + filter + ")");
         var currentList = this, // [h]
             contents = journal.archive.data[app.year], // original:[f]
@@ -8602,7 +8604,7 @@ stats.init = function() {
     stats.initTable();
     animation.showMenuOnly("stats");
     // Bind click to select for `.checkbox`
-    $("#stats-options li.checkbox").each(function() {
+    $("#stats-options").find("li.checkbox").each(function() {
         $(this).click(function() {
             $(this).toggleClass("checked");
             var name = $(this).attr("encode");
@@ -8778,7 +8780,7 @@ stats.quit = function() {
     $("#query").fadeIn();
     $("#stats-query").fadeOut().unbind("keyup");
     // Unbind click to toggle checkbox
-    $("#stats-options li.checkbox").each(function() {
+    $("#stats-options").find("li.checkbox").each(function() {
         $(this).unbind("click");
     });
     $(".stats").removeClass("stats");
@@ -8823,7 +8825,7 @@ stats.addEntry = function(entry, overwriteNum) {
         sum += monthCount[i];
     }
     // Show the html result
-    var htmlContent = "<td><input type='text' class='edit' autocomplete='off' onclick='this.select()' value='" + entry + "' /></td>";
+    var htmlContent = `<td><input type='text' class='edit' autocomplete='off' onclick='this.select()' value='${entry}' /></td>`;
     for (i = 0; i !== monthCount.length; ++i) {
         htmlContent += "<td>" + monthCount[i] + "</td>";
     }
@@ -9012,7 +9014,7 @@ stats.showGraph = function(viewAsMonth) {
     if (viewAsMonth) {
         days = app.monthArray;
         // Extract the data from the html content
-        $("#stats-table tbody tr").each(function() {
+        $("#stats-table").find("tbody tr").each(function() {
             var monthData = [];
             $(this).children("td").each(function(n) {
                 if (n === 0) {
@@ -9105,7 +9107,7 @@ stats.showGraph = function(viewAsMonth) {
         }
     };
     $("#graph").fadeIn().highcharts(data);
-    $("#action-stats .hidden").removeClass("hidden");
+    $("#action-stats").find(".hidden").removeClass("hidden");
     animation.testAllSubs();
 };
 /**
@@ -9116,7 +9118,7 @@ stats.hideGraph = function() {
     $("#graph").fadeOut(function() {
         $(this).html("");
     });
-    $("#action-stats .hidden-icon").addClass("hidden");
+    $("#action-stats").find(".hidden-icon").addClass("hidden");
     animation.testAllSubs();
 };
 /**
@@ -9249,10 +9251,7 @@ window.calendar = function() {
                 bulb   : bulbNumber
             })
             // Add the new bubbles
-            .prepend("<div class='bubble'>" + dateStr +
-                "<p class='article-no'>" + articleNumber +
-                "</p><p class='bulb-no'>" + bulbNumber +
-                "</p></div>");
+            .prepend(`<div class='bubble'>${dateStr}<p class='article-no'>${articleNumber}</p><p class='bulb-no'>${bulbNumber}</p></div>`);
 
         _monthArticleNum[month] = (_monthArticleNum[month] || 0) + (articleNumber || 0);
         _monthBulbNum[month] = (_monthBulbNum[month] || 0) + (bulbNumber || 0);
@@ -9536,17 +9535,22 @@ window.map = function() {
                     });
 
                     marker.addListener("click", ()=> {
+                        while (i >= app.lastLoaded) {
+                            // Not yet displayed, show more
+                            $(".loadmore").click();
+
+                        }
+
                         var $li = app.$list.find("li:nth-child(" + i + ")"),
                             $a = $li.find("a");
 
                         $a.click();
                         app.$list.scrollTop($a.position().top);
-
                     });
 
                     _markers.push(marker);
                     _contentStrings.push(contentString);
-                })(bulb);
+                })(bulb, i);
             }
         }
 

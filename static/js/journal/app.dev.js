@@ -775,8 +775,6 @@ edit.init = function(overwrite, index) {
     console.log(Object.keys(data));
     var editPane = $(edit.editView(data));
 
-    edit.enableWidthAdjust();
-
     // Content processing
     $("#search-new, #search-result").fadeOut();
     // Initialize the contents
@@ -851,7 +849,7 @@ edit.init = function(overwrite, index) {
             }
         });
         // Click to remove tags
-        $("#attach-area .texttags .other p").click(function() {
+        $("#attach-area").find(".texttags .other p").click(function() {
             edit.removeTag($(this).text().substring(1));
         });
         // Hover to show the time of created, started and ended
@@ -1438,6 +1436,18 @@ edit.removeDuplicate = function() {
  ************************ CONTENT CONTROL *************************
  ******************************************************************/
 
+/**
+ * Sets the width of #app given the right property of css from app.$ruler
+ * @param rulerRight
+ */
+edit.setAppWidthWithRuler = function(rulerRight) {
+    var width = windowWidth - 2 * (rulerRight + selfWidth);
+
+    width = app.$app.width(width).width();
+    app.$ruler
+        .css("right", `${(windowWidth - width) / 2 - selfWidth}px`);
+};
+
 edit.enableWidthAdjust = function() {
     var isDown = false,
         /**
@@ -1447,9 +1457,11 @@ edit.enableWidthAdjust = function() {
          */
         delta = 0,
         windowWidth = 0,
-        selfWidth = $("#ruler").outerWidth();
+        selfWidth = app.$ruler.outerWidth();
 
-    $("#ruler").off("mousedown mousemove mouseup")
+    edit.setAppWidthWithRuler(praseInt(localStorage["rulerRight"] || 0));
+
+    app.$ruler.off("mousedown mousemove mouseup")
         .mousedown(function(e) {
             isDown = true;
 
@@ -1464,18 +1476,15 @@ edit.enableWidthAdjust = function() {
             if (isDown) {
                 var right = Math.max(windowWidth - selfWidth - e.pageX + delta,
                     0);
-                var width = windowWidth - 2 * (right + selfWidth);
 
-                width = app.$app.width(width).width();
-                $(this)
-                    .css("right", `${(windowWidth - width) / 2 - selfWidth}px`);
+                edit.setAppWidthWithRuler(right);
             }
         })
-        .mouseup((e)=> {
+        .mouseup(function(e)=> {
             // Adjust the ruler to put it back to the right place
             isDown = false;
 
-            console.log(`${e.pageX}`);
+            localStorage["rulerRight"] = $(this).css("right");
         });
 };
 
@@ -1909,6 +1918,7 @@ edit.fullScreen = function() {
     // Change the icon
     animation.showMenuOnly("fullscreen");
     $("body").addClass("fullscreen");
+
     // Request the browser to toggle fullscreen
     if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
@@ -1919,6 +1929,8 @@ edit.fullScreen = function() {
     } else if (document.documentElement.webkitRequestFullscreen) {
         document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
+
+    edit.enableWidthAdjust();
 };
 edit.windowMode = function() {
     // Exit dark mode
@@ -1927,8 +1939,9 @@ edit.windowMode = function() {
     animation.showMenuOnly("add");
     // Resize
     $("body").removeClass("fullscreen");
-    // Re-enable auto-height
+    // Re-enable auto-height, and remove any width adjust of app
     app.layout();
+
     // Request the browser to exit fullscreen
     if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -5623,9 +5636,13 @@ app.layout = function() {
             app.$app.height(newHeight);
             app.contents.height(newHeight);
         };
+
+    // Ruler may have changed thw width of the app, reset it
+    app.$app.css("width", "");
+
     changeWindowSize();
     // Seems to refer to some function else
-    activeWindow.on("resize", changeWindowSize);
+    activeWindow.off("resize").on("resize", changeWindowSize);
 };
 // Defines the utility functions for this
 app.util = {
@@ -6846,6 +6863,7 @@ $(document).ready(function() {
     app.$list = $("#list");
     app.$detail = $("#detail");
     app.$editPane = $("#edit-pane");
+    app.$ruler = $("#ruler");
     app.itemView = _.template($("#list-view").html());
     app.detailView = _.template($("#detail-view").html());
     calendar.viewTemplate = _.template($("#calendar-view").html());

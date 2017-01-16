@@ -2460,7 +2460,7 @@ body.fullscreen #app {
   height: 95%;
   top: 2%;
   width: 850px;
-  min-width: 80; }
+  min-width: 800px; }
 body.fullscreen #text-area {
   width: 100%; }
 body.fullscreen #feedback p {

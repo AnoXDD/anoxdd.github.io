@@ -1480,7 +1480,7 @@ edit.enableWidthAdjust = function() {
                 edit.setAppWidthWithRuler(right);
             }
         })
-        .mouseup(function(e)=> {
+        .mouseup(function(e) {
             // Adjust the ruler to put it back to the right place
             isDown = false;
 

@@ -9588,7 +9588,7 @@ window.map = function() {
         _map.setZoom(15);
 
         // Set the map position to center if not in the bound
-        if (_map.getBounds().contains(_marker[index].position)) {
+        if (_map.getBounds().contains(_markers[index].position)) {
             _map.setCenter(_markers[index].position);
         }
     };

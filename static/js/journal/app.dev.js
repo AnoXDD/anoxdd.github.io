@@ -2,7 +2,8 @@
  * Things to do to release stable
  * 1. Copy app.dev.js to app.js. Remove animation.debug=true;
  * 2. Copy journal.dev.css to journal.old.css
- * 2. Copy dev.html to index.html. Rename journal/app.dev.js to lib/app.min.js. Rename journal.dev.css to journal.old.min.css
+ * 2. Copy dev.html to index.html. Rename journal/app.dev.js to lib/app.min.js.
+ * Rename journal.dev.css to journal.old.min.css
  */
 
 //region animation.js
@@ -781,7 +782,7 @@ edit.init = function(overwrite, index) {
         /* Iterator */
         var i;
         // Initialize the pane, this line must be the first one!
-        $("#edit-pane").html(editPane).fadeIn();
+        app.$editPane.html(editPane).fadeIn();
         edit.isEditPaneDisplayed = true;
         // Hide photo preview panal
         $("#photo-preview").hide();
@@ -1048,10 +1049,10 @@ edit.quit = function(selector, save) {
     edit.cleanupMediaEdit();
     // Content processing
     $("#search-new, #search-result").fadeIn();
-    $("#edit-pane").fadeOut(400, function() {
+    app.$editPane.fadeOut(400, function() {
         edit.isEditPaneDisplayed = false;
         // Remove the edit pane
-        $("#edit-pane").html("");
+        app.$editPane.html("");
         $("#contents").fadeIn();
         // Reload
         app.refresh();
@@ -1495,7 +1496,9 @@ edit.removeEntry = function() {
     // Remove from the map
     delete journal.archive.data[app.year][app.currentDisplayed];
     // Clear from the list
-    var $entry = $("#list ul li:nth-child(" + (app.currentDisplayed + 1) + ")");
+    var $entry = app.$list
+        .find("ul")
+        .find("li:nth-child(" + (app.currentDisplayed + 1) + ")");
     if ($entry.next().length === 0 || $entry.next()
             .has("p.separator").length !== 0) {
         // Reaches EOF or the beginning of next month (separator)
@@ -1811,7 +1814,7 @@ edit.setRemove = function(typeVal) {
  * Cleans up all the media edit data to get ready for next editing
  */
 edit.cleanupMediaEdit = function() {
-    $("#edit-pane").off("keyup");
+    app.$editPane.off("keyup");
     switch (edit.isEditing) {
         case 1:
             edit.videoHide();
@@ -2232,16 +2235,18 @@ edit.toggleIcon = function(tag) {
     if ($(selector).toggleClass("highlight").hasClass("highlight")) {
         if (parent === "weather" || parent === "emotion") {
             // Now highlighted
-            $("#attach-area .icontags ." + parent + " span:not(." + htmlName + ")")
+            $("#attach-area")
+                .find(".icontags")
+                .find("." + parent + " span:not(." + htmlName + ")")
                 .addClass("hidden");
         } else {
-            $("#attach-area .icontags .selected")
+            $("#attach-area").find(".icontags").find(".selected")
                 .append($(selector).addClass("highlight").clone());
         }
     } else {
         if (parent === "weather" || parent === "emotion") {
             // Dimmed
-            $("#attach-area .icontags ." + parent + " span")
+            $("#attach-area").find(".icontags").find("." + parent).find("span")
                 .removeClass("hidden");
         } else {
             setTimeout(function() {
@@ -2381,7 +2386,7 @@ edit.coverTest = function(type) {
     });
     if (!has) {
         // Imitate a click on that icon
-        $("#attach-area .types #" + type + "-cover").trigger("click");
+        $("#attach-area").find(".types #" + type + "-cover").trigger("click");
     }
 };
 /************************** PHOTO 0 ************************/
@@ -2417,13 +2422,15 @@ edit.photo = function(isQueue, callback) {
     // If queue photos want to be displayed before this panel is initialized,
     // initialize photo panel first
     var addQueue = false;
-    if ($("#attach-area .images").css("height") !== "100px" && isQueue) {
+    if ($("#attach-area")
+            .find(".images")
+            .css("height") !== "100px" && isQueue) {
         // Change the parameter to pretend to add local images first
         addQueue = true;
         isQueue = false;
     }
     // Extend the image area and add sortable functionality and hover
-    $("#attach-area .images").css({height: "100px"}).hover(function() {
+    $("#attach-area").find(".images").css({height: "100px"}).hover(function() {
         // Mouseover
         // Clean up the data
         edit.cleanupMediaEdit();
@@ -2516,7 +2523,7 @@ edit.photo = function(isQueue, callback) {
                             }
                         }
                         htmlContent += "<span></span><img src=\"" + edit.photos[i]["url"] + "\"/></div>";
-                        $("#attach-area .images").append(htmlContent);
+                        $("#attach-area").find(".images").append(htmlContent);
                     }
                     // Stop throttle
                     $("#add-photo").html("&#xf03e").attr({
@@ -2524,7 +2531,8 @@ edit.photo = function(isQueue, callback) {
                         href   : "#"
                     }).fadeIn();
                     // Clicking on img functionality
-                    $("#attach-area .images div").each(function() {
+                    $("#attach-area").find(".images")
+                        .find("div").each(function() {
                         // Re-apply
                         $(this).off("contextmenu");
                         $(this).on("contextmenu", function() {
@@ -2534,15 +2542,15 @@ edit.photo = function(isQueue, callback) {
                             return false;
                         });
                     });
-                    $("#attach-area .images img").each(function() {
+                    $("#attach-area").find(".images").find("img").each(function() {
                         $(this).unbind("mouseenter mouseleave").hover(function() {
                             // Mouseover
-                            $("#photo-preview img")
+                            $("#photo-preview").find("img")
                                 .animate({opacity: 1}, 200)
                                 .attr("src", $(this).attr("src"));
                         }, function() {
                             // Mouseout
-                            $("#photo-preview img").animate({opacity: 0}, 0);
+                            $("#photo-preview").find("img").animate({opacity: 0}, 0);
                         });
                     });
                     if (isQueue) {
@@ -2627,7 +2635,7 @@ edit.photo = function(isQueue, callback) {
         });
     } else {
         // Remove all the queue images
-        $("#attach-area .images .queue").each(function() {
+        $("#attach-area").find(".images .queue").each(function() {
             // Remove this image from edit.photos
             for (var i = 0; i !== edit.photos.length; ++i) {
                 var url = $(this).children("img").attr("src");
@@ -2662,7 +2670,7 @@ edit.photoSave = function(callback) {
             newImagesData = [];
         edit.getDate(function(timeHeader) {
             // Change the `change` of edit.photos according to html contents
-            $("#attach-area .images div").each(function() {
+            $("#attach-area").find(".images div").each(function() {
                 for (var i = 0; i !== edit.photos.length; ++i) {
                     if ($(this)
                             .children("img")
@@ -2766,7 +2774,7 @@ edit.photoSave = function(callback) {
                                     // Process all the html elements
                                     // Find the correct img to add or remove
                                     // highlight class on it
-                                    $("#attach-area .images div")
+                                    $("#attach-area").find(".images div")
                                         .each(function() {
                                             $(this).removeClass("change");
                                             // Try to match images with
@@ -2810,7 +2818,7 @@ edit.photoSave = function(callback) {
                                     }
                                     // Process edit.photos and match the
                                     // sequence in the div
-                                    $("#attach-area .images img")
+                                    $("#attach-area").find(".images img")
                                         .each(function() {
                                             for (j = 0;
                                                  j !== edit.photos.length;
@@ -2837,7 +2845,7 @@ edit.photoSave = function(callback) {
                 });
             } else {
                 // Sort the images again
-                $("#attach-area .images img").each(function() {
+                $("#attach-area").find(".images img").each(function() {
                     for (j = 0; j !== edit.photos.length; ++j) {
                         if (edit.photos[j]["url"] === $(this).attr("src")) {
                             if (edit.photos[j]["resource"]) {
@@ -2857,7 +2865,7 @@ edit.photoSave = function(callback) {
 };
 edit.photoHide = function() {
     // Just hide everything, no further moves to be made
-    $("#attach-area .images").animate({height: "0"}).fadeOut().html("");
+    $("#attach-area").find(".images").animate({height: "0"}).fadeOut().html("");
 };
 
 /************************** VIDEO 1 ************************/
@@ -2882,7 +2890,7 @@ edit.video = function(index, link) {
     $(selectorHeader + "a").removeAttr("onclick");
     $(selectorHeader + "input").prop("disabled", false);
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    app.$editPane.keyup(function(n) {
         if (n.keyCode === 27) {
             edit.videoHide();
         }
@@ -2892,7 +2900,7 @@ edit.video = function(index, link) {
     var source;
     if (link) {
         source = link;
-        $("#text-area #video-preview").fadeIn();
+        $("#text-area").find("#video-preview").fadeIn();
         app.videoPlayer("#text-area #video-preview", source);
     } else {
         // Find it from this dataClip
@@ -2904,7 +2912,7 @@ edit.video = function(index, link) {
                         .val());
                 return;
             }
-            $("#text-area #video-preview").fadeIn();
+            $("#text-area").find("#video-preview").fadeIn();
             app.videoPlayer("#text-area #video-preview", source);
         } else {
             animation.error(log.FILE_NOT_LOADED + $(selectorHeader + ".title") + log.DOWNLOAD_PROMPT);
@@ -2933,7 +2941,7 @@ edit.videoHide = function() {
     }
     // Save data
     edit.videoSave(edit.mediaIndex["video"]);
-    $("#edit-pane").off("keyup");
+    app.$editPane.off("keyup");
     // Hide all the option button
     animation.hideHiddenIcons();
     edit.mediaIndex["video"] = -1;
@@ -3065,7 +3073,7 @@ edit.location = function(index) {
     // Avoid accidentally click
     $(selectorHeader + "a").removeAttr("onclick");
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    app.$editPane.keyup(function(n) {
         if (n.keyCode === 27) {
             edit.locationHide();
         }
@@ -3090,7 +3098,7 @@ edit.locationHide = function() {
     // Remove the contents
     $("#map-holder").fadeOut().html("<div id=\"map-selector\"></div>");
     $("#pin-point").addClass("hidden");
-    $("#edit-pane").off("keyup");
+    app.$editPane.off("keyup");
     // Hide all the options button
     animation.hideHiddenIcons();
     edit.mediaIndex["place"] = -1;
@@ -3185,7 +3193,7 @@ edit.locationGeocode = function(pos) {
 edit.locationWeather = function(pos) {
     // Test if the weather info already exists
     var flag = false;
-    $("#attach-area .icontags .weather p").each(function() {
+    $("#attach-area").find(".icontags .weather p").each(function() {
         if ($(this).hasClass("highlight")) {
             flag = true;
         }
@@ -3226,7 +3234,7 @@ edit.locationWeather = function(pos) {
         if (selector) {
             // Available
             animation.log(log.EDIT_PANE_WEATHER_END, -1);
-            $("#attach-area .icontags ." + selector).trigger("click");
+            $("#attach-area").find(".icontags ." + selector).trigger("click");
         } else {
             // Weather info not applicable
             animation.log(log.EDIT_PANE_WEATHER_END_FAIL + data["summary"] + log.EDIT_PANE_WEATHER_END_FAIL_END,
@@ -3256,7 +3264,7 @@ edit.voice = function(index, link) {
     $(selectorHeader + "a").removeAttr("onclick");
     $(selectorHeader + "input").prop("disabled", false);
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    app.$editPane.keyup(function(n) {
         if (n.keyCode === 27) {
             edit.voiceHide();
         }
@@ -3305,7 +3313,7 @@ edit.voiceHide = function() {
     }
     // Save data
     edit.voiceSave(edit.mediaIndex["voice"]);
-    $("#edit-pane").off("keyup");
+    app.$editPane.off("keyup");
     // Hide all the option button
     animation.hideHiddenIcons();
     edit.mediaIndex["voice"] = -1;
@@ -3385,7 +3393,7 @@ edit.weblink = function(index) {
     $(selectorHeader + "a").removeAttr("onclick");
     $(selectorHeader + "input").prop("disabled", false);
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    app.$editPane.keyup(function(n) {
         if (n.keyCode == 27) {
             edit.weblinkHide(7);
         }
@@ -3405,7 +3413,7 @@ edit.weblinkHide = function() {
         .attr("onclick", "edit.weblink(" + edit.mediaIndex["weblink"] + ")");
     // Save data
     edit.weblinkSave(edit.mediaIndex["weblink"], 7);
-    $("#edit-pane").off("keyup");
+    app.$editPane.off("keyup");
     // Hide all the option button
     animation.hideHiddenIcons();
     edit.mediaIndex["weblink"] = -1;
@@ -3446,7 +3454,7 @@ edit.itunes = function(index, typeNum) {
         }
     });
     // Press esc to save
-    $("#edit-pane").keyup(function(n) {
+    app.$editPane.keyup(function(n) {
         if (n.keyCode == 27) {
             edit.itunesHide(typeNum);
         }
@@ -3467,7 +3475,7 @@ edit.itunesHide = function(typeNum) {
         .attr("onclick", "edit." + type + "(" + edit.mediaIndex[type] + ")");
     // Save data
     edit.itunesSave(edit.mediaIndex[type], typeNum);
-    $("#edit-pane").off("keyup");
+    app.$editPane.off("keyup");
     // Hide all the option button
     animation.hideHiddenIcons();
     edit.mediaIndex[type] = -1;
@@ -4091,7 +4099,7 @@ window.app = function() {
         });
     };
     var _initializeNetworkSetup = function() {
-// Setup timeout time
+        // Setup timeout time
         $.ajaxSetup({
             timeout: network.timeOut
         });
@@ -4110,7 +4118,7 @@ window.app = function() {
         });
     };
     var _initializeIconsAppearance = function() {
-// Test if there is any cache
+        // Test if there is any cache
         animation.testCacheIcons();
         animation.testAllSubs();
     };
@@ -4182,13 +4190,13 @@ window.app = function() {
      *     the result
      */
     var _resetDataAndLayout = function(filter) {
-// Reset animation indentation
+        // Reset animation indentation
         animation.indent = 0;
         // Remove all the child elements and always
         animation.debug(log.CONTENTS_RELOADED);
         animation.testAllSubs();
         console.log("==================Force loaded==================");
-        $("#list").empty();
+        app.$list.empty();
         app.lastLoaded = 0;
         app.lastQualified = -1;
         app.displayedChars = 0;
@@ -4199,6 +4207,7 @@ window.app = function() {
 
         app.command = filter;
         app.highlightWords = [];
+        app.qualifiedEntry = [];
 
         $("#query").val(filter);
         $("#total-displayed").text(app.displayedNum);
@@ -4236,9 +4245,9 @@ window.app = function() {
             // Remove the data from the queue
             delete app.yearQueue[app.year];
         }
-    }
+    };
     var _processQueuedData = function() {
-// Test if there are any data in the queue
+        // Test if there are any data in the queue
         _attemptLoadDataFromQueue();
 
         // Filter out undefined element and entries not belong to this year
@@ -4247,7 +4256,7 @@ window.app = function() {
         if (queuedYears.length > 0) {
             _processQueuedYears(queuedYears);
         }
-    }
+    };
     /**
      * Load a script and passed in a function
      * @param {object} data - the data to be loaded
@@ -4339,6 +4348,12 @@ window.app = function() {
         lostMedia       : [],
         /** The limit of how many entries to be loaded before it stops */
         entryLoadLimit  : 10,
+        /**
+         * Qualified entry to be loaded. Note that this entry will have the
+         * same size as the length of current data. For each index, it will be
+         * false if it is not qualified, or true if it is
+         */
+        qualifiedEntry  : [],
 
         /** Whether the date of this year is loaded */
         dataLoaded : {},
@@ -4775,8 +4790,12 @@ app.list = function(filter) {
     /* The data loaded */
         data = journal.archive.data[app.year]; // original:[e]
     journal.total = data.length;
-    var d = app.cList,
+    var d = app.$list,
         c = d.children("ul");
+
+    // Process the qualified entries to be loaded
+    this.processQualifiedEntry(filter);
+
     // Load more if the user requests
     if (!this.contents && c.length < 1) {
         d.html("<ul></ul><div class=\"loadmore\"></div>");
@@ -4809,12 +4828,12 @@ app.list = function(filter) {
 };
 app.list.prototype = {
     /**
-     * Used to cache the query result to avoid multiple processing of the same string
-     * Format of each entry: ${queryString}: [${startDate}, ${endDate}]
+     * Used to cache the query result to avoid multiple processing of the same
+     * string Format of each entry: ${queryString}: [${startDate}, ${endDate}]
      */
-    queryCache   : {},
+    queryCache           : {},
     /* Load one qualified entry of the contents from the data */
-    load         : function(filter) {
+    load                 : function(filter) {
         ////console.log("Call app.list.load(" + filter + ")");
         var currentList = this, // [h]
             contents = journal.archive.data[app.year], // original:[f]
@@ -4828,11 +4847,11 @@ app.list.prototype = {
         }
         contents[currentLoaded].index = currentLoaded;
 
-        filter = this.processFilter(filter);
-
-        // Test if current entry satisfies the filter
-        for (var i = 0; i < app.entryLoadLimit && currentLoaded < journal.total; ++i, ++currentLoaded) {
-            if (this.qualify(contents[currentLoaded], filter)) {
+        // Iterate over qualified entry
+        for (var i = 0;
+             i < app.entryLoadLimit && currentLoaded < journal.total;
+             ++i, ++currentLoaded) {
+            if (app.qualifiedEntry[i]) {
                 currentList.html(journal.archive.data[app.year][currentLoaded]);
                 // Track the index of this data
                 lastQualifiedLoaded = currentLoaded;
@@ -4852,8 +4871,9 @@ app.list.prototype = {
                 this.htmlEmpty();
             }
 
-            // Always keep loading if the list is not filled with any entries yet
-            if ($("#list").get(0).scrollHeight == $("#list").height()) {
+            // Always keep loading if the list is not filled with any entries
+            // yet
+            if (app.$list.get(0).scrollHeight == app.$list.height()) {
                 i = 0;
             }
         }
@@ -4873,18 +4893,30 @@ app.list.prototype = {
             // Remove load more
             $(".loadmore").remove();
             // Append a sign to indicate all of the entries have been loaded
-            $("#list")
+            app.$list
                 .append("<li><p class=\"separator\"><span>EOF</span></p></li>");
         }
         app.lastQualified = lastQualifiedLoaded;
         app.lastLoaded = currentLoaded;
     },
     /**
+     * Process the qualified entry index
+     * @param filter - a string of raw filter
+     */
+    processQualifiedEntry: function(filter) {
+        filter = this.processFilter(filter);
+
+        app.qualifiedEntry = [];
+        _.each(journal.archive.data[app.year], (content, i) => {
+            app.qualifiedEntry.push(this.qualify(content, filter));
+        });
+    },
+    /**
      * Pre-process the filter to make it easier to process
      * @param filter - the raw filter to be processed
      * @return Array - an array of filter requirements
      */
-    processFilter: function(filter) {
+    processFilter        : function(filter) {
         if (!filter) {
             return [];
         }
@@ -4932,7 +4964,7 @@ app.list.prototype = {
      * @param filter - the processed filter
      * @returns {boolean}
      */
-    qualify      : function(data, filter) {
+    qualify              : function(data, filter) {
         /**
          * A helper function to return if two arrays have common elements
          * @param array1
@@ -4985,7 +5017,7 @@ app.list.prototype = {
      * @param {boolean} timeOnly - If only returns the time
      * @returns {string} Converted time
      */
-    date         : function(time, timeOnly) {
+    date                 : function(time, timeOnly) {
         var date = new Date(time),
             hour = date.getHours(),
             minute = date.getMinutes();
@@ -5040,9 +5072,10 @@ app.list.prototype = {
     /**
      * Converts the content to html and append to the list of contents
      * @param data
-     * @param isDynamicCover - deliberately set false so the cover is always a photo
+     * @param isDynamicCover - deliberately set false so the cover is always a
+     *     photo
      */
-    html         : function(data, isDynamicCover) { // [d]
+    html                 : function(data, isDynamicCover) { // [d]
         // All the summary
         data.summary = data.text.ext || data.text.body.substr(0, 50);
 
@@ -5122,7 +5155,7 @@ app.list.prototype = {
             }
             // De-hightlight the data that is displayed
             ////console.log(app.currentDisplayed);
-            $("#list")
+            app.$list
                 .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
                 .removeClass("display");
             // Highlight the data that is now displayed
@@ -5131,7 +5164,7 @@ app.list.prototype = {
             var flag = (app.currentDisplayed == $(this).parent().index());
             if (!flag) {
                 app.currentDisplayed = $(this).parent().index();
-                $("#detail").hide().fadeIn(500);
+                app.$detail.hide().fadeIn(500);
                 app.view = new app.detail();
             }
             return false;
@@ -5171,11 +5204,11 @@ app.list.prototype = {
         this.contents.append($newClass.fadeIn(500));
     },
     /* Add an empty html list */
-    htmlEmpty    : function() {
+    htmlEmpty            : function() {
         return $("#list ul").append("<li></li>");
     },
     /*  Get the thumbnail of the contents and returns the html */
-    thumb        : function(data, type) {
+    thumb                : function(data, type) {
         var typeContents = data[type],
             returnHtml;
         if (!!typeContents && typeContents.length > 0) {
@@ -5248,7 +5281,7 @@ app.list.prototype = {
         return returnHtml || "<div class=\"dummy\"></div>";
     },
     /* Attach the attachments the contents have to the content */
-    attached     : function(contentFlag) { // [d, h]
+    attached             : function(contentFlag) { // [d, h]
         var retArray = [], // [g]
             typeArray = app.tag().content(contentFlag); // [e]
         // Iterate to push all of the contents
@@ -5263,7 +5296,7 @@ app.list.prototype = {
      The time format should be mmddyy
      Supported time format: @mmddyy:mmddyy @mmddyy @mmyy:mmyy @mmyy
      */
-    isInRange    : function(timeStr, timeNum) {
+    isInRange            : function(timeStr, timeNum) {
         // Test if it is cached already
         var queryResult = this.queryCache[timeStr];
         if (!queryResult) {
@@ -5285,7 +5318,7 @@ app.list.prototype = {
      * @param timeStr - a time str specificed
      * @return [${startDate}, ${endDate}];
      */
-    getTimeRange : function(timeStr) {
+    getTimeRange         : function(timeStr) {
         var range = [0, 0];
         if (timeStr.length == 4) {
             var month = parseInt(timeStr.substr(0, 2)),
@@ -5323,7 +5356,7 @@ app.list.prototype = {
      * @returns {number} - The month of `newTime` if two time differs, -1 if
      *     same
      */
-    isInSameMonth: function(newTime, oldTime) {
+    isInSameMonth        : function(newTime, oldTime) {
         var newDate = new Date(newTime),
             newMonth = newDate.getMonth();
         // Just initialized
@@ -5347,7 +5380,8 @@ app.detail = function() {
     if (app.highlightWords) {
         for (var i = 0; i < app.highlightWords.length; ++i) {
             var re = new RegExp(app.highlightWords[i], "g");
-            contents = contents.replace(re, "<span class='highlight'>" + app.highlightWords[i] + "</span>");
+            contents = contents.replace(re,
+                "<span class='highlight'>" + app.highlightWords[i] + "</span>");
         }
     }
 
@@ -5413,7 +5447,7 @@ app.detail = function() {
 
     var l = $(app.detailView(dataClip));
     // !!!!!HIDE THE CONTENT LISTS!!!!
-    app.cDetail.css("display", "inline-block").html(l);
+    app.$detail.css("display", "inline-block").html(l);
     app.app.addClass("detail-view");
     $(".content.loading").removeClass("loading");
     // Show the button if any images available
@@ -5525,7 +5559,7 @@ app.detail.prototype = {
         // !!!!!HIDE THE CONTENT LISTS!!!!
         $("#edit-this, #delete").addClass("hidden");
         animation.testAllSubs();
-        app.cDetail.css("display", "none").empty();
+        app.$detail.css("display", "none").empty();
         app.app.removeClass("detail-view");
         //// $(window).off("keyup.detail-key");
         // Remove all the photos
@@ -6027,7 +6061,7 @@ app.showEntryImages = function() {
         event.preventDefault();
     });
     ;
-    var photos = $(".upper > a", app.cDetail);
+    var photos = $(".upper > a", app.$detail);
     // Activate the photo viewer on click
     if (photos.length > 0) {
         app.photos = new app.PhotoViewer(photos.find(" > img").clone());
@@ -6125,8 +6159,9 @@ app.PhotoViewer.prototype = {
         var e = c.find(" > ul > li");
         e.on("click", function(k) {
             if (this == k.toElement) {
-                // Below is the original code. But the minifier reports it can be a bug or something. If anything goes
-                // wrong, use the code below: if (k, this == k.toElement) {
+                // Below is the original code. But the minifier reports it can
+                // be a bug or something. If anything goes wrong, use the code
+                // below: if (k, this == k.toElement) {
                 j.close();
             }
         });
@@ -6757,14 +6792,15 @@ app.cleanResource = function() {
                 });
         });
     }
-}
+};
 
 
 $(document).ready(function() {
-    app.app = $("div#app");
+    app.app = $("#app");
     app.contents = app.app.find(" > #contents");
-    app.cList = app.app.find("#list");
-    app.cDetail = app.app.find(" > #contents > #detail");
+    app.$list = $("#list");
+    app.$detail = $("#detail");
+    app.$editPane = $("#edit-pane");
     app.itemView = _.template($("#list-view").html());
     app.detailView = _.template($("#detail-view").html());
     calendar.viewTemplate = _.template($("#calendar-view").html());
@@ -6862,8 +6898,8 @@ archive.init = function(selector) {
                 }
                 app.audioPlayer.quit();
                 // Clean both list and detail
-                $("#list").empty();
-                $("#detail").empty();
+                app.$list.empty();
+                app.$detail.empty();
                 // Display the result
                 archive.isDisplayed = true;
                 archive.lastLoaded = 0;
@@ -6890,7 +6926,7 @@ archive.load = function() {
     // Also hide the detail view
     archive.detail.prototype.hideDetail();
     // Remove all the child elements and always
-    $("#list").empty();
+    app.$list.empty();
     archive.lastLoaded = 0;
     archive.currentDisplayed = -1;
     // Refresh every stuff
@@ -6904,7 +6940,7 @@ archive.load = function() {
 archive.list = function() {
     ////console.log("Called archive.list(" +  + ")");
     var f = this,
-        d = app.cList,
+        d = app.$list,
         c = d.children("ul");
     // Load more if the user requests
     if (!this.contents && c.length < 1) {
@@ -6950,7 +6986,7 @@ archive.list.prototype = {
             ++currentLoaded;
             // Find the qualified entry, break the loop if scrollbar is not
             // visible yet
-            if ($("#list").get(0).scrollHeight == $("#list")
+            if (app.$list.get(0).scrollHeight == app.$list
                     .height() && currentLoaded < archive.data.length) {
                 continue;
             }
@@ -6961,7 +6997,7 @@ archive.list.prototype = {
             // Remove load more
             $(".loadmore").remove();
             // Append a sign to indicate all of the entries have been loaded
-            $("#list")
+            app.$list
                 .append("<li><p class=\"separator\"><span>EOF</span></p></li>");
         }
         archive.lastLoaded = currentLoaded;
@@ -7046,7 +7082,9 @@ archive.list.prototype = {
             animation.hideHiddenIcons();
             // De-hightlight the data that is displayed
             ////console.log(archive.currentDisplayed);
-            $("#list ul li:nth-child(" + (archive.currentDisplayed + 1) + ") a")
+            app.$list.find("ul")
+                .find("li:nth-child(" + (archive.currentDisplayed + 1) + ")")
+                .find("a")
                 .removeClass("display");
             // Highlight the data that is now displayed
             $(this).addClass("display");
@@ -7054,7 +7092,7 @@ archive.list.prototype = {
             var flag = (archive.currentDisplayed == $(this).parent().index());
             if (!flag) {
                 archive.currentDisplayed = $(this).parent().index();
-                $("#detail").hide();
+                app.$detail.hide();
                 archive.view = new archive.detail();
             }
             return false;
@@ -7074,7 +7112,7 @@ archive.detail = function() {
     if (!dataClip.processed) {
         animation.log(log.CONTENTS_DOWNLOAD_START, 1);
         // Add loading icon
-        $("#list").addClass("loading");
+        app.$list.addClass("loading");
         var t = this;
         $.ajax({
             type: "GET",
@@ -7082,7 +7120,7 @@ archive.detail = function() {
         }).done(function(data, status, xhr) {
             animation.log(log.CONTENTS_DOWNLOAD_END, -1);
             // Stop telling the user it is loading
-            $("#list").removeClass("loading");
+            app.$list.removeClass("loading");
             var contents = JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf(
                 "["))).slice(0, 50);
             // Convert date
@@ -7094,11 +7132,11 @@ archive.detail = function() {
             // Set the read status of the clip to read
             dataClip.processed = true;
             var l = $(archive.detailView(dataClip));
-            app.cDetail.css("display", "inline-block").html(l);
+            app.$detail.css("display", "inline-block").html(l);
             app.app.addClass("detail-view");
-            $("#detail").fadeIn(500);
+            app.$detail.fadeIn(500);
             // Back button
-            $(".btn-back", app.cDetail).on("click", function() {
+            $(".btn-back", app.$detail).on("click", function() {
                 t.hideDetail();
             });
             // Show restore button
@@ -7113,15 +7151,15 @@ archive.detail = function() {
         try {
             var l = $(archive.detailView(dataClip));
             // !!!!!HIDE THE CONTENT LISTS!!!!
-            app.cDetail.html(l);
+            app.$detail.html(l);
             app.app.addClass("detail-view");
             // Hide center if no images available
             if (!dataClip["images"]) {
                 $(".center").hide();
             }
-            $("#detail").fadeIn(500);
+            app.$detail.fadeIn(500);
             // Back button
-            $(".btn-back", app.cDetail).on("click", function() {
+            $(".btn-back", app.$detail).on("click", function() {
                 this.hideDetail();
             });
             return dataClip;
@@ -7142,8 +7180,8 @@ archive.detail.prototype = {
     /* Hide the detail-view */
     hideDetail      : function() {
         // !!!!!HIDE THE CONTENT LISTS!!!!
-        app.cDetail.css("display", "none").empty();
-        app.cList.css("display", "inline-block");
+        app.$detail.css("display", "none").empty();
+        app.$list.css("display", "inline-block");
         app.app.removeClass("detail-view");
         animation.hideHiddenIcons();
         //// $(window).off("keyup.detail-key");
@@ -7317,7 +7355,7 @@ archive.remove = function(callback) {
  */
 archive.toggle = function(type) {
     var changed = false;
-    $("#list .archive").each(function(index) {
+    app.$list.find(".archive").each(function(index) {
         if ($(this).children("a").hasClass("change")) {
             changed = true;
             if ($(this).children("a").toggleClass(type).hasClass(type)) {
@@ -7331,7 +7369,7 @@ archive.toggle = function(type) {
     if (!changed) {
         animation.warn(log.ARCHIVE_NO_SELECTED);
     }
-}
+};
 
 /**
  * Selects the archives since archive.currentDisplayed
@@ -7343,37 +7381,37 @@ archive.selectBelow = function() {
         animation.log(log.ARCHIVE_SELECT_ALL);
     }
     ++since;
-    $("#list .archive").each(function(index) {
+    app.$list.find(".archive").each(function(index) {
         if (index >= since) {
             $(this).children("a").addClass("change");
         }
     });
-}
+};
 
 /**
  * Reverses selection of all archive lists
  */
 archive.reverse = function() {
-    $("#list .archive").each(function() {
+    app.$list.find(".archive").each(function() {
         $(this).children("a").toggleClass("change");
     });
-}
+};
 
 /**
  * Clears the selection of all archive lists and removes all their changes
  */
 archive.clear = function() {
-    $("#list .archive").each(function() {
+    app.$list.find(".archive").each(function() {
         $(this).children("a").removeAttr("class");
     });
-}
+};
 
 
 archive.quit = function() {
     if (archive.isDisplayed) {
         archive.isDisplayed = false;
-        $("#list").empty();
-        $("#detail").empty();
+        app.$list.empty();
+        app.$detail.empty();
         // Reshow the menu
         $("#refresh-media").trigger("click");
         $("#search-new, #search-result").fadeIn();
@@ -7575,7 +7613,8 @@ function getBulbUrlHeader() {
  * @param {String} url - The direct url of the file. Default is from
  *     core/data.js
  * @param {Boolean} textOnly - whether to download text file or not
- * @param {Function} callbackOnSuccess - the function to be called if downloading is a success
+ * @param {Function} callbackOnSuccess - the function to be called if
+ *     downloading is a success
  */
 function downloadFile(url, textOnly, callbackOnSuccess) {
     animation.log(log.CONTENTS_DOWNLOAD_START, 1);
@@ -8278,14 +8317,15 @@ window.bulb = function() {
                     })
                     .done(function(data) {
                         // Test if there is more bulbs available
-                        //if (data["@odata.nextLink"] && false) { // never go into
-                        // the loop (intended) // More bulbs available! var nextUrl
-                        // = data["@odata.nextLink"];  var groups =
+                        //if (data["@odata.nextLink"] && false) { // never go
+                        // into the loop (intended) // More bulbs available!
+                        // var nextUrl = data["@odata.nextLink"];  var groups =
                         // nextUrl.split("&"); // Manually ask server return
-                        // downloadUrl for (var i = 0; i !== groups.length; ++i) {
-                        // if (groups[i].startsWith("$select")) { groups[i] =
-                        // "$select=id,name,size,@content.downloadUrl"; break; } }
-                        // nextUrl = groups.join("&");
+                        // downloadUrl for (var i = 0; i !== groups.length;
+                        // ++i) { if (groups[i].startsWith("$select")) {
+                        // groups[i] =
+                        // "$select=id,name,size,@content.downloadUrl"; break;
+                        // } } nextUrl = groups.join("&");
                         // bulb.initFetchData(nextUrl); }
 
                         // Add these bulbs to the queue to process them
@@ -9097,8 +9137,9 @@ window.calendar = function() {
     "use strict";
 
     /**
-     * The threshold of each bulb. The first element (number) of each element means the minimum number the bulb(s) have
-     * to be. The key (number) should be sorted descendingly
+     * The threshold of each bulb. The first element (number) of each element
+     * means the minimum number the bulb(s) have to be. The key (number) should
+     * be sorted descendingly
      * @type {{}}
      * @private
      */
@@ -9119,8 +9160,9 @@ window.calendar = function() {
 
     /**
      * Generates the calendar of this year
-     * @returns {Array} - an array of 12 elements representing 12 months, with each element having 42 (6 * 7) days. It
-     *     starts with Sunday. For empty day, use 0 instead.
+     * @returns {Array} - an array of 12 elements representing 12 months, with
+     *     each element having 42 (6 * 7) days. It starts with Sunday. For
+     *     empty day, use 0 instead.
      * @private
      */
     var _generateCalendar = function() {
@@ -9278,7 +9320,8 @@ window.calendar = function() {
     var _highlightToday = function() {
         var date = new Date();
         if (app.year === date.getFullYear()) {
-            $("#month-" + date.getMonth() + " .day-" + date.getDate()).addClass("today");
+            $("#month-" + date.getMonth() + " .day-" + date.getDate())
+                .addClass("today");
         }
     };
 
@@ -9286,7 +9329,8 @@ window.calendar = function() {
         viewTemplate: undefined,
 
         /**
-         * Initialize the calendar view, should only be called once every time a new year is loaded
+         * Initialize the calendar view, should only be called once every time
+         * a new year is loaded
          */
         initView: function() {
             // Clean the canvas
@@ -9347,11 +9391,13 @@ window.calendar = function() {
         ,
 
         /**
-         * Clear all the labels/tags on the calendar, also reset all the data fields
+         * Clear all the labels/tags on the calendar, also reset all the data
+         * fields
          */
         clear: function() {
             $(".calendar-table .day")
-                .removeClass("article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7");
+                .removeClass(
+                    "article bulb-0 bulb-1 bulb-2 bulb-3 bulb-4 bulb-5 bulb-6 bulb-7");
 
             _monthArticleNum = {};
             _monthBulbNum = {};
@@ -9431,7 +9477,8 @@ window.map = function() {
          */
         _contentStrings = [],
         /**
-         * The index of the bulb last displayed. This index is from `_markers` and `_contentStrings`
+         * The index of the bulb last displayed. This index is from `_markers`
+         * and `_contentStrings`
          * @type {number}
          * @private
          */
@@ -9439,18 +9486,20 @@ window.map = function() {
 
     /**
      * Extracts the location data from the bulbs of current journal archive
-     * This function will read the data and will simple append the data to _markers and _contentStrings
+     * This function will read the data and will simple append the data to
+     * _markers and _contentStrings
      * @private
      */
     var _drawDataLocations = function() {
-// todo only extract shown data
         var coordinates = [],
             bounds = new google.maps.LatLngBounds();
 
-        for (var i = 0, len = journal.archive.data[app.year].length; i < len; ++i) {
+        for (var i = 0, len = journal.archive.data[app.year].length;
+             i < len;
+             ++i) {
             var bulb = journal.archive.data[app.year][i];
-            if (bulb.contentType === app.contentType.BULB && bulb["place"]) {
-                (function innerLoop(bulb) {
+            if (app.qualifiedEntry[i] && bulb.contentType === app.contentType.BULB && bulb["place"]) {
+                (function innerLoop(bulb, i) {
                     var latlng = {
                         lat: parseFloat(bulb["place"]["latitude"]),
                         lng: parseFloat(bulb["place"]["longitude"])
@@ -9487,7 +9536,12 @@ window.map = function() {
                     });
 
                     marker.addListener("click", ()=> {
-                        // todo show the bulb in the list
+                        var $li = app.$list.find("li:nth-child(" + i + ")"),
+                            $a = $li.find("a");
+
+                        $a.click();
+                        app.$list.scrollTop($a.position().top);
+
                     });
 
                     _markers.push(marker);
@@ -9543,7 +9597,8 @@ window.map = function() {
 
     /**
      * Show the data on the map.
-     * This function assumes that the location data is already extracted from the journal data
+     * This function assumes that the location data is already extracted from
+     * the journal data
      * @private
      */
     var _showDataOnMap = function() {
@@ -9584,7 +9639,8 @@ window.map = function() {
         },
 
         /**
-         * Shows an older bulb available. Will do nothing if no next bulb is available
+         * Shows an older bulb available. Will do nothing if no next bulb is
+         * available
          */
         showOlderBulb: function() {
             if (++_lastDisplayedIndex >= _markers.length) {
@@ -9595,7 +9651,8 @@ window.map = function() {
         },
 
         /**
-         * Shows a later (more recent) bulb available. Will do nothing if no previos bulb is available
+         * Shows a later (more recent) bulb available. Will do nothing if no
+         * previos bulb is available
          */
         showLaterBulb: function() {
             if (--_lastDisplayedIndex < 0) {

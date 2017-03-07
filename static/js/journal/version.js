@@ -1,4 +1,4 @@
-﻿app.version.main = "v4.6.3 Build 010817_1627";
+﻿app.version.main = "v4.7.0 Build 030717_1425";
 
 // Version number show up
 $("#version").html(app.version.main);
@@ -14,6 +14,10 @@ $("#version").html(app.version.main);
  * [Add] Disable rightclick everywhere
  *
  * Todo add an integrity check before logging in
+ *
+ * v4.7 - Diverse update
+ * [Add] Added support for images in bulb
+ * [Chg] The layout of map
  *
  * v4.6 - Calendar update
  * [Add] Add calendar on the left

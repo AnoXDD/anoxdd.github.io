@@ -171,6 +171,7 @@ window.log = {
     BULB_PROCESSED_LEFT      : " bulbs processed. Left: ",
     BULB_REMOVE_MERGED_START : "Cleaning data on OneDrive ...",
     BULB_FETCH_FINAL_END     : "Done integrating bulbs",
+    BULB_IMAGE_MERGE_FAILED  : "Unable to merge image associated with ",
 };
 
 animation.degree = 0;
@@ -4804,6 +4805,10 @@ window.app = function() {
                 };
             }
 
+            if (content["image"]) {
+                newData["images"] = [{fileName: content["image"]}];
+            }
+
             journal.archive.data[app.year].push(newData);
 
             $("#year").addClass("change");
@@ -8230,6 +8235,12 @@ window.bulb = function() {
      */
     var _data = {};
     /**
+     * Holds the image timestamp and its corresponding id
+     * @type {{}} Format: [timestamp: id]
+     * @private
+     */
+    var _image = {};
+    /**
      * The number of bulbs that were fetched from the bulb folder and to be
      * processed
      * @type {number}
@@ -8305,31 +8316,78 @@ window.bulb = function() {
     }
 
     /**
+     * Sets the bulb content, ASSUMING this is merged successfully
+     * @param timestamp {string} the timestamp of this bulb
+     * @param rawContent {string} the raw content of the xhr response from
+     *     server
+     * @param imageName {string} (Optional) an optional image name attached to
+     *     this bulb
+     * @private
+     */
+    function _setBulbContent(timestamp, rawContent, imageName) {
+        // Remove illegal characters
+        rawContent = rawContent.replace(/\r*\n/g, " ");
+
+        bulb.setRawContent(timestamp, rawContent);
+        // Process the raw content
+        bulb.extractRawContent(timestamp);
+        // Merge into journal archive data
+        bulb.mergeIntoArchive(timestamp);
+        // Try to set image data
+        if (imageName) {
+            bulb.setImageContent(timestamp, imageName);
+        }
+
+        animation.log(++_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalBulbs);
+    }
+
+    /**
      * Fetch the bulb content given a timestamp to be used as an index to search
-     * data from `bulb.data`
+     * data from `bulb.data`, will also move the image files
      * @param {string} timestamp The timestamp
      */
     function _fetchBulbContent(timestamp) {
         getTokenCallback(function(token) {
-            var id = bulb.getID(timestamp);
+            var id = bulb.getBulbID(timestamp);
             var url = "https://api.onedrive.com/v1.0/drive/items/" + id + "/content?access_token=" + token;
 
             $.ajax({
                 type: "GET",
                 url : url
             }).done(function(data, status, xhr) {
-                // Get the content of bulb
                 var content = xhr.responseText;
-                // Remove illegal characters
-                content = content.replace(/\r*\n/g, " ");
 
-                bulb.setRawContent(timestamp, content);
-                // Process the raw content
-                bulb.extractRawContent(timestamp);
-                // Merge into journal archive data
-                bulb.mergeIntoArchive(timestamp);
+                // Try to see if there's an image file associated
+                var imageID = bulb.getImageID(timestamp);
+                if (imageID) {
+                    $.ajax({
+                        type       : "PATCH",
+                        url        : `https://api.onedrive.com/v1.0/drive/items/${imageID}?select=id,name,size,@content.downloadUrl&access_token=${token}`,
+                        contentType: "application/json",
+                        data       : JSON.stringify({
+                            // If later I'd like to rename it, I can add it here
+                            //// name: "newname.jpg",
+                            parentReference: {
+                                path: "/drive/root:/Apps/Journal/resource/" + app.year
+                            }
+                        })
+                    }).done((data) => {
+                        journal.archive.map[data["name"]] = {
+                            url : data["@content.downloadUrl"],
+                            size: data["size"],
+                            id  : data["id"]
+                        };
 
-                animation.log(++_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalBulbs);
+                        _setBulbContent(timestamp, content, data["name"]);
+                    }).fail(() => {
+                        // For debug purpose only, because practically this
+                        // won't be able to show up in the UI (due to too much
+                        // information)
+                        animation.log(log.BULB_IMAGE_MERGE_FAILED + timestamp);
+                    })
+                } else {
+                    _setBulbContent(timestamp, content);
+                }
             }).always(function() {
                 // Decrement the total bulbs to be processed
                 bulb.decrementTotalBulbs();
@@ -8377,21 +8435,9 @@ window.bulb = function() {
                         url : url
                     })
                     .done(function(data) {
-                        // Test if there is more bulbs available
-                        //if (data["@odata.nextLink"] && false) { // never go
-                        // into the loop (intended) // More bulbs available!
-                        // var nextUrl = data["@odata.nextLink"];  var groups =
-                        // nextUrl.split("&"); // Manually ask server return
-                        // downloadUrl for (var i = 0; i !== groups.length;
-                        // ++i) { if (groups[i].startsWith("$select")) {
-                        // groups[i] =
-                        // "$select=id,name,size,@content.downloadUrl"; break;
-                        // } } nextUrl = groups.join("&");
-                        // bulb.initFetchData(nextUrl); }
-
                         // Add these bulbs to the queue to process them
                         var itemList = data["value"];
-                        bulb.clearData();
+                        bulb.clearAllData();
                         bulb.setTotalBulbs(itemList.length);
 
                         if (itemList.length === 0) {
@@ -8401,25 +8447,40 @@ window.bulb = function() {
                             return;
                         }
 
+                        // Process for different types of bulbs
+                        // First, images
+                        _.each(itemList, (item) => {
+                            var filename = item["name"];
+
+                            if (filename.endsWith(".jpg")
+                                || filename.endsWith(".png")) {
+                                var timestamp = bulb.getTimeFromEpoch(filename.substr(
+                                    0,
+                                    filename.length - 4));
+                                bulb.setImageData(timestamp, item["id"]);
+                            }
+                        });
+
+                        // Then, texts
+
                         animation.log(log.BULB_FETCH_CONTENT_START);
 
-                        for (var key = 0, len = itemList.length;
-                             key != len;
-                             ++key) {
+                        _.each(itemList, (item) => {
                             var dataElement = {
-                                id : itemList[key]["id"],
-                                url: itemList[key]["@content.downloadUrl"],
+                                id : item["id"],
+                                url: item["@content.downloadUrl"],
                             };
-                            var filename = itemList[key]["name"];
+                            var filename = item["name"];
                             var timestamp = bulb.getTimeFromEpoch(filename);
 
-                            bulb.setData(timestamp, dataElement);
+                            bulb.setBulbData(timestamp, dataElement);
 
                             _fetchBulbContent(timestamp);
-                        }
-                    }).fail(function() {
-                    bulb.isProcessing = false;
-                });
+                        });
+                    })
+                    .fail(function() {
+                        bulb.isProcessing = false;
+                    });
             });
         },
 
@@ -8499,12 +8560,17 @@ window.bulb = function() {
             return _mergedBulbCounter;
         },
 
-        setData: function(timestamp, data) {
+        setImageData: function(timestamp, id) {
+            _image[timestamp] = id;
+        },
+
+        setBulbData: function(timestamp, data) {
             _data[timestamp] = data;
         },
 
-        clearData: function() {
+        clearAllData: function() {
             _data = {};
+            _image = {};
         },
 
         /**
@@ -8535,12 +8601,20 @@ window.bulb = function() {
             return _data;
         },
 
-        getID: function(timestamp) {
+        getBulbID: function(timestamp) {
             return _data[timestamp]["id"];
+        },
+
+        getImageID: function(timestamp) {
+            return _image[timestamp];
         },
 
         setRawContent: function(timestamp, contentRaw) {
             _data[timestamp]["contentRaw"] = contentRaw;
+        },
+
+        setImageContent: function(timestamp, imageName) {
+            _data[timestamp]["image"] = imageName;
         }
     }
 }();

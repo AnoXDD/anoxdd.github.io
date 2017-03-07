@@ -8342,6 +8342,19 @@ window.bulb = function() {
     }
 
     /**
+     * The callback function after a bulb is merged
+     * @private
+     */
+    function _doneProcessingOneBulb() {
+        // Decrement the total bulbs to be processed
+        bulb.decrementTotalBulbs();
+        if (_totalBulbs <= 0) {
+            // None bulbs left
+            app.finishMergingBulbs();
+        }
+    }
+
+    /**
      * Fetch the bulb content given a timestamp to be used as an index to search
      * data from `bulb.data`, will also move the image files
      * @param {string} timestamp The timestamp
@@ -8384,17 +8397,15 @@ window.bulb = function() {
                         // won't be able to show up in the UI (due to too much
                         // information)
                         animation.log(log.BULB_IMAGE_MERGE_FAILED + timestamp);
-                    })
+                    }).always(() => {
+                        _doneProcessingOneBulb();
+                    });
                 } else {
                     _setBulbContent(timestamp, content);
+                    _doneProcessingOneBulb();
                 }
-            }).always(function() {
-                // Decrement the total bulbs to be processed
-                bulb.decrementTotalBulbs();
-                if (_totalBulbs <= 0) {
-                    // None bulbs left
-                    app.finishMergingBulbs();
-                }
+            }).fail(function() {
+                _doneProcessingOneBulb();
             });
         })
     }

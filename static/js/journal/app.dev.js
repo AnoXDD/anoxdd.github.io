@@ -8463,7 +8463,7 @@ window.bulb = function() {
                         // Then, texts
                         // Filter out non-text entries
                         itemList = _.filter(itemList, (item) => {
-                            return item["name"].indexOf(".") !== -1;
+                            return item["name"].indexOf(".") === -1;
                         });
                         bulb.setTotalBulbs(itemList.length);
 

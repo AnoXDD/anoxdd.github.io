@@ -8438,7 +8438,6 @@ window.bulb = function() {
                         // Add these bulbs to the queue to process them
                         var itemList = data["value"];
                         bulb.clearAllData();
-                        bulb.setTotalBulbs(itemList.length);
 
                         if (itemList.length === 0) {
                             // Empty bulb list
@@ -8462,24 +8461,26 @@ window.bulb = function() {
                         });
 
                         // Then, texts
+                        // Filter out non-text entries
+                        itemList = _.filter(itemList, (item) => {
+                            return item["name"].indexOf(".") !== -1;
+                        });
+                        bulb.setTotalBulbs(itemList.length);
 
                         animation.log(log.BULB_FETCH_CONTENT_START);
 
                         _.each(itemList, (item) => {
                             // The text should not have any suffix
                             var filename = item["name"];
+                            var dataElement = {
+                                id : item["id"],
+                                url: item["@content.downloadUrl"],
+                            };
+                            var timestamp = bulb.getTimeFromEpoch(filename);
 
-                            if (filename.indexOf(".") === -1) {
-                                var dataElement = {
-                                    id : item["id"],
-                                    url: item["@content.downloadUrl"],
-                                };
-                                var timestamp = bulb.getTimeFromEpoch(filename);
+                            bulb.setBulbData(timestamp, dataElement);
 
-                                bulb.setBulbData(timestamp, dataElement);
-
-                                _fetchBulbContent(timestamp);
-                            }
+                            _fetchBulbContent(timestamp);
                         });
                     })
                     .fail(function() {

@@ -8328,15 +8328,16 @@ window.bulb = function() {
         // Remove illegal characters
         rawContent = rawContent.replace(/\r*\n/g, " ");
 
+        // Try to set image data
+        if (imageName) {
+            bulb.setImageContent(timestamp, imageName);
+        }
+        
         bulb.setRawContent(timestamp, rawContent);
         // Process the raw content
         bulb.extractRawContent(timestamp);
         // Merge into journal archive data
         bulb.mergeIntoArchive(timestamp);
-        // Try to set image data
-        if (imageName) {
-            bulb.setImageContent(timestamp, imageName);
-        }
 
         animation.log(++_mergedBulbCounter + log.BULB_PROCESSED_LEFT + _totalBulbs);
     }

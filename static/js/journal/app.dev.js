@@ -8466,16 +8466,20 @@ window.bulb = function() {
                         animation.log(log.BULB_FETCH_CONTENT_START);
 
                         _.each(itemList, (item) => {
-                            var dataElement = {
-                                id : item["id"],
-                                url: item["@content.downloadUrl"],
-                            };
+                            // The text should not have any suffix
                             var filename = item["name"];
-                            var timestamp = bulb.getTimeFromEpoch(filename);
 
-                            bulb.setBulbData(timestamp, dataElement);
+                            if (filename.indexOf(".") === -1) {
+                                var dataElement = {
+                                    id : item["id"],
+                                    url: item["@content.downloadUrl"],
+                                };
+                                var timestamp = bulb.getTimeFromEpoch(filename);
 
-                            _fetchBulbContent(timestamp);
+                                bulb.setBulbData(timestamp, dataElement);
+
+                                _fetchBulbContent(timestamp);
+                            }
                         });
                     })
                     .fail(function() {

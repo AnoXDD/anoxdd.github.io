@@ -5214,7 +5214,7 @@ app.list.prototype = {
                 var marker = map.getMarker(createTime);
                 // Try to show the info window
                 if (marker) {
-                    marker.mouseover();
+                    google.maps.event.trigger(marker, "mouseover");
                 } else {
                     animation.error("Unable to locate this bulb on the map");
                 }

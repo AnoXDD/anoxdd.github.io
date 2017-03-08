@@ -5205,6 +5205,14 @@ app.list.prototype = {
 
         var item = $(app.itemView(data));
 
+        // De-hightlight the data that is displayed
+        ////console.log(app.currentDisplayed);
+        app.$list
+            .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
+            .removeClass("display");
+        // Highlight the data that is now displayed
+        $(this).addClass("display");
+
         // The event when clicking the list
         if (data.contentType === app.contentType.BULB) {
             item.find(" > a").click((e) => {
@@ -5231,13 +5239,7 @@ app.list.prototype = {
                 if (app.photos) {
                     app.photos.remove();
                 }
-                // De-hightlight the data that is displayed
-                ////console.log(app.currentDisplayed);
-                app.$list
-                    .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
-                    .removeClass("display");
-                // Highlight the data that is now displayed
-                $(this).addClass("display");
+
                 // Update the index of the list to be displayed
                 var flag = (app.currentDisplayed == $(this).parent().index());
                 if (!flag) {
@@ -9678,11 +9680,15 @@ window.map = function() {
                     });
 
                     var contentString = '<div class="map-infowindow-container"><p class="bulb-date">' +
-                        new Date(bulb["time"]["created"]).toString() + '</p><p class="bulb-content">' +
-                        bulb["text"]["body"] + '</p><p class="location">' +
-                        (bulb["place"]["title"] || "") +
-                        '</p><div class="map-actions"><a href="javascript:;" onclick="map.showOlderBulb()" id="bulb-map-prev"></a>' +
-                        '<a href="javascript:;" onclick="map.showLaterBulb()" id="bulb-map-next"></a></div></div>';
+                        new Date(bulb["time"]["created"]).toString() + '</p>' +
+                        '<div class="bulb-content-wrapper">' +
+                        (bulb["images"] ? `<img class="bulb-image" src="${bulb['images'][0]['fileName']}">` : "") +
+                        '<p class="bulb-content">' + bulb["text"]["body"] + '</p>'
+                    '</div>' +
+                    '<p class="location">' +
+                    (bulb["place"]["title"] || "") +
+                    '</p><div class="map-actions"><a href="javascript:;" onclick="map.showOlderBulb()" id="bulb-map-prev"></a>' +
+                    '<a href="javascript:;" onclick="map.showLaterBulb()" id="bulb-map-next"></a></div></div>';
 
                     var currentIndex = _markers.length;
 

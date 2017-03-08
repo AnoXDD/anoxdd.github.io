@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8"/>
     <title>Anoxic's Journal Viewer</title>
-    <link rel="stylesheet" href="../static/css/journal.dev.css" type="text/css"/>
+    <link rel="stylesheet" href="../static/css/journal.dev.css"
+          type="text/css"/>
     <link rel="stylesheet" href="../static/css/jquery-ui.css"/>
     <link rel="icon" href="../static/journal/favicon.ico"/>
 </head>
@@ -943,6 +944,24 @@
             </table>
         </div>
         <% } %>
+    </div>
+</script>
+<script type="text/x-template" id="bulb-view">
+    <div class="map-infowindow-container">
+        <p class="bulb-date"> <%= time.created %> </p>
+        <div class="bulb-content-wrapper">
+            <% if (image) { %>
+            <img class="bulb-image" src="<%- image %>">
+            <% }
+            <p class="bulb-content"><%= text.body %></p>
+        </div>
+        <p class="location"> <%= place.title %> </p>
+        <div class="map-actions">
+            <a href="javascript:;" onclick="map.showOlderBulb()"
+               id="bulb-map-prev"></a>
+            <a href="javascript:;" onclick="map.showLaterBulb()"
+               id="bulb-map-next"></a>
+        </div>
     </div>
 </script>
 </body>

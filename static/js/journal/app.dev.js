@@ -6885,6 +6885,7 @@ $(document).ready(function() {
     app.$ruler = $("#ruler");
     app.itemView = _.template($("#list-view").html());
     app.detailView = _.template($("#detail-view").html());
+    app.bulbView = _.template($("#bulb-view").html());
     calendar.viewTemplate = _.template($("#calendar-view").html());
     app.layout();
     app.initializeApp();
@@ -9679,18 +9680,12 @@ window.map = function() {
                         title   : new Date(bulb["time"]["created"]).toString()
                     });
 
-                    var contentString = '<div class="map-infowindow-container"><p class="bulb-date">' +
-                        new Date(bulb["time"]["created"]).toString() + '</p>' +
-                        '<div class="bulb-content-wrapper">' +
-                        (bulb["images"] ? `<img class="bulb-image" src="${bulb['images'][0]['fileName']}">` : "") +
-                        '<p class="bulb-content">' + bulb["text"]["body"] + '</p>'
-                    '</div>' +
-                    '<p class="location">' +
-                    (bulb["place"]["title"] || "") +
-                    '</p><div class="map-actions"><a href="javascript:;" onclick="map.showOlderBulb()" id="bulb-map-prev"></a>' +
-                    '<a href="javascript:;" onclick="map.showLaterBulb()" id="bulb-map-next"></a></div></div>';
+                    bulb["image"] = bulb["images"] ? "" : bulb["images"][0]["fileName"];
+                    bulb["place"]["title"] = bulb["place"]["title"] || "";
 
-                    var currentIndex = _markers.length;
+
+                    var contentString = $(app.bulbView(bulb)),
+                        currentIndex = _markers.length;
 
                     marker.addListener("mouseover", () => {
                         _showInfoWindow(currentIndex);

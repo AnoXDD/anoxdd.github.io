@@ -9680,7 +9680,7 @@ window.map = function() {
                         title   : new Date(bulb["time"]["created"]).toString()
                     });
 
-                    bulb["image"] = bulb["images"] ? "" : bulb["images"][0]["fileName"];
+                    bulb["image"] = bulb["images"] ? (bulb["images"][0]["fileName"] || "") : "";
                     bulb["place"]["title"] = bulb["place"]["title"] || "";
 
 

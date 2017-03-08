@@ -5205,36 +5205,50 @@ app.list.prototype = {
 
         var item = $(app.itemView(data));
 
-        // Bind the click event of this data clip
-        item.find(" > a").on("click", function(j) {
-            j.preventDefault();
-            // Show edit panel
-            animation.showMenuOnly("edit");
-            // Remove all the photos that have already been loaded
-            if (app.photos) {
-                app.photos.remove();
-            }
-            // De-hightlight the data that is displayed
-            ////console.log(app.currentDisplayed);
-            app.$list
-                .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
-                .removeClass("display");
-            // Highlight the data that is now displayed
-            $(this).addClass("display");
-            // Update the index of the list to be displayed
-            var flag = (app.currentDisplayed == $(this).parent().index());
-            if (!flag) {
-                app.currentDisplayed = $(this).parent().index();
-                app.$detail.hide().fadeIn(500);
-                app.view = new app.detail();
-            }
-            return false;
-        });
-
         // The event when clicking the list
         if (data.contentType === app.contentType.BULB) {
+            item.find(" > a").click((e) => {
+                e.preventDefault();
+                app.$detail.hide();
 
+                var marker = map.getMarker(createTime);
+                // Try to show the info window
+                if (marker) {
+                    marker.mouseover();
+                } else {
+                    animation.error("Unable to locate this bulb on the map");
+                }
+
+                return false;
+            })
         } else {
+            // Bind the click event of this data clip
+            item.find(" > a").on("click", function(e) {
+                e.preventDefault();
+                // Show edit panel
+                animation.showMenuOnly("edit");
+                // Remove all the photos that have already been loaded
+                if (app.photos) {
+                    app.photos.remove();
+                }
+                // De-hightlight the data that is displayed
+                ////console.log(app.currentDisplayed);
+                app.$list
+                    .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
+                    .removeClass("display");
+                // Highlight the data that is now displayed
+                $(this).addClass("display");
+                // Update the index of the list to be displayed
+                var flag = (app.currentDisplayed == $(this).parent().index());
+                if (!flag) {
+                    app.currentDisplayed = $(this).parent().index();
+                    app.$detail.hide().fadeIn(500);
+                    app.view = new app.detail();
+                }
+                return false;
+            });
+
+            // If possible, todo tell me what this else function is doing
             $(".thumb > img:not([style])", item).on("load", function() {
                 var h = this.naturalWidth || this.width,
                     f = this.naturalHeight || this.height,
@@ -8332,7 +8346,7 @@ window.bulb = function() {
         if (imageName) {
             bulb.setImageContent(timestamp, imageName);
         }
-        
+
         bulb.setRawContent(timestamp, rawContent);
         // Process the raw content
         bulb.extractRawContent(timestamp);
@@ -9847,6 +9861,16 @@ window.map = function() {
             _markers = [];
             _contentStrings = [];
             _lastDisplayedIndex = -1;
+        },
+
+        /**
+         * Find a marker given a timestamp (seconds from epoch)
+         * @param timestamp
+         */
+        getMarker: function(timestamp) {
+            return _.find(_markers, (marker) => {
+                return marker.title === new Date(timestamp).toString();
+            })
         }
 
     }

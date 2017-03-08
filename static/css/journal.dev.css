@@ -236,7 +236,7 @@ body {
     display: none; }
 
 #list, #map {
-  height: 50%;
+  height: 100%;
   transition: height .4s ease, width .4s ease; }
 
 #list-tab {

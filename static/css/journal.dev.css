@@ -278,6 +278,8 @@ body {
         top: 3px;
         font-size: 10px;
         width: 80%; }
+      #list li.bulb a .display .summary {
+        font-weight: bold; }
     #list li.archive {
       height: 60px; }
       #list li.archive a {

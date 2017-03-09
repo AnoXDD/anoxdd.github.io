@@ -5207,81 +5207,43 @@ app.list.prototype = {
             highlight = function($this) {
                 // De-hightlight the data that is displayed
                 ////console.log(app.currentDisplayed);
-                app.$list
-                    .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
-                    .removeClass("display");
+                app.$list.find(".display").removeClass("display");
                 // Highlight the data that is now displayed
                 $this.addClass("display");
             };
 
         // The event when clicking the list
-        if (data.contentType === app.contentType.BULB) {
-            item.find(" > a").click(function(e) {
-                e.preventDefault();
-                highlight($(this));
+        item.find(" > a").click(function(e) {
+            e.preventDefault();
+            highlight($(this));
 
-                app.$detail.hide();
+            var $parent = $(this).parent();
+            app.currentDisplayed = $parent.index();
 
+            if ($parent.hasClass("bulb")) {
                 var marker = map.getMarker(createTime);
-                // Try to show the info window
                 if (marker) {
                     google.maps.event.trigger(marker, "mouseover");
-                } else {
-                    animation.error("Unable to locate this bulb on the map");
+                    return false;
                 }
+            }
 
-                return false;
-            });
-        } else {
-            // Bind the click event of this data clip
-            item.find(" > a").on("click", function(e) {
-                e.preventDefault();
-                highlight($(this));
+            // Else, it's either not a bulb or cannot be displayed on the map
+            // Show edit panel
+            animation.showMenuOnly("edit");
+            // Remove all the photos that have already been loaded
+            if (app.photos) {
+                app.photos.remove();
+            }
 
-                // Show edit panel
-                animation.showMenuOnly("edit");
-                // Remove all the photos that have already been loaded
-                if (app.photos) {
-                    app.photos.remove();
-                }
+            if (app.currentDisplayed !== $parent.index()) {
+                app.$detail.hide().fadeIn(500);
+                app.view = new app.detail();
+            }
 
-                // Update the index of the list to be displayed
-                var flag = (app.currentDisplayed == $(this).parent().index());
-                if (!flag) {
-                    app.currentDisplayed = $(this).parent().index();
-                    app.$detail.hide().fadeIn(500);
-                    app.view = new app.detail();
-                }
-                return false;
-            });
+            return false;
+        });
 
-            // If possible, todo tell me what this else function is doing
-            $(".thumb > img:not([style])", item).on("load", function() {
-                var h = this.naturalWidth || this.width,
-                    f = this.naturalHeight || this.height,
-                    g = app.util.crop(h, f, 160);
-                $(this).css(g);
-            });
-            $(".thumb > canvas", item).each(function() {
-                var g = new Image(),
-                    f = this.getContext("2d");
-                g.src = $(this).data("src");
-                g.onload = function() {
-                    var croppedPhoto = app.util.crop(this.width,
-                        this.height,
-                        160),
-                        x = croppedPhoto.marginLeft || 0,
-                        y = croppedPhoto.marginTop || 0,
-                        width = croppedPhoto.width || 160,
-                        height = croppedPhoto.height || 160;
-                    f.drawImage(g, x, y, width, height);
-                };
-            });
-        }
-
-        // return item.data("pid",
-        // data.pid).addClass(data.type).appendTo(this.contents); //return
-        // item.addClass(data.type).appendTo(this.contents);
         var $newClass = item.addClass(data.type).hide();
         this.contents.append($newClass.fadeIn(500));
     },

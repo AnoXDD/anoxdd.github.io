@@ -5222,6 +5222,7 @@ app.list.prototype = {
             if ($parent.hasClass("bulb")) {
                 var marker = map.getMarker(createTime);
                 if (marker) {
+                    app.$detail.hide();
                     app.currentDisplayed = $parent.index();
                     google.maps.event.trigger(marker, "mouseover");
                     return false;
@@ -5237,11 +5238,10 @@ app.list.prototype = {
             }
 
             if (app.currentDisplayed !== $parent.index()) {
+                app.currentDisplayed = $parent.index();
                 app.$detail.hide().fadeIn(500);
                 app.view = new app.detail();
             }
-
-            app.currentDisplayed = $parent.index();
 
             return false;
         });

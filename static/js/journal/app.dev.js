@@ -9680,8 +9680,13 @@ window.map = function() {
                         title   : new Date(bulb["time"]["created"]).toString()
                     });
 
-                    // todo use the url from map instead
-                    bulb["image"] = bulb["images"] ? (journal.archive.map[bulb["images"][0]["fileName"]]["url"] || "") : "";
+                    if (bulb["images"]) {
+                        var m = journal.archive.map[bulb["images"][0]["fileName"]];
+                        bulb["image"] = m ? m["url"] : "";
+                    } else {
+                        bulb["image"] = "";
+                    }
+
                     bulb["place"]["title"] = bulb["place"]["title"] || "";
 
                     var contentString = $(app.bulbView(bulb))[0].outerHTML,

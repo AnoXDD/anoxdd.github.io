@@ -3802,6 +3802,12 @@ body.fullscreen {
     .bulb-content {
       padding: 10px;
     }
+    .bulb-image {
+      max-height: 50vh;
+      display: block;
+      margin: auto;
+      max-width: 100%;
+    }
     .location {
       text-align: right;
     }

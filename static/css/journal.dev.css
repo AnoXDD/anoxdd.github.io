@@ -2661,6 +2661,11 @@ body.fullscreen .header, body.fullscreen #attach-area {
     width: 500px; }
     #map .map-infowindow-container .bulb-content {
       padding: 10px; }
+    #map .map-infowindow-container .bulb-image {
+      max-height: 50vh;
+      display: block;
+      margin: auto;
+      max-width: 100%; }
     #map .map-infowindow-container .location {
       text-align: right; }
     #map .map-infowindow-container .map-actions {

@@ -9745,7 +9745,9 @@ window.map = function() {
      * @private
      */
     var _showInfoWindow = function(index) {
-        index = index || _lastDisplayedIndex;
+        if (typeof index === "undefined") {
+            _lastDisplayedIndex = index;
+        }
 
         clearTimeout(_infoWindowTimeoutID);
 

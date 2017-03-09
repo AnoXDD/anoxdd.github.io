@@ -9725,7 +9725,7 @@ window.map = function() {
                         // Scroll more until nothing can be loaded or it's
                         // actually on the top
                         app.$list.scrollTop(0).scrollTop(top);
-                        while ($(".loadmore").length && $li.position.top() > 1) {
+                        while ($(".loadmore").length && $li.position().top > 1) {
                             $(".loadmore").click();
                             app.$list.scrollTop(0)
                                 .scrollTop($li.position().top);
@@ -9761,7 +9761,7 @@ window.map = function() {
      */
     var _showInfoWindow = function(index) {
         if (typeof index === "undefined") {
-            _lastDisplayedIndex = index;
+            index = _lastDisplayedIndex;
         }
 
         clearTimeout(_infoWindowTimeoutID);

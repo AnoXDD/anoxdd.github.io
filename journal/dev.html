@@ -948,14 +948,14 @@
 </script>
 <script type="text/x-template" id="bulb-view">
     <div class="map-infowindow-container">
-        <p class="bulb-date"> <%= time.created %> </p>
+        <p class="bulb-date"> <%- new Date(time.created).toString() %> </p>
         <div class="bulb-content-wrapper">
             <% if (image) { %>
-            <img class="bulb-image" src="<%- image %>">
+            <img class="bulb-image sensitive" src="<%- image %>">
             <% } %>
-            <p class="bulb-content"><%= text.body %></p>
+            <p class="bulb-content sensitive"><%= text.body %></p>
         </div>
-        <p class="location"> <%= place.title %> </p>
+        <p class="location sensitive"> <%= place.title %> </p>
         <div class="map-actions">
             <a href="javascript:;" onclick="map.showOlderBulb()"
                id="bulb-map-prev"></a>

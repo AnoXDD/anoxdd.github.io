@@ -9680,11 +9680,11 @@ window.map = function() {
                         title   : new Date(bulb["time"]["created"]).toString()
                     });
 
-                    bulb["image"] = bulb["images"] ? (bulb["images"][0]["fileName"] || "") : "";
+                    // todo use the url from map instead
+                    bulb["image"] = bulb["images"] ? (journal.archive.map[bulb["images"][0]["fileName"]]["url"] || "") : "";
                     bulb["place"]["title"] = bulb["place"]["title"] || "";
 
-
-                    var contentString = $(app.bulbView(bulb)),
+                    var contentString = $(app.bulbView(bulb))[0].outerHTML,
                         currentIndex = _markers.length;
 
                     marker.addListener("mouseover", () => {
@@ -9715,7 +9715,7 @@ window.map = function() {
 
                     _markers.push(marker);
                     _contentStrings.push(contentString);
-                })(bulb, i);
+                })(_.map(bulb, _.clone), i); // A copy of bulb is created
             }
         }
 

@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8"/>
     <title>Anoxic's Journal Viewer</title>
-    <link rel="stylesheet" href="../static/css/journal.old.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../static/css/journal.old.min.css"
+          type="text/css"/>
     <link rel="stylesheet" href="../static/css/jquery-ui.css"/>
     <link rel="icon" href="../static/journal/favicon.ico"/>
 </head>
@@ -358,14 +359,15 @@
     </ul>
 </div>
 <div id="video-fullscreen"></div>
+<div id="ruler"></div>
 <!-- Main frame of the viewer -->
 <div id="app">
     <div id="contents">
         <div id="data-calendar"></div>
         <div id="list-tab">
             <div id="list"></div>
-            <div id="map"></div>
         </div>
+        <div id="map"></div>
         <div id="detail"></div>
     </div>
     <div id="edit-pane"></div>
@@ -942,6 +944,24 @@
             </table>
         </div>
         <% } %>
+    </div>
+</script>
+<script type="text/x-template" id="bulb-view">
+    <div class="map-infowindow-container">
+        <p class="bulb-date"> <%- new Date(time.created).toString() %> </p>
+        <div class="bulb-content-wrapper">
+            <% if (image) { %>
+            <img class="bulb-image sensitive" src="<%- image %>">
+            <% } %>
+            <p class="bulb-content sensitive"><%= text.body %></p>
+        </div>
+        <p class="location sensitive"> <%= place.title %> </p>
+        <div class="map-actions">
+            <a href="javascript:;" onclick="map.showOlderBulb()"
+               id="bulb-map-prev"></a>
+            <a href="javascript:;" onclick="map.showLaterBulb()"
+               id="bulb-map-next"></a>
+        </div>
     </div>
 </script>
 </body>

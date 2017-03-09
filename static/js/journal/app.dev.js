@@ -1,9 +1,18 @@
+animation.isDebug = true;
+
 /**
  * Things to do to release stable
  * 1. Copy app.dev.js to app.js. Remove animation.debug=true;
  * 2. Copy journal.dev.css to journal.old.css
- * 2. Copy dev.html to index.html. Rename journal/app.dev.js to lib/app.min.js.
- * Rename journal.dev.css to journal.old.min.css
+ * 3. Copy dev.html to index.html.
+ * - Rename journal/app.dev.js to lib/app.min.js.
+ * - Rename journal.dev.css to journal.old.min.css
+ *
+ * OR
+ *
+ * Run /static/release.sh
+ *
+ * And do not forget to use PhpStorm to minify those data
  */
 
 //region animation.js
@@ -11,8 +20,6 @@
 /* A library for animations */
 
 window.animation = {};
-
-animation.isDebug = true;
 
 window.log = {
     FILE_NOT_FOUND     : "Cannot find the file ",

@@ -5218,11 +5218,11 @@ app.list.prototype = {
             highlight($(this));
 
             var $parent = $(this).parent();
-            app.currentDisplayed = $parent.index();
 
             if ($parent.hasClass("bulb")) {
                 var marker = map.getMarker(createTime);
                 if (marker) {
+                    app.currentDisplayed = $parent.index();
                     google.maps.event.trigger(marker, "mouseover");
                     return false;
                 }
@@ -5240,6 +5240,8 @@ app.list.prototype = {
                 app.$detail.hide().fadeIn(500);
                 app.view = new app.detail();
             }
+
+            app.currentDisplayed = $parent.index();
 
             return false;
         });

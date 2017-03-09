@@ -5203,20 +5203,23 @@ app.list.prototype = {
             data.datetime += " - " + this.date(data.time.end, 1);
         }
 
-        var item = $(app.itemView(data));
-
-        // De-hightlight the data that is displayed
-        ////console.log(app.currentDisplayed);
-        app.$list
-            .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
-            .removeClass("display");
-        // Highlight the data that is now displayed
-        $(this).addClass("display");
+        var item = $(app.itemView(data)),
+            highlight = function($this) {
+                // De-hightlight the data that is displayed
+                ////console.log(app.currentDisplayed);
+                app.$list
+                    .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
+                    .removeClass("display");
+                // Highlight the data that is now displayed
+                $(this).addClass("display");
+            };
 
         // The event when clicking the list
         if (data.contentType === app.contentType.BULB) {
-            item.find(" > a").click((e) => {
+            item.find(" > a").click(function(e) {
                 e.preventDefault();
+                highlight($(this));
+
                 app.$detail.hide();
 
                 var marker = map.getMarker(createTime);
@@ -5228,11 +5231,13 @@ app.list.prototype = {
                 }
 
                 return false;
-            })
+            });
         } else {
             // Bind the click event of this data clip
             item.find(" > a").on("click", function(e) {
                 e.preventDefault();
+                highlight($(this));
+
                 // Show edit panel
                 animation.showMenuOnly("edit");
                 // Remove all the photos that have already been loaded
@@ -9704,7 +9709,8 @@ window.map = function() {
                         }, _INFO_WINDOW_TIMEOUT);
                     });
 
-                    marker.addListener("click", ()=> {
+                    marker.addListener("click", () => {
+                        // todo make sure it is throughly loaded
                         while (i >= app.lastLoaded) {
                             // Not yet displayed, show more
                             $(".loadmore").click();

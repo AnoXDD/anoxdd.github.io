@@ -9715,7 +9715,7 @@ window.map = function() {
 
                     _markers.push(marker);
                     _contentStrings.push(contentString);
-                })(_.map(bulb, _.clone), i); // A copy of bulb is created
+                })($.extend({}, bulb), i); // A copy of bulb is created
             }
         }
 

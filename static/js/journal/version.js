@@ -7,8 +7,6 @@ $("#version").html(app.version.main);
  * Version update change log and planned update
  *
  * Future:
- * [Add] Gets text and multiple entries from "tmp" folder (search "folder" in
- * fontawesome)
  * [Add] Automatically create an entry based on \queue
  * [Add] Shortcut keys management
  * [Add] Disable rightclick everywhere

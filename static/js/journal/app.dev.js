@@ -1,3 +1,4 @@
+window.animation = {};
 animation.isDebug = true;
 
 /**
@@ -18,8 +19,6 @@ animation.isDebug = true;
 //region animation.js
 
 /* A library for animations */
-
-window.animation = {};
 
 window.log = {
     FILE_NOT_FOUND     : "Cannot find the file ",

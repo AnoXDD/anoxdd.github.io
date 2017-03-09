@@ -5211,7 +5211,7 @@ app.list.prototype = {
                     .find("ul li:nth-child(" + (app.currentDisplayed + 1) + ") a")
                     .removeClass("display");
                 // Highlight the data that is now displayed
-                $(this).addClass("display");
+                $this.addClass("display");
             };
 
         // The event when clicking the list

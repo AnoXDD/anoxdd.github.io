@@ -9718,10 +9718,19 @@ window.map = function() {
                         }
 
                         var $li = app.$list.find("li:nth-child(" + (i + 1) + ")"),
-                            $a = $li.find("a");
+                            $a = $li.find("a"),
+                            top = $li.position().top;
 
                         $a.click();
-                        app.$list.scrollTop(0).scrollTop($li.position().top);
+                        // Scroll more until nothing can be loaded or it's
+                        // actually on the top
+                        app.$list.scrollTop(0).scrollTop(top);
+                        while ($(".loadmore").length && $li.position.top() > 1) {
+                            $(".loadmore").click();
+                            app.$list.scrollTop(0)
+                                .scrollTop($li.position().top);
+                        }
+
                     });
 
                     _markers.push(marker);

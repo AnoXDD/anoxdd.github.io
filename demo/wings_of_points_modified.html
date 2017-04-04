@@ -733,7 +733,7 @@
 
   $box.show()
           .html(`${target.name} <strong>${rate}</strong> ${source.name}`);
-  var x = (target.x + target.dx + source.x + source.dx - $box.width()) / 2,
+  var x = (target.x + target.dx + source.x + source.dx - $box.width()) / 2 + $("#chart").position().left,
           y = (target.y + target.dy + source.y + source.dy + link.dy - $box.height()) / 2;
   $box.css({
     top : y + "px",

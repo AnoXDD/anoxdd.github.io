@@ -355,7 +355,7 @@ span {
       width: 480px; } }
   @media screen and (max-width: 580px) {
     .skills-wrapper {
-      width: 360px; } }
+      width: 240px; } }
   .skills-wrapper .skill {
     display: inline-block;
     width: 116px;

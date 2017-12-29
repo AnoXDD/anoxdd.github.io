@@ -380,8 +380,15 @@ span {
 
 #bio {
   height: 380px;
-  transition: height .4s ease;
+}
+
+#trash {
+  height: 160px;
+}
+
+.smooth-toggle {
   position: relative;
+  transition: height .4s ease;
 }
 
 .center-wrapper {
@@ -698,6 +705,13 @@ footer {
   }
   #bio {
     height: 315px;
+  }
+  #trash {
+    > .detail {
+      display: flex;
+      align-items: center;
+      height:105px;
+    }
   }
   .center-wrapper {
     width: 100%;

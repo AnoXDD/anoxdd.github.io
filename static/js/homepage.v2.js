@@ -3,7 +3,7 @@
  */
 function showContent() {
     // Add something before
-    var header = "<p>(C) 2017 Runjie Guan. All rights reserved.<br/>This website only supports modern browser. </p>";
+    var header = "<p>(C) 2018 Runjie Guan. All rights reserved.<br/>This website only supports modern browser. </p>";
 
     setTimeout(function() {
         // Add to header
@@ -175,11 +175,11 @@ function enableSmoothScroll() {
 }
 
 /**
- * Enables the toggle of project detail
+ * Enables smooth transition of toggling
  * @returns {}
  */
-function enableToggleProjectDetail() {
-    $(".project-wrapper, #bio").each(function() {
+function enableSmoothToggle() {
+    $(".project-wrapper, .smooth-toggle").each(function() {
         // Prepend a toggle to each one
         var $this = $(this),
             $toggle = $("<a class='toggle'></a>"),
@@ -232,7 +232,7 @@ showContent();
 $(document).ready(function() {
     enableSmoothScroll();
     enableResponsiveHeader();
-    enableToggleProjectDetail();
+    enableSmoothToggle();
     enableRippleEffect();
     randomizeSkills();
 });
